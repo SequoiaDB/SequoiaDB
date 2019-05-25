@@ -1,0 +1,95 @@
+<div ng-controller="Deploy.Scan.Ctrl" ng-container="{}">
+
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+   <div style="padding:10px 15px;"  ng-container="{offsetY:-70}">
+
+      <div class="alert alert-info" style="margin-bottom:10px;font-size:90%;">
+         {{autoLanguage("提示：使用主机名范围或IP地址范围可以批量添加主机, 详情请点击")}}<a class="linkButton" ng-click="ShowHelper()">{{autoLanguage("帮助")}}</a>
+      </div>
+      <div ng-windows="info as Helper.config" windows-callback="Helper.callback">
+         <p>
+            {{autoLanguage("请输入主机名或IP地址，然后单击")}}<b>{{autoLanguage("扫描。")}}</b>{{autoLanguage("您还可以指定主机名和IP地址范围：")}}
+         </p>
+         <table class="table loosen border">
+            <tr>
+               <td><b>{{autoLanguage("使用此延展范围")}}</b></td>
+               <td><b>{{autoLanguage("要指定的主机")}}</b></td>
+            </tr>
+            <tr>
+               <td>10.1.1.[1-4]</td>
+               <td>10.1.1.1, 10.1.1.2, 10.1.1.3, 10.1.1.4</td>
+            </tr>
+            <tr>
+               <td>pc[1-4]host</td>
+               <td>pc1host, pc2host, pc3host, pc4host</td>
+            </tr>
+            <tr>
+               <td>pc[098-101]host</td>
+               <td>pc098host, pc099host, pc100host, pc101host</td>
+            </tr>
+         </table>
+         <p>{{autoLanguage("您可以添加多个主机名、IP地址和主机名范围、IP地址范围，但要注意主机名和IP地址是唯一。")}}</p>
+         <p>{{autoLanguage("扫描结果将包括所有扫描的地址，但只有运行SSH服务的主机才会被选择包含在集群中。如果是用户名、密码或SSH填写不正确，可以点击主机名或IP地址修改。")}}</p>
+         <p><b>{{autoLanguage("注意")}}</b>：{{autoLanguage("如果您不知道主机的HostName和IP，可输入更大的范围进行扫描。但是范围越大，扫描时间越长。")}}</p>
+      </div>
+
+      <div ng-container="{offsetY:-95}">
+         <div class="pull-left" ng-container="{width:400}">
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("扫描主机")}}</div>
+
+            <div class="borderBox" style="padding:10px;overflow:auto;position:relative;" ng-container="{offsetY:-30}">
+
+               <div form-create para="ScanForm"></div>
+
+               <div style="margin-top:10px;text-align:right;">
+                  <button class="btn btn-default" ng-click="ClearInput()">{{autoLanguage("清空")}}</button>&nbsp;
+                  <button class="btn btn-primary" ng-click="ScanHost()">{{autoLanguage("扫描")}}</button>
+               </div>
+
+            </div>
+         </div>
+         <div class="pull-left" ng-container="{offsetX:-410,marginLeft:10}">
+            <div ng-windows="form as ChangeHostInfoWindow.config" windows-callback="ChangeHostInfoWindow.callback">
+               <div form-create para="form"></div>
+            </div>
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("主机列表")}}</div>
+            <button class="btn btn-default" ng-click="SelectAll()">{{autoLanguage("全选")}}</button>&nbsp;<button class="btn btn-default" ng-click="Unselected()">{{autoLanguage("反选")}}</button>&nbsp;<button class="btn btn-default" ng-click="ClearErrorHost()">{{autoLanguage("清除失败的主机")}}</button>
+            <div ng-container="{offsetY:-65,marginTop:10}" ng-table="HostListTable['options']" table-title="HostListTable['title']" table-content="hostInfo in HostListTable['body']" table-callback="HostListTable['callback']">
+               <div class="Ellipsis" table-key="Check">
+                  <input type="checkbox" ng-model="hostInfo['checked']" ng-click="CountCheckedHostNum();" ng-disabled="hostInfo['Errno']!=0" />
+               </div>
+               <div class="Ellipsis linkButton" table-key="Errno" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  <i class="fa fa-circle" ng-style="{'true':{'color':'#00CC66'},'false':{'color':'#ff4444'}}[hostInfo['Errno']==0]"></i> <span ng-if="hostInfo['Errno']==0">{{autoLanguage("连接成功")}}</span><span ng-if="hostInfo['Errno']!=0">{{hostInfo['Detail']}}</span>
+               </div>
+               <div class="Ellipsis linkButton" table-key="HostName" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['HostName']}}
+               </div>
+               <div class="Ellipsis linkButton" table-key="IP" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['IP']}}
+               </div>
+               <div class="Ellipsis linkButton" table-key="User" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['User']}}
+               </div>
+               <div class="Ellipsis linkButton" table-key="Password" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  ***
+               </div>
+               <div class="Ellipsis linkButton" table-key="SSH" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['SSH']}}
+               </div>
+               <div class="Ellipsis linkButton" table-key="Proxy" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['Proxy']}}
+               </div>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-click="GotoDeploy()">{{autoLanguage("返 回")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn" ng-class="{'true':'btn-primary','false':'btn-danger'}[checkedHostNum>0]" ng-click="GotoAddHost()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+
+   </div>
+
+</div>

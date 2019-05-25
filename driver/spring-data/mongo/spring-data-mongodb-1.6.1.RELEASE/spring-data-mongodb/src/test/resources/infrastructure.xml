@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="coord1" class="org.springframework.data.mongodb.assist.ServerAddress">
+		<constructor-arg name="host" value="192.168.20.166"/>
+		<constructor-arg name="port" value="11810"/>
+	</bean>
+
+	<bean id="coord2" class="org.springframework.data.mongodb.assist.ServerAddress">
+		<constructor-arg name="host" value="192.168.20.166"/>
+		<constructor-arg name="port" value="50000"/>
+	</bean>
+
+	<bean id="coord3" class="org.springframework.data.mongodb.assist.ServerAddress">
+		<constructor-arg name="host" value="192.168.20.165"/>
+		<constructor-arg name="port" value="11810"/>
+	</bean>
+
+	<bean id="mongoOptions1" class="org.springframework.data.mongodb.core.MongoOptionsFactoryBean">
+		<property name="connectTimeout" value="100"/>
+		<property name="maxCount" value="100"/>
+		<property name="preferedInstance">
+			<list>
+				<value>M</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean">
+		<property name="coordAddress">
+			<list>
+				<!--<ref bean="coord1"/>-->
+				<ref bean="coord2"/>
+				<!--<ref bean="coord3"/>-->
+			</list>
+		</property>
+		<property name="userName" value="123"/>
+		<property name="password" value="456"/>
+		<property name="mongoOptions" ref="mongoOptions1"/>
+	</bean>
+
+
+	<!--<bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean">-->
+		<!--<property name="host" value="192.168.20.166"/>-->
+		<!--&lt;!&ndash;<property name="host" value="192.168.20.165"/>&ndash;&gt;-->
+		<!--&lt;!&ndash;<property name="host" value="192.168.28.1"/>&ndash;&gt;-->
+		<!--<property name="port" value="11810"/>-->
+		<!--&lt;!&ndash;<property name="port" value="60000"/>&ndash;&gt;-->
+	<!--</bean>-->
+
+	<bean id="mongoDbFactory" class="org.springframework.data.mongodb.core.SimpleMongoDbFactory">
+		<constructor-arg name="mongo" ref="mongo"/>
+		<constructor-arg name="databaseName" value="database"/>
+	</bean>
+
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+	</bean>
+
+</beans>

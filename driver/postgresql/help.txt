@@ -1,0 +1,123 @@
+prerequisit: openSSL is installed, libcrypto.so can be found in lib
+
+normal user:
+1) download postgresql 9.3+
+2) ./configure + make
+if you want to choose different path than /usr/local/pgsql, you can specify
+prefix to specify pgsql934
+eg: ./configure --prefix=/usr/local/pgsql934
+
+Root user:
+3) make install
+note: default path is /usr/local/pgsql/
+
+normal user:
+4) cd /home/sequoiadb/trunk/driver/postgresql
+5) PATH=/usr/local/pgsql934/bin:$PATH make local
+6) PATH=/usr/local/pgsql934/bin:$PATH make all
+
+Root user:
+7) cd /home/sequoiadb/trunk/driver/postgresql
+8) PATH=/usr/local/pgsql934/bin:$PATH make install
+9) mkdir /usr/local/pgsql934/data
+10) chown postgres /usr/local/pgsql934/*
+11) su - postgres
+
+normal user:
+12) start sequoiadb and create cs.cl
+
+13) insert record
+{ a: 1, b: 2, c: "hello world" }
+{ d: 1 }
+{ a: "hello", b: "world", c: 1 }
+{ a: { A:1 }, b: 1.5, c: "abc" }
+
+postgres user:
+14)
+/usr/local/pgsql934/bin/initdb -D /usr/local/pgsql934/data
+/usr/local/pgsql934/bin/postgres -D /usr/local/pgsql934/data >logfile 2>&1 &
+/usr/local/pgsql934/bin/createdb test
+/usr/local/pgsql934/bin/psql test
+
+15) in pg shell
+# register wrapper for driver
+create extension sdb_fdw;
+# register server as remote host
+create server sdb_server foreign data wrapper sdb_fdw options ( address
+'192.168.20.35', service '50000' );
+# table map to collection, if collectionspace is not specified, it uses default
+# schema "public". if collection not specified, it's same name as table name
+create foreign table bar ( a integer, b integer, c text ) server sdb_server
+options ( collectionspace 'cs', collection 'cl' ) ;
+# collect statistics
+analyze bar;
+# query from the table
+select * from bar;
+test=# select * from bar;
+ a | b |      c
+---+---+-------------
+ 1 | 2 | hello world
+   |   |
+   |   |
+   | 1 | abc
+(4 rows)
+# create table with subobject
+test=# create foreign table bar3 ( "a.A" integer, b integer, c text ) server
+sdb_server options ( collectionspace 'cs', collection 'cl' ) ;
+CREATE FOREIGN TABLE
+test=# select * from bar3;
+ a.A | b |      c
+-----+---+-------------
+     | 2 | hello world
+     |   |
+     |   |
+   1 | 1 | abc
+(4 rows)
+# create array
+   sdb: db.cs.cl.remove(); db.cs.cl.insert({a:100,b:100,c:[1,2,3,4,5,6,7,8,9,10]})
+test=# create foreign table bar4 ( a integer, b integer, c integer[] ) server
+sdb_server options ( collectionspace 'cs', collection 'cl' ) ;
+CREATE FOREIGN TABLE
+test=# select * from bar4;
+  a  |  b  |           c
+-----+-----+------------------------
+ 100 | 100 | {1,2,3,4,5,6,7,8,9,10}
+(1 row)
+test=# select a,b,unnest(c) from bar4;
+  a  |  b  | unnest
+-----+-----+--------
+ 100 | 100 |      1
+ 100 | 100 |      2
+ 100 | 100 |      3
+ 100 | 100 |      4
+ 100 | 100 |      5
+ 100 | 100 |      6
+ 100 | 100 |      7
+ 100 | 100 |      8
+ 100 | 100 |      9
+ 100 | 100 |     10
+(10 rows)
+
+
+
+note:
+a) restart postgresql
+su - postgres
+ps -elf | grep postgres    ->>> find out something like
+"/usr/local/pgsql934/bin/postgres -D /usr/local/pgsql934/data"
+kill -15 <pid>
+/usr/local/pgsql934/bin/postgres -D /usr/local/pgsql934/data >logfile 2>&1 &
+
+b) mongodb steps
+install mongodb fdw driver
+CREATE EXTENSION mongo_fdw;
+CREATE SERVER mongo_server FOREIGN DATA WRAPPER mongo_fdw OPTIONS (address
+'192.168.20.112', port '27017');
+CREATE FOREIGN TABLE bar1 ( a integer, b integer, c text ) server mongo_server
+options ( database 'test', collection 'bar' ) ;
+analyze bar1;
+CREATE FOREIGN TABLE bar2 ( a integer, b integer, c text ) server mongo_server
+options ( database 'test', collection 'bar1' ) ;
+
+c) show access plan
+explain verbose select * from bar;

@@ -1,0 +1,67 @@
+﻿<div  ng-controller="Performance.Memory.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div class="active" ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div style="margin-top:5px;" class="well Ellipsis">
+         <i class="fa fa-circle" ng-style="{true:{'color':'#00CC66'},false:{'color':'#D9534F'},'null':{'color':'#000'}}[HostStatus]"></i>&nbsp;
+         <span style="font-weight:bold;color:#006699;">&nbsp;{{hostName}}</span>
+      </div>
+
+      <div class="underlineTab" ng-container="{height:34,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Index">{{autoLanguage("主机信息")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/CPU">CPU</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Host/Info/Memory">{{autoLanguage("内存")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Disk">{{autoLanguage("磁盘")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Network">{{autoLanguage("网卡")}}</a>
+            </li>
+            <!--<li>
+               <a href="#/Monitor/Host-Info/Config">{{autoLanguage("系统配置")}}</a>
+            </li>-->
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div class="content" style="border: 1px solid #E3E7E8;" ng-container="{offsetY:-115,marginTop:10}">
+         <!--图表-->
+         <div ng-container="{offsetY:-95,offsetX:-20}" style="padding:10px 20px 0 20px;" create-chart="charts.Memory"></div>
+         <!--底部描述-->
+         <div style="border-top:1px solid #ddd;height:90px;">
+            <!--横条-->
+            <div style="height:45px;width:80%;padding-left:10px;" create-chart="charts.MemoryBar"></div>
+            <div style="padding:5px 0 0 20px;">
+               <div style="float:left;width:100px;color:#666;">
+                  <div style="height:20px;font-size:100%;font-weight:bold;"><i class="fa fa-stop"></i>&nbsp;{{autoLanguage("总量")}}</div>
+                  <div style="height:20px;">{{memoryInfo['size']}}<span ng-if="memoryInfo['size'] != '-'">MB</span></div>
+               </div>
+               <div style="float:left;width:100px;color:#18bc9a;">
+                  <div style="height:20px;font-size:100%;font-weight:bold;"><i class="fa fa-stop"></i>&nbsp;{{autoLanguage("已使用")}}</div>
+                  <div style="height:20px;">{{memoryInfo['use']}}<span ng-if="memoryInfo['use'] != '-'">MB</span></div>
+               </div>
+               <div style="float:left;width:100px;color:#21bbee;">
+                  <div style="height:20px;font-size:100%;font-weight:bold;"><i class="fa fa-stop"></i>&nbsp;{{autoLanguage("可用")}}</div>
+                  <div style="height:20px;">{{memoryInfo['free']}}<span ng-if="memoryInfo['free'] != '-'">MB</span></div>
+               </div>
+               <div class="clear-float"></div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

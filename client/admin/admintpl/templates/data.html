@@ -1,0 +1,42 @@
+		<div class="row">
+			<div class="col-md-2">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<table width="100%" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td>列表</td>
+								<td align="right">
+									<div class="btn-group">
+									  <button type="button" class="btn btn-default btn-xs" onclick='getleftlist( "pictree", "data" );'>刷新</button>
+									  <button type="button" class="btn btn-default btn-xs" onclick='left_list_open_all(d);'>展开</button>
+									  <button type="button" class="btn btn-default btn-xs" onclick='left_list_close_all(d);'>收起</button>
+									</div>
+								</td>
+								<!--<td align="right" id="helplist"><span class="glyphicon glyphicon-question-sign"></span></td>-->
+							</tr>
+						</table>
+					</div>
+					<div class="panel-body" id="left_list" style="overflow:auto;">
+						<div id="pictree" style="font-size:15px;"></div>
+					</div>
+				</div>
+			</div>
+
+			<input id="h-type" type="hidden" value="">
+			<input id="h-cs" type="hidden" value="">
+			<input id="h-cl" type="hidden" value="">
+			<input id="h-skip" type="hidden" value="20">
+
+  			<div class="col-md-10">
+				<div class="panel panel-default" style="margin-bottom:0;">
+					<div class="panel-heading">
+						窗口<!-- <span class="glyphicon glyphicon-question-sign" id="helpcontext"></span>-->
+					</div>
+					<div class="panel-body" id="right_context" style="overflow-x:none;overflow:auto;">
+						<div id="context"></div>
+					</div>
+					<div id="context_respond" class="panel-body" style="height:60px;overflow:auto;border-top:#DDD solid 1px;"></div>
+				</div>
+			</div>
+
+		</div>

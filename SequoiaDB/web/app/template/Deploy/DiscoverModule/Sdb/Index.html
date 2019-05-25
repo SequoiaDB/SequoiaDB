@@ -1,0 +1,111 @@
+<div ng-controller="Deploy.Sdb.Discover.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList" ng-show="DiscoverConf != null"></div>
+   <div style="padding:10px 15px;" ng-container="{'true':ContainerBox[0],'false':ContainerBox[1]}[DiscoverConf != null]">
+      <div ng-container="{offsetY:-5}">
+         <div ng-controller="Deploy.Sdb.Discover.Preview.Ctrl" class="pull-left" ng-container="{width:400}">
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("发现信息")}}</div>
+            <div class="borderBox" style="padding:10px;font-size:90%;overflow-y:auto;" ng-container="{offsetY:-30}">
+               <div style="font-weight:bold;margin-bottom:10px;">{{autoLanguage("业务信息")}}</div>
+               <table class="table loosen border" style="margin-bottom:15px;">
+                  <tr>
+                     <td style="width:150px;">{{autoLanguage("状态")}}</td>
+                     <td>{{autoLanguage("完成")}}</td>
+                  </tr>
+                  <tr>
+                     <td style="width:120px;">{{autoLanguage("所属集群")}}</td>
+                     <td>{{ClusterName}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("发现业务")}}</td>
+                     <td>{{ModuleName}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("部署模式")}}</td>
+                     <td>{{BusinessConf['moduleMode']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("主机数")}}</td>
+                     <td>{{BusinessConf['hostNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("总节点数")}}</td>
+                     <td>{{BusinessConf['nodeNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("数据组数")}}</td>
+                     <td>{{BusinessConf['dataGroupNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("最大副本数")}}</td>
+                     <td>{{BusinessConf['maxReplicaNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("最小副本数")}}</td>
+                     <td>{{BusinessConf['minReplicaNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("数据节点数")}}</td>
+                     <td>{{BusinessConf['dataNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("协调节点数")}}</td>
+                     <td>{{BusinessConf['coordNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("编目节点数")}}</td>
+                     <td>{{BusinessConf['cataNum']}}</td>
+                  </tr>
+               </table>
+            </div>
+         </div>
+         <div ng-controller="Deploy.Sdb.Discover.Table.Ctrl" class="pull-left" ng-container="{offsetX:-410,marginLeft:10}">
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("节点列表")}}</div>
+            <div ng-container="{offsetY:-30}" ng-table="NodeTable['options']" table-title="NodeTable['title']" table-content="nodeInfo in NodeTable['body']" table-callback="NodeTable['callback']">
+               <div class="Ellipsis" table-key="hostname">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeInfo )">{{nodeInfo['hostname']}}</a>
+               </div>
+               <div class="Ellipsis" table-key="svcname">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeInfo )">{{nodeInfo['svcname']}}</a>
+               </div>
+               <div class="Ellipsis" table-key="dbpath">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeInfo )">{{nodeInfo['dbpath']}}</a>
+               </div>
+               <div class="Ellipsis" table-key="role">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeInfo )">{{nodeInfo['role']}}</a>
+               </div>
+               <div class="Ellipsis" table-key="datagroupname">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeInfo )">{{nodeInfo['datagroupname']}}</a>
+               </div>
+            </div>
+
+            <div ng-windows="config as NodeConfWindow.config" windows-callback="NodeConfWindow.callback">
+               <table class="table border loosen">
+                  <thead>
+                     <tr style="background:#F1F4F5;">
+                        <th width="160">{{autoLanguage("配置项")}}</th>
+                        <th>{{autoLanguage("值")}}</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat="item in config track by $index">
+                        <td>
+                           <span>{{item.key}}</span>
+                        </td>
+                        <td>
+                           <span>{{item.value}}</span>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-primary" ng-click="GotoDeploy()">{{autoLanguage("完成")}}</button>
+      </div>
+
+   </div>
+
+</div>

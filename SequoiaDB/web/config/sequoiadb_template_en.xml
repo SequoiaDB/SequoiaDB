@@ -1,0 +1,104 @@
+<DeployModList type="array">
+   <FILLER>
+      <DeployMod>distribution</DeployMod>
+      <WebName>Distributed Mode</WebName>
+      <BusinessType>sequoiadb</BusinessType>
+      <Property type="array">
+         <FILLER>
+            <Name>replicanum</Name>
+            <Type>int</Type>
+            <Default>3</Default>
+            <Valid>1,3,5,7</Valid>
+            <Display>select box</Display>
+            <Edit>true</Edit>
+            <Desc>Data Copies Number</Desc>
+            <Level>0</Level>
+            <WebName>Replica Number</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>datagroupnum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1-</Valid>
+            <Display>edit box</Display>
+            <Edit>true</Edit>
+            <Desc>Data Replica Group Number</Desc>
+            <Level>0</Level>
+            <WebName>Replica Group Number</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>catalognum</Name>
+            <Type>int</Type>
+            <Default>3</Default>
+            <Valid>1,3,5,7</Valid>
+            <Display>select box</Display>
+            <Edit>true</Edit>
+            <Desc>Catalog Node Number</Desc>
+            <Level>0</Level>
+            <WebName>Catalog Node Number</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>coordnum</Name>
+            <Type>int</Type>
+            <Default>0</Default>
+            <Valid>0-993</Valid>
+            <Display>edit box</Display>
+            <Edit>true</Edit>
+            <Desc> Coord Node Number,0 means that all hosts will install one coord node.</Desc>
+            <Level>0</Level>
+            <WebName>Coord Node Number</WebName>
+         </FILLER>
+      </Property>
+   </FILLER>
+   <FILLER>
+      <DeployMod>standalone</DeployMod>
+      <WebName>Standalone Mode</WebName>
+      <BusinessType>sequoiadb</BusinessType>
+      <Property type="array">
+         <FILLER>
+            <Name>replicanum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1</Valid>
+            <Display>select box</Display>
+            <Edit>false</Edit>
+            <Desc>Data Copies</Desc>
+            <Level>0</Level>
+            <WebName>Replica Numbers</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>datagroupnum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1</Valid>
+            <Display>edit box</Display>
+            <Edit>false</Edit>
+            <Desc>Data Replica Group Number</Desc>
+            <Level>0</Level>
+            <WebName>Replica Group Number</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>catalognum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1</Valid>
+            <Display>select box</Display>
+            <Edit>false</Edit>
+            <Desc>Catalog Nodes Number</Desc>
+            <Level>0</Level>
+            <WebName>Catalog Node Number</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>coordnum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1</Valid>
+            <Display>edit box</Display>
+            <Edit>false</Edit>
+            <Desc>Coord Node Number,0 means that all hosts will install one coord node.</Desc>
+            <Level>0</Level>
+            <WebName>Coord Node Number</WebName>
+         </FILLER>
+      </Property>
+   </FILLER>
+</DeployModList>

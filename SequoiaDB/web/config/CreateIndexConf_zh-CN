@@ -1,0 +1,49 @@
+[
+      {
+            "name": "name", 
+            "webName": "索引名", 
+            "type": "string", 
+            "valid": "s1-127!.$", 
+            "desc": "索引名，同一个集合中的索引名必须唯一。"
+      }, 
+      {
+            "name": "indexDef", 
+            "webName": "索引键", 
+            "type": "list", 
+            "valid": "1-100", 
+            "child": [
+                  {
+                        "type": "string", 
+                        "valid": "s1"
+                  }, 
+                  {
+                        "type": "select", 
+                        "valid": "1:升序,-1:降序"
+                  }
+            ], 
+            "desc": "索引键，包含一个或多个指定索引字段与方向的对象。"
+      }, 
+      {
+            "name": "isUnique", 
+            "webName": "索引是否唯一", 
+            "type": "select", 
+            "valid": "true:是,false:否", 
+            "default": "false", 
+            "relyon": true
+      }, 
+      {
+            "name": "enforced", 
+            "webName": "索引是否强制唯一", 
+            "type": "select", 
+            "valid": "true:是,false:否", 
+            "default": "false", 
+            "desc": "索引是否强制唯一。只有当索引唯一时生效，索引强制唯一最多只能存在一个不包含完整索引键。"
+      }, 
+      {
+            "type": "note", 
+            "text": [
+                  "在唯一索引所指定的索引键字段上，集合中不可存在一条以上的记录完全重复。", 
+                  "索引名不能为空，不能含点（.）或者美元符号（$），且长度不超过127B。"
+            ]
+      }
+]

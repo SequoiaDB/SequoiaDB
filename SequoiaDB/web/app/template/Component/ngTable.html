@@ -1,0 +1,35 @@
+﻿<div class="ng-table" ng-container="{}">
+   <div class="ng-table-box" ng-container="{offsetY:tools.height}" ng-mousemove="move($event)" ng-mouseup="mouseUp()">
+      <div class="ng-table-header">
+         <table>
+            <tbody>
+               <tr class="ng-table-titles"></tr>
+               <tr class="ng-table-filter"></tr>
+            </tbody>
+         </table>
+      </div>
+      <div class="ng-table-body">
+         <table>
+            <tbody></tbody>
+         </table>
+      </div>
+   </div>
+   <div class="ng-table-tools" ng-show="table.options.tools"><!-- && (loadStatus.onFilter.status || loadStatus.length > 10)-->
+      <ul>
+         <li class="event" ng-repeat="btn in tools.custom track by $index" ng-if="btn.position == 'left'" ng-click="btn.onClick()">
+            <i class="fa" ng-class="btn.icon" ng-style="btn.style"></i>
+         </li>
+         <li class="event" ng-click="first()"><i class="fa fa-fast-backward"></i></li>
+         <li class="event" ng-click="previous()"><i class="fa fa-backward"></i></li>
+         <li><input type="text" ng-model="loadStatus.page" ng-change="check()" ng-keypress="jump($event)"/> / {{tools.page}}</li>
+         <li class="event" ng-click="next()"><i class="fa fa-forward"></i></li>
+         <li class="event" ng-click="last()"><i class="fa fa-fast-forward"></i></li>
+         <li class="event" ng-repeat="btn in tools.custom track by $index" ng-if="btn.position == 'right'" ng-click="btn.onClick()">
+            <i class="fa" ng-class="btn.icon"></i>
+         </li>
+
+         <li class="right">{{tools.text}}</li>
+      </ul>
+      <div class="clear-float"></div>
+   </div>
+</div>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder
+			location="classpath:/org/springframework/data/mongodb/config/mongo.properties"/>
+
+	<mongo:mongo host="${mongo.host}" port="${mongo.port}">
+			<mongo:options
+					connections-per-host="${mongo.connectionsPerHost}"
+					threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+					connect-timeout="${mongo.connectTimeout}"
+					max-wait-time="${mongo.maxWaitTime}"					
+					auto-connect-retry="${mongo.autoConnectRetry}"
+					socket-keep-alive="${mongo.socketKeepAlive}"					
+					socket-timeout="${mongo.socketTimeout}"
+					slave-ok="${mongo.slaveOk}"
+					write-number="1"
+					write-timeout="0"
+					write-fsync="true"/>
+	</mongo:mongo>
+	
+	<mongo:db-factory dbname="database" mongo-ref="mongo"/>
+
+
+	
+	<mongo:db-factory id="secondMongoDbFactory"
+					  host="192.168.20.166"
+					  port="11810"
+					  dbname="database"
+					  username="joe"
+					  password="secret"/>
+					  
+		<mongo:db-factory id="thirdMongoDbFactory"
+					  host="192.168.20.166"
+					  port="11810"
+					  dbname="database"
+					  username="joe"
+					  password="secret"
+					  authentication-dbname="admin"/>
+
+	<mongo:mongo id="defaultMongo" host="localhost" port="27017"/>
+
+	<mongo:mongo id="mongoSsl" host="localhost" port="27017">
+		<mongo:options ssl="true"/>
+	</mongo:mongo>
+
+	<mongo:mongo id="mongoSslWithCustomSslFactory" host="localhost" port="27017">
+		<!-- setting a non-null ssl-socket-factory implicitly sets ssl=true -->
+		<mongo:options ssl-socket-factory-ref="customSslSocketFactory"/>
+	</mongo:mongo>
+
+	<bean id="customSslSocketFactory" class="javax.net.ssl.SSLSocketFactory" factory-method="getDefault" scope="singleton"/>
+
+	<mongo:mongo id="noAttrMongo"/>
+
+	<mongo:mapping-converter>
+		<mongo:custom-converters>
+			<mongo:converter ref="readConverter"/>
+			<mongo:converter>
+				<bean class="org.springframework.data.mongodb.core.PersonWriteConverter"/>
+			</mongo:converter>
+		</mongo:custom-converters>
+	</mongo:mapping-converter>
+
+	<bean id="readConverter" class="org.springframework.data.mongodb.core.PersonReadConverter"/>
+
+	<mongo:template id="mongoTemplate" db-factory-ref="mongoDbFactory" converter-ref="mappingConverter"/>
+	<mongo:template id="anotherMongoTemplate" db-factory-ref="mongoDbFactory" write-concern="SAFE" />
+	
+	<mongo:gridFsTemplate/>
+	<mongo:gridFsTemplate id="secondGridFsTemplate" db-factory-ref="mongoDbFactory" converter-ref="mappingConverter"/>
+	<mongo:gridFsTemplate id="thirdGridFsTemplate" db-factory-ref="mongoDbFactory" converter-ref="mappingConverter" bucket="bucketString"/>
+	
+</beans>

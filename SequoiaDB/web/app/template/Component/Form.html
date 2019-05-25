@@ -1,0 +1,64 @@
+<form class="Form" ng-if="Setting.Type != 'grid'&&Setting.Type != 'table'">
+   <div class="FormGroup" ng-repeat="inputInfo in Setting.inputList track by $index">
+      <table class="table">
+         <tbody>
+            <tr ng-if="inputInfo.type == 'group'">
+               <td colspan="2">
+                  <div class="FormName">
+                     <label><span class="error" ng-if="inputInfo.required == true">*</span> {{inputInfo.webName}}</label> <i ng-if="inputInfo.desc" class="fa fa-info-circle" ng-attr="{'data-desc':inputInfo.desc}"></i>
+                  </div>
+                  <div class="FormInput" ng-include="'./app/template/Component/Form_child.html'"></div>
+                  <span class="FormHelp error">{{inputInfo.error}}</span>
+               </td>
+            </tr>
+            <tr ng-if="inputInfo.type != 'group' && inputInfo.type != 'grid'">
+               <td ng-style="{true:{'vertical-align':'middle'},false:{'vertical-align':'top','padding-top':'8px'}}[inputInfo.type!='list'];{width:Setting.KeyWidth}">
+                  <div class="FormName">
+                     <label><span class="error" ng-if="inputInfo.required == true">*</span> {{inputInfo.webName}}</label> <i ng-if="inputInfo.desc" class="fa fa-info-circle" ng-attr="{'data-desc':inputInfo.desc}"></i>
+                  </div>
+               </td>
+               <td style="padding-left:10px;">
+                  <div class="FormInput" ng-include="'./app/template/Component/Form_child.html'"></div>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="2" class="error">{{inputInfo.error}}</td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
+</form>
+<div class="Grid" ng-if="Setting.Type == 'grid'" ng-grid="Setting.Grid" style="border-bottom:1px solid #E3E7E8;">
+   <div class="GridHeader">
+      <div class="GridTr">
+         <div class="GridTd Ellipsis" ng-repeat="title in Setting.GridTitle track by $index">{{title.text}}</div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+   <div class="GridBody">
+      <div class="GridTr" ng-repeat="tr in Setting.inputList track by $index">
+         <div class="GridTd" ng-repeat="td in tr track by $index" ng-class="{'undefined':'Ellipsis','true':'Ellipsis'}[td.ellipsis]" ng-style="{'word-break':(data.options.grid.tdModel == 'auto' || !data.options.grid.tdModel ? 'break-all' : '' ) }" ng-switch on="td.type">
+            <input ng-switch-when="string" type="text" class="form-control" ng-model="td.value" />
+            <input ng-switch-when="checkbox" type="checkbox" ng-model="td.value" />
+            <span ng-switch-when="textual">{{td.value}}</span>
+            <select class="form-control" ng-switch-when="select" ng-model="td.value" ng-options="selectList.value as selectList.key for selectList in td.valid"></select>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+</div>
+<div class="Grid" ng-if="Setting.Type == 'table'" ng-grid="Setting.Grid" style="border-bottom:1px solid #E3E7E8;">
+   <table class="table border loosen" style="width:100%;">
+      <tr>
+         <td style="background-color:#F1F4F5; font-size:95%; font-weight:100;" ng-repeat="title in Setting.GridTitle track by $index">{{title.text}}</td>
+      </tr>
+      <tr class="" ng-repeat="tr in Setting.inputList track by $index">
+         <td class="" ng-repeat="td in tr track by $index" ng-class="{'undefined':'Ellipsis','true':'Ellipsis'}[td.ellipsis]" ng-style="{'word-break':(data.options.grid.tdModel == 'auto' || !data.options.grid.tdModel ? 'break-all' : '' ) }" ng-switch on="td.type">
+            <input ng-switch-when="string" type="text" class="form-control" ng-model="td.value" />
+            <input ng-switch-when="checkbox" type="checkbox" ng-disabled="td.disabled" ng-model="td.value" />
+            <span ng-switch-when="textual">{{td.value}}</span>
+            <select class="form-control" ng-switch-when="select" ng-model="td.value" ng-options="selectList.value as selectList.key for selectList in td.valid"></select>
+         </td>
+      </tr>
+   </table>
+</div>

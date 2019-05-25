@@ -1,0 +1,4 @@
+# Tooling related information for the Sdb DB namespace
+http\://www.springframework.org/schema/data/sdb@name=Sdb Namespace
+http\://www.springframework.org/schema/data/sdb@prefix=sdb
+http\://www.springframework.org/schema/data/sdb@icon=org/springframework/jdbc/config/spring-jdbc.gif

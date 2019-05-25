@@ -1,0 +1,90 @@
+/*
+ * Copyright 2017 SequoiaDB Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
+package com.sequoiadb.message.request;
+
+import com.sequoiadb.exception.BaseException;
+import com.sequoiadb.exception.SDBError;
+import com.sequoiadb.message.MsgOpCode;
+import com.sequoiadb.util.Helper;
+import org.bson.BSONObject;
+import org.bson.BasicBSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+
+public class DeleteRequest extends SdbRequest {
+    private static final int FIXED_LENGTH = 44;
+    private static final byte[] EMPTY_BSON_BYTES = Helper.encodeBSONObj(new BasicBSONObject());
+    private static final int ALIGNED_EMPTY_BSON_LENGTH = Helper.alignedSize(EMPTY_BSON_BYTES.length);
+    private static final int version = 1;
+    private static final short w = 0;
+    private static final short padding = 0;
+    private static int flag = 0;
+    private String collectionName;
+    private byte[] matcherBytes;
+    private byte[] hintBytes;
+
+    public DeleteRequest(String collectionName, BSONObject matcher, BSONObject hint) {
+        opCode = MsgOpCode.DELETE_REQ;
+        length = FIXED_LENGTH;
+
+        if (collectionName == null || collectionName.length() == 0) {
+            throw new BaseException(SDBError.SDB_INVALIDARG, "Collection name is null or empty");
+        }
+
+        this.collectionName = collectionName;
+        length += Helper.alignedSize(collectionName.length() + 1);
+
+        if (matcher == null) {
+            matcherBytes = EMPTY_BSON_BYTES.clone();
+            length += ALIGNED_EMPTY_BSON_LENGTH;
+        } else {
+            matcherBytes = Helper.encodeBSONObj(matcher);
+            length += Helper.alignedSize(matcherBytes.length);
+        }
+
+        if (hint == null) {
+            hintBytes = EMPTY_BSON_BYTES.clone();
+            length += ALIGNED_EMPTY_BSON_LENGTH;
+        } else {
+            hintBytes = Helper.encodeBSONObj(hint);
+            length += Helper.alignedSize(hintBytes.length);
+        }
+    }
+
+    @Override
+    protected void encodeBody(ByteBuffer out) {
+        out.putInt(version);
+        out.putShort(w);
+        out.putShort(padding);
+        out.putInt(flag);
+        out.putInt(collectionName.length());
+        try {
+            out.put(collectionName.getBytes("UTF-8"));
+            out.put((byte) 0);
+            int length = collectionName.length() + 1;
+            int paddingLen = Helper.alignedSize(length) - length;
+            if (paddingLen > 0) {
+                out.put(new byte[paddingLen]);
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new BaseException(SDBError.SDB_INVALIDARG, e);
+        }
+        encodeBSONBytes(matcherBytes, out);
+        encodeBSONBytes(hintBytes, out);
+    }
+}

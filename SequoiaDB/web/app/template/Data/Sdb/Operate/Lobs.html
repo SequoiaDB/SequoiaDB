@@ -1,0 +1,36 @@
+<div style="padding:10px 15px;" ng-controller="Data.Lob.Lobs.Ctrl" ng-container="{}">
+   <div class="underlineTab" ng-container="{height:50}">
+      <ul class="right">
+         <li class="text Ellipsis" style="width:350px;">
+            <b><a class="linkButton" href="#/Data/SDB-Database/Index">{{autoLanguage("数据库")}}</a> <span style="font-size:80%; color:#666;">></span> <span style="color:#666;">{{fullName}}</span></b>
+         </li>
+         <li class="active">
+            <a href="#/Data/SDB-Operate/Lobs">{{autoLanguage("大对象操作")}}</a>
+         </li>
+         <li>
+            <a href="#/Data/SDB-Operate/Record">{{autoLanguage("记录操作")}}</a>
+         </li>
+      </ul>
+   </div>
+   <div ng-container="{height:30}">
+      <button class="topBtn" ng-click="queryAll()"><i class="fa fa-search"></i> {{autoLanguage("所有")}}</button>
+   </div>
+   <div class="result Ellipsis" ng-class="{true:'success',false:'failed'}[execRc]"  ng-container="{marginTop:12,height:40}">
+      {{execResult}}
+   </div>
+   <div ng-container="{marginTop:13,offsetY:-145}" ng-if="lobTable['body'].length > 0" ng-table="lobTable['options']" table-title="lobTable['title']" table-content="lobInfo in lobTable['body']" table-callback="lobTable['callback']">
+      <div class="Ellipsis" table-key="Oid">{{$index+1}}</div>
+      <div class="Ellipsis" table-key="Oid.$oid">
+         <a class="linkButton" ng-click="showLobInfo(lobInfo['Oid']['$oid'])">{{lobInfo['Oid']['$oid']}}</a>
+      </div>
+      <div class="Ellipsis" table-key="CreateTime.$timestamp">{{lobInfo['CreateTime']['$timestamp']}}</div>
+      <div class="Ellipsis" table-key="Size">{{lobInfo.Size}}</div>
+      <div class="Ellipsis" table-key="Available">{{lobInfo.Available}}</div>
+   </div>
+   <div style="position:relative;" ng-container="{marginTop:13,offsetY:-145}" ng-if="lobTable['body'].length == 0">
+      <div class="data_empty">
+         <div class="title">{{autoLanguage("集合没有数据")}}</div>
+         <div class="tips">{{autoLanguage("使用工具可以导入Lob。")}}</div>
+      </div>
+   </div>
+</div>

@@ -1,0 +1,52 @@
+<div ng-controller="Deploy.Package.Conf.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+   <div style="padding:10px 15px;"  ng-container="{offsetY:-40}">
+      <div ng-container="{offsetY:-73}">
+         <div class="pull-left" ng-container="{width:400}">
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("配置信息")}}</div>
+            <div class="borderBox" style="padding:10px;overflow:auto;position:relative;" ng-container="{offsetY:-30}">
+               <div form-create para="Form"></div>
+               <div class="alert alert-danger" ng-style="{'zh-CN':{'line-height':'32px'}}[Language]">
+                  {{autoLanguage("提示：强制安装会导致业务重启。")}}
+               </div>
+            </div>
+         </div>
+         <div class="pull-left" ng-controller="Deploy.Package.Conf.Right.Ctrl" ng-container="{offsetX:-410,marginLeft:10}">
+            <div ng-windows="form as ChangeHostInfoWindow.config" windows-callback="ChangeHostInfoWindow.callback">
+               <div form-create para="form"></div>
+            </div>
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("主机列表")}}</div>
+            <div ng-container="{offsetY:-30}" ng-table="HostListTable['options']" table-title="HostListTable['title']" table-content="hostInfo in HostListTable['body']" table-callback="HostListTable['callback']">
+               <div class="Ellipsis" table-key="Checked">
+                  <i class="fa fa-times" style="color:#D9534F;font-size:22px;" ng-attr="{'data-desc': 'Package is exist, The host is not installed.'}" ng-if="hostInfo['Checked'] != true"></i>
+                  <i class="fa fa-check" style="color:#00CC66;font-size:22px;" ng-if="hostInfo['Checked'] == true"></i>
+               </div>
+               <div class="Ellipsis" ng-class="{'linkButton':hostInfo['Checked'],'grayColor':!hostInfo['Checked']}" table-key="HostName" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['HostName']}}
+               </div>
+               <div class="Ellipsis" ng-class="{'linkButton':hostInfo['Checked'],'grayColor':!hostInfo['Checked']}" table-key="IP" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['IP']}}
+               </div>
+               <div class="Ellipsis" ng-class="{'linkButton':hostInfo['Checked'],'grayColor':!hostInfo['Checked']}" table-key="User" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['User']}}
+               </div>
+               <div class="Ellipsis" ng-class="{'linkButton':hostInfo['Checked'],'grayColor':!hostInfo['Checked']}" table-key="Passwd" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  <span ng-if="hostInfo['Passwd']">***</span>
+               </div>
+               <div class="Ellipsis" ng-class="{'linkButton':hostInfo['Checked'],'grayColor':!hostInfo['Checked']}" table-key="Package" style="word-break:break-all;" ng-click="ShowChangeHostInfo($index)">
+                  {{hostInfo['Package']}}
+               </div>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-click="GotoDeploy()">{{autoLanguage("返 回")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn btn-primary" ng-click="GotoAddHost()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+
+   </div>
+
+</div>

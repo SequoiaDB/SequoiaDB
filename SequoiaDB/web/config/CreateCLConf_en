@@ -1,0 +1,78 @@
+[
+      {
+            "name": "name", 
+            "webName": "集合名", 
+            "type": "string", 
+            "valid": "s1-127!.$"
+      }, 
+      {
+            "name": "ShardingType", 
+            "webName": "集合类型", 
+            "type": "select", 
+            "valid": "normal:普通,range:水平范围分区,hash:水平散列分区,maincl:垂直分区", 
+            "default": "normal", 
+            "relyon": true
+      }, 
+      {
+            "name": "ShardingKey", 
+            "webName": "分区键", 
+            "type": "list", 
+            "valid": "1-100", 
+            "child": [
+                  {
+                        "type": "string", 
+                        "valid": "s1"
+                  }, 
+                  {
+                        "type": "select", 
+                        "valid": "1:升序,-1:降序"
+                  }
+            ], 
+            "desc": "分区键，指定一个或多个字段正向或逆向排序。"
+      }, 
+      {
+            "name": "Partition", 
+            "webName": "散列区间", 
+            "type": "string", 
+            "valid": "i2^3-2^20"
+      }, 
+      {
+            "name": "ReplSize", 
+            "webName": "副本数", 
+            "type": "select", 
+            "valid": "0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7", 
+            "default": 1
+      }, 
+      {
+            "name": "Compressed", 
+            "webName": "数据压缩", 
+            "type": "select", 
+            "valid": "true:开,false:关", 
+            "default": "false"
+      }, 
+      {
+            "name": "AutoSplit", 
+            "webName": "是否自动切分", 
+            "type": "select", 
+            "valid": "true:是,false:否", 
+            "default": "false"
+      }, 
+      {
+            "name": "Group", 
+            "webName": "创建在指定的复制组", 
+            "type": "select", 
+            "valid": ":随机", 
+            "default": ""
+      }, 
+      {
+            "type": "note", 
+            "text": [
+                  "当副本数等于0时，副本写入个数会根据当前数据组中节点数变化而变化。当副本数大于0时，不能超出当前组内节点个数。", 
+                  "集合名不能为空，不能含点（.）或者美元符号（$），且长度不超过127B。", 
+                  "自动切分必须配合散列分区和域使用，且不能指定复制组。", 
+                  "自动切分需要搭配域来使用", 
+                  "如果没有开启自动切分，则使用所属域中的自动切分参数。", 
+                  "指定的复制组必须存在于集合空间所属的域中（所有复制组均属于 SYSDOMAIN，即如果集合空间没有指定域，则系统内任意复制组均可）。"
+            ]
+      }
+]

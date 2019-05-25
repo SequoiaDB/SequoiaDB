@@ -1,0 +1,16 @@
+# age > 25
+# name is one of "tao wang", "xun tang", "leo wu"
+{age: { $gt: 25 }, name: { $in: [ "tao wang", "xun tang", "leo wu" ] } }
+
+# age field exists
+# like field not exist
+{age: { $exists: true}, like: { $not: { $exists: true } } }
+
+# founder contains "tao wang"
+{founder: "tao wang"}
+
+# voter includes "tao wang"
+{"voter.name": "tao wang", "voter.votes": 7}
+
+# name matches regular expression
+{name: /^ta.*/}

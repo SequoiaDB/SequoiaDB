@@ -1,0 +1,17 @@
+[SAMPLE.employee]
+{ id: "0071523", name: { firstName: "Tomas", lastName: "Frangos" }, address: { home: { street: "1051 Raymerville Drive", city: "Toronto", province: "ON", country: "Canada" }, office: { street: "1011 Bay Street", city: "Toronto", province: "ON", country: "Canada", postcode: "L1I5U7" } }, SIN: "815368512", phone: [ "1859283451", "1252138492" ], title: "Software Engineer", language: "English", rank: 8, salary: 98000 }
+{ id: "0052342", name: "张明伟", address: { home: { street: "天河区北路99号502", city: "广州", province: "广东", country: "中国" }, office: { street: "大学城南三路52栋702", city: "广州", province: "广东", country: "中国" } }, identityCard: "11013527197206071324", phone: [ "18023142523", "13523451231" ], title: "高级软件开发工程师", language: "中文", rank: 9, salary: 320000 }
+{ id: "010198", name: { firstName: "Zahidule", lastName: "Sakar" }, address: { office: { street: null, city: null, province: null, country: "India" } }, ID: "7132AB72", phone: [ "7628352" ], email: "zahidule.sakar@gmail.com", title: "Manager", language: "English", rank: 10, salary: 650000 }
+{ id: "006234", name: "王志强", address: { home: { street: "和平里西街5号楼1单元703", city: "北京", country: "中国" }, office : { street: "上地环古科技楼1504", city: "北京", country: "中国", postcode: "100070" }}, identityCard: "110101197803120132", phone: [], title: "技术总监", language: "中文", rank 11, salary: 790823 }
+
+[SAMPLE.customer]
+{ id: "CA7758032", name: { firstName: "Jerry", middleName: "Brown", lastName: "Kelly" }, phone: [ "1341723" ], company: "S.T.A.R corporation", title: "CEO" }
+{ id: "CA7718203", name: "李为民", phone: [ "801673235" ], company: "百度", title: "市场部经理" }
+
+[SAMPLE.history]
+{ action: "Purcharse", id: "CA7758032", name: {firstName: "Jerry", middleName: "Brown", lastName: "Kelly" }, phone: [ "1341723" ], company: "S.T.A.R corporation", items: [ { id: "KI57132", name: "Panasonic DVD Drive", quantity: 30, price: 23.53 } ], date: { $timestamp: "2012-07-21-17.51.32.132435" } }
+{ action: "Purcharse", id: "CA7718203", name: "李为民", phone: [ "801673235" ], company: "百度", items: [ { id: "KV51231", name: "Samsung Monitor KI31723", quanity: 10, price: 213.50 }, { id: "KI33123", name: "Intel CPU i7", quanity: 10, price: 350.00 } ], date: { $timestamp: "2012-05-13-11.35.21.132430" } }
+
+[SAMPLE.inventory]
+{ id: "KI33123", name: "Intel CPU i7", quanity: 135, rec_price: 375.00, min_price: 315.00, next_shipment: { $date: "2012-07-11" } }
+{ id: "KI57132", name: "Panasonic DVD Drive", quanity: 750, rec_price: 25.00, min_price: 21, next_shipmenet: { $date: "2012-06-11" }, description: "深受用户好评" }

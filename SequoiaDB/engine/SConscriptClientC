@@ -1,0 +1,119 @@
+import os
+
+Import("clientCEnv")
+Import("linux")
+Import("aix")
+Import("windows")
+Import("ssllib_file")
+Import("ssllib_file1")
+Import("mergeStaticLibrary")
+Import("release")
+Import("debugBuild")
+
+
+# release or debug build
+release_build = release
+debug_build = debugBuild
+
+
+# set the compile options
+dllLibEnv = clientCEnv.Clone()
+staticLibEnv = clientCEnv.Clone()
+
+
+# set compile options for building in windows 
+if windows:
+    if release_build:
+        dllLibEnv.Append( CPPFLAGS= " /MD " )
+        staticLibEnv.Append( CPPFLAGS= " /MT " )
+    elif debug_build:
+        dllLibEnv.Append( CPPFLAGS= " /MDd " )
+        staticLibEnv.Append( CPPFLAGS= " /MTd " )
+
+
+# files
+clientCFiles = [
+      "client/client.c"
+      ]
+
+clientCLibFiles = [
+      clientCFiles,
+      "oss/ossSSLCertificate.c",
+      "oss/ossSSLWrapper.c",
+      "oss/ossSSLContext.c",
+      "oss/oss.c",
+      "oss/ossUtil.c",
+      "oss/ossMem.c",
+      "client/common.c",
+      "client/network.c",
+      "client/bson/numbers.c",
+      "client/bson/bson.c",
+      "client/bson/encoding.c",
+      "client/bson/common_decimal.c",
+      "client/base64c.c",
+      "client/cJSON.c",
+      "client/cJSON_ext.c",
+      "client/cJSON_iterator.c",
+      "client/jstobs.c",
+      "client/timestampParse.c",
+      "client/timestampTm.c",
+      "client/timestampValid.c",
+      "bson/md5.c"
+      ]
+
+#Shared Library
+if aix:
+    dllLib = dllLibEnv.SharedLibrary('sdbc', [clientCLibFiles, ssllib_file1, ssllib_file])
+    dllLibEnv.Install( '#/client/lib', dllLib )
+elif linux:
+    dllLib = dllLibEnv.SharedLibrary('sdbc', clientCLibFiles)
+    dllLibEnv.Install( '#/client/lib', dllLib )
+elif windows:
+    if release_build:
+        dllLib = dllLibEnv.SharedLibrary( 'sdbc', clientCLibFiles, OBJSUFFIX='_dll' )
+        dllLibEnv.Install( '#/client/lib/c/release/dll', dllLib )
+    elif debug_build:
+        dllLib = dllLibEnv.SharedLibrary( 'sdbcd', clientCLibFiles, OBJSUFFIX='_dll' )
+        dllLibEnv.Install( '#/client/lib/c/debug/dll', dllLib )
+
+
+#Static Library
+dir = ''
+def merge(target, source = None, env = staticLibEnv):
+    pureLib = dir + '/libstaticpuresdbc.a'
+    staticLib = dir + '/libstaticsdbc.a'
+    mergeStaticLibrary(staticLib, aix, ssllib_file, ssllib_file1, pureLib)
+    staticLibEnv.Install( '#/client/lib/', staticLib )
+
+if linux or aix:
+    staticPureSdbCLib = staticLibEnv.StaticLibrary('staticpuresdbc', clientCLibFiles)
+    dir = os.path.dirname(staticPureSdbCLib[0].get_abspath())
+    staticLibEnv.AddPostAction(staticPureSdbCLib, Action(merge))
+elif windows:
+    ""
+    ## we are not going to issue static library, although there is no error.
+    #if release_build:
+    #    staticLib = staticLibEnv.StaticLibrary('staticsdbc', [clientCLibFiles, ssllib_file, ssllib_file1])
+    #    staticLibEnv.Install( '#/client/lib/c/release/static', staticLib )
+    #elif debug_build:
+    #    staticLib = staticLibEnv.StaticLibrary('staticsdbcd', [clientCLibFiles, ssllib_file, ssllib_file1])
+    #    staticLibEnv.Install( '#/client/lib/c/debug/static', staticLib )
+
+
+#Header files
+clientCEnv.Install( '#/client/include', "client/client.h" )
+clientCEnv.Install( '#/client/include', "client/jstobs.h" )
+clientCEnv.Install( '#/client/include', "client/cJSON.h" )
+clientCEnv.Install( '#/client/include', "client/cJSON_ext.h" )
+clientCEnv.Install( '#/client/include', "client/base64c.h" )
+clientCEnv.Install( '#/client/include/bson/', "client/bson/bson.h" )
+clientCEnv.Install( '#/client/include/bson/', "client/bson/encoding.h" )
+clientCEnv.Install( '#/client/include/', "include/core.h" )
+clientCEnv.Install( '#/client/include/', "include/ossErr.h" )
+clientCEnv.Install( '#/client/include/', "include/ossFeat.h" )
+clientCEnv.Install( '#/client/include/', "include/ossTypes.h" )
+clientCEnv.Install( '#/client/include/', "include/spd.h" )
+clientCEnv.Install( '#/client/include/', "include/common_decimal.h" )
+clientCEnv.Install( '#/client/include/', "include/common_decimal_fun.h" )
+clientCEnv.Install( '#/client/include/', "include/common_decimal_type.h" )
+clientCEnv.Install( '#/client/include/', "client/clientDef.h" )

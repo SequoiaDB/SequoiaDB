@@ -1,0 +1,33 @@
+<div id="ModuleBox" style="overflow-y:auto;overflow-x:hidden;+zoom:1;+position:relative;" ng-controller="Data.Overview.Index.Ctrl">
+   <div style="padding:15px;">
+      <div ng-repeat="moduleInfo in QueryModule track by $index" create-response="{len:QueryModule.length,index:$index,min:660,max:1980}" style="padding:0 15px 15px 15px;">
+         <div ng-class="moduleInfo.color" class="DataListBox">
+            <div ng-if="moduleInfo.errno == 0" style="height:295px;">
+               <div class="DataTitle">
+                  <div class="linkButton ModuleName Ellipsis" ng-click="gotoDatabase($index)" style="float:left;max-width:300px;">
+                     {{moduleInfo.BusinessName}}
+                  </div>
+                  &nbsp; 
+                  <span class="ModuleType">({{moduleInfo.BusinessType}} - {{moduleInfo.WebDeployMod}})</span> <span class="status success">{{moduleInfo.status1}}</span>
+                  <div class="clear-float"></div>
+               </div>
+               <div class="DataSubTitle">{{moduleInfo.status2}}</div>
+               <div class="DataSubTitle" ng-bind="moduleInfo.detail"></div>
+               <div style="+zoom:1;+position:relative;">
+                  <div style="height:220px;width:400px;float:left;" create-chart="moduleInfo.chart" ></div>
+                  <div style="height:200px;width:200px;float:left;" para="moduleInfo.info" create-cylinder></div>
+                  <div class="clear-float"></div>
+               </div>
+            </div>
+            <div ng-if="moduleInfo.errno != 0" style="height:295px;">
+               <div class="DataTitle">
+                  <span class="ModuleName error">{{moduleInfo.BusinessName}}</span> (<span class="ModuleType">{{moduleInfo.BusinessType}} - {{moduleInfo.WebDeployMod}}</span>) <span class="status error">{{moduleInfo.status1}}</span>
+               </div>
+               <div class="DataSubTitle">{{moduleInfo.status2}}</div>
+               <div class="DataSubTitle" ng-bind="moduleInfo.detail"></div>
+               <span class="DataSubTitle" ng-bind="moduleInfo.description"></span>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

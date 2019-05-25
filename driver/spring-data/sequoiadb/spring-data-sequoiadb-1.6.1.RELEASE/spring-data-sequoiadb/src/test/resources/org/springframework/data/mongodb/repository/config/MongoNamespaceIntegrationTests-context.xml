@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:sdb="http://www.springframework.org/schema/data/sdb"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:repository="http://www.springframework.org/schema/data/repository"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/sdb http://www.springframework.org/schema/data/sdb/spring-sdb.xsd
+		http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!--
+	<sdb:db-factory dbname="repositories"/>
+
+	<bean id="sequoiadbTemplate" class="org.springframework.data.sequoiadb.core.SequoiadbTemplatelate">
+		<constructor-arg name="sequoiadbFactory" ref="sequoiadbFactory"/>
+		<property name="writeConcern">
+			<util:constant static-field="org.springframework.data.sequoiadb.assist.WriteConcern.SAFE" />
+		</property>
+	</bean>
+-->
+
+	<bean id="sdb" class="org.springframework.data.sequoiadb.core.SequoiadbFactoryBean">
+		<property name="host" value="192.168.20.166"/>
+		<property name="port" value="11810"/>
+	</bean>
+
+	<bean id="sequoiadbFactory" class="org.springframework.data.sequoiadb.core.SimpleSequoiadbFactory">
+		<constructor-arg name="sdb" ref="sdb"/>
+		<constructor-arg name="databaseName" value="database"/>
+	</bean>
+
+	<bean id="sequoiadbTemplate" class="org.springframework.data.sequoiadb.core.SequoiadbTemplate">
+		<constructor-arg name="sequoiadbFactory" ref="sequoiadbFactory"/>
+	</bean>
+
+	<sdb:repositories base-package="org.springframework.data.sequoiadb.repository">
+		<repository:exclude-filter type="regex" expression=".*SequoiadbRepository"/>
+	</sdb:repositories>
+
+</beans>
