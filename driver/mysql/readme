@@ -1,0 +1,50 @@
+
+***build & install***
+# mkdir -p mysql-5.7.18/storage/sequoiadb
+# cp * mysql-5.7.18/storage/sequoiadb
+# mkdir -p mysql-5.7.18/storage/sequoiadb/sequoiadb
+# cp -r /opt/sequoiadb/include mysql-5.7.18/storage/sequoiadb/sequoiadb
+# mkdir -p mysql-5.7.18/storage/sequoiadb/sequoiadb/lib
+# cp /opt/sequoiadb/lib/libstaticsdbcpp.a mysql-5.7.18/storage/sequoiadb/sequoiadb/lib
+# cd mysql-5.7.18
+# cmake . -DWITH_BOOST=../thirdparty/boost/boost_1_59_0/ -DCMAKE_INSTALL_PREFIX=/opt/mysql -DMYSQL_DATADIR=/opt/mysql/data -DCMAKE_BUILD_TYPE=Release
+# make -j 4
+# make install
+
+
+***auto start***
+# cp /opt/mysql/support-files/mysql.server /etc/init.d/mysqld
+# chkconfig --add mysqld
+
+
+***init database***
+# /opt/mysql/bin/mysql_install_db --datadir=/opt/mysql/data/
+# /opt/mysql/bin/mysqld --basedir=/opt/mysql/ --datadir=/opt/mysql/data/ --initialize-insecure
+# chown -R mysql:mysql /opt/mysql/
+
+
+***start database***
+# service mysqld start
+
+
+***use sequoiadb-engine***
+# mysql -u root -p
+mysql> install plugin sequoiadb soname 'ha_sequoiadb.so';
+mysql> show storage engines;
+mysql> select * from information_schema.PLUGINS where plugin_name="sequoiadb";
+mysql> create database test;
+mysql> use test;
+mysql> create table cl(a int, b int, c text) engine = SequoiaDB;
+mysql> insert into cl values(1,2,"test");
+mysql> select * from cl;
+
+
+***config sequoiadb address****
+# vi /et/my.cnf
+[mysqld]
+sequoiadb_conn_addr=192.168.20.37:11810,192.168.20.38:11810,192.168.20.39:11810
+# service mysqld restart
+ 
+
+***uninstall sequoiadb-engine***
+mysql> uninstall plugin sequoiadb;

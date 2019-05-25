@@ -1,0 +1,4 @@
+rm -r cscope*
+find ./SequoiaDB/ -name *.cpp -o -name *.h -o -name *.c -o -name *.hpp > cscope.files
+cscope -bkq -i cscope.files
+ctags -R

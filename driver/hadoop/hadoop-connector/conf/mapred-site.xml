@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+  <property>
+    <name>mapred.job.tracker</name>
+    <value>192.168.30.190:9001</value>
+  </property>
+  
+  <property>
+    <!-- The number of server threads for the JobTracker. This should be roughly 
+         4% of the number of tasktracker nodes. Overrides default 10. -->
+    <name>mapred.job.tracker.handler.count</name>
+    <value>64</value>
+  </property>
+  
+  <property>
+    <!-- Overrides default FIFO scheduler. -->
+    <name>mapred.jobtracker.taskScheduler</name>
+    <value>com.ibm.biginsights.scheduler.WorkflowScheduler</value>
+  </property>
+
+  <property>
+    <!-- The maximum number of map tasks that will be run simultaneously by a 
+         task tracker. Default: 2. Recommendations: set relevant to number of 
+         CPUs and amount of memory on each data node. -->
+    <name>mapred.tasktracker.map.tasks.maximum</name>
+    <value>3</value>
+  </property>
+  
+  <property>
+    <!-- The maximum number of reduce tasks that will be run simultaneously by 
+         a task tracker. Default: 2. Recommendations: set relevant to number of 
+         CPUs and amount of memory on each data node, note that reduces usually 
+         take more memory and do more I/O than maps. -->
+    <name>mapred.tasktracker.reduce.tasks.maximum</name>
+    <value>2</value>
+  </property>
+  
+  <property>
+    <!-- Max heap of child JVM spawned by tasktracker. Ideally as large as the
+         task machine can afford. The default -Xmx200m is usually too small. -->
+    <name>mapred.child.java.opts</name>
+    <value>-Xmx1000m</value>
+  </property>
+  
+  <property>
+    <!-- The percentage of io.sort.mb dedicated to tracking record boundaries. 
+         Let this value be r, io.sort.mb be x. The maximum number of records 
+         collected before the collection thread must block is equal to 
+         (r * x) / 4. Memory comes out of the task's JVM memory allocation. 
+         Overrides default 100M. -->
+    <name>io.sort.mb</name>
+    <value>256</value>
+  </property>
+  
+  <property>
+    <!-- The number of input streams (files) to be merged at once in the 
+         map/reduce tasks. The value should be sufficiently large to minimize
+         disk access. Overrides default 10. -->
+    <name>io.sort.factor</name>
+    <value>10</value>
+  </property>
+  
+  <property>
+    <!-- Overrides default 0.05. -->
+    <name>mapred.reduce.slowstart.completed.maps</name>
+    <value>0.5</value>
+  </property>
+  
+  <property>
+    <!-- Don't be too aggressive on MR execution. Overrides default false. -->
+    <name>mapred.map.tasks.speculative.execution</name>
+    <value>false</value>
+  </property>
+  
+  <property>
+    <!-- Don't be too aggressive on MR execution. Overrides default false. -->
+    <name>mapred.reduce.tasks.speculative.execution</name>
+    <value>false</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.tasktracker.outofband.heartbeat</name>
+    <value>true</value>
+  </property>
+  
+  <property>
+    <name>mapred.heartbeats.in.second</name>
+    <value>200</value>
+  </property>
+  
+   <property>
+    <!-- Default is to compress per record, a record is almost always too small to compress at all 
+    	 (instead, it makes the compressed record bigger). Overrides defalt RECORD -->
+    <name>mapred.output.compression.type</name>
+    <value>BLOCK</value>
+  </property>
+  
+  <property>
+    <name>mapred.jobinit.threads</name>
+    <value>4</value>
+  </property>
+  
+  <property>
+    <name>mapreduce.jobtracker.staging.root.dir</name>
+    <value>/user</value>
+  </property>
+
+  <property>
+      <name>mapred.jobtracker.instrumentation</name>
+      <value>org.apache.hadoop.mapred.JobTrackerConfLogStreaming</value>
+  </property>
+  
+  <property>
+      <name>mapred.acls.enabled</name>
+      <value>true</value>
+  </property>
+  <property>
+    <name>mapred.job.tracker.http.address</name>
+    <value>0.0.0.0:50030</value>
+  </property>
+  <property>
+    <name>mapred.local.dir</name>
+    <value>/hadoop/mapred/local</value>
+  </property>
+  <property>
+    <name>mapred.system.dir</name>
+    <value>/hadoop/mapred/system</value>
+  </property>
+  <property>
+    <name>mapred.task.tracker.http.address</name>
+    <value>0.0.0.0:50060</value>
+  </property>
+  <property>
+    <name>mapred.fairscheduler.allocation.file</name>
+    <value>/opt/ibm/biginsights/hadoop-conf/fair-scheduler.xml</value>
+  </property>
+  <property>
+    <name>mapred.hosts</name>
+    <value>/opt/ibm/biginsights/hadoop-conf/includes</value>
+  </property>
+  <property>
+    <name>mapred.workflowscheduler.algorithm</name>
+    <value>AVERAGE_RESPONSE_TIME</value>
+<!--    Possible values are:
+     <value>AVERAGE_RESPONSE_TIME</value>
+     <value>MAXIMUM_STRETCH</value>  
+     <value>FAIR</value>
+	The default is AVERAGE_RESPONSE_TIME     
+-->
+  </property>
+  <property>
+    <name>mapred.workflowscheduler.config.file</name>
+    <value>/opt/ibm/biginsights/hadoop-conf/flex-scheduler.xml</value>
+  </property>
+  <property>
+    <name>adaptivemr.map.enable</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>adaptivemr.zookeeper.hosts</name>
+    <value>192.168.30.190:2181</value>
+  </property>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>classic</value>
+  </property>
+  <property>
+    <name>mapred.submit.replication</name>
+    <value>2</value>
+  </property>
+  <property>
+    <name>mapred.task.tracker.task-controller</name>
+    <value>org.apache.hadoop.mapred.LinuxTaskController</value>
+  </property>
+  <property>
+    <name>mapreduce.tasktracker.group</name>
+    <value>biadmin</value>
+  </property>
+</configuration>

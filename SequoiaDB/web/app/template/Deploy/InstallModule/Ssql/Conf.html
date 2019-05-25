@@ -1,0 +1,53 @@
+<div ng-controller="Deploy.Ssql.Conf.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+   <div style="padding:10px 15px;" ng-container="{offsetY:-70}">
+
+      <div ng-windows="info as SwitchHostWindow.config" windows-callback="SwitchHostWindow.callback">
+         <div style="margin-bottom:10px;">
+            <button ng-click="SelectAll()" class="ng-scope btn btn-default">{{autoLanguage("全选")}}</button>&nbsp;
+            <button ng-click="Unselect()" class="ng-scope btn btn-default">{{autoLanguage("反选")}}</button>
+         </div>
+         <div ng-container="{offsetY:-40}" style="overflow-y:auto;">
+            <table class="table loosen border">
+               <tr style="background-color:#F1F4F5;height:30px;">
+                  <td width="30"></td>
+                  <td>{{autoLanguage("主机名")}}</td>
+                  <td>{{autoLanguage("IP地址")}}</td>
+               </tr>
+               <tr ng-repeat="hostInfo in HostList track by $index">
+                  <td>
+                     <input type="checkbox" ng-model="HostList[$index]['checked']" ng-click="HostRadio()" />
+                  </td>
+                  <td class="Ellipsis" style="word-break:break-all;">{{hostInfo['HostName']}}</td>
+                  <td class="Ellipsis" style="word-break:break-all;">{{hostInfo['IP']}}</td>
+               </tr>
+            </table>
+         </div>
+      </div>
+
+      <div ng-container="{offsetY:-45}">
+         <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("业务配置")}}</div>
+         <div class="borderBox" style="padding:10px;font-size:90%;" ng-container="{offsetY:-30}">
+            <div style="margin-top:10px;">
+               <button class="btn btn-default" ng-click="OpenSwitchHost()">{{autoLanguage("选择安装业务的主机")}}</button>
+            </div>
+            <div style="margin-top:20px;">
+               <div class="pull-left" style="width:160px;">{{autoLanguage("业务名")}}</div>
+               <div class="pull-left Ellipsis" style="padding-left:10px;width:238px;">{{ModuleName}}</div>
+               <div class="clear-float"></div>
+            </div>
+            <div style="margin-top:10px;" form-create para="ConfForm1"></div>
+            <div style="margin-top:10px;" form-create para="ConfForm2"></div>
+         </div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-if="DeployType == 'Module'" ng-click="GotoDeploy()"><i class="fa fa-chevron-left"></i> {{autoLanguage("返回")}}</button>
+         <button class="btn btn-default" ng-if="DeployType == 'Deploy'" ng-click="GotoScanHost()"><i class="fa fa-chevron-left"></i> {{autoLanguage("上一步")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn" ng-class="{'true':'btn-primary','false':'btn-danger'}[IsAllClear]" ng-click="GotoModSsql()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+
+   </div>
+
+</div>

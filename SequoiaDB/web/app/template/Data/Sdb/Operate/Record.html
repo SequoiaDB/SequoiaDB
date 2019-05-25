@@ -1,0 +1,170 @@
+<div style="padding:10px 15px;" ng-controller="Data.Operate.Record.Ctrl" ng-container="{}">
+
+   <div class="underlineTab" ng-controller="Data.Operate.Record.Tab.Ctrl" ng-container="{height:50}">
+      <ul class="right">
+         <li class="text Ellipsis" style="width:350px;">
+            <b><a class="linkButton" href="#/Data/SDB-Database/Index">{{autoLanguage("数据库")}}</a> <span style="font-size:80%; color:#666;">&gt;</span> <span style="color:#555;">{{FullName}}</span></b>
+         </li>
+         <li ng-if="ClType != 'main'">
+            <a href="#/Data/SDB-Operate/Lobs">{{autoLanguage("大对象操作")}}</a>
+         </li>
+         <li class="active">
+            <a href="#/Data/SDB-Operate/Record">{{autoLanguage("记录操作")}}</a>
+         </li>
+      </ul>
+   </div>
+
+   <div ng-controller="Data.Operate.Record.OperateBtn.Ctrl" ng-container="{height:30}">
+      <button class="topBtn" ng-click="queryAll()"><i class="fa fa-search"></i>&nbsp;{{autoLanguage("所有")}}</button>
+      <button class="topBtn" ng-click="ShowQueryWindows()"><i class="fa fa-search"></i>&nbsp;{{autoLanguage("查询")}}</button>
+      <button class="topBtn" ng-click="ShowInsert()"><i class="fa fa-plus"></i>&nbsp;{{autoLanguage("插入")}}</button>
+      <button class="topBtn" ng-click="ShowUpdate()"><i class="fa fa-edit"></i>&nbsp;{{autoLanguage("更新")}}</button>
+      <button class="topBtn" ng-click="ShowDelete()"><i class="fa fa-remove"></i>&nbsp;{{autoLanguage("删除")}}</button>
+      <span style="border-left:2px solid #aaa;vertical-align:middle;" ng-if="TableType == 3"></span>&nbsp;
+      <button class="btn btn-default" ng-if="TableType == 3" ng-click="ShowKeyList($event)">{{autoLanguage("选择字段")}}&nbsp;<i class="fa fa-caret-down"></i></button>
+      <div ng-dropdown="config in FieldDropdown.config" dropdown-callback="FieldDropdown.callback">
+         <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="SaveField()">
+            <input type="checkbox" ng-model="config.show" />&nbsp;{{config.field}}
+         </label>
+      </div> 
+   </div>
+
+   <div class="result Ellipsis" ng-controller="Data.Operate.Record.Result.Ctrl" ng-class="{true:'success',false:'failed'}[ExecRc]" ng-container="{height:40,marginTop:12}">
+      {{ExecResult}}
+   </div>
+
+   <div style="position:relative;" ng-controller="Data.Operate.Record.Grid.Ctrl" ng-container="{marginTop:13,offsetY:-145}">
+
+      <div ng-container="{}" ng-show="RecordNum > 0" ng-table="RecordTable['options']" table-title="RecordTable['title']" table-content="record in Records" table-callback="RecordTable['callback']">
+         <div ng-show="TableType == 1 || TableType == 3" table-key="#">
+            <span ng-if="TableType == 1">{{$index+1}}</span>
+            <div class="Ellipsis" ng-if="TableType == 3">{{$index+1}}</div>
+         </div>
+         <div ng-show="TableType == 1" table-key="-">
+            <a class="linkButton" ng-click="ShowEdit($index)" data-desc="{{autoLanguage('编辑')}}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
+            <a class="linkButton" ng-click="ShowInsert($index)" data-desc="{{autoLanguage('复制')}}"><i class="fa fa-copy"></i></a>&nbsp;&nbsp;
+            <a class="linkButton" ng-click="DeleteRecord($index)" data-desc="{{autoLanguage('删除')}}"><i class="fa fa-remove"></i></a>
+         </div>
+         <div ng-show="TableType == 1" table-key="Record">
+            <a class="linkButton" ng-click="ShowView($index)">{{record['Record']}}</a>
+         </div>
+
+         <div ng-show="TableType == 2" table-key="key">
+            <div tree-key="record"></div>
+         </div>
+         <div ng-show="TableType == 2" table-key="value">
+            <div tree-value="record"></div>
+         </div>
+         <div ng-show="TableType == 2" table-key="type">
+            <div tree-type="record"></div>
+         </div>
+
+         <div ng-show="TableType == 3" class="Ellipsis" table-key="$auto">{{$autoValue}}</div>
+      </div>
+
+      <div ng-show="RecordNum == 0" ng-container="{}">
+         <div class="data_empty">
+            <div class="title">{{autoLanguage("集合没有数据")}}</div>
+            <div class="tips">{{autoLanguage("使用\"插入\"操作添加数据。")}}</div>
+         </div>
+      </div>
+   </div>
+
+   <div ng-windows="form as QueryWindows.config" windows-callback="QueryWindows.callback">
+      <div class="underlineTab" style="padding-bottom:20px;">
+         <ul class="left">
+            <li ng-class="{active:QueryWindows.tabType == 1}">
+               <a ng-click="QueryWindows.tabType = 1">{{autoLanguage("快速")}}</a>
+            </li>
+            <li ng-class="{active:QueryWindows.tabType == 2}">
+               <a ng-click="QueryWindows.tabType = 2">{{autoLanguage("高级")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div ng-if="QueryWindows.tabType == 1" form-create para="form[0]"></div>
+      <table ng-if="QueryWindows.tabType == 2" class="table loosen">
+         <tr>
+            <td style="width:130px;vertical-align:top;">{{autoLanguage("查询条件")}}</td>
+            <td><div json-edit para="QueryWindows.data.filter"></div></td>
+         </tr>
+         <tr>
+            <td style="width:130px;vertical-align:top;">{{autoLanguage("选择字段")}}</td>
+            <td><div json-edit para="QueryWindows.data.selector"></div></td>
+         </tr>
+         <tr>
+            <td style="width:130px;vertical-align:top;">{{autoLanguage("排序字段")}}</td>
+            <td><div json-edit para="QueryWindows.data.sort"></div></td>
+         </tr>
+         <tr>
+            <td style="width:130px;vertical-align:top;">{{autoLanguage("扫描方式")}}</td>
+            <td><div json-edit para="QueryWindows.data.hint"></div></td>
+         </tr>
+         <tr>
+            <td colspan="2"><div form-create para="form[1]"></div></td>
+         </tr>
+      </table>
+   </div>
+
+   <div ng-windows="form as EditWindows.config" windows-callback="EditWindows.callback">
+      <div class="alert alert-warning" style="padding:10px;">
+         <span style="color:#FF8804;font-size:150%;"><i class="fa fa-exclamation-triangle"></i></span>{{autoLanguage("更新操作中会忽略对分区键的修改。")}}
+      </div>
+      <div style="margin-top:10px;" json-edit para="EditWindows.data"></div>
+   </div>
+
+   <div ng-windows="form as InsertWindows.config" windows-callback="InsertWindows.callback">
+      <div json-edit para="InsertWindows.data"></div>
+   </div>
+
+   <div ng-windows="form as ViewWindows.config" windows-callback="ViewWindows.callback">
+      <div json-view="ViewWindows.data" json-callback="ViewWindows.dataCallback"></div>
+   </div>
+
+   <div ng-windows="form as UpdateWindows.config" windows-callback="UpdateWindows.callback">
+      <div class="alert alert-warning" style="padding:10px;">
+         <span style="color:#FF8804;font-size:150%;"><i class="fa fa-exclamation-triangle"></i></span>{{autoLanguage("更新操作中会忽略对分区键的修改。")}}
+      </div>
+      <div class="underlineTab" style="padding-bottom:20px;margin-top:10px;">
+         <ul class="left">
+            <li ng-class="{active:UpdateWindows.tabType == 1}">
+               <a ng-click="UpdateWindows.tabType = 1">{{autoLanguage("快速")}}</a>
+            </li>
+            <li ng-class="{active:UpdateWindows.tabType == 2}">
+               <a ng-click="UpdateWindows.tabType = 2">{{autoLanguage("高级")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div ng-if="UpdateWindows.tabType == 1" form-create para="form"></div>
+      <table ng-if="UpdateWindows.tabType == 2" class="table loosen">
+         <tr>
+            <td style="width:130px;vertical-align:top;">{{autoLanguage("匹配条件")}}</td>
+            <td><div json-edit para="UpdateWindows.data.filter"></div></td>
+         </tr>
+         <tr>
+            <td style="width:130px;vertical-align:top;">{{autoLanguage("更新操作")}}</td>
+            <td><div json-edit para="UpdateWindows.data.rule"></div></td>
+         </tr>
+      </table>
+   </div>
+
+   <div ng-windows="form as DeleteWindows.config" windows-callback="DeleteWindows.callback">
+      <div class="underlineTab" style="padding-bottom:20px;margin-top:10px;">
+         <ul class="left">
+            <li ng-class="{active:DeleteWindows.tabType == 1}">
+               <a ng-click="DeleteWindows.tabType = 1">{{autoLanguage("快速")}}</a>
+            </li>
+            <li ng-class="{active:DeleteWindows.tabType == 2}">
+               <a ng-click="DeleteWindows.tabType = 2">{{autoLanguage("高级")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div ng-if="DeleteWindows.tabType == 1" form-create para="form"></div>
+      <table ng-if="DeleteWindows.tabType == 2" class="table loosen">
+         <tr>
+            <td style="width:130px;vertical-align:top;">{{autoLanguage("匹配条件")}}</td>
+            <td><div json-edit para="DeleteWindows.data.filter"></div></td>
+         </tr>
+      </table>
+   </div>
+
+</div>

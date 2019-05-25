@@ -1,0 +1,8 @@
+<phpunit>
+   <php>
+      <includePath>.</includePath>
+      <post name="hostname" value="127.0.0.1" />
+      <post name="port" value="50000" />
+      <post name="islocal" value="true" />
+   </php>
+</phpunit>

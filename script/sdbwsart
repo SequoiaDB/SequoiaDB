@@ -1,0 +1,38 @@
+#!/bin/bash
+#This script for start web admin server
+basepath=$(cd `dirname $0`; pwd)
+if [ -f "$basepath/nohup.out" ];then
+   rm -f $basepath/nohup.out
+fi
+processnotexist=`ps -ef|grep php-bin|grep -v grep`
+if [ -n "$processnotexist" ];then
+  echo "process is exist"
+  exit 1
+fi
+
+startpara="-S 0.0.0.0:8080"
+if [ $# -eq 0 ];then
+  echo "start with $0 $startpara"
+else
+  startpara=$*
+fi
+
+if [ -f /etc/default/sequoiadb ] ; then
+    source /etc/default/sequoiadb
+else
+    INSTALL_DIR=/opt/sequoiadb
+fi
+
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${INSTALL_DIR}/tools/server/php/libxml2/lib/
+
+nohup ${INSTALL_DIR}/tools/server/php/bin/php-bin -c ${INSTALL_DIR}/tools/server/php/lib/php.ini -t ${INSTALL_DIR}/www $startpara &
+
+sleep 5
+processexist=`ps -ef|grep php-bin|grep -v grep`
+if [ -z "$processexist" ];then
+  echo "$0 $startpara start failed" 
+  cat $basepath/nohup.out
+  exit 1
+else
+  echo "start successful"
+fi

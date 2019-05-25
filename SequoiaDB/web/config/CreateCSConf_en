@@ -1,0 +1,28 @@
+[
+      {
+            "name": "name", 
+            "webName": "集合空间名", 
+            "type": "string", 
+            "valid": "s1-127"
+      }, 
+      {
+            "name": "PageSize", 
+            "webName": "数据页大小", 
+            "type": "select", 
+            "valid": "4096:4KB,8192:8KB,16384:16KB,32768:32KB,65536:64KB", 
+            "default": "65536"
+      }, 
+      {
+            "name": "Domain", 
+            "webName": "所属域", 
+            "type": "string", 
+            "valid": ""
+      }, 
+      {
+            "name": "LobPageSize", 
+            "webName": "Lob数据页大小", 
+            "type": "select", 
+            "valid": "4096:4KB,8192:8KB,16384:16KB,32768:32KB,65536:64KB,131072:128KB,262144:256KB,524288:512KB", 
+            "default": "262144"
+      }
+]

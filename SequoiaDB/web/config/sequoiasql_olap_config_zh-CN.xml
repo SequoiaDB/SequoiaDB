@@ -1,0 +1,197 @@
+<Property type="array">
+    <FILLER>
+        <Name>master_host</Name>
+        <WebName>主节点主机</WebName>
+        <Type>string</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>主节点主机</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>master_port</Name>
+        <WebName>主节点端口号</WebName>
+        <Type>port</Type>
+        <Default>5432</Default>
+        <Valid>1024-65535</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>主节点端口号</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>standby_host</Name>
+        <WebName>备节点主机</WebName>
+        <Type>string</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>备节点主机</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>master_dir</Name>
+        <WebName>主节点数据目录</WebName>
+        <Type>path</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>true</Edit>
+        <Desc>主节点数据目录</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>master_temp_dir</Name>
+        <WebName>主节点临时目录</WebName>
+        <Type>path</Type>
+        <Default>/tmp</Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>true</Edit>
+        <Desc>主节点临时目录</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>hdfs_url</Name>
+        <WebName>HDFS URL</WebName>
+        <Type>string</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>HDFS URL</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>true</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>segment_hosts</Name>
+        <WebName>Segment主机</WebName>
+        <Type>string</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>false</Edit>
+        <Desc>Segment主机</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>true</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>segment_port</Name>
+        <WebName>Segment端口号</WebName>
+        <Type>port</Type>
+        <Default>40000</Default>
+        <Valid>1024-65535</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Segment端口号</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>segment_dir</Name>
+        <WebName>Segment数据目录</WebName>
+        <Type>path</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>true</Edit>
+        <Desc>Segment数据目录</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>segment_temp_dir</Name>
+        <WebName>Segment临时目录</WebName>
+        <Type>path</Type>
+        <Default>/tmp</Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>true</Edit>
+        <Desc>Segment临时目录</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>install_dir</Name>
+        <WebName>安装目录</WebName>
+        <Type>string</Type>
+        <Default>/opt/sequoiasql/olap</Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>安装目录</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>log_dir</Name>
+        <WebName>管理日志目录</WebName>
+        <Type>string</Type>
+        <Default>/tmp/sequoiasqlAdminLogs</Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>管理日志目录</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>max_connections</Name>
+        <WebName>最大连接数</WebName>
+        <Type>int</Type>
+        <Default>100</Default>
+        <Valid>1-</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>最大连接数</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>shared_buffers</Name>
+        <WebName>共享缓冲区大小(MB)</WebName>
+        <Type>int</Type>
+        <Default>128</Default>
+        <Valid>32-</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>共享缓冲区大小(MB)</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>remove_if_failed</Name>
+        <WebName>安装失败时删除</WebName>
+        <Type>bool</Type>
+        <Default>true</Default>
+        <Valid>true,false</Valid>
+        <Display>select box</Display>
+        <Edit>true</Edit>
+        <Desc>安装失败时删除安装目录和数据目录</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+</Property>

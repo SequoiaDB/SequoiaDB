@@ -1,0 +1,47 @@
+<div ng-controller="Monitor.SdbOverview.NodesCharts.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div class="active" ng-click="GotoNodeList()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHostList()">{{autoLanguage("主机")}}</div>
+         <!--<div>{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Nodes">{{autoLanguage("节点列表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Groups">{{autoLanguage("分区组列表")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Nodes/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/GroupsSnapshot">{{autoLanguage("分区组快照")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/NodesSnapshot">{{autoLanguage("节点快照")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/NodesSync">{{autoLanguage("节点数据同步")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div ng-container="{offsetY:-105,marginTop:10}">
+         <div ng-container="{offsetX:-10,height:'50%'}">
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%'}" create-chart="charts.Insert"></div>
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%',marginLeft:16}" create-chart="charts.Update"></div>
+            <div class="clear-float"></div>
+         </div>
+         <div ng-container="{offsetX:-10,marginTop:20,height:'50%'}">
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%'}" create-chart="charts.Delete"></div>
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%',marginLeft:16}" create-chart="charts.Query"></div>
+            <div class="clear-float"></div>
+         </div>
+      </div>
+   </div>
+   
+</div>

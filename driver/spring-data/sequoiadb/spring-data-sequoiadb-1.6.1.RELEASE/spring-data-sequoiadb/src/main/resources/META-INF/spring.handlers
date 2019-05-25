@@ -1,0 +1,1 @@
+http\://www.springframework.org/schema/data/sdb=org.springframework.data.sequoiadb.repository.config.SequoiadbRepositoryConfigNamespaceHandler

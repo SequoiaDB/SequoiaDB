@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optOtherInfoForWeb>
+   <title>
+      <en>Database Runtime Configurtion</en>
+      <cn>数据库配置</cn>
+   </title>
+   <subtitle>
+      <en>Parameter Instruction</en>
+      <cn>参数说明</cn>
+   </subtitle>
+   <sthead>
+      <stentry_name>
+         <en>Parameter Name</en>
+         <cn>参数名</cn>
+      </stentry_name>
+      <stentry_acronym>
+         <en>Acronym</en>
+         <cn>缩写</cn>
+      </stentry_acronym>
+      <stentry_type>
+         <en>Type</en>
+         <cn>类型</cn>
+      </stentry_type>
+      <stentry_reloadable>
+         <en>Reloadable</en>
+         <cn>动态生效</cn>
+      </stentry_reloadable>
+      <stentry_reloadstrategy>
+         <en>Reload Strategy</en>
+         <cn>生效策略</cn>
+      </stentry_reloadstrategy>
+      <stentry_dest>
+         <en>Description</en>
+         <cn>说明</cn>
+      </stentry_dest>
+   </sthead>
+   <note>
+      <first>
+         <en>The total size of synch log (logfilesz * logfilenum)determines the fault tolerance in the process of sync. If log is bigger, the possiblity of full sync is lower.</en>
+         <cn>同步日志的总大小（logfilesz * logfilenum）决定了在同步过程中的容错能力。日志越大则进行全量恢复的可能性越小。</cn>
+      </first>
+   </note>
+
+</optOtherInfoForWeb>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property>
+     <name>sequoiadb.input.url</name>
+     <value>r520-1:11810</value>
+  </property>
+  <property>
+     <name>sequoiadb.output.url</name>
+     <value>r520-1:11810</value>
+  </property>
+  <property>
+     <name>sequoiadb.in.collectionspace</name>
+     <value>total</value>
+  </property>
+  <property>
+     <name>sequoiadb.in.collect</name>
+     <value>data</value>
+  </property>
+  <property>
+     <name>sequoiadb.out.collectionspace</name>
+     <value>total</value>
+  </property>
+  <property>
+     <name>sequoiadb.out.collect</name>
+     <value>result</value>
+  </property>
+    <property>
+     <name>sequoiadb.out.bulknum</name>
+     <value>10</value>
+  </property>
+</configuration>

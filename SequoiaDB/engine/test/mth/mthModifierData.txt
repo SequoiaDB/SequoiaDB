@@ -1,0 +1,33 @@
+# age 28
+# name "tao wang"
+{age: 28, name: "tao wang" }
+
+# age 35
+# name "leo wu"
+{age: 35, name: "leo wu"}
+
+# age 38
+# name "xun tang"
+# like "tennis"
+{age: 38, name: "xun tang", like: "tennis"}
+
+# corrupted record
+{ hello: world
+
+# age 35
+# name "denny chen"
+{ age: 35, name: "danny chen" }
+
+# company name "sequoiadb"
+# founder "tao wang" "leo wu" "xun tang"
+{ name: "sequoiadb", founder: ["tao wang", "leo wu", "xun tang"] }
+
+# country = "canada"
+# voter contains name and number of votes
+{ name: "canada", voter: [ {name: "tao wang", votes: 5}, {name: "xun tang",votes: 6} ] }
+
+# zzz test
+{ zzz: "zzzdata" }
+
+# zzz test1
+{ zzz: {zzz: [1,2,3,4,5,6,7,8,9,10]}}

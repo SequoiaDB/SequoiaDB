@@ -1,0 +1,7 @@
+#!/bin/bash
+#This script for stop web admin server
+PHP_PID=`ps -ef | grep php-bin | grep -v grep | awk '{print $2}'`
+if [ -n "${PHP_PID}" ];then
+   kill -15 ${PHP_PID}
+fi
+

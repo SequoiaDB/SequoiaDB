@@ -1,0 +1,14 @@
+﻿<div style="padding:10px 15px;" ng-controller="Data.SQL.Index.Ctrl" ng-container="{}">
+   <div class="underlineTab" ng-container="{height:50}">
+      <ul class="right">
+         <li class="text Ellipsis" style="width:350px;">
+            <b>{{fullName}}</b>
+         </li>
+      </ul>
+   </div>
+   <div ng-container="{height:30}">
+      <button class="topBtn" ng-click="queryAll()"><i class="fa fa-refresh"></i> {{autoLanguage("刷新")}}</button>
+      <button class="topBtn" ng-click="LobQuery()"><i class="fa fa-plus"></i> {{autoLanguage("创建策略")}}</button>
+   </div>
+   <div style="position:relative;" create-grid="fieldGridData" ng-container="{marginTop:10,offsetY:-105}"></div>
+</div>

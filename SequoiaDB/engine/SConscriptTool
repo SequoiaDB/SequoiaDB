@@ -1,0 +1,697 @@
+import os
+
+Import("toolEnv")
+Import("linux")
+
+bsonFiles = [
+      "bson/bsonobj.cpp",
+      "bson/oid.cpp",
+      "bson/base64.cpp",
+      "bson/nonce.cpp",
+      "bson/md5.c",
+      "bson/bsonDecimal.cpp",
+      "util/utilBsongen.cpp"
+      ]
+
+inspectFiles = [
+      "tools/inspect/sdbInspect.cpp"
+      ]
+
+importFiles = [
+      "tools/import/sdbImport.cpp",
+      "tools/import/impOptions.cpp",
+      "tools/import/impInputStream.cpp",
+      "tools/import/impRecordScanner.cpp",
+      "tools/import/impRecordParser.cpp",
+      "tools/import/impCSVRecordParser.cpp",
+      "tools/import/impRecordImporter.cpp",
+      "tools/import/impRecordReader.cpp",
+      "tools/import/impWorker.cpp",
+      "tools/import/impCoord.cpp",
+      "tools/import/impRecordSharding.cpp",
+      "tools/import/impCataInfo.cpp",
+      "tools/import/impCatalogAgent.cpp",
+      "tools/import/impParser.cpp",
+      "tools/import/impImporter.cpp",
+      "tools/import/impSharding.cpp",
+      "tools/import/impRoutine.cpp",
+      "tools/import/impLogFile.cpp",
+      "tools/import/impUtil.cpp",
+      "tools/import/impMonitor.cpp",
+      "tools/import/impHosts.cpp"
+      ]
+exportFiles = [
+      "tools/export/sdbExport.cpp",
+      "tools/export/expOptions.cpp",
+      "tools/export/expUtil.cpp",
+      "tools/export/expCL.cpp",
+      "tools/export/expExport.cpp",
+      "tools/export/expOutput.cpp"
+      ]
+
+clsFiles = [
+      "cls/clsCatalogAgent.cpp",
+      "cls/clsCatalogMatcher.cpp",
+      "cls/clsCatalogPredicate.cpp",
+      "cls/clsCataHashMatcher.cpp"
+      ]
+
+ixmFiles = [
+      "ixm/ixmIndexKey.cpp"
+      ]
+
+rtnFiles = [
+      "rtn/rtnPredicate.cpp"
+]
+
+rtnJobFiles = [
+      "rtn/rtnBackgroundJobBase.cpp"
+      ]
+
+migFiles = [
+      "mig/migCommon.cpp"
+      ]
+
+migLobFiles = [
+      "mig/migLobTool.cpp"
+]
+
+sdbLoadMain = [
+      "pmd/sdbLoad.cpp"
+      ]
+
+sdbLobToolMain = [
+      "pmd/sdblobtool.cpp"
+      ]
+
+msgFiles = [
+      "msg/msgMessage.cpp",
+      "msg/msgMessageFormat.cpp",
+      "msg/msgReplicator.cpp",
+      "msg/msgCatalog.cpp",
+      "msg/msgAuth.cpp"
+      ]
+
+ossFiles = [
+      "oss/ossSSLCertificate.c",
+      "oss/ossSSLWrapper.c",
+      "oss/ossSSLContext.c",
+      "oss/ossErr.cpp",
+      "oss/oss.cpp",
+      "oss/ossUtil.cpp",
+      "oss/ossFile.cpp",
+      "oss/ossPath.cpp",
+      "oss/ossPrimitiveFileOp.cpp",
+      "oss/ossStackDump.cpp",
+      "oss/ossEDU.cpp",
+      "oss/ossSocket.cpp",
+      "oss/ossIO.cpp",
+      "oss/ossVer.cpp",
+      "oss/ossMem.cpp",
+      "oss/ossProc.cpp",
+      "oss/ossCmdRunner.cpp",
+      "oss/ossNPipe.cpp",
+      "oss/ossLatch.cpp",
+      "oss/ossRWMutex.cpp",
+      "oss/ossEvent.cpp",
+      "oss/ossDynamicLoad.cpp",
+      "oss/ossHdfs.cpp",
+      "oss/ossShMem.cpp"
+      ]
+
+netFiles = [
+      "net/netEventHandler.cpp",
+      "net/netEventSuit.cpp",
+      "net/netFrame.cpp",
+      "net/netRoute.cpp",
+      "net/netRouteAgent.cpp"
+      ]
+
+pdFiles = [
+      "pd/pdErr.cpp",
+      "pd/pd.cpp",
+      "pd/pdTrace.cpp",
+      "pd/pdComponents.cpp",
+      "pd/pdFunctionList.cpp",
+      "pd/pdTraceAnalysis.cpp"
+      ]
+
+pmdFiles = [
+      "pmd/pmdDaemon.cpp",
+      "pmd/pmdWinService.cpp",
+      "pmd/pmdProc.cpp",
+      "cls/clsUtil.cpp",
+      "pmd/pmdOptionsMgr.cpp",
+      "pmd/pmdEnv.cpp",
+      "pmd/pmdSignalHandler.cpp",
+      "pmd/pmdStartup.cpp"
+      ]
+# pmd multiple thread model files.
+pmdMTFiles = [
+      "pmd/pmdMemPool.cpp",
+      "pmd/pmdSyncMgr.cpp",
+      "pmd/pmd.cpp",
+      "pmd/pmdEDU.cpp",
+      "pmd/pmdEDUMgr.cpp",
+      "pmd/pmdEntryPoint.cpp",
+      "mon/monCB.cpp",
+      "pmd/pmdAsyncSessionAgent.cpp",
+      "pmd/pmdInnerClient.cpp",
+      "pmd/pmdAsyncHandler.cpp",
+      "pmd/pmdAsyncSession.cpp",
+      "pmd/pmdCBMgrEntryPoint.cpp",
+      "pmd/pmdAsyncNetEntryPoint.cpp",
+      "pmd/pmdBackgroundJob.cpp",
+      "pmd/pmdWindowsListener.cpp",
+      ]
+	  
+utilFiles = [
+      "util/fromjson.cpp",
+      "util/json2rawbson.c",
+      "client/bson/numbers.c",
+      "client/bson/bson.c",
+      "client/bson/encoding.c",
+      "client/bson/common_decimal.c",
+      "client/base64c.c",
+      "client/cJSON.c",
+      "client/cJSON_ext.c",
+      "client/cJSON_iterator.c",
+      "client/jstobs.c",
+      "client/timestampParse.c",
+      "client/timestampTm.c",
+      "client/timestampValid.c",
+      "bson/md5.c",
+      "util/utilBsonHash.cpp",
+      "util/utilBsonHashObsolete.cpp",
+      "util/utilParseJSONs.cpp",
+      "util/utilParseCSV.cpp",
+      "util/utilParseData.cpp",
+      "util/utilAccessDataLocalIO.cpp",
+      "util/utilAccessDataHdfs.cpp",
+      "util/utilPath.cpp",
+      "util/text.cpp",
+      "util/utilStr.cpp",
+      "util/utilParam.cpp",
+      "util/utilCommon.cpp",
+      "util/utilNodeOpr.cpp",
+      "util/utilSdb.cpp",
+      "util/csv2rawbson.cpp",
+      "util/rawbson2csv.c",
+      "util/utilDecodeRawbson.cpp",
+      "util/utilCache.cpp",
+      "util/utilOptions.cpp",
+      "util/utilStream.cpp",
+      "util/utilFileStream.cpp",
+      "util/utilZlibStream.cpp",
+      "util/utilJsonFile.cpp",
+      ]
+
+dpsFiles = [
+      "dps/dpsDump.cpp",
+      "dps/dpsLogRecord.cpp",
+      "dps/dpsLogFile.cpp",
+      "dps/dpsArchiveFile.cpp",
+      "dps/dpsArchiveFileMgr.cpp",
+      "dps/dpsOp2Record.cpp",
+      ]
+
+omagentFiles = [
+      "omagent/omagentMgr.cpp",
+      "omagent/omagentNodeMgr.cpp",
+      "omagent/omagentUtil.cpp",
+      "omagent/omagentSession.cpp",
+      "omagent/omagentHelper.cpp",
+      "omagent/omagentCmdBase.cpp",
+      "omagent/omagentSyncCmd.cpp",
+      "omagent/omagentBackgroundCmd.cpp",
+      "omagent/omagentNodeCmd.cpp",
+      "omagent/omagentTaskBase.cpp",
+      "omagent/omagentTask.cpp",
+      "omagent/omagentAsyncTask.cpp",
+      "omagent/omagentSubTask.cpp",
+      "omagent/omagentJob.cpp",
+      "omagent/omagentNodePathGuard.cpp",
+      "omagent/omagentRemoteBase.cpp",
+      "omagent/omagentRemoteUsrSystem.cpp",
+      "omagent/omagentRemoteUsrFile.cpp",
+      "omagent/omagentRemoteUsrCmd.cpp",
+      "omagent/omagentRemoteUsrOma.cpp"
+      ]
+
+sptFiles = [
+      "spt/dbClasses.cpp",
+      "spt/sptConvertor.cpp",
+      "spt/sptConvertorHelper.cpp",
+      "spt/sptCommon.cpp"
+      ]
+
+spt2Files = [
+      "spt/sptContainer.cpp",
+      "spt/sptInvoker.cpp",
+      "spt/sptObjDesc.cpp",
+      "spt/sptReturnVal.cpp",
+      "spt/sptScope.cpp",
+      "spt/sptSPArguments.cpp",
+      "spt/sptSPScope.cpp",
+      "spt/sptConvertor2.cpp",
+      "spt/sptBsonobj.cpp",
+      "spt/sptBsonobjArray.cpp",
+      "spt/sptLibssh2Session.cpp",
+      "spt/sptSshSession.cpp",
+      "spt/sptClassMetaInfo.cpp",
+      "spt/sptHelp.cpp",
+      "spt/sptWords.cpp",
+      "spt/sptFuncDef.cpp",
+      "spt/usrdef/sptUsrSsh.cpp",
+      "spt/sptRemote.cpp",
+      "spt/sptProperty.cpp",
+      "spt/sptPrivateData.cpp",
+      "spt/sptGlobalFunc.cpp",
+      "spt/usrdef/sptUsrCmd.cpp",
+      "spt/usrdef/sptUsrFile.cpp",
+      "spt/usrdef/sptUsrSystem.cpp",
+      "spt/usrdef/sptUsrOma.cpp",
+      "spt/usrdef/sptUsrOmaAssit.cpp",
+      "spt/usrdef/sptUsrHash.cpp",
+      "spt/usrdef/sptUsrSdbTool.cpp",
+      "spt/usrdef/sptUsrRemote.cpp",
+      "spt/usrdef/sptUsrRemoteAssit.cpp",
+      "spt/usrdef/sptUsrFilter.cpp",
+      "spt/usrdef/sptUsrFileContent.cpp",
+      "spt/usrdef/sptUsrFileCommon.cpp",
+      "spt/usrdef/sptUsrSystemCommon.cpp",
+      "spt/usrdef/sptUsrCmdCommon.cpp",
+      "spt/usrdef/sptUsrOmaCommon.cpp"
+      ]
+
+ssh2Files = [
+      "ssh2/agent.c",
+      "ssh2/channel.c",
+      "ssh2/comp.c",
+      "ssh2/crypt.c",
+      "ssh2/global.c",
+      "ssh2/hostkey.c",
+      "ssh2/keepalive.c",
+      "ssh2/kex.c",
+      "ssh2/knownhost.c",
+      "ssh2/libgcrypt.c",
+      "ssh2/mac.c",
+      "ssh2/misc.c",
+      "ssh2/openssl.c",
+      "ssh2/packet.c",
+      "ssh2/pem.c",
+      "ssh2/publickey.c",
+      "ssh2/scp.c",
+      "ssh2/session.c",
+      "ssh2/sftp.c",
+      "ssh2/transport.c",
+      "ssh2/userauth.c",
+      "ssh2/version.c"
+      ]
+
+clientFiles = [
+      "client/client.c",
+      "client/common.c",
+      "client/network.c"
+      ]
+
+clientCppFiles = [
+      "client/clientcpp.cpp",
+      "client/common.c",
+      "client/network.c",
+      "bson/bsonobj.cpp",
+      "bson/oid.cpp",
+      "bson/base64.cpp",
+      "bson/md5.c",
+      "bson/nonce.cpp",
+      ]
+ncursesFiles = [
+      "ncurses/./tty/hardscroll.c",
+      "ncurses/./tty/hashmap.c",
+      "ncurses/./base/lib_addch.c",
+      "ncurses/./base/lib_addstr.c",
+      "ncurses/./base/lib_beep.c",
+      "ncurses/./base/lib_bkgd.c",
+      "ncurses/./base/lib_box.c",
+      "ncurses/./base/lib_chgat.c",
+      "ncurses/./base/lib_clear.c",
+      "ncurses/./base/lib_clearok.c",
+      "ncurses/./base/lib_clrbot.c",
+      "ncurses/./base/lib_clreol.c",
+      "ncurses/./base/lib_color.c",
+      "ncurses/./base/lib_colorset.c",
+      "ncurses/./base/lib_delch.c",
+      "ncurses/./base/lib_delwin.c",
+      "ncurses/./base/lib_echo.c",
+      "ncurses/./base/lib_endwin.c",
+      "ncurses/./base/lib_erase.c",
+      "ncurses/./base/lib_flash.c",
+      "ncurses/lib_gen.c",
+      "ncurses/./base/lib_getch.c",
+      "ncurses/./base/lib_getstr.c",
+      "ncurses/./base/lib_hline.c",
+      "ncurses/./base/lib_immedok.c",
+      "ncurses/./base/lib_inchstr.c",
+      "ncurses/./base/lib_initscr.c",
+      "ncurses/./base/lib_insch.c",
+      "ncurses/./base/lib_insdel.c",
+      "ncurses/./base/lib_insnstr.c",
+      "ncurses/./base/lib_instr.c",
+      "ncurses/./base/lib_isendwin.c",
+      "ncurses/./base/lib_leaveok.c",
+      "ncurses/./base/lib_mouse.c",
+      "ncurses/./base/lib_move.c",
+      "ncurses/./tty/lib_mvcur.c",
+      "ncurses/./base/lib_mvwin.c",
+      "ncurses/./base/lib_newterm.c",
+      "ncurses/./base/lib_newwin.c",
+      "ncurses/./base/lib_nl.c",
+      "ncurses/./base/lib_overlay.c",
+      "ncurses/./base/lib_pad.c",
+      "ncurses/./base/lib_printw.c",
+      "ncurses/./base/lib_redrawln.c",
+      "ncurses/./base/lib_refresh.c",
+      "ncurses/./base/lib_restart.c",
+      "ncurses/./base/lib_scanw.c",
+      "ncurses/./base/lib_screen.c",
+      "ncurses/./base/lib_scroll.c",
+      "ncurses/./base/lib_scrollok.c",
+      "ncurses/./base/lib_scrreg.c",
+      "ncurses/./base/lib_set_term.c",
+      "ncurses/./base/lib_slk.c",
+      "ncurses/./base/lib_slkatr_set.c",
+      "ncurses/./base/lib_slkatrof.c",
+      "ncurses/./base/lib_slkatron.c",
+      "ncurses/./base/lib_slkatrset.c",
+      "ncurses/./base/lib_slkattr.c",
+      "ncurses/./base/lib_slkclear.c",
+      "ncurses/./base/lib_slkcolor.c",
+      "ncurses/./base/lib_slkinit.c",
+      "ncurses/./base/lib_slklab.c",
+      "ncurses/./base/lib_slkrefr.c",
+      "ncurses/./base/lib_slkset.c",
+      "ncurses/./base/lib_slktouch.c",
+      "ncurses/./base/lib_touch.c",
+      "ncurses/./tty/lib_tstp.c",
+      "ncurses/./base/lib_ungetch.c",
+      "ncurses/./tty/lib_vidattr.c",
+      "ncurses/./base/lib_vline.c",
+      "ncurses/./base/lib_wattroff.c",
+      "ncurses/./base/lib_wattron.c",
+      "ncurses/./base/lib_winch.c",
+      "ncurses/./base/lib_window.c",
+      "ncurses/./base/nc_panel.c",
+      "ncurses/./base/safe_sprintf.c" ,
+      "ncurses/./tty/tty_update.c",
+      "ncurses/./trace/varargs.c",
+      "ncurses/./base/memmove.c",
+      "ncurses/./base/vsscanf.c",
+      "ncurses/./base/lib_freeall.c",
+      "ncurses/expanded.c",
+      "ncurses/./base/legacy_coding.c",
+      "ncurses/./base/lib_dft_fgbg.c",
+      "ncurses/./tinfo/lib_print.c",
+      "ncurses/./base/resizeterm.c" ,
+      "ncurses/./tinfo/use_screen.c",
+      "ncurses/./base/use_window.c",
+      "ncurses/./base/wresize.c",
+      "ncurses/./tinfo/access.c",
+      "ncurses/./tinfo/add_tries.c",
+      "ncurses/./tinfo/alloc_ttype.c",
+      "ncurses/codes.c",
+      "ncurses/comp_captab.c",
+      "ncurses/./tinfo/comp_error.c",
+      "ncurses/./tinfo/comp_hash.c",
+      "ncurses/./tinfo/db_iterator.c",
+      "ncurses/./tinfo/doalloc.c",
+      "ncurses/./tinfo/entries.c",
+      "ncurses/fallback.c",
+      "ncurses/./tinfo/free_ttype.c",
+      "ncurses/./tinfo/getenv_num.c",
+      "ncurses/./tinfo/home_terminfo.c" ,
+      "ncurses/./tinfo/init_keytry.c" ,
+      "ncurses/./tinfo/lib_acs.c" ,
+      "ncurses/./tinfo/lib_baudrate.c" ,
+      "ncurses/./tinfo/lib_cur_term.c" ,
+      "ncurses/./tinfo/lib_data.c" ,
+      "ncurses/./tinfo/lib_has_cap.c",
+      "ncurses/./tinfo/lib_kernel.c" ,
+      "ncurses/lib_keyname.c" ,
+      "ncurses/./tinfo/lib_longname.c" ,
+      "ncurses/./tinfo/lib_napms.c" ,
+      "ncurses/./tinfo/lib_options.c" ,
+      "ncurses/./tinfo/lib_raw.c" ,
+      "ncurses/./tinfo/lib_setup.c" ,
+      "ncurses/./tinfo/lib_termcap.c" ,
+      "ncurses/./tinfo/lib_termname.c",
+      "ncurses/./tinfo/lib_tgoto.c" ,
+      "ncurses/./tinfo/lib_ti.c" ,
+      "ncurses/./tinfo/lib_tparm.c" ,
+      "ncurses/./tinfo/lib_tputs.c" ,
+      "ncurses/./trace/lib_trace.c" ,
+      "ncurses/./tinfo/lib_ttyflags.c" ,
+      "ncurses/./tty/lib_twait.c",
+      "ncurses/./tinfo/name_match.c",
+      "ncurses/names.c",
+      "ncurses/./tinfo/read_entry.c",
+      "ncurses/./tinfo/read_termcap.c",
+      "ncurses/./tinfo/setbuf.c",
+      "ncurses/./tinfo/strings.c",
+      "ncurses/./base/tries.c",
+      "ncurses/./tinfo/trim_sgr0.c",
+      "ncurses/unctrl.c",
+      "ncurses/./trace/visbuf.c",
+      "ncurses/./tinfo/alloc_entry.c",
+      "ncurses/./tinfo/captoinfo.c",
+      "ncurses/./tinfo/comp_expand.c",
+      "ncurses/./tinfo/comp_parse.c",
+      "ncurses/./tinfo/comp_scan.c",
+      "ncurses/./tinfo/parse_entry.c",
+      "ncurses/./tinfo/write_entry.c",
+      "ncurses/./base/define_key.c",
+      "ncurses/./tinfo/hashed_db.c",
+      "ncurses/./base/key_defined.c",
+      "ncurses/./base/keybound.c",
+      "ncurses/./base/keyok.c",
+      "ncurses/./base/version.c"
+]
+sdbStartMain = [
+      "pmd/sdbstart.cpp"
+      ]
+
+sdbStopMain = [
+      "pmd/sdbstop.cpp"
+      ]
+
+sdbListMain = [
+      "pmd/sdblist.cpp",
+      ]
+
+sdbcmMain = [
+      "pmd/pmdCMMain.cpp",
+      ]
+
+sdbcmDMNMain = [
+      "pmd/pmdCMDMNMain.cpp"
+      ]
+
+sdbcmartMain = [
+      "pmd/cm/sdbcmart.cpp"
+      ]
+
+sdbcmtopMain = [
+      "pmd/cm/sdbcmtop.cpp"
+      ]
+#sdbtop
+sdbtopMain = [
+      "pmd/sdbtop.cpp"
+      ]
+sdbmemcheckFiles = [
+      "tools/sdbCheckDumpMem.cpp"
+      ]
+
+sdbdpsdumpFiles = [
+      "tools/sdbDpsDump.cpp"
+      ]
+
+sdbOmToolMain = [
+      "tools/sdbOmTool.cpp"
+      ]
+
+sdbRepairMain = [
+      "tools/sdbrepair.cpp"
+      ]
+
+sdbReplayFiles = [
+      "tools/replay/sdbReplay.cpp",
+      "tools/replay/rplOptions.cpp",
+      "tools/replay/rplFilter.cpp",
+      "tools/replay/rplReplayer.cpp",
+      "tools/replay/rplMonitor.cpp",
+      "tools/replay/rplUtil.cpp",
+      ]
+
+sdbSEAdptFiles = [
+      "rtn/rtnContextBuff.cpp",
+      "rest/http_parser.cpp",
+      "tools/seadapter/pmdSEAdptMain.cpp",
+      "tools/seadapter/seAdptOptionsMgr.cpp",
+      "tools/seadapter/seAdptMgr.cpp",
+      "tools/seadapter/seAdptAgentSession.cpp",
+      "tools/seadapter/seAdptIndexSession.cpp",
+      "tools/seadapter/seAdptContext.cpp",
+      "tools/seadapter/utilHttp.cpp",
+      "tools/seadapter/utilESClt.cpp",
+      "tools/seadapter/utilESBulkBuilder.cpp",
+      "tools/seadapter/seAdptMsgHandler.cpp",
+      "tools/seadapter/utilESCltMgr.cpp",
+      "tools/seadapter/seAdptIdxMetaMgr.cpp",
+      "tools/seadapter/utilCommObjBuff.cpp",
+      "rtn/rtnSimpleCondNode.cpp",
+      "rtn/rtnSimpleCondParser.cpp"
+      ]
+
+#cls
+toolEnv.StaticLibrary('cls', clsFiles)
+#ixm
+toolEnv.StaticLibrary('ixm', ixmFiles)
+#rtn
+toolEnv.StaticLibrary('rtn', rtnFiles)
+toolEnv.StaticLibrary('rtnJob', rtnJobFiles)
+#BSON
+toolEnv.StaticLibrary('bson', bsonFiles)
+#Client Driver
+toolEnv.StaticLibrary('client', clientFiles)
+#ClientCpp Driver
+toolEnv.StaticLibrary('clientcpp', clientCppFiles)
+#Operating System Services
+toolEnv.StaticLibrary('oss', ossFiles)
+#Problem Determination
+toolEnv.StaticLibrary('pd', pdFiles)
+#Process Model
+toolEnv.StaticLibrary('pmd', pmdFiles)
+#Multiple thread model
+toolEnv.StaticLibrary('pmdMT', pmdMTFiles)
+#Utilities
+toolEnv.StaticLibrary('util', utilFiles)
+#mig
+toolEnv.StaticLibrary('mig', migFiles)
+toolEnv.StaticLibrary('miglob', migLobFiles)
+#msg
+toolEnv.StaticLibrary('msg', msgFiles)
+#net
+toolEnv.StaticLibrary('net', netFiles)
+#dps
+toolEnv.StaticLibrary('dps', dpsFiles)
+#omagent
+toolEnv.StaticLibrary('omagent', omagentFiles)
+#ncurses
+if linux:
+   toolEnv.StaticLibrary('ncurses', ncursesFiles)
+#Scripting
+toolEnv.StaticLibrary('spt', sptFiles)
+toolEnv.StaticLibrary('spt2', spt2Files)
+toolEnv.StaticLibrary('ssh2', ssh2Files)
+
+#Export Executable
+sdbimprt = toolEnv.Program("sdbimprt", importFiles,
+         LIBDEPS=["bson", "oss", "pd", "util", "client", "cls", "ixm", "rtn", "msg"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbexprt = toolEnv.Program("sdbexprt", exportFiles,
+          LIBDEPS=["bson","oss","pd","util","client","clientcpp"],
+          _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbreplay = toolEnv.Program("sdbreplay", sdbReplayFiles,
+          LIBDEPS=["bson","oss","pd","util","clientcpp","dps","pmd"],
+          _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbload2 = toolEnv.Program("sdbload2", sdbLoadMain,
+         LIBDEPS=["bson","oss","pd","util","client"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbstart = toolEnv.Program("sdbstart", sdbStartMain,
+         LIBDEPS=["pd","oss","pmd","bson","util"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbstop = toolEnv.Program("sdbstop", sdbStopMain,
+         LIBDEPS=["pd","oss","bson","util"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdblist = toolEnv.Program("sdblist", sdbListMain,
+         LIBDEPS=["pd","oss","bson", "util","pmd"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbcm = toolEnv.Program("sdbcm", sdbcmMain,
+         LIBDEPS=["pd","oss","msg","bson","util","net","pmd","pmdMT","omagent","client", "spt","spt2","ssh2","rtnJob"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbcmd = toolEnv.Program("sdbcmd", sdbcmDMNMain,
+         LIBDEPS=["pd","oss","msg","bson","pmd","util"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbcmart = toolEnv.Program("sdbcmart", sdbcmartMain,
+         LIBDEPS=["pd","oss","bson","util"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbcmtop = toolEnv.Program("sdbcmtop", sdbcmtopMain,
+         LIBDEPS=["pd","oss", "bson", "util"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdblobtool = toolEnv.Program("sdblobtool", sdbLobToolMain,
+         LIBDEPS=["pd","oss", "bson", "util", "miglob","clientcpp"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+if linux:
+   sdbtop = toolEnv.Program("sdbtop", sdbtopMain,
+            LIBDEPS=["mig","oss","pd","bson","util","client","clientcpp","ncurses"],
+            _LIBDEPS='$_LIBDEPS_OBJS' )
+sdbmemcheck = toolEnv.Program("sdbmemcheck", sdbmemcheckFiles,
+          LIBDEPS=["oss","pd","bson","util"],
+          _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbrepair = toolEnv.Program("sdbrepair", sdbRepairMain,
+          LIBDEPS=["oss", "pd","bson","util"],
+          _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbdpsdump = toolEnv.Program("sdbdpsdump", sdbdpsdumpFiles,
+          LIBDEPS=["oss","pd","pmd","bson","dps", "util"],
+          _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbinspect = toolEnv.Program("sdbinspect",
+         inspectFiles,
+         LIBDEPS=["oss", "bson", "pmd", "util", "pd", "client", "clientcpp"],
+         _LIBDEPS='$_LIBDEPS_OBJS' )
+
+if linux:
+   sdbomtool = toolEnv.Program("sdbomtool",
+               sdbOmToolMain,
+               LIBDEPS=["pd", "oss","bson", "util"],
+               _LIBDEPS='$_LIBDEPS_OBJS' )
+
+sdbseadapter = toolEnv.Program("sdbseadapter",
+		 sdbSEAdptFiles,
+		 LIBDEPS=["pd","oss","msg","util","bson","pmd","pmdMT","net","rtnJob"],
+		 _LIBDEPS='$_LIBDEPS_OBJS' )
+
+toolEnv.Install( '#/bin', sdbimprt )
+toolEnv.Install( '#/bin', sdbexprt )
+toolEnv.Install( '#/bin', sdbreplay )
+toolEnv.Install( '#/bin', sdbstart )
+toolEnv.Install( '#/bin', sdbstop )
+toolEnv.Install( '#/bin', sdblist )
+toolEnv.Install( '#/bin', sdbcm )
+toolEnv.Install( '#/bin', sdbcmd )
+toolEnv.Install( '#/bin', sdbcmart )
+toolEnv.Install( '#/bin', sdbcmtop )
+toolEnv.Install( '#/bin', sdblobtool )
+if linux:
+   toolEnv.Install( '#/bin', sdbtop )
+toolEnv.Install( '#/tools', sdbload2 )
+toolEnv.Install( '#/tools', sdbmemcheck )
+toolEnv.Install( '#/tools', sdbrepair )
+toolEnv.Install( '#/bin', sdbdpsdump )
+toolEnv.Install( '#/bin', sdbinspect )
+if linux:
+   toolEnv.Install( '#/bin', sdbomtool )
+
+toolEnv.Install( '#/bin', sdbseadapter )

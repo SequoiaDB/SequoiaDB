@@ -1,0 +1,67 @@
+<div ng-controller="Data.SQL.Metadata.Ctrl" style="padding:10px 0;" ng-container="{}">
+   <div class="underlineTab" style="margin:0 15px;height:60px;">
+      <ul class="right" style="height:45px;">
+         <li class="text Ellipsis" style="max-width:240px;height:32px;">
+            <b>{{moduleName}}</b>
+         </li>
+         <li class="Ellipsis" style="max-width:240px;height:32px;color:#333;">
+            <b>{{dbHost}} : {{dbPort}}</b>
+         </li>
+      </ul>
+   </div>
+   <div class="relativeBox" style="padding-left:15px;" ng-container="{offsetY:-65}">
+      <div class="pull-left" ng-container="{offsetX:-280}">
+         <div ng-show="GridData['body'].length > 0" create-grid="GridData" ng-container="{offsetX:-10}"></div>
+         <div ng-show="GridData['body'].length == 0">
+            <div class="data_empty">
+               <div class="title">{{autoLanguage("当前数据库没有数据表。")}}</div>
+               <div class="tips">
+                  {{autoLanguage("使用")}}
+                  <span class="linkButton" ng-click="showCreateTable()">{{autoLanguage("\"创建数据表\"")}}</span>
+                  {{autoLanguage("操作进行创建数据表。")}}
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="pull-left" ng-container="{width:270}" style="font-size:90%;">
+         <div class="borderBox" style="padding:10px;overflow-y:auto;" ng-container="{offsetY:-122}">
+            <div><b>{{autoLanguage("数据库列表")}}：</b></div>
+            <ul style="list-style:none;margin:10px 0 0 0;padding:0;font-size:110%;">
+               <li class="linkButton Ellipsis" style="padding-bottom:5px;" ng-repeat="databaseName in databaseList track by $index" ng-click="showTableInfo($index)" ng-style="{true:{'font-weight':'bold','color':'#FF7547'} }[databaseIndex == $index]">
+                  <i class="fa fa-database"></i> {{databaseName["Name"]}}
+               </li>
+            </ul>
+         </div>
+         <div ng-container="{marginTop:10,height:115}">
+            <table class="table loosen border">
+               <tbody>
+                  <tr>
+                     <td style="background-color:#F1F4F5; font-weight:bold;">{{autoLanguage("操作")}}</td>
+                  </tr>
+                  <tr>
+                     <td>
+                        <a class="linkButton" ng-click="showCreateDatabase()">
+                           {{autoLanguage("创建数据库")}}
+                        </a>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>
+                        <a class="linkButton" ng-class="{'disabled':databaseList.length==0}" ng-click="showRemoveDatabase()">
+                           {{autoLanguage("删除数据库")}}
+                        </a>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>
+                        <a class="linkButton" ng-class="{'disabled':databaseList.length==0}" ng-click="showCreateTable()">
+                           {{autoLanguage("创建数据表")}}
+                        </a>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>

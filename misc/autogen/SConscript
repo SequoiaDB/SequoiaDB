@@ -1,0 +1,254 @@
+import os
+from os.path import join, dirname, abspath
+
+import types
+
+Import("has_option")
+Import("get_option")
+Import("GuessOS")
+Import("GuessArch")
+Import("findVersion")
+
+root_dir = dirname(File('SConscript').rfile().abspath)
+boost_dir = join(root_dir, '../../thirdparty/boost')
+boost_lib_dir = join(boost_dir, 'lib')
+
+linux = False
+linux64  = False
+windows = False
+aix = False
+force64 = has_option( "force64" )
+msarch = None
+guess_os = GuessOS()
+guess_arch = GuessArch()
+if force64:
+    msarch = "amd64"
+
+force32 = has_option( "force32" )
+static = False
+
+env = Environment( BUILD_DIR = root_dir, MSVS_ARCH=msarch, PYSYSPLATFORM=os.sys.platform )
+
+
+if env['PYSYSPLATFORM'] == 'linux3':
+    env['PYSYSPLATFORM'] = 'linux2'
+
+if os.sys.platform == 'win32':
+    env['OS_FAMILY'] = 'win'
+else:
+    env['OS_FAMILY'] = 'posix'
+
+if env['PYSYSPLATFORM'] == 'linux2':
+    env['LINK_LIBGROUP_START'] = '-Wl,--start-group'
+    env['LINK_LIBGROUP_END'] = '-Wl,--end-group'
+    env['RELOBJ_LIBDEPS_START'] = '--whole-archive'
+    env['RELOBJ_LIBDEPS_END'] = '--no-whole-archive'
+    env['RELOBJ_LIBDEPS_ITEM'] = ''
+
+env["LIBPATH"] = []
+
+extraLibPlaces = []
+
+env['EXTRACPPPATH'] = []
+env['EXTRALIBPATH'] = []
+
+def addExtraLibs( s ):
+    for x in s.split(","):
+        env.Append( EXTRACPPPATH=[ x + "/include" ] )
+        env.Append( EXTRALIBPATH=[ x + "/lib" ] )
+        env.Append( EXTRALIBPATH=[ x + "/lib64" ] )
+        extraLibPlaces.append( x + "/lib" )
+
+# ---- other build setup -----
+
+platform = os.sys.platform
+if "uname" in dir(os):
+    processor = os.uname()[4]
+else:
+    processor = "i386"
+
+if force32:
+    processor = "i386"
+if force64:
+    processor = "x86_64"
+
+env['PROCESSOR_ARCHITECTURE'] = processor
+
+DEFAULT_INSTALL_DIR = "/usr/local"
+installDir = DEFAULT_INSTALL_DIR
+nixLibPrefix = "lib"
+
+env.Append( CPPPATH=[boost_dir] )
+env.Append( CPPPATH=[ "../../../SequoiaDB/engine/include" ] )
+
+# specify dependent libraries for javascript engine and boost
+if guess_os == "linux":
+    linux = True
+    platform = "linux"
+
+    env.Append( LIBS=['m'] )
+    env.Append( LIBS=['dl'] )
+    # 64 bit linux
+    if guess_arch == "ia64" and not force32:
+        linux64 = True
+        nixLibPrefix = "lib64"
+        env.Append( EXTRALIBPATH="/usr/lib64" )
+        env.Append( EXTRALIBPATH="/lib64" )
+        # use project-related boost library
+        env.Append( LIBPATH=join(boost_lib_dir,'linux64') )
+        force64 = False
+    elif guess_arch == "ppc64":
+        linux64 = True
+        nixLibPrefix = "lib64"
+        env.Append( EXTRALIBPATH="/usr/lib64" )
+        env.Append( EXTRALIBPATH="/lib64" )
+        # use project-related boost library
+        env.Append( LIBPATH=join(boost_lib_dir,'ppclinux64') )
+        force64 = False
+    elif guess_arch == "ppc64le":
+        linux64 = True
+        nixLibPrefix = "lib64"
+        env.Append( EXTRALIBPATH="/usr/lib64" )
+        env.Append( EXTRALIBPATH="/lib64" )
+        # use project-related boost library
+        env.Append( LIBPATH=join(boost_lib_dir,'ppclelinux64') )
+        force64 = False
+          
+    # in case for 32 bit linux
+    elif guess_arch == "ia32":
+        linux64 = False
+        nixLibPrefix = "lib"
+        env.Append( EXTRALIBPATH="/usr/lib" )
+        env.Append( EXTRALIBPATH="/lib" )
+        # we want 32 bit boost library
+        env.Append( LIBPATH=join(boost_lib_dir,'linux32') )
+
+    elif guess_arch == "ia64" and force32:
+        # let's use 32 bit boost library
+        env.Append( LIBPATH=["/usr/lib32", join(boost_lib_dir,'linux32')] )
+
+    if static:
+        env.Append( LINKFLAGS=" -static " )
+    env.Append ( LIBS="boost_filesystem" )
+    env.Append ( LIBS="boost_system" )
+    env.Append ( LIBS="pthread" )
+    env.Append ( CPPFLAGS=" -ggdb " )
+elif guess_os == "aix":
+    aix = True
+
+    env.Append( LIBS=['m'] )
+    env.Append( LIBS=['dl'] )
+    nixLibPrefix = "lib"
+    env.Append( EXTRALIBPATH="/usr/lib" )
+    env.Append( EXTRALIBPATH="/lib" )
+    env.Append( LIBPATH=join(boost_lib_dir,'aix64') )
+
+    if static:
+        env.Append( LINKFLAGS=" -static " )
+    env.Append( LINKFLAGS=" -maix64 " )
+    env.Append ( LIBS="boost_filesystem" )
+    env.Append ( LIBS="boost_system" )
+    env.Append ( LIBS="pthread" )
+    env.Append ( CPPFLAGS=" -ggdb -maix64 " )
+    env.Append ( CPPDEFINES=[ "SDB_BIG_ENDIAN" ] )
+elif "win32" == guess_os:
+
+    # when building windows
+    windows = True
+    #if force64:
+
+    # check VC compiler
+    for pathdir in env['ENV']['PATH'].split(os.pathsep):
+        if os.path.exists(os.path.join(pathdir, 'cl.exe')):
+            print( "found visual studio at " + pathdir )
+            break
+        else:
+              #use current environment
+              env['ENV'] = dict(os.environ)
+
+    # if we are 64 bit
+    if guess_arch == "ia64" and not force32:
+        # use 64 bit boost library
+        env.Append( LIBPATH=join(boost_lib_dir,'win64') )
+        force64 = False
+    else:
+          # either we are 32 bit or force 32 bit
+        env.Append( LIBPATH=join(boost_lib_dir,'win32') )
+
+    boostLibs = []
+
+    env.Append( CPPDEFINES=[ "_UNICODE" ] )
+    env.Append( CPPDEFINES=[ "UNICODE" ] )
+    # find windows SDK
+    winSDKHome = findVersion( [ "C:/Program Files/Microsoft SDKs/Windows/", "C:/Program Files (x86)/Microsoft SDKs/Windows/" ] ,
+                              [ "v7.1", "v7.0A", "v7.0", "v6.1", "v6.0a", "v6.0" ] )
+    print( "Windows SDK Root '" + winSDKHome + "'" )
+
+    env.Append( EXTRACPPPATH=[ winSDKHome + "/Include" ] )
+
+    # consider adding /MP build with multiple processes option.
+
+    # /EHsc exception handling style for visual studio
+    # /W3 warning level
+    # /WX abort build on compiler warnings
+    env.Append( CPPFLAGS=" /EHsc /W3 " ) #  /WX " )
+
+    if guess_arch == "ia64" and not force32:
+        env.Append( EXTRALIBPATH=[ winSDKHome + "/Lib/x64" ] )
+    else:
+        env.Append( EXTRALIBPATH=[ winSDKHome + "/Lib" ] )
+
+    winLibString = "ws2_32.lib kernel32.lib advapi32.lib Psapi.lib"
+
+    if force64:
+
+        winLibString += ""
+        #winLibString += " LIBCMT LIBCPMT "
+
+    else:
+        winLibString += " user32.lib gdi32.lib winspool.lib comdlg32.lib  shell32.lib ole32.lib oleaut32.lib "
+        winLibString += " odbc32.lib odbccp32.lib uuid.lib dbghelp.lib "
+
+    env.Append( LIBS=Split(winLibString) )
+    env.Append( CPPFLAGS=" /RTC1 /MDd /Z7 /TP /errorReport:none " )
+    env.Append( LINKFLAGS=" /debug " )
+    env.Append( CPPFLAGS=" /Od " )
+
+else:
+    print( "No special config for [" + os.sys.platform + "] which probably means it won't work" )
+
+env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1
+
+
+language = get_option("language")
+if language is None:
+   language = "en"
+
+copyFiles = [ "../../../SequoiaDB/engine/oss/ossUtil.c",
+              "../../../SequoiaDB/engine/oss/ossMem.c",
+              "../../../SequoiaDB/engine/oss/ossMem.cpp",
+              "../../../SequoiaDB/engine/oss/oss.c",
+              "../../../SequoiaDB/engine/oss/oss.cpp",
+              "../../../SequoiaDB/engine/pd/pdComponents.cpp" ]
+for file in copyFiles:
+   env.Execute(Copy('../', file))
+
+srcFiles = [ "ossUtil.c",
+             "ossMem.cpp",
+             "oss.cpp",
+             "pdComponents.cpp",
+             "main.cpp",
+             "rcgen.cpp",
+             "filenamegen.cpp",
+             "optgen.cpp",
+             "buildgen.cpp",
+             "tracegen.cpp",
+             "dbConfForWeb.cpp",
+             "vergen.cpp",
+]
+
+autogen = env.Program( "autogen", srcFiles )
+cmd = "bin" + os.sep + "autogen "
+run = env.Command ( target = language, source = autogen, action = cmd + language )
+env.Depends ( run, autogen )
+env.AlwaysBuild( run )

@@ -1,0 +1,11 @@
+[
+      {
+            "name": "CsName", 
+            "webName": "集合空间", 
+            "type": "select"
+      }, 
+      {
+            "type": "note", 
+            "text": "删除集合空间会把集合也删除，删除后数据将无法恢复。"
+      }
+]

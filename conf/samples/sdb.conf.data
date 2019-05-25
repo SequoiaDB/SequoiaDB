@@ -1,0 +1,101 @@
+# SequoiaDB configuration
+
+# Database path
+dbpath=/opt/sequoiadb/database/data
+
+# Index path
+# indexpath=
+
+# Configure file path
+# confpath=
+
+# Log file path
+# logpath=
+
+# Diagnostic log file path
+# diagpath=
+
+# The max number of diagnostic log files, default:20, -1:unlimited
+# diagnum=
+
+# Backup path
+# bkuppath=
+
+# The maximum number of pooled agent,defalut:0
+# maxpool=
+
+# Local service name or port
+svcname=11820
+
+# Replication service name or port, default: 'svcname'+1
+replname=11821
+
+# Sharding service name or port, default: 'svcname'+2
+shardname=11822
+
+# Catalog service name or port, default: 'svcname'+3
+catalogname=11823
+
+# REST service name or port, default: 'svcname'+4
+httpname=11824
+
+# Diagnostic level,default:3,value range:[0-5]
+diaglevel=3
+
+# Role of the node (data/coord/catalog/standalone)
+role=data
+
+# Catalog addr (hostname1:servicename1,hostname2:servicename2,...)
+catalogaddr=localhost:11803
+
+# Log file size ( in MB ),default:64,value range:[64,2048]
+logfilesz=64
+
+# Number of log files,default:20, value range:[1,11800]
+logfilenum=20
+
+# Turn on transaction, default:FALSE
+transactionon=false
+
+# The number of pre-loaders, default:0,value range:[0,100]
+# numpreload=
+
+# The maximum number of prefetchers, default:0, value range:[0,1000]
+# maxprefpool=
+
+# The maximum number of repl-sync threads, default:10, value range:[0, 200], 0:disable concurrent repl-sync
+# maxreplsync=
+
+# The number of pages ( in 64KB ) for replica log memory ( default:1024, value range:[512,1024000] ), the size should be smaller than log space
+# logbuffsize=
+
+# The path of the temp files
+# tmppath=
+
+# Size of the sorting buf(MB), default:256, min value:128
+# sortbuf=
+
+# Size of the hash join buf(MB), default:128, min value:64
+# hjbuf=
+
+# The control strategy of data sync in ReplGroup, value enumeration: none,keepnormal,keepall, default:keepnormal.
+# syncstrategy=
+
+# Prefered instance for read request, default:A, value enum:M,S,A,1-7
+preferedinstance=A
+
+# Number of page cleaners, default 0, value range:[0, 50]
+numpagecleaners=0
+
+# The minimal interval between two cleanup actions for each collection space (in ms, default 10000, min 1000 )
+pagecleaninterval=10000
+
+# Large object file path
+# lobpath=
+
+# Open direct io in large object
+# directioinlob=
+
+# extend the file as a sparse file
+# sparsefile=
+

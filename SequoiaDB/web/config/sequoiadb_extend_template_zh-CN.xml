@@ -1,0 +1,71 @@
+<DeployModList type="array">
+  <FILLER>
+    <DeployMod>horizontal</DeployMod>
+    <WebName>添加分区组</WebName>
+    <BusinessType>sequoiadb</BusinessType>
+    <Property type="array">
+      <FILLER>
+        <Name>datagroupnum</Name>
+        <Type>int</Type>
+        <Default>1</Default>
+        <Valid>1-</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>新增数据分区组的数量</Desc>
+        <Level>0</Level>
+        <WebName>分区组数</WebName>
+      </FILLER>
+      <FILLER>
+        <Name>replicanum</Name>
+        <Type>int</Type>
+        <Default>3</Default>
+        <Valid>1,2,3,4,5,6,7</Valid>
+        <Display>select box</Display>
+        <Edit>true</Edit>
+        <Desc>数据拷贝数</Desc>
+        <Level>0</Level>
+        <WebName>副本数</WebName>
+      </FILLER>
+    </Property>
+  </FILLER>
+  <FILLER>
+    <DeployMod>vertical</DeployMod>
+    <WebName>添加副本数</WebName>
+    <BusinessType>sequoiadb</BusinessType>
+    <Property type="array">
+      <FILLER>
+        <Name>coordnum</Name>
+        <Type>int</Type>
+        <Default>1</Default>
+        <Valid>0-</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>协调节点数</Desc>
+        <Level>0</Level>
+        <WebName>协调节点数</WebName>
+      </FILLER>
+      <FILLER>
+        <Name>catalognum</Name>
+        <Type>int</Type>
+        <Default>1</Default>
+        <Valid>0,1,2,3,4,5,6,7</Valid>
+        <Display>select box</Display>
+        <Edit>true</Edit>
+        <Desc>编目节点数</Desc>
+        <Level>0</Level>
+        <WebName>编目节点数</WebName>
+      </FILLER>
+      <FILLER>
+        <Name>replicanum</Name>
+        <Type>int</Type>
+        <Default>1</Default>
+        <Valid>0,1,2,3,4,5,6,7</Valid>
+        <Display>select box</Display>
+        <Edit>true</Edit>
+        <Desc>数据拷贝数</Desc>
+        <Level>0</Level>
+        <WebName>副本数</WebName>
+      </FILLER>
+    </Property>
+  </FILLER>
+</DeployModList>

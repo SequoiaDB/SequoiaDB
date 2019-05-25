@@ -1,0 +1,197 @@
+<Property type="array">
+    <FILLER>
+        <Name>master_host</Name>
+        <WebName>Master Host</WebName>
+        <Type>string</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Master Host</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>master_port</Name>
+        <WebName>Master Port</WebName>
+        <Type>port</Type>
+        <Default>5432</Default>
+        <Valid>1024-65535</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Master Port</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>standby_host</Name>
+        <WebName>Standby Host</WebName>
+        <Type>string</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Standby Host</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>master_dir</Name>
+        <WebName>Master Data Directory</WebName>
+        <Type>path</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>true</Edit>
+        <Desc>Master Data Directory</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>master_temp_dir</Name>
+        <WebName>Master Temporary Directory</WebName>
+        <Type>path</Type>
+        <Default>/tmp</Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>true</Edit>
+        <Desc>Master Temporary Directory</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>hdfs_url</Name>
+        <WebName>HDFS URL</WebName>
+        <Type>string</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>HDFS URL</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>segment_hosts</Name>
+        <WebName>Segment Hosts</WebName>
+        <Type>string</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>false</Edit>
+        <Desc>Segment Hosts</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>segment_port</Name>
+        <WebName>Segment Port</WebName>
+        <Type>port</Type>
+        <Default>40000</Default>
+        <Valid>1024-65535</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Segment Port</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>segment_dir</Name>
+        <WebName>Segment Data Directory</WebName>
+        <Type>path</Type>
+        <Default></Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>true</Edit>
+        <Desc>Segment Data Directory</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>segment_temp_dir</Name>
+        <WebName>Segment Temporary Directory</WebName>
+        <Type>path</Type>
+        <Default>/tmp</Default>
+        <Valid></Valid>
+        <Display>text box</Display>
+        <Edit>true</Edit>
+        <Desc>Segment Temporary Directory</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>install_dir</Name>
+        <WebName>Install Directory</WebName>
+        <Type>string</Type>
+        <Default>/opt/sequoiasql/olap</Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Install Directory</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>log_dir</Name>
+        <WebName>Log Directory</WebName>
+        <Type>string</Type>
+        <Default>/tmp/sequoiasqlAdminLogs</Default>
+        <Valid></Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Log Directory</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>max_connections</Name>
+        <WebName>Max Connections</WebName>
+        <Type>int</Type>
+        <Default>100</Default>
+        <Valid>1-</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Max Connections</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>shared_buffers</Name>
+        <WebName>Shared Buffers(MB)</WebName>
+        <Type>int</Type>
+        <Default>128</Default>
+        <Valid>32-</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Shared Buffers(MB)</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+    <FILLER>
+        <Name>remove_if_failed</Name>
+        <WebName>Remove if failed</WebName>
+        <Type>bool</Type>
+        <Default>true</Default>
+        <Valid>true,false</Valid>
+        <Display>select box</Display>
+        <Edit>true</Edit>
+        <Desc>Remove install directory and data directory if failed</Desc>
+        <Level>0</Level>
+        <DynamicEdit>false</DynamicEdit>
+        <BatchEdit>false</BatchEdit>
+    </FILLER>
+</Property>

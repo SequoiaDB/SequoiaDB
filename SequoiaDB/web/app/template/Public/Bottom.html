@@ -1,0 +1,8 @@
+<div class="footInfo" ng-controller="Index.Bottom.Ctrl">
+   <span>©{{Bottom.year}} SequoiaDB.</span>
+   &nbsp;&nbsp;
+   <span>{{autoLanguage('系统时间')}}: {{Bottom.nowtime}}</span>
+   &nbsp;&nbsp;
+   <span>{{autoLanguage('系统状态')}}: </span>
+   <span class="status Ellipsis" ng-class="{ 'success': 'success', 'error': 'error', 'warning': 'warning' }[Bottom.statusColor]">{{Bottom.sysStatus}}</span>
+</div>
