@@ -1,0 +1,52 @@
+<div id="ClusterBox" ng-controller="Index.Index.Index.Ctrl">
+   <div style="padding:15px;" data-height="65">
+      <button class="topBtn" ng-click="queryAll()"><i class="fa fa-share-alt"></i> {{autoLanguage("部署引导")}}</button>
+      <button class="topBtn" ng-click="queryAll()"><i class="fa fa-plus"></i> {{autoLanguage("创建集群")}}</button>
+      <div style="padding-top:15px;border-bottom:1px solid #DDD;"></div>
+   </div>
+   <div data-offsetY="-100" style="overflow-y:auto;overflow-x:hidden;+zoom:1;+position:relative;">
+      <div ng-repeat="clusterInfo in QueryCluster track by $index" style="padding:15px;" create-response="{len:QueryCluster.length,index:$index,min:660,max:1980}">
+         <div class="DataListBox blue">
+            <div class="linkButton Ellipsis" style="font-size:110%;float:left;height:26px;line-height:26px;max-width:350px;">
+               {{clusterInfo.ClusterName}}
+            </div>
+            &nbsp;
+            <span class="badge badge-warning">2</span>
+            <span class="badge badge-danger">1</span>
+            <button style="float:right;" class="btn btn-default btn-lg"><i class="fa fa-bars"></i> <i class="fa fa-caret-down"></i></button>
+            <div class="clear-float"></div>
+            <div class="Ellipsis" style="font-size:90%;height:18px;padding:4px 0 6px 10px;color:#666;">
+               {{clusterInfo.Desc}}
+            </div>
+
+            <div style="padding:0 0 0 10px;">
+               <table class="table border loosen">
+                  <tr>
+                     <td>
+                        <a class="linkButton">主机</a>(12)
+                     </td>
+                     <td>
+                        <span class="badge badge-warning">磁盘可用空间只有10%</span>
+                        <span class="badge badge-warning">CPU占用达90%</span>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>
+                        <a class="linkButton">业务</a>(3)
+                     </td>
+                     <td>
+                        <span class="badge badge-danger">有1个业务正在重启</span>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+
+            <div style="+zoom:1;+position:relative;padding:10px 0 0 0;" ng-if="0">
+               <div style="height:200px;width:400px;float:left;">11</div>
+               <div style="height:200px;width:200px;float:left;">22</div>
+               <div class="clear-float"></div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

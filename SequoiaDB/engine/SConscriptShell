@@ -1,0 +1,197 @@
+import os
+
+Import("shellEnv")
+Import("guess_os")
+Import("usesm")
+if usesm:
+    Import("smlib_file")
+
+sptFiles = [
+      "spt/dbClasses.cpp",
+      "spt/sptConvertor.cpp",
+      "spt/sptConvertorHelper.cpp",
+      "spt/sptCommon.cpp"
+      ]
+
+spt2Files = [
+      "spt/sptContainer.cpp",
+      "spt/sptInvoker.cpp",
+      "spt/sptObjDesc.cpp",
+      "spt/sptReturnVal.cpp",
+      "spt/sptScope.cpp",
+      "spt/sptSPArguments.cpp",
+      "spt/sptSPScope.cpp",
+      "spt/sptConvertor2.cpp",
+      "spt/sptBsonobj.cpp",
+      "spt/sptBsonobjArray.cpp",
+      "spt/sptLibssh2Session.cpp",
+      "spt/sptSshSession.cpp",
+      "spt/sptRemote.cpp",
+      "spt/sptProperty.cpp",
+      "spt/sptGlobalFunc.cpp",
+      "spt/sptClassMetaInfo.cpp",
+      "spt/sptHelp.cpp",
+      "spt/sptWords.cpp",
+      "spt/sptParseMandoc.cpp",
+      "spt/sptFuncDef.cpp",
+      "spt/sptPrivateData.cpp",
+      "spt/usrdef/sptUsrSsh.cpp",
+      "spt/usrdef/sptUsrCmd.cpp",
+      "spt/usrdef/sptUsrFile.cpp",
+      "spt/usrdef/sptUsrSystem.cpp",
+      "spt/usrdef/sptUsrOma.cpp",
+      "spt/usrdef/sptUsrOmaAssit.cpp",
+      "spt/usrdef/sptUsrHash.cpp",
+      "spt/usrdef/sptUsrSdbTool.cpp",
+      "spt/usrdef/sptUsrRemote.cpp",
+      "spt/usrdef/sptUsrRemoteAssit.cpp",
+      "spt/usrdef/sptUsrFilter.cpp",
+      "spt/usrdef/sptUsrFileContent.cpp",
+      "spt/usrdef/sptUsrFileCommon.cpp",
+      "spt/usrdef/sptUsrSystemCommon.cpp",
+      "spt/usrdef/sptUsrCmdCommon.cpp",
+      "spt/usrdef/sptUsrOmaCommon.cpp"
+      ]
+
+ossFiles = [
+      "oss/ossSSLCertificate.c",
+      "oss/ossSSLWrapper.c",
+      "oss/ossSSLContext.c",
+      "oss/oss.cpp",
+      "oss/ossErr.cpp",
+      "oss/ossUtil.cpp",
+      "oss/ossFile.cpp",
+      "oss/ossIO.cpp",
+      "oss/ossPrimitiveFileOp.cpp",
+      "oss/ossStackDump.cpp",
+      "oss/ossEDU.cpp",
+      "oss/ossProc.cpp",
+      "oss/ossCmdRunner.cpp",
+      "oss/ossNPipe.cpp",
+      "oss/ossPath.cpp",
+      "oss/ossVer.cpp",
+      "oss/ossMem.cpp",
+      "oss/ossSocket.cpp",
+      "oss/ossEvent.cpp"
+      ]
+
+shellMain = [
+      "pmd/sdb.cpp",
+      ]
+
+shellBpMain = [
+      "pmd/sdbbp.cpp",
+      ]
+
+pdFiles = [
+      "pd/pdErr.cpp",
+      "pd/pd.cpp",
+      "pd/pdTrace.cpp",
+      "pd/pdComponents.cpp",
+      "pd/pdFunctionList.cpp",
+      "pd/pdTraceAnalysis.cpp"
+      ]
+
+utilFiles = [
+      "util/fromjson.cpp",
+      "util/json2rawbson.c",
+      "util/linenoise.cpp",
+      "util/utilStr.cpp",
+      "util/utilParam.cpp",
+      "util/utilLinenoiseWrapper.cpp",
+      "util/utilPipe.cpp",
+      "util/utilPath.cpp",
+      "util/utilCommon.cpp",
+      "util/utilNodeOpr.cpp",
+      "client/bson/numbers.c",
+      "client/bson/bson.c",
+      "client/bson/encoding.c",
+      "client/bson/common_decimal.c",
+      "client/base64c.c",
+      "client/cJSON.c",
+      "client/cJSON_ext.c",
+      "client/cJSON_iterator.c",
+      "client/jstobs.c",
+      "client/timestampParse.c",
+      "client/timestampTm.c",
+      "client/timestampValid.c",
+      "bson/md5.c"
+      ]
+
+util2Files = [
+     "bson/bsonobj.cpp",
+     "bson/oid.cpp",
+     "bson/base64.cpp",
+     "bson/nonce.cpp",
+     "bson/md5.c",
+     "bson/bsonDecimal.cpp",
+     "util/utilBsongen.cpp"
+]
+
+clientCFiles = [
+      "client/client.c",
+      "client/common.c",
+      "client/network.c"
+      ]
+
+ssh2Files = [
+      "ssh2/agent.c",
+      "ssh2/channel.c",
+      "ssh2/comp.c",
+      "ssh2/crypt.c",
+      "ssh2/global.c",
+      "ssh2/hostkey.c",
+      "ssh2/keepalive.c",
+      "ssh2/kex.c",
+      "ssh2/knownhost.c",
+      "ssh2/libgcrypt.c",
+      "ssh2/mac.c",
+      "ssh2/misc.c",
+      "ssh2/openssl.c",
+      "ssh2/packet.c",
+      "ssh2/pem.c",
+      "ssh2/publickey.c",
+      "ssh2/scp.c",
+      "ssh2/session.c",
+      "ssh2/sftp.c",
+      "ssh2/transport.c",
+      "ssh2/userauth.c",
+      "ssh2/version.c"
+      ]
+
+pmdFiles = [
+      "cls/clsUtil.cpp",
+      "pmd/pmdOptionsMgr.cpp"
+      ]
+
+#Client Driver
+shellEnv.StaticLibrary('clientc', clientCFiles)
+#Operating System Services
+shellEnv.StaticLibrary('oss', ossFiles)
+#Problem Determination
+shellEnv.StaticLibrary('pd', pdFiles)
+#Scripting
+shellEnv.StaticLibrary('spt', sptFiles)
+shellEnv.StaticLibrary('spt2', spt2Files)
+shellEnv.StaticLibrary('ssh2', ssh2Files)
+#Utilities
+shellEnv.StaticLibrary('util', utilFiles)
+shellEnv.StaticLibrary('util2', util2Files)
+#Process Model
+shellEnv.StaticLibrary('pmd', pmdFiles)
+
+#Shell Executable
+#Shell Backend  Executable
+sdb = shellEnv.Program("sdb", shellMain,
+      LIBDEPS=["spt","oss","pd","util","clientc", "ssh2", "util2", "spt2", "pmd"],
+      _LIBDEPS='$_LIBDEPS_OBJS' )
+sdbbp = shellEnv.Program("sdbbp", shellBpMain,
+      LIBDEPS=["spt","oss","pd","util","clientc", "ssh2", "util2", "spt2", "pmd"],
+      _LIBDEPS='$_LIBDEPS_OBJS' )
+shellEnv.Install( '#/bin', sdbbp )
+
+shellEnv.Install( '#/bin', sdb )
+
+if "win32" == guess_os:
+   if usesm:
+      shellEnv.Install( '#/bin', smlib_file)

@@ -1,0 +1,2853 @@
+<Property type="array">
+   <FILLER>
+      <Name>dbpath</Name>
+      <WebName>dbpath</WebName>
+      <Type>path</Type>
+      <Default>/opt/sequoiasqloltp/database/</Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>Data storing path</Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>port</Name>
+      <WebName>port</WebName>
+      <Type>port</Type>
+      <Default>5432</Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Local service port</Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_connections</Name>
+      <WebName>max connections</WebName>
+      <Type>int</Type>
+      <Default>100</Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>shared_buffers</Name>
+      <WebName>shared buffers</WebName>
+      <Type>string</Type>
+      <Default>128MB</Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>min 128kB</Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_timezone</Name>
+      <WebName>log timezone</WebName>
+      <Type>string</Type>
+      <Default>PRC</Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>datestyle</Name>
+      <WebName>datestyle</WebName>
+      <Type>string</Type>
+      <Default>iso, ymd</Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>timezone</Name>
+      <WebName>timezone</WebName>
+      <Type>string</Type>
+      <Default>PRC</Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>default_text_search_config</Name>
+      <WebName>default text search config</WebName>
+      <Type>string</Type>
+      <Default>pg_catalog.simple</Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>hba_file</Name>
+      <WebName>hba file</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>host-based authentication file</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>FILE LOCATIONS</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>ident_file</Name>
+      <WebName>ident file</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>ident configuration file</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>FILE LOCATIONS</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>external_pid_file</Name>
+      <WebName>external pid file</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the name of an additional process-ID (PID) file that the server should create for use by server administration programs. This parameter can only be set at server start.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>FILE LOCATIONS</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>superuser_reserved_connections</Name>
+      <WebName>superuser reserved connections</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>unix_socket_directories</Name>
+      <WebName>unix socket directories</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>comma-separated list of directories</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>unix_socket_group</Name>
+      <WebName>unix socket group</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>unix_socket_permissions</Name>
+      <WebName>unix socket permissions</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>begin with 0 to use octal notation</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>bonjour</Name>
+      <WebName>bonjour</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>advertise server via Bonjour</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>bonjour_name</Name>
+      <WebName>bonjourname</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>defaults to the computer name</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>authentication_timeout</Name>
+      <WebName>authentication timeout</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>1s-600s</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>ssl</Name>
+      <WebName>ssl</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,off,on</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>ssl_ciphers</Name>
+      <WebName>ssl ciphers</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>ssl_renegotiation_limit</Name>
+      <WebName>ssl renegotiation limit</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>amount of data between renegotiations</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>ssl_cert_file</Name>
+      <WebName>ssl cert file</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>ssl_key_file</Name>
+      <WebName>ssl key file</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>ssl_ca_file</Name>
+      <WebName>ssl ca file</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>ssl_crl_file</Name>
+      <WebName>ssl crl file</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>password_encryption</Name>
+      <WebName>password encryption</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>db_user_namespace</Name>
+      <WebName>db user namespace</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>krb_server_keyfile</Name>
+      <WebName>krb server keyfile</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>krb_srvname</Name>
+      <WebName>krb srvname</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>krb_caseins_users</Name>
+      <WebName>krb caseins users</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>tcp_keepalives_idle</Name>
+      <WebName>tcp keepalives idle</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>TCP_KEEPIDLE, in seconds; 0 selects the system default</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>tcp_keepalives_interval</Name>
+      <WebName>tcp keepalives interval</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>TCP_KEEPINTVL, in seconds; 0 selects the system default</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>tcp_keepalives_count</Name>
+      <WebName>tcp keepalives count</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>
+        Specifies the number of keepalive packets to send on an otherwise idle connection. A value of 0
+        uses the system default. This parameter is supported only on systems that support TCP_KEEPCNT
+        or an equivalent socket option; on other systems, it must be zero. In sessions connected via a
+        Unix-domain socket, this parameter is ignored and always reads as zero.
+      </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>authentication</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>temp_buffers</Name>
+      <WebName>temp buffers</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the maximum number of temporary buffers used by each database session. These are session-local buffers used only for access to temporary tables. The default is eight megabytes (8MB).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_prepared_transactions</Name>
+      <WebName>max prepared transactions</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the maximum number of transactions that can be in the “prepared” state simultaneously. Setting this parameter to zero (which is the default) disables the prepared-transaction feature. </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>work_mem</Name>
+      <WebName>work mem</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the amount of memory to be used by internal sort operations and hash tables beforewriting to temporary disk files. The value defaults to one megabyte (1MB).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>maintenance_work_mem</Name>
+      <WebName>maintenance work mem</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the maximum amount of memory to be used by maintenance operations, such as VACUUM, CREATE INDEX, and ALTER TABLE ADD FOREIGN KEY. It defaults to 16 megabytes (16MB).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_stack_depth</Name>
+      <WebName>max stack depth</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the maximum safe depth of the server’s execution stack. The default setting is two megabytes (2MB).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>temp_file_limit</Name>
+      <WebName>temp file limit</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>limits per-session temp file space in kB, or -1 for no limit</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_files_per_process</Name>
+      <WebName>max files per process</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the maximum number of simultaneously open files allowed to each server subprocess. The default is one thousand files.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>shared_preload_libraries</Name>
+      <WebName>shared preload libraries</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>This variable specifies one or more shared libraries to be preloaded at server start.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_cost_delay</Name>
+      <WebName>vacuum cost delay</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The length of time, in milliseconds, that the process will sleep when the cost limit has been exceeded. The default value is zero.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_cost_page_hit</Name>
+      <WebName>vacuum cost page hit</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The estimated cost for vacuuming a buffer found in the shared buffer cache. It represents the cost to lock the buffer pool, lookup the shared hash table and scan the content of the page. The default value is one</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_cost_page_miss</Name>
+      <WebName>vacuum cost page miss</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The estimated cost for vacuuming a buffer that has to be read from disk. This represents the effort to lock the buffer pool, lookup the shared hash table, read the desired block in from the disk and scan its content. The default value is 10.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_cost_page_dirty</Name>
+      <WebName>vacuum cost page dirty</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The estimated cost charged when vacuum modifies a block that was previously clean. It represents the extra I/O required to flush the dirty block out to disk again. The default value is 20.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_cost_limit</Name>
+      <WebName>vacuum cost limit</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The accumulated cost that will cause the vacuuming process to sleep. The default value is 200</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>bgwriter_delay</Name>
+      <WebName>bgwriter delay</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the delay between activity rounds for the background writer.The default value is 200 milliseconds (200ms).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>bgwriter_lru_maxpages</Name>
+      <WebName>bgwriter lru maxpages</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>In each round, no more than this many buffers will be written by the background writer. Setting this to zero disables background writing. The default value is 100 buffers. </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>bgwriter_lru_multiplier</Name>
+      <WebName>bgwriter lru multiplier</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The number of dirty buffers written in each round is based on the number of new buffers that have been needed by server processes during recent rounds.The default is 2.0.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>effective_io_concurrency</Name>
+      <WebName>effective io concurrency</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the number of concurrent disk I/O operations that PostgreSQL expects can be executed simultaneously. The allowed range is 1 to 1000, or zero to disable issuance of asynchronous I/O requests.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>RESOURCE USAGE</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>wal_level</Name>
+      <WebName>wal level</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,minimal,archive,hot_standby</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>fsync</Name>
+      <WebName>fsync</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>turns forced synchronization on or off</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>synchronous_commit</Name>
+      <WebName>synchronous commit</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,remote_write,local,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>wal_sync_method</Name>
+      <WebName>wal sync method</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,open_datasync,fdatasync,fsync,fsync_writethrough,open_sync</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>full_page_writes</Name>
+      <WebName>full page writes</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>wal_buffers</Name>
+      <WebName>wal buffers</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>min 32kB,select -1 sets based on shared_buffers</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>wal_writer_delay</Name>
+      <WebName>wal writer delay</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Range is 1-10000 milliseconds, The default value is 200 milliseconds</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>commit_delay</Name>
+      <WebName>commit delay</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>range 0-100000, default is 0</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>commit_siblings</Name>
+      <WebName>commit siblings</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Minimum number of concurrent open transactions to require before performing the commit_delay delay. A larger value makes it more probable that at least one other transaction will become ready to commit during the delay interval. The default is five transactions.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>checkpoint_segments</Name>
+      <WebName>checkpoint segments</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Maximum number of log file segments between automatic WAL checkpoints (each segment is normally 16 megabytes). The default is three segments. Increasing this parameter can increase the amount of time needed for crash recovery. </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>checkpoint_timeout</Name>
+      <WebName>checkpoint timeout</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Maximum time between automatic WAL checkpoints, in seconds. The default is five minutes (5min).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>checkpoint_completion_target</Name>
+      <WebName>checkpoint completion target</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the target of checkpoint completion, as a fraction of total time between checkpoints. The default is 0.5. </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>checkpoint_warning</Name>
+      <WebName>checkpoint warning</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Write a message to the server log if checkpoints caused by the filling of checkpoint segment files happen closer together than this many seconds (which suggests that checkpoint_segments ought to be raised). The default is 30 seconds (30s). </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>archive_mode</Name>
+      <WebName>archive mode</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>allows archiving to be done</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>archive_command</Name>
+      <WebName>archive command</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The shell command to execute to archive a completed WAL file segment. Any %p in the string is replaced by the path name of the file to archive, and any %f is replaced by only the file name. Use %% to embed an actual % character in the command. </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>archive_timeout</Name>
+      <WebName>archive timeout</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>number of seconds; 0 disables</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>log</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_wal_senders</Name>
+      <WebName>max wal senders</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>max number of walsender processes</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>wal_keep_segments</Name>
+      <WebName>wal keep segments</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>in logfile segments, 16MB each; 0 disables</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>wal_sender_timeout</Name>
+      <WebName>wal sender timeout</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>in milliseconds; 0 disables</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>synchronous_standby_names</Name>
+      <WebName>synchronous standby names</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies a comma-separated list of standby names that can support synchronous replication.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_defer_cleanup_age</Name>
+      <WebName>vacuum defer cleanup age</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the number of transactions by which VACUUM and HOT updates will defer cleanup of dead row versions. The default is zero transactions.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>hot_standby</Name>
+      <WebName>hot standby</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>select "on" allows queries during recovery</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_standby_archive_delay</Name>
+      <WebName>max standby archive delay</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>max delay before canceling queries when reading WAL from archive; -1 allows indefinite delay</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_standby_streaming_delay</Name>
+      <WebName>max standby streaming delay</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>max delay before canceling queries when reading streaming WAL; -1 allows indefinite delay</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>wal_receiver_status_interval</Name>
+      <WebName>wal receiver status interval</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>send replies at least this often; 0 disables</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>hot_standby_feedback</Name>
+      <WebName>hot standby feedback</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>send info from standby to prevent query conflicts</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>wal_receiver_timeout</Name>
+      <WebName>wal receiver timeout</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>time that receiver waits for communication from master in milliseconds; 0 disables</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>REPLICATION</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_bitmapscan</Name>
+      <WebName>enable bitmapscan</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Enables or disables the query planner’s use of bitmap-scan plan types. The default is on.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_hashagg</Name>
+      <WebName>enable hashagg</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Enables or disables the query planner’s use of hashed aggregation plan types. The default is on.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_hashjoin</Name>
+      <WebName>enable hashjoin</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Enables or disables the query planner’s use of hash-join plan types. The default is on.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_indexscan</Name>
+      <WebName>enable indexscan</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Enables or disables the query planner’s use of index-scan plan types. The default is on.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_indexonlyscan</Name>
+      <WebName>enable indexonlyscan</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Enables or disables the query planner’s use of index-only-scan plan types. The default is on</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_material</Name>
+      <WebName>enable material</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Enables or disables the query planner’s use of materialization. It is impossible to suppress materializationentirely, but turning this variable off prevents the planner from inserting materializenodes except in cases where it is required for correctness. The default is on.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_mergejoin</Name>
+      <WebName>enable mergejoin</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Enables or disables the query planner’s use of merge-join plan types. The default is on</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_nestloop</Name>
+      <WebName>enable nestloop</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_seqscan</Name>
+      <WebName>enable seqscan</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_sort</Name>
+      <WebName>enable sort</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>enable_tidscan</Name>
+      <WebName>enable tidscan</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>seq_page_cost</Name>
+      <WebName>seq page cost</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the planner’s estimate of the cost of a disk page fetch that is part of a series of sequential fetches. The default is 1.0.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>random_page_cost</Name>
+      <WebName>random page cost</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the planner’s estimate of the cost of a non-sequentially-fetched disk page. The default is 4.0.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>cpu_tuple_cost</Name>
+      <WebName>cpu tuple cost</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the planner’s estimate of the cost of processing each row during a query. The default is 0.01.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>cpu_index_tuple_cost</Name>
+      <WebName>cpu index tuple cost</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the planner’s estimate of the cost of processing each index entry during an index scan. The default is 0.005.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>cpu_operator_cost</Name>
+      <WebName>cpu operator cost</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the planner’s estimate of the cost of processing each operator or function executed during a query. The default is 0.0025.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>effective_cache_size</Name>
+      <WebName>effective cache size</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>geqo</Name>
+      <WebName>geqo</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>geqo_threshold</Name>
+      <WebName>geqo threshold</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>geqo_effort</Name>
+      <WebName>geqo effort</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Controls the trade-off between planning time and query plan quality in GEQO. This variable must be an integer in the range from 1 to 10. The default value is 5.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>geqo_pool_size</Name>
+      <WebName>geqo pool size</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>geqo_generations</Name>
+      <WebName>geqo generations</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>geqo_selection_bias</Name>
+      <WebName>geqo selection bias</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Controls the selection bias used by GEQO. The selection bias is the selective pressure within the population. Values can be from 1.50 to 2.00; The default value is 2.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>geqo_seed</Name>
+      <WebName>geqo seed</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Controls the initial value of the random number generator used by GEQO to select random paths through the join order search space. The value can range from zero (the default) to one.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>default_statistics_target</Name>
+      <WebName>default statistics target</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the default statistics target for table columns without a column-specific target set via ALTER TABLE SET STATISTICS. The default is 100. </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>constraint_exclusion</Name>
+      <WebName>constraint exclusion</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off,partition</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>cursor_tuple_fraction</Name>
+      <WebName>cursor tuple fraction</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the planner’s estimate of the fraction of a cursor’s rows that will be retrieved. The default is 0.1.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>from_collapse_limit</Name>
+      <WebName>from collapse limit</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The planner will merge sub-queries into upper queries if the resulting FROM list would have no more than this many items. Smaller values reduce planning time but might yield inferior query plans. The default is 8. </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>join_collapse_limit</Name>
+      <WebName>join collapse limit</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>The planner will rewrite explicit JOIN constructs (except FULL JOINs) into lists of FROM items whenever a list of no more than this many items would result. Smaller values reduce planning time but might yield inferior query plans.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>QUERY TUNING</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_destination</Name>
+      <WebName>log destination</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>PostgreSQL supports several methods for logging server messages, including stderr, csvlog and syslog. On Windows, eventlog is also supported. Set this parameter to a list of desired log desti470 Chapter 18. Server Configuration nations separated by commas. The default is to log to stderr only.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>logging_collector</Name>
+      <WebName>logging collector</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Enable capturing of stderr and csvlog into log files. Required to be on for csvlogs</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_directory</Name>
+      <WebName>log directory</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>directory where log files are written, can be absolute or relative to PGDATA</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_filename</Name>
+      <WebName>log filename</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>When logging_collector is enabled, this parameter sets the file names of the created log files. The default is postgresql-%Y-%m-%d_%H%M%S.log.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_file_mode</Name>
+      <WebName>log file mode</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>creation mode for log files, begin with 0 to use octal notation</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_truncate_on_rotation</Name>
+      <WebName>log truncate on rotation</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_rotation_age</Name>
+      <WebName>log rotation age</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Automatic rotation of logfiles will happen after that time.  0 disables.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_rotation_size</Name>
+      <WebName>log rotation size</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Automatic rotation of logfiles will happen after that much log output. 0 disables.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>syslog_facility</Name>
+      <WebName>syslog facility</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,LOCAL0,LOCAL1,LOCAL2,LOCAL3,LOCAL4,LOCAL5,LOCAL6,LOCAL7</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>syslog_ident</Name>
+      <WebName>syslog ident</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>event_source</Name>
+      <WebName>event source</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>client_min_messages</Name>
+      <WebName>client min messages</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,debug5,debug4,debug3,debug2,debug1,log,notice,warning,error,fatal,panic</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_min_messages</Name>
+      <WebName>log min messages</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,debug5,debug4,debug3,debug2,debug1,info,notice,warning,error,log,fatal,panic</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_min_error_statement</Name>
+      <WebName>log min error statement</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,debug5,debug4,debug3,debug2,debug1,info,notice,warning,error,log,fatal,panic</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_min_duration_statement</Name>
+      <WebName>log min duration statement</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>-1 is disabled, 0 logs all statements and their durations, > 0 logs only statements running at least this number of milliseconds</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>debug_print_parse</Name>
+      <WebName>debug print parse</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>debug_print_rewritten</Name>
+      <WebName>debug print rewritten</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>debug_print_plan</Name>
+      <WebName>debug print plan</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>debug_pretty_print</Name>
+      <WebName>debug pretty print</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_checkpoints</Name>
+      <WebName>log checkpoints</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_connections</Name>
+      <WebName>log connections</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_disconnections</Name>
+      <WebName>log disconnections</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_duration</Name>
+      <WebName>log duration</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_error_verbosity</Name>
+      <WebName>log error verbosity</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,terse,default</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_hostname</Name>
+      <WebName>log hostname</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_line_prefix</Name>
+      <WebName>log line prefix</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>
+         special values: %a = application name; %u = user name; %d = database name; %r = remote host and port; %h = remote host; %p = process ID;
+         %t = timestamp without milliseconds; %m = timestamp with milliseconds; %i = command tag; %e = SQL state; %c = session ID; %l = session line number;
+         %s = session start timestamp; %v = virtual transaction ID; %x = transaction ID (0 if none); %q = stop here in non-session processes; %% = '%'
+      </Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_lock_waits</Name>
+      <WebName>log lock waits</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>log lock waits >= deadlock_timeout</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_statement</Name>
+      <WebName>log statement</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,none,ddl,mod,all</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_temp_files</Name>
+      <WebName>log temp files</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>log temporary files equal or larger than the specified size in kilobytes; -1 disables, 0 logs all temp files</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>track_activities</Name>
+      <WebName>track activities</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>track_counts</Name>
+      <WebName>track counts</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>track_io_timing</Name>
+      <WebName>track to timing</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>track_functions</Name>
+      <WebName>track functions</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,none,pl,all</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>track_activity_query_size</Name>
+      <WebName>track activity query size</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>update_process_title</Name>
+      <WebName>update process title</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>stats_temp_directory</Name>
+      <WebName>stats temp directory</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_parser_stats</Name>
+      <WebName>log parser stats</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_planner_stats</Name>
+      <WebName>log planner stats</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_executor_stats</Name>
+      <WebName>log executor stats</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_statement_stats</Name>
+      <WebName>log statement stats</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>statistics</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum</Name>
+      <WebName>autovacuum</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc>Controls whether the server should run the autovacuum launcher daemon. This is on by default; however, track_counts must also be enabled for autovacuum to work.The default is on.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>log_autovacuum_min_duration</Name>
+      <WebName>log autovacuum min duration</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Causes each action executed by autovacuum to be logged if it ran for at least the specified number of milliseconds. Setting this to zero logs all autovacuum actions. The default is -1 disables logging autovacuum actions.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_max_workers</Name>
+      <WebName>autovacuum max workers</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the maximum number of autovacuum processes (other than the autovacuum launcher) which may be running at any one time. The default is three.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_naptime</Name>
+      <WebName>autovacuum naptime</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the minimum delay between autovacuum runs on any given database. In each round the daemon examines the database and issues VACUUM and ANALYZE commands as needed for tables in that database. The delay is measured in seconds, and the default is one minute (1min).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_vacuum_threshold</Name>
+      <WebName>autovacuum vacuum threshold</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the minimum number of updated or deleted tuples needed to trigger a VACUUM in any one table. The default is 50 tuples.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_analyze_threshold</Name>
+      <WebName>autovacuum analyze threshold</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the minimum number of inserted, updated or deleted tuples needed to trigger an ANALYZE in any one table. The default is 50 tuples.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_vacuum_scale_factor</Name>
+      <WebName>autovacuum vacuum scale factor</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies a fraction of the table size to add to autovacuum_vacuum_threshold when deciding whether to trigger a VACUUM. The default is 0.2 (20% of table size).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_analyze_scale_factor</Name>
+      <WebName>autovacuum analyze scale factor</WebName>
+      <Type>double</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies a fraction of the table size to add to autovacuum_analyze_threshold when deciding whether to trigger an ANALYZE. The default is 0.1 (10% of table size).</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_freeze_max_age</Name>
+      <WebName>autovacuum freeze max age</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the maximum age (in transactions) that a table's pg_class.relfrozenxid field can attain before a VACUUM operation is forced to prevent transaction ID wraparound within the table. The default is 200000000.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_multixact_freeze_max_age</Name>
+      <WebName>autovacuum multixact freeze max age</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the maximum age (in multixacts) that a table’s pg_class.relminmxid field can attain before a VACUUM operation is forced to prevent multixact ID wraparound within the table. The default is 400000000.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_vacuum_cost_delay</Name>
+      <WebName>autovacuum vacuum cost delay</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the cost delay value that will be used in automatic VACUUM operations. If -1 is specified, the regular vacuum_cost_delay value will be used. The default value is 20 milliseconds.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>autovacuum_vacuum_cost_limit</Name>
+      <WebName>autovacuum vacuum cost limit</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Specifies the cost limit value that will be used in automatic VACUUM operations. If -1 is specified (which is the default), the regular vacuum_cost_limit value will be used.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>vacuum</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>search_path</Name>
+      <WebName>search path</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>default_tablespace</Name>
+      <WebName>default tablespace</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>This variable specifies the default tablespace in which to create objects (tables and indexes) when a CREATE command does not explicitly specify a tablespace. The default value is ''.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>temp_tablespaces</Name>
+      <WebName>temp tablespaces</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>This variable specifies tablespaces in which to create temporary objects (temp tables and indexes on temp tables) when a CREATE command does not explicitly specify a tablespace. The default value is ''.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>check_function_bodies</Name>
+      <WebName>check function bodies</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>default_transaction_isolation</Name>
+      <WebName>default transaction isolation</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,read uncommitted,read commited,repeated read,serializable</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>default_transaction_read_only</Name>
+      <WebName>default transaction read only</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>default_transaction_deferrable</Name>
+      <WebName>default transaction deferrable</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>session_replication_role</Name>
+      <WebName>session replication role</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,origin,replica,local</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>statement_timeout</Name>
+      <WebName>statement timeout</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>in milliseconds, 0 is disabled</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>lock_timeout</Name>
+      <WebName>lock timeout</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>in milliseconds, 0 is disabled</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_freeze_min_age</Name>
+      <WebName>vacuum freeze min age</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_freeze_table_age</Name>
+      <WebName>vacuum freeze table age</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_multixact_freeze_min_age</Name>
+      <WebName>vacuum multixact freeze min age</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>vacuum_multixact_freeze_table_age</Name>
+      <WebName>vacuum multixact freeze table age</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>bytea_output</Name>
+      <WebName>bytea output</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,hex,escape</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>xmlbinary</Name>
+      <WebName>xmlbinary</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,base64,hex</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>xmloption</Name>
+      <WebName>xmloption</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,DOCUMENT,CONTENT</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>intervalstyle</Name>
+      <WebName>intervalstyle</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,sql_standard,postgres,postgres_verbose,iso_8601</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>timezone_abbreviations</Name>
+      <WebName>timezone abbreviations</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Select the set of available time zone abbreviations. Currently, there are Default,Australia,India. You can create your own file in share/timezonesets/.</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>extra_float_digits</Name>
+      <WebName>extra float digits</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>client_encoding</Name>
+      <WebName>client encoding</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Sets the client-side encoding (character set). The default is to use the database encoding. T</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>lc_monetary</Name>
+      <WebName>lc messages</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>locale for system error message strings</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>lc_monetary</Name>
+      <WebName>lc monetary</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>locale for monetary formatting</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>lc_numeric</Name>
+      <WebName>lc numeric</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>locale for number formatting</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>lc_time</Name>
+      <WebName>lc time</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>locale for time formatting</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>dynamic_library_path</Name>
+      <WebName>dynamic library path</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>local_preload_libraries</Name>
+      <WebName>local preload libraries</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>connection</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>deadlock_timeout</Name>
+      <WebName>deadlock timeout</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>LOCK MANAGEMENT</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_locks_per_transaction</Name>
+      <WebName>max locks per transaction</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>LOCK MANAGEMENT</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>max_pred_locks_per_transaction</Name>
+      <WebName>max pred locks per transaction</WebName>
+      <Type>int</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>LOCK MANAGEMENT</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>array_nulls</Name>
+      <WebName>array nulls</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>backslash_quote</Name>
+      <WebName>backslash quote</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off,safe_encoding</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>default_with_oids</Name>
+      <WebName>default with oids</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>escape_string_warning</Name>
+      <WebName>escape string warning</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>lo_compat_privileges</Name>
+      <WebName>lo compat privileges</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>quote_all_identifiers</Name>
+      <WebName>quote all identifiers</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>sql_inheritance</Name>
+      <WebName>sql inheritance</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>standard_conforming_strings</Name>
+      <WebName>standard conforming strings</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>synchronize_seqscans</Name>
+      <WebName>synchronize seqscans</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>transform_null_equals</Name>
+      <WebName>transform null equals</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,on,off</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>compatibility</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>exit_on_error</Name>
+      <WebName>exit on error</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,true,false</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>restart_after_crash</Name>
+      <WebName>restart after crash</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid>,true,false</Valid>
+      <Display>select box</Display>
+      <Edit>true</Edit>
+      <Desc></Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>error diagnosis</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>include_dir</Name>
+      <WebName>include dir</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>include files ending in '.conf' from directory 'conf.d'</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>CONFIG FILE INCLUDES</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>include_if_exists</Name>
+      <WebName>include if exists</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>include file only if it exists</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>CONFIG FILE INCLUDES</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>include</Name>
+      <WebName>include</WebName>
+      <Type>string</Type>
+      <Default></Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>include file</Desc>
+      <Level>1</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>CONFIG FILE INCLUDES</ConfType>
+   </FILLER>
+</Property>

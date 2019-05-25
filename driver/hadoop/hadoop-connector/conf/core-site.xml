@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+  <property>
+    <!-- The default file system used by Hadoop -->
+    <name>fs.default.name</name>
+    <value>hdfs://192.168.30.190:9000</value>
+  </property>
+  
+  <property>
+    <!-- The slave.host.name must match what's defined in includes/excludes 
+         file, or NameNode and JobTracker will refuce connection from the 
+         slave node. ("hostname" is a build-in variable whose value is the 
+         target node under deployment.)  -->
+    <name>slave.host.name</name>
+    <value>192.168.30.190</value>
+  </property>
+  
+  <property>
+     <name>fs.hdfs.impl</name>
+     <value>org.apache.hadoop.hdfs.DistributedFileSystem</value>
+  </property>
+  
+  <property>
+    <!-- A larger buffer for lesser disk I/O. Overrides default 4096. -->
+    <name>io.file.buffer.size</name>
+    <value>65536</value>
+  </property>
+
+  <property>
+    <name>fs.checkpoint.dir</name>
+    <value>/hadoop/hdfs/namesecondary</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.biadmin.groups</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.biadmin.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>/var/ibm/biginsights/hadoop/tmp/${user.name}</value>
+  </property>
+  <property>
+    <name>io.compression.codecs</name>
+    <value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.SnappyCodec,com.ibm.biginsights.compress.CmxCodec</value>
+  </property>
+  <property>
+    <name>fs.sftp.impl</name>
+    <value>com.ibm.biginsights.hadoop.fs.sftp.SFTPFileSystem</value>
+  </property>
+
+</configuration>

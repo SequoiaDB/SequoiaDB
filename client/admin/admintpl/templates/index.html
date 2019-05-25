@@ -1,0 +1,359 @@
+   <style>
+      .i-container{ border:#B5CFD9 solid 2px; border-radius: 10px; }
+      .i-container-title{ border-bottom:#B5CFD9 solid 1px; background:#F5FAFE; padding:5px 10px 5px 10px; font-size:12px; border-radius: 8px 8px 0 0; }
+      .i-container-body{ padding:10px; text-align:center; font-size:12px; }
+      .i-container-body .font-pic{ margin:15px 0 30px 0; }
+      .i-container-body .font-pic .back-pic{ background:url(images/green-round.png); width:80px;height:30px;margin:10px 0 0 15px; }
+      .i-container-body .font-pic .back-font{ padding:7px 0 0 0; font-weight:bold; color:#FFF; }
+      .i-container-body .back-font-1{ margin-bottom:10px; }
+      .i-container-body .back-font-2{ margin-bottom:10px; color:#00C300; font-weight:bold; }
+      
+      .arrow-i-container{ width:70px;float:left;padding-top:40px; }
+      .arrow-i-container .arrow-i-container-sub{ margin-bottom:30px; }
+      .arrow-i-container .arrow-i-container-sub .back-font{ margin-bottom:5px; font-size:12px; text-align:center }
+      .arrow-i-container .arrow-i-container-sub .back-font-green{ color:#00C300; font-weight:bold; }
+   </style>
+   <div class="row">
+      <div class="col-md-2">
+         <div class="panel panel-default">
+            <div class="panel-heading">
+               <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                     <td>列表</td>
+                     <td align="right">
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-default btn-xs" onclick='getleftlist( "pictree", "data" );'>刷新</button>
+                          <button type="button" class="btn btn-default btn-xs" onclick='left_list_open_all(d);'>展开</button>
+                          <button type="button" class="btn btn-default btn-xs" onclick='left_list_close_all(d);'>收起</button>
+                        </div>
+                     </td>
+                     <!--<td align="right" id="helplist"><span class="glyphicon glyphicon-question-sign"></span></td>-->
+                  </tr>
+               </table>
+            </div>
+            <div class="panel-body" id="left_list" style="overflow:auto;">
+               <div id="pictree" style="font-size:15px;"></div>
+            </div>
+         </div>
+      </div>
+
+      <input id="h-type" type="hidden" value="">
+      <input id="h-cs" type="hidden" value="">
+      <input id="h-cl" type="hidden" value="">
+      <input id="h-skip" type="hidden" value="20">
+
+      <div class="col-md-10">
+         <div class="panel panel-default" style="margin-bottom:0;">
+            <div class="panel-heading">
+               窗口<!-- <span class="glyphicon glyphicon-question-sign" id="helpcontext"></span>-->
+            </div>
+            <div class="panel-body" id="right_context" style="overflow-x:none;overflow:auto;">
+               <div id="context">
+               
+               	<!-- 引擎 和 性能统计框 -->
+                  <div style="width:330px;float:left;">
+                     <!-- 引擎外框 -->
+                     <div style="width:130px;float:left;height:416px;">
+                        <!-- 容器 -->
+                        <div class="i-container" style="height:416px;">
+                           <!-- 容器标题 -->
+                           <div class="i-container-title">
+                              引擎
+                           </div>
+                           <!-- 容器内容 -->
+                           <div class="i-container-body" style="height:360px;">
+                              <div class="font-pic">
+                                 <div>用户会话</div>
+                                 <div class="back-pic">
+                                    <div class="back-font">
+                                       9
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="font-pic">
+                                 <div>活动用户会话</div>
+                                 <div class="back-pic">
+                                    <div class="back-font">
+                                       13
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="font-pic">
+                                 <div>用户会话HWM</div>
+                                 <div class="back-pic">
+                                    <div class="back-font">
+                                       19
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- 容器内容底 -->
+                        </div>
+                        <!-- 容器底 -->
+                     </div>
+                     <!-- 引擎外框底 -->
+                     
+                     <!-- 箭头 -->
+                     <div class="arrow-i-container">
+                        <div class="arrow-i-container-sub">
+                           <div class="back-font">请求数/s</div>
+                           <div class="back-font back-font-green">.32</div>
+                           <div><img src="images/arrow-write.png"></div>
+                        </div>
+                        <div class="arrow-i-container-sub">
+                           <div class="back-font">应答数/s</div>
+                           <div class="back-font back-font-green">.78</div>
+                           <div><img src="images/arrow-read.png"></div>
+                        </div>
+                        <div class="arrow-i-container-sub">
+                           <div class="back-font">事务数/s</div>
+                           <div class="back-font back-font-green">.90</div>
+                           <div><img src="images/arrow-write.png"></div>
+                        </div>
+                     </div>
+                     
+                     
+                     <!-- 性能统计 -->
+                     <div style="width:130px;float:left;">
+                        <!-- 容器 -->
+                        <div class="i-container">
+                           <!-- 容器标题 -->
+                           <div class="i-container-title">
+                              性能统计
+                           </div>
+                           <!-- 容器内容 -->
+                           <div class="i-container-body" style="border-radius: 0;">
+                              <div class="font-pic">
+                                 <div>整体命中率</div>
+                                 <div class="back-pic">
+                                    <div class="back-font">
+                                       90%
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- 容器内容底 -->
+                           
+                           <!-- 容器标题 -->
+                           <div class="i-container-title" style="border-radius: 0;margin-top:12px; border-top:#B5CFD9 solid 2px;">
+                              排序
+                           </div>
+                           <!-- 容器内容 -->
+                           <div class="i-container-body" style="margin-top:12px;">
+                              <div class="font-pic">
+                                 <div>排序次数</div>
+                                 <div class="back-pic">
+                                    <div class="back-font">
+                                       45
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="font-pic">
+                                 <div>排序溢出</div>
+                                 <div class="back-pic">
+                                    <div class="back-font">
+                                       4
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- 容器内容底 -->
+                        </div>
+                        <!-- 容器底 -->
+                     </div>
+                     <!-- 性能统计外框底 -->
+                     
+                     <div style="clear:both"></div>
+                     
+                     <!-- 数据库信息 -->
+                     <div style="width:330px;margin-top:10px;">
+                        <!-- 容器 -->
+                        <div class="i-container">
+                           <!-- 容器标题 -->
+                           <div class="i-container-title">
+                              数据库信息
+                           </div>
+                           <!-- 容器内容 -->
+                           <div class="i-container-body" style="height:98px;">
+                              <div style="float:left" class="back-font-1">节点数：</div> <div style="float:right" class="back-font-2">15</div>
+                              <div style="clear:both"></div>
+                              <div style="float:left" class="back-font-1">分片数：</div> <div style="float:right" class="back-font-2">3</div>
+                              <div style="clear:both"></div>
+                              <div style="float:left" class="back-font-1">后台任务：</div> <div style="float:right" class="back-font-2">5</div>
+                              <div style="clear:both"></div>
+                              <div style="float:left" class="back-font-1">最新备份：</div> <div style="float:right" class="back-font-2">2014-01-13 12:30:00</div>
+                              <div style="clear:both"></div>
+                           </div>
+                           <!-- 容器内容底 -->
+                        </div>
+                        <!-- 容器底 -->
+                     </div>
+                     <!-- 性能统计外框底 -->
+                     
+                  </div>
+                  <!-- 引擎 和 性能统计框底 -->
+                  
+                  <!-- 箭头 -->
+                  <div class="arrow-i-container">
+                     <div class="arrow-i-container-sub">
+                        <div class="back-font">同步读/s</div>
+                        <div class="back-font back-font-green">.32</div>
+                        <div><img src="images/arrow-write.png"></div>
+                     </div>
+                     <div class="arrow-i-container-sub">
+                        <div class="back-font">异步读/s</div>
+                        <div class="back-font back-font-green">.90</div>
+                        <div><img src="images/arrow-write.png"></div>
+                     </div>
+                  </div>
+                  
+                  <!-- 读写框 -->
+                  <div style="width:130px;float:left;">
+                     <!-- 容器 -->
+                     <div class="i-container">
+                        <!-- 容器标题 -->
+                        <div class="i-container-title">
+                           读写
+                        </div>
+                        <!-- 容器内容 -->
+                        <div class="i-container-body" style="height:549px;">
+                           <div class="font-pic">
+                              <div>数据读百分比</div>
+                              <div class="back-pic">
+                                 <div class="back-font">
+                                    90%
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="font-pic">
+                              <div>数据写百分比</div>
+                              <div class="back-pic">
+                                 <div class="back-font">
+                                    20%
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="font-pic">
+                              <div>索引读百分比</div>
+                              <div class="back-pic">
+                                 <div class="back-font">
+                                    30%
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="font-pic">
+                              <div>索引写百分比</div>
+                              <div class="back-pic">
+                                 <div class="back-font">
+                                    19%
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="font-pic">
+                              <div>预读线程</div>
+                              <div class="back-pic">
+                                 <div class="back-font">
+                                    10
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- 容器内容底 -->
+                     </div>
+                     <!-- 容器底 -->
+                  </div>
+                  <!-- 读写框底 -->
+                  
+                  <!-- 箭头 -->
+                  <div class="arrow-i-container">
+                     <div class="arrow-i-container-sub">
+                        <div class="back-font">写入/s</div>
+                        <div class="back-font back-font-green">.32</div>
+                        <div><img src="images/arrow-write.png"></div>
+                     </div>
+                     <div class="arrow-i-container-sub">
+                        <div class="back-font">读取/s</div>
+                        <div class="back-font back-font-green">.78</div>
+                        <div><img src="images/arrow-read.png"></div>
+                     </div>
+                     
+                     <div style="height:170px;"></div>
+                     
+                     <div class="arrow-i-container-sub">
+                        <div class="back-font">日志写/s</div>
+                        <div class="back-font back-font-green">.32</div>
+                        <div><img src="images/arrow-write.png"></div>
+                     </div>
+                     <div class="arrow-i-container-sub">
+                        <div class="back-font">日志读/s</div>
+                        <div class="back-font back-font-green">.78</div>
+                        <div><img src="images/arrow-read.png"></div>
+                     </div>
+                     
+                  </div>
+                  
+                  <!-- 存储 和 日志 -->
+                  <div style="width:130px;float:left;">
+                     <!-- 容器 -->
+                     <div class="i-container">
+                        <!-- 容器标题 -->
+                        <div class="i-container-title">
+                           存储
+                        </div>
+                        <!-- 容器内容 -->
+                        <div class="i-container-body" style="width:130px;height:210px;padding:20px 0 0 15px;">
+                           <div style="float:left;width:30px;height:210px;">
+                              <div style="background:url(images/green-cylinder.png) repeat-y;height:180px;">
+                                 <div style="background:url(images/black-cylinder.png) repeat-y;height:80px;">
+                                 </div>
+                              </div>
+                           </div>
+                           <div style="float:left;width:70px;padding-top:30px;" align="right">
+                              <div class="back-font-1">使用百分比</div>
+                              <div class="back-font-2">40%</div>
+                              <div class="back-font-1">剩余空间</div>
+                              <div class="back-font-2">20 GB</div>
+                              <div class="back-font-1">已用空间</div>
+                              <div class="back-font-2">4 GB</div>
+                           </div>
+                        </div>
+                        <!-- 容器内容底 -->
+                     </div>
+                     <!-- 容器底 -->
+                     
+                     <div style="height:160px; clear:both;"></div>
+                     
+                     <!-- 容器 -->
+                     <div class="i-container">
+                        <!-- 容器标题 -->
+                        <div class="i-container-title">
+                           日志
+                        </div>
+                        <!-- 容器内容 -->
+                        <div class="i-container-body" style="width:130px;height:150px;padding:20px 0 0 15px;">
+                           <div style="float:left;width:30px;height:150px;">
+                              <div style="background:url(images/green-cylinder.png) repeat-y;height:140px;">
+                                 <div style="background:url(images/black-cylinder.png) repeat-y;height:80px;">
+                                 </div>
+                              </div>
+                           </div>
+                           <div style="float:left;width:70px;padding-top:42px;" align="right">
+                              <div class="back-font-1">活动日志空间</div>
+                              <div class="back-font-2">200 MB</div>
+                              <div class="back-font-1">总日志空间</div>
+                              <div class="back-font-2">500 MB</div>
+                           </div>
+                        </div>
+                        <!-- 容器内容底 -->
+                     </div>
+                     <!-- 容器底 -->
+                     
+                  </div>
+                  <!-- 读写框底 -->
+               
+               </div>
+            </div>
+         </div>
+      </div>
+	</div>
+  

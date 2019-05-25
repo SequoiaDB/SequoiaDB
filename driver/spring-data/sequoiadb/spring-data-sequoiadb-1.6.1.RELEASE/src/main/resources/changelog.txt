@@ -1,0 +1,1234 @@
+Spring Data SequoiaDB Changelog
+=============================
+
+Changes in version 1.6.1.RELEASE (2014-10-30)
+---------------------------------------------
+* DATA_JIRA-1080 - AbstractSequoiadbQuery must not eagerly post-process results.
+* DATA_JIRA-1079 - Release 1.6.1.
+* DATA_JIRA-1077 - Update removes positional operator $ in key when used on DBRef property.
+* DATA_JIRA-1076 - Finalizer hit db on lazy dbrefs.
+* DATA_JIRA-1072 - Query placeholders in keys no longer correctly substituted.
+* DATA_JIRA-1070 - Query annotation with $oid leads to a parse error.
+* DATA_JIRA-1068 - elemMatch of Class Criteria fails to build special cirteria.
+* DATA_JIRA-1063 - IllegalStateException using any().in().
+* DATA_JIRA-1062 - Fix failing test in ServerAddressPropertyEditorUnitTests.
+* DATA_JIRA-1058 - Using @Field("foo") with @Dbref breaking behavior.
+* DATA_JIRA-1057 - AbstractSequoiadbQuery.SlicedExecution#execute() skips every nth element.
+* DATA_JIRA-1053 - In 1.6, any field in a mapped object named "language" will fail to map if it is a type other than String.
+* DATA_JIRA-1049 - Reserved field name 'language' causes trouble.
+
+
+Changes in version 1.6.0.RELEASE (2014-09-05)
+---------------------------------------------
+* DATA_JIRA-1046 - Release 1.6 GA.
+* DATA_JIRA-1045 - Make sure Spring Data SequoiaDB can build against Spring 4.1.
+* DATA_JIRA-1040 - deleteAll repository query don't use EntityMetadata collection name.
+* DATA_JIRA-1039 - Polish implementation for cleaning up after tests.
+* DATA_JIRA-1038 - Assert Sdb instances cleand up properly after test runs.
+* DATA_JIRA-1036 - Custom repository implementations are not picked up when using CDI.
+* DATA_JIRA-1034 - Improve error message when trying to convert incompatible types.
+* DATA_JIRA-1032 - Polish Asciidoctor documentation.
+* DATA_JIRA-1030 - Query methods retuning a single entity does not work with projecting types.
+* DATA_JIRA-1027 - Collection inherits complex index from embedded class/object.
+* DATA_JIRA-1025 - Duplicate index creation on embedded documents.
+
+
+Changes in version 1.5.4.RELEASE (2014-08-27)
+---------------------------------------------
+* DATA_JIRA-1038 - Assert Sdb instances cleand up properly after test runs.
+* DATA_JIRA-1034 - Improve error message when trying to convert incompatible types.
+* DATA_JIRA-1033 - Release 1.5.4.
+* DATA_JIRA-1030 - Query methods retuning a single entity does not work with projecting types.
+* DATA_JIRA-1027 - Collection inherits complex index from embedded class/object.
+* DATA_JIRA-1025 - Duplicate index creation on embedded documents.
+* DATA_JIRA-1020 - LimitOperator should be a public class.
+* DATA_JIRA-1008 - IndexOperations fail, when "2dsphere" index is present.
+
+
+Changes in version 1.6.0.RC1 (2014-08-13)
+-----------------------------------------
+* DATA_JIRA-1024 - Upgrade to Java driver 2.12.3.
+* DATA_JIRA-1021 - Release 1.6 RC1.
+* DATA_JIRA-1020 - LimitOperator should be a public class.
+* DATA_JIRA-1019 - Correct examples in reference documentation.
+* DATA_JIRA-1017 - Add support for custom implementations in CDI repositories.
+* DATA_JIRA-1016 - Remove deprecations in geospatial area.
+* DATA_JIRA-1015 - Move to Asciidoctor for reference documentation.
+* DATA_JIRA-1012 - Proxies for lazy DBRefs with field access should have their id values resolved eagerly.
+* DATA_JIRA-1009 - Adapt to new multi-store configuration detection.
+* DATA_JIRA-1008 - IndexOperations fail, when "2dsphere" index is present.
+* DATA_JIRA-1005 - Improve cycle-detection for DbRef's.
+* DATA_JIRA-1002 - Update.toString(…) might throw exception.
+* DATA_JIRA-1001 - Can't save/update lazy load object.
+* DATA_JIRA-999 - Multiple Sdb Instances always have the same SequoiadbOption Reference - SequoiadbOptionsFactoryBean has a static instance of SequoiadbOptions.
+* DATA_JIRA-996 - Pagination broken after introduction of the support for top/first.
+* DATA_JIRA-995 - Parameter binding in String-based query does not bind all parameters.
+* DATA_JIRA-993 - The system variables $$CURRENT and $$ROOT not handled correctly.
+* DATA_JIRA-992 - Entity can't be deserialized if @TypeAlias is used.
+* DATA_JIRA-991 - Adapt to deprecation removals in Spring Data Commons.
+* DATA_JIRA-989 - MatchOperation should accept CriteriaDefinition.
+* DATA_JIRA-987 - Problem with lazy loading in @DBRef when getting data using SequoiadbTemplate.
+* DATA_JIRA-974 - synthetic field target's name is returned instead of the alias name.
+* DATA_JIRA-973 - Add support for deriving full text queries.
+* DATA_JIRA-957 - Add support for query modifiers.
+* DATA_JIRA-420 - Extra quotes being added to @Query values and fields.
+
+
+Changes in version 1.5.2.RELEASE (2014-07-28)
+---------------------------------------------
+* DATA_JIRA-1007 - Release 1.5.2.
+* DATA_JIRA-1002 - Update.toString(…) might throw exception.
+* DATA_JIRA-1001 - Can't save/update lazy load object.
+* DATA_JIRA-999 - Multiple Sdb Instances always have the same SequoiadbOption Reference - SequoiadbOptionsFactoryBean has a static instance of SequoiadbOptions.
+* DATA_JIRA-995 - Parameter binding in String-based query does not bind all parameters.
+* DATA_JIRA-992 - Entity can't be deserialized if @TypeAlias is used.
+* DATA_JIRA-989 - MatchOperation should accept CriteriaDefinition.
+* DATA_JIRA-987 - Problem with lazy loading in @DBRef when getting data using SequoiadbTemplate.
+* DATA_JIRA-983 - Remove links to forum.spring.io.
+* DATA_JIRA-982 - Assure compatibility with upcoming SequoiaDB driver versions.
+* DATA_JIRA-978 - deleteBy/removeBy repository methods don't set type information in Before/AfterDeleteEvent.
+* DATA_JIRA-972 - References are not handled properly in Querydsl integration.
+* DATA_JIRA-969 - String @id field is not mapped to ObjectId when using QueryDSL .id.in(Collection<String>).
+* DATA_JIRA-420 - Extra quotes being added to @Query values and fields.
+
+
+Changes in version 1.6.0.M1 (2014-07-10)
+----------------------------------------
+* DATA_JIRA-983 - Remove links to forum.spring.io.
+* DATA_JIRA-982 - Assure compatibility with upcoming SequoiaDB driver versions.
+* DATA_JIRA-981 - Release 1.6 M1.
+* DATA_JIRA-980 - Use meta annotations from spring data commons for @Score.
+* DATA_JIRA-978 - deleteBy/removeBy repository methods don't set type information in Before/AfterDeleteEvent.
+* DATA_JIRA-977 - Adapt to Spring 4 upgrade.
+* DATA_JIRA-976 - Add support for reading $meta projection on textScore into document.
+* DATA_JIRA-975 - Add support for date/time operators in aggregation framework.
+* DATA_JIRA-973 - Add support for deriving full text queries.
+* DATA_JIRA-972 - References are not handled properly in Querydsl integration.
+* DATA_JIRA-970 - Id query cannot be created if object to remove is BSONObject.
+* DATA_JIRA-969 - String @id field is not mapped to ObjectId when using QueryDSL .id.in(Collection<String>).
+* DATA_JIRA-968 - Add support for $meta projections and sorting for textScore metadata.
+* DATA_JIRA-963 - Compound index with expireAfterSeconds causes repeating error on sequoiadb server.
+* DATA_JIRA-962 - “Cycle found” with Spring Data Sdb 1.5.
+* DATA_JIRA-960 - Allow to pass options to the Aggregation Pipeline.
+* DATA_JIRA-958 - Move to FieldNamingStrategy SPI in Spring Data Commons.
+* DATA_JIRA-954 - Add support for System Variables in Aggregations.
+* DATA_JIRA-953 - Update object should have a proper equals/hashcode/toString.
+* DATA_JIRA-952 - @Query annotation does not work with only field restrictions.
+* DATA_JIRA-950 - Add support for limiting the query result in the query derivation mechanism.
+* DATA_JIRA-949 - CyclicPropertyReferenceException in versions 1.5.0 + for SequoiaDB.
+* DATA_JIRA-948 - Assertion error in SequoiadbTemplate.getMappedSortObject.
+* DATA_JIRA-944 - Add support $currentDate to Update.
+* DATA_JIRA-938 - Exception when creating geo within Criteria using MapReduce.
+* DATA_JIRA-937 - Add support for creating text index.
+* DATA_JIRA-850 - Add support for text search using $text.
+* DATA_JIRA-745 - @Query($in) and Pageable in result Page total = 0.
+
+
+Changes in version 1.4.3.RELEASE (2014-06-18)
+---------------------------------------------
+* DATA_JIRA-955 - Release 1.4.3.
+* DATA_JIRA-953 - Update object should have a proper equals/hashcode/toString.
+* DATA_JIRA-952 - @Query annotation does not work with only field restrictions.
+* DATA_JIRA-948 - Assertion error in SequoiadbTemplate.getMappedSortObject.
+* DATA_JIRA-938 - Exception when creating geo within Criteria using MapReduce.
+* DATA_JIRA-924 - Aggregation not working with as() method in project() pipeline operator.
+* DATA_JIRA-920 - Fix debug messages for delete events in AbstractSequoiadbEventListener.
+* DATA_JIRA-917 - DefaultDbRefResolver throws NPE when bundled into an uberjar.
+* DATA_JIRA-914 - Improve resolving of LazyLoading proxies for classes that override equals/hashcode.
+* DATA_JIRA-913 - Can't query using lazy DBRef objects.
+* DATA_JIRA-912 - Aggregation#project followed by Aggregation#match with custom converter causes IllegalArgumentException.
+* DATA_JIRA-898 - MapReduce seems not to work when javascript not being escaped.
+* DATA_JIRA-847 - Allow usage of Criteria within Update.
+* DATA_JIRA-745 - @Query($in) and Pageable in result Page total = 0.
+* DATA_JIRA-647 - Using "OrderBy" in "query by method name" ignores the @Field annotation for field alias.
+
+
+Changes in version 1.5.0.RELEASE (2014-05-20)
+---------------------------------------------
+* DATA_JIRA-936 - Release 1.5 GA.
+* DATA_JIRA-929 - Index key should be the properties dot path when creating index using @Indexed / @CompoundIndex.
+* DATA_JIRA-928 - Error when using field-naming-strategy-ref.
+* DATA_JIRA-926 - Stack Overflow Error with 1.5.0.RC1 Release.
+* DATA_JIRA-925 - MappingSequoiadbConverterParser is incorrectly rejecting field-naming-strategy-ref XML configuration.
+* DATA_JIRA-647 - Using "OrderBy" in "query by method name" ignores the @Field annotation for field alias.
+* DATA_JIRA-367 - @Indexed field in embedded Object creates new collection.
+
+
+Changes in version 1.5.0.RC1 (2014-05-02)
+-----------------------------------------
+* DATA_JIRA-924 - Aggregation not working with as() method in project() pipeline operator.
+* DATA_JIRA-921 - Upgrade to SequoiaDB Java driver 2.12.1.
+* DATA_JIRA-920 - Fix debug messages for delete events in AbstractSequoiadbEventListener.
+* DATA_JIRA-919 - Release 1.5 RC1.
+* DATA_JIRA-917 - DefaultDbRefResolver throws NPE when bundled into an uberjar.
+* DATA_JIRA-914 - Improve resolving of LazyLoading proxies for classes that override equals/hashcode.
+* DATA_JIRA-913 - Can't query using lazy DBRef objects.
+* DATA_JIRA-912 - Aggregation#project followed by Aggregation#match with custom converter causes IllegalArgumentException.
+* DATA_JIRA-910 - Upgrade to latest SequoiaDB Java driver (2.12).
+* DATA_JIRA-909 - @CompoundIndex on inherited entity classes.
+* DATA_JIRA-908 - Nested field references in group operations broken.
+* DATA_JIRA-907 - Assert compatibility with sequoiadb 2.6.0.
+* DATA_JIRA-905 - Remove obsolete CGLib dependency from cross store module.
+* DATA_JIRA-901 - SequoiadbRepositoryConfigurationExtension fails to invoke super method.
+* DATA_JIRA-899 - Overhaul automatic index creation.
+* DATA_JIRA-898 - MapReduce seems not to work when javascript not being escaped.
+* DATA_JIRA-897 - FindAndUpdate broken when using @DbRef and interface as target.
+* DATA_JIRA-896 - Assert compatibility with latest SequoiaDB Java driver.
+* DATA_JIRA-895 - Use most specific type for checks against values in DBObjects.
+* DATA_JIRA-893 - Mapping Convertor does not remove "_class" property on collection of embedded objects.
+* DATA_JIRA-892 - <sdb:mapping-converter> can't be configured as nested bean definition.
+* DATA_JIRA-888 - Mapping is not applied to SortObject during queries.
+* DATA_JIRA-866 - Add new field naming strategy and make it configurable through XML/Java config.
+* DATA_JIRA-847 - Allow usage of Criteria within Update.
+* DATA_JIRA-827 - @Indexed and @CompundIndex cannot be created without giving index name.
+
+
+Changes in version 1.4.2.RELEASE (2014-04-15)
+---------------------------------------------
+** Fix
+    * [DATA_JIRA-880] - Improved handling of persistence of lazy-loaded DBRefs.
+    * [DATA_JIRA-884] - Improved handling for Object methods in LazyLoadingInterceptor.
+    * [DATA_JIRA-887] - Added unit tests to verify TreeMaps can be converted.
+    * [DATA_JIRA-888] - Sorting now considers mapping information.
+    * [DATA_JIRA-890] - Fixed Point.toString().
+    * [DATA_JIRA-892] - Reject nested MappingSequoiadbConverter declarations in XML.
+    * [DATA_JIRA-893] - Converter must not write "_class" information for know types.
+    * [DATA_JIRA-897] - Fixed potential NullPointerException in QueryMapper.
+    * [DATA_JIRA-908] - Support for nested field references in group operations.
+
+** Improvement
+    * [DATA_JIRA-881] - Allow custom conversions to override default conversions.
+
+** Task
+    * [DATA_JIRA-895] - Use most specific type for checks against values in DBObjects.
+    * [DATA_JIRA-896] - Assert compatibility with latest SequoiaDB Java driver.
+    * [DATA_JIRA-905] - Removed obsolete dependency to CGLib from cross-store support.
+    * [DATA_JIRA-907] - Assert compatibility with sequoiadb 2.6.
+    * [DATA_JIRA-911] - Release 1.4.2
+
+Changes in version 1.5.0.M1 (2014-03-31)
+----------------------------------------
+** Fix
+    * [DATA_JIRA-471] - Update operation $addToSet does not support adding a list with $each.
+    * [DATA_JIRA-773] - Spring Data SequoiaDB projection search on @DBref fields.
+    * [DATA_JIRA-821] - MappingException for $size queries on subcollections containing dbrefs.
+    * [DATA_JIRA-829] - NearQuery, when used in conjunction with a Query, it sets num=0, unless Query specifies otherwise.
+    * [DATA_JIRA-833] - EnumSet is not handled correctly.
+    * [DATA_JIRA-843] - Unable to use @EnableSequoiadbAuditing annotation in Java config.
+    * [DATA_JIRA-862] - Update Array Field Using Positional Operator ($) Does Not Work.
+    * [DATA_JIRA-863] - QueryMapper.getMappedValue Fails To Handle Arrays Mapped To $in.
+    * [DATA_JIRA-868] - findAndModify method does not increment @Version field.
+    * [DATA_JIRA-871] - Declarative query method with array return type causes NPE.
+    * [DATA_JIRA-877] - AbstractSequoiadbConfiguration.getMappingBasePackage() throws NullPointerException if config class resides in default package.
+    * [DATA_JIRA-880] - Error when trying to persist an object containing a DBRef which was lazy loaded.
+    * [DATA_JIRA-884] - Potential NullPointerException for lazy DBRefs.
+    * [DATA_JIRA-887] - Repository not instantiated when entity contains field of type TreeMap.
+    * [DATA_JIRA-890] - Point class toString method is confusing.
+
+** Improvement
+    * [DATA_JIRA-809] - Make filename optional in GridFsOperations doc and GridFsTemplate implementation.
+    * [DATA_JIRA-858] - Add support for common geospatial structures.
+    * [DATA_JIRA-865] - Adjust test dependencies to avoid ClassNotFoundException during test runs.
+    * [DATA_JIRA-881] - Cannot override default converters in CustomConversions.
+    * [DATA_JIRA-882] - Adapt to removal of obsolete generics in BeanWrapper.
+
+** New Feature
+    * [DATA_JIRA-566] - Provide support for removeBy… / deleteBy… methods like for findBy… on repository interfaces.
+    * [DATA_JIRA-870] - Add support for sliced query method execution.
+
+** Task
+    * [DATA_JIRA-876] - Adapt to changes introduced for property access configuration.
+    * [DATA_JIRA-883] - Update auditing configuration to enable auditing annotations on accessors.
+    * [DATA_JIRA-859] - Release 1.5 M1.
+
+Changes in version 1.4.1.RELEASE (2014-03-13)
+---------------------------------------------
+** Fix
+    * [DATA_JIRA-773] - Verify that @DBRef fields can be included in query.
+    * [DATA_JIRA-821] - Fixed handling of keyword expressions for DBRefs.
+    * [DATA_JIRA-829] - NearQuery should not default 'num' to zero.
+    * [DATA_JIRA-833] - Support for EnumSet and EnumMap in MappingSequoiadbConverter.
+    * [DATA_JIRA-843] - Back-port of defaulting of the MappingContext for auditing.
+    * [DATA_JIRA-862] - Fixed handling of unmapped paths for updates.
+    * [DATA_JIRA-863] - UpdateMapper doesn't convert raw DBObjects anymore.
+    * [DATA_JIRA-868] - SequoiadbTemplate.findAndModify(…) increases version if not handled manually.
+    * [DATA_JIRA-871] - Add support for arrays as query method return types.
+    * [DATA_JIRA-877] - Added guard against null-package in AbstractMappingConfiguration.
+
+** Improvement
+    * [DATA_JIRA-865] - Adjust test dependencies to avoid ClassNotFoundException during test runs.
+
+Changes in version 1.3.5.RELEASE (2014-03-10)
+---------------------------------------------
+** Fix
+    * [DATA_JIRA-829] - NearQuery, when used in conjunction with a Query, no longer sets num=0, unless Query specifies otherwise.
+    * [DATA_JIRA-871] - Repository queries support array return type.
+
+** Improvement
+    * [DATA_JIRA-865] - Avoid ClassNotFoundException during test runs.
+
+Changes in version 1.4.0.RELEASE (2014-02-24)
+---------------------------------------------
+
+** Fix
+    * [DATA_JIRA-354] - SequoiadbTemplate should support multiple $pushAll in one update.
+    * [DATA_JIRA-404] - Removing a DBRef using pull does not work.
+    * [DATA_JIRA-410] - Update with pushAll should recognize defined Converter.
+    * [DATA_JIRA-812] - $pushAll is deprecated since sequoiadb 2.4 move to $push $each.
+    * [DATA_JIRA-830] - Fix NPE during cache warmup in CustomConversions.
+    * [DATA_JIRA-838] - Support for refering to expression based field in group operation.
+    * [DATA_JIRA-840] - Support for nested SequoiaDB field references in SpEL expressions within Projections.
+    * [DATA_JIRA-842] - Fix documentation error in GRIDFS section.
+    * [DATA_JIRA-852] - Increase version for update should traverse BSONObject correctly in order to find version property.
+
+** Improvement
+    * [DATA_JIRA-468] - Simplification for updates of DBRef fields with sequoiadbTemplate.
+    * [DATA_JIRA-849] - Documentation on github should not reference invalid class.
+
+** Task
+    * [DATA_JIRA-848] - Ensure compatibility with Sdb Java driver 2.12.
+    * [DATA_JIRA-853] - Update no longer allows null keys.
+    * [DATA_JIRA-856] - Update documentation.
+
+Changes in version 1.3.4.RELEASE (2014-02-17)
+---------------------------------------------
+** Bug
+    * [DATA_JIRA-407] - Collection with generics losing element type after $set update
+    * [DATA_JIRA-410] - Update with pushAll doesnt recognize defined Converter
+    * [DATA_JIRA-686] - ClassCastException while reusing Query object
+    * [DATA_JIRA-805] - Excluding DBRef field in a query causes a MappingException
+    * [DATA_JIRA-807] - using findAndModify removes the _class field of encapsulated classes, causing MappingInstantiationException
+    * [DATA_JIRA-808] - Spring data sequoiadb not working with IPv6 address directly
+    * [DATA_JIRA-811] - updateFirst methods do not increment @Version field
+    * [DATA_JIRA-816] - Unable to execute query with DocumentCallbackHandler when query contains Criteria with enums.
+    * [DATA_JIRA-828] - UpdateFirst throws OptimisticLockingFailureException when updating document that does not exist
+    * [DATA_JIRA-830] - NPE during cache warmup in CustomConversions
+    * [DATA_JIRA-842] - Documentation error in GRIDFS section
+** Improvement
+    * [DATA_JIRA-813] - GridFsTemplate.getResource(location) throws NPE if don't find file
+** Task
+    * [DATA_JIRA-824] - Add contribution guidelines
+    * [DATA_JIRA-846] - Release 1.3.4
+
+Changes in version 1.4.0.RC1 (2014-01-29)
+---------------------------------------------
+
+** Bug
+    * [DATA_JIRA-407] - Collection with generics losing element type after $set update
+    * [DATA_JIRA-686] - ClassCastException while reusing Query object
+    * [DATA_JIRA-726] - References to non existing classes in namespace XSD
+    * [DATA_JIRA-804] - EnableSequoiadbRepositories repositoryImplementationPostfix() default is empty String instead of "Impl"
+    * [DATA_JIRA-805] - Excluding DBRef field in a query causes a MappingException
+    * [DATA_JIRA-806] - Spring Data SequoiaDB - Aggregation Framework - No property _id found for type com.entity.User
+    * [DATA_JIRA-807] - using findAndModify removes the _class field of encapsulated classes, causing MappingInstantiationException
+    * [DATA_JIRA-808] - Spring data sequoiadb not working with IPv6 address directly
+    * [DATA_JIRA-811] - updateFirst methods do not increment @Version field
+    * [DATA_JIRA-816] - Unable to execute query with DocumentCallbackHandler when query contains Criteria with enums.
+** Improvement
+    * [DATA_JIRA-778] - Create geospatial index of type other than 2d with @GeoSpatialIndexed
+    * [DATA_JIRA-785] - Add support for geospatial 2Dsphere and geohaystack index types
+    * [DATA_JIRA-787] - Guard against SpEL issue in Spring 3.2.4
+    * [DATA_JIRA-799] - Fix failing test in SequoiadbTemplateTests on Sdb 2.5.x
+    * [DATA_JIRA-802] - Change AbstractSequoiadbConfiguration.sequoiadbFactory() to return SequoiadbFactory
+    * [DATA_JIRA-813] - GridFsTemplate.getResource(location) throws NPE if don't find file
+    * [DATA_JIRA-822] - Add support for eager CDI repository instantiation
+    * [DATA_JIRA-823] - Add bucket attribute to <sdb:gridFsTemplate />
+    * [DATA_JIRA-837] - Upgrade SequoiaDB Java driver to 2.11.4
+** Task
+    * [DATA_JIRA-790] - Ensure compatibility with Spring Framework 4.0
+    * [DATA_JIRA-824] - Add contribution guidelines
+    * [DATA_JIRA-826] - Release Spring Data SequoiaDB 1.4.0.RC1
+    * [DATA_JIRA-835] - Code cleanups
+
+Changes in version 1.3.3.RELEASE (2013-12-11)
+---------------------------------------------
+** Bug
+    * [DATA_JIRA-726] - Fixed classname references in namespace XSDs.
+    * [DATA_JIRA-788] - Projection operations do not render synthetic fields properly.
+    * [DATA_JIRA-795] - When adding custom converters to the sdb template it is possible to get unpredictable behaviour
+    * [DATA_JIRA-804] - Fix default annotation attribute value for repositoryImplementationPostfix().
+    * [DATA_JIRA-806] - Fixed invalid rendering of id field references.
+    * [DATA_JIRA-768] - Improve documentation of how to use @PersistenceConstructor
+
+** Improvement
+    * [DATA_JIRA-791] - Added newAggregation(…) overloads to accept a List.
+    * [DATA_JIRA-799] - Fix failing test in SequoiadbTemplateTests on Sdb 2.5.x
+    * [DATA_JIRA-800] - Improved AuditingIntegrationTests.
+** Task
+    * [DATA_JIRA-810] - Release 1.3.3
+
+Changes in version 1.4.0.M1 (2013-11-19)
+---------------------------------------------
+** Bug
+    * [DATA_JIRA-534] - The GridFs query execution does not return sorted resources, when the sorting fields are defined in the query definition
+    * [DATA_JIRA-630] - Add support of $setOnInsert modifier for upsert
+    * [DATA_JIRA-746] - IndexInfo cannot be read for indices created via sdb shell
+    * [DATA_JIRA-752] - QueryMapper prevents searching for values that start with a $ [dollarsign]
+    * [DATA_JIRA-753] - Add support for nested field references in group operations
+    * [DATA_JIRA-758] - Reject excludes other than _id in projection operations
+    * [DATA_JIRA-759] - Render group operation without non synthetic fields correctly.
+    * [DATA_JIRA-761] - ClassCastException in SpringDataSequoiadbSerializer.getKeyForPath
+    * [DATA_JIRA-768] - Improve documentation of how to use @PersistenceConstructor
+    * [DATA_JIRA-788] - Projection operations do not render synthetic fields properly.
+    * [DATA_JIRA-789] - Support login via different (e.g. admin) authentication database
+    * [DATA_JIRA-795] - When adding custom converters to the sdb template it is possible to get unpredictable behaviour
+** Improvement
+    * [DATA_JIRA-757] - Projections should follow sequoiadb conventions more precisely.
+    * [DATA_JIRA-764] - Add support for SSL connections to Sdb
+    * [DATA_JIRA-766] - Allow nested field references on properties through e.g. @Field("a.b")
+    * [DATA_JIRA-769] - Support arithmetic operators for properties
+    * [DATA_JIRA-770] - Repository - findBy<Field>IgnoreCase doesnt work
+    * [DATA_JIRA-771] - Saving raw JSON through SequoiadbTemplate.insert(…) fails
+    * [DATA_JIRA-774] - Support SpEL expressions to define arithmetical projection operations in the aggregation framework
+    * [DATA_JIRA-776] - TypeBasedAggregationOperationContext should use MappingContext.getPersistentPropertyPath(String, Class<?>)
+    * [DATA_JIRA-780] - Add support for nested repositories
+    * [DATA_JIRA-782] - Typo in reference documentation
+    * [DATA_JIRA-785] - Add support for geospatial 2Dsphere and geohaystack index types
+    * [DATA_JIRA-787] - Upgrade to Spring 3.2.4
+    * [DATA_JIRA-791] - make newAggregation() method to accept list
+    * [DATA_JIRA-793] - Adapt to changes in Spring Data Commons triggered by repository initialization changes
+    * [DATA_JIRA-800] - AuditingIntegrationTests fail on fast machines
+** New Feature
+    * [DATA_JIRA-348] - Lazy Load for DbRef
+    * [DATA_JIRA-653] - Support for index operations in GridFsOperations
+    * [DATA_JIRA-760] - Add support for custom findAll Queries
+    * [DATA_JIRA-792] - Add support to configure Auditing via JavaConfig.
+** Task
+    * [DATA_JIRA-777] - Upgrade to Sdb Java Driver in 2.11
+
+Changes in version 1.3.2.RELEASE (2013-10-25)
+---------------------------------------------
+** Bug
+    * [DATA_JIRA-746] IndexInfo cannot be read for indices created via sdb shell
+    * [DATA_JIRA-752] QueryMapper prevents searching for values that start with a $ [dollarsign]
+    * [DATA_JIRA-753] Add support for nested field references in group operations
+    * [DATA_JIRA-758] Reject excludes other than _id in projection operations
+    * [DATA_JIRA-759] Render group operation without non synthetic fields correctly.
+    * [DATA_JIRA-761] ClassCastException in SpringDataSequoiadbSerializer.getKeyForPath
+    * [DATA_JIRA-768] Improve documentation of how to use @PersistenceConstructor
+
+** Improvement
+    * [DATA_JIRA-757] - Projections should follow sequoiadb conventions more precisely.
+    * [DATA_JIRA-769] - Support arithmetic operators for properties
+    * [DATA_JIRA-771] - Saving raw JSON through SequoiadbTemplate.insert(…) fails
+** Task
+    * [DATA_JIRA-772] - Release 1.3.2
+
+Changes in version 1.3.1.RELEASE (2013-09-09)
+---------------------------------------------
+** Task
+    * [DATA_JIRA-751] Upgraded to Spring Data Commons 1.6.1.
+
+Changes in version 1.3.0.RELEASE (2013-09-09)
+---------------------------------------------
+** Bug
+    * [DATA_JIRA-540] SequoiadbTemplate upsert and findOne handle id queries differently.
+    * [DATA_JIRA-445] GeoNear Query Doesn't Work with Pageable.
+    * [DATA_JIRA-507] Criteria not() is not working.
+    * [DATA_JIRA-602] Querying with $in operator on the id field of type BigInteger returns zero results.
+
+** Improvement
+    * [DATA_JIRA-725] Improve configurability and documentation of TypeMapper on MappingSequoiadbConverter.
+    * [DATA_JIRA-738] Add methods to SequoiadbTemplate and SequoiadbOperations to allow calling class to pass both the entityClass and the collectionName for the update and upsert methods.
+    * [DATA_JIRA-737] Extra SequoiadbSynchronizations cause TransactionSynchronizationManager to throw IllegalStateException on transaction complete.
+    * [DATA_JIRA-743] Support returning raw json from a query.
+
+** Task
+    * [DATA_JIRA-742] Document CDI integration in reference documentation.
+
+Changes in version 1.3.0.RC1 (2013-08-05)
+-----------------------------------------
+** Bug
+    * [DATA_JIRA-392] - Updating an object does not write type information for objects to be updated
+    * [DATA_JIRA-685] - JMX ServerInfo bean may return wrong info
+    * [DATA_JIRA-688] - There is no precedence between @Id annotation and field named "id" - both are attempted to be used
+    * [DATA_JIRA-693] - SequoiadbFactoryBean should create a sdb instance with host/port if replicaset is null or empty
+    * [DATA_JIRA-702] - Spring Data SequoiaDB projection search, is not properly configured with respective Java Pojo
+    * [DATA_JIRA-704] - Remove references to SimpleSequoiadbConverter from JavaDoc.
+    * [DATA_JIRA-705] - QueryMapper doesn't handles exists query with DBRef field
+    * [DATA_JIRA-706] - QueryMapper does not transform DBRefs in nested keywords correctly
+    * [DATA_JIRA-709] - Polymorphic query on documents in same collection
+    * [DATA_JIRA-717] - Application context is not properly distributed to persistent entities
+    * [DATA_JIRA-721] - Polymorphic attribute type not persisted on update operations
+
+** Improvement
+    * [DATA_JIRA-701] - Improve performance of indexed starts-with queries
+    * [DATA_JIRA-713] - Typos in readme.md
+
+** New Feature
+    * [DATA_JIRA-544] - Support for TTL collection via Indexed annotation
+    * [DATA_JIRA-586] - Add support for new Aggregation Framework
+
+** Task
+    * [DATA_JIRA-714] - Add latest formatter to project sources
+    * [DATA_JIRA-723] - Clean up test cases
+    * [DATA_JIRA-728] - Add missing package-info.java files
+    * [DATA_JIRA-731] - Adapt refactorings in Spring Data Commons
+    * [DATA_JIRA-732] - Release 1.3 RC1
+
+
+Changes in version 1.2.3.GA (2013-07-24)
+----------------------------------------
+** Task
+    * [DATA_JIRA-728] - Add missing package-info.java files
+    * [DATA_JIRA-729] - Release 1.2.3.
+
+
+Changes in version 1.2.2.GA (2013-07-19)
+----------------------------------------
+** Bug
+    * [DATA_JIRA-663] - org.springframework.data.sequoiadb.core.query.Field needs an equals method
+    * [DATA_JIRA-677] - QueryMapper does not handled correctly Map with DBRef value
+    * [DATA_JIRA-679] - SequoiadbTemplate.doSave(…) passed a JSON String doesn't save it.
+    * [DATA_JIRA-683] - QueryMapper does not handle default _id when no MappingMetadata is present
+    * [DATA_JIRA-685] - JMX ServerInfo bean may return wrong info
+    * [DATA_JIRA-693] - SequoiadbFactoryBean should create a sdb instance with host/port if replicaset is null or empty
+    * [DATA_JIRA-704] - Remove references to SimpleSequoiadbConverter from JavaDoc.
+    * [DATA_JIRA-705] - QueryMapper doesn't handles exists query with DBRef field
+    * [DATA_JIRA-706] - QueryMapper does not transform DBRefs in nested keywords correctly
+    * [DATA_JIRA-717] - Application context is not properly distributed to persistent entities
+
+** Improvement
+    * [DATA_JIRA-682] - Remove performance hotspots
+    * [DATA_JIRA-701] - Improve performance of indexed starts-with queries
+
+** Task
+    * [DATA_JIRA-658] - Minor formatting changes to README.md
+    * [DATA_JIRA-678] - Performance improvements in CustomConversions
+    * [DATA_JIRA-714] - Add latest formatter to project sources
+    * [DATA_JIRA-723] - Clean up test cases
+    * [DATA_JIRA-727] - Release 1.2.2
+
+
+Changes in version 1.3.0.M1 (2013-06-04)
+----------------------------------------
+** Bug
+    * [DATA_JIRA-571] - Spring Data for Sequoiadb doesn't save null values when @Version is added to domain class
+    * [DATA_JIRA-612] - Fix PDF reference documentation name
+    * [DATA_JIRA-613] - Images missing from reference documentation
+    * [DATA_JIRA-617] - NullPointerException in SequoiadbTemplate.initializeVersionProperty(…)
+    * [DATA_JIRA-620] - SequoiadbTemplate.doSaveVersioned(…) does not consider collection handed into the method
+    * [DATA_JIRA-621] - SequoiadbTemplate.initializeVersionProperty(…) does not use ConversionService
+    * [DATA_JIRA-622] - An unversioned object should be created using insert(…) instead of save.
+    * [DATA_JIRA-629] - Different results when using count and find with the same criteria with 'id' field
+    * [DATA_JIRA-638] - MappingContext should not create PersistentEntity instances for native maps
+    * [DATA_JIRA-640] - SequoiadbLog4jAppender suffers from potential NullPointerException when closing Sdb instance
+    * [DATA_JIRA-641] - SequoiadbLog4jAppender suffers from potential NullPointerException when closing Sdb instance
+    * [DATA_JIRA-642] - SequoiadbChangeSetPersister does not use mapped collection name
+    * [DATA_JIRA-646] - Can't insert DBObjects through SequoiadbTemplate
+    * [DATA_JIRA-648] - ID attributes in namespace shouldn't be XSD IDs
+    * [DATA_JIRA-663] - org.springframework.data.sequoiadb.core.query.Field needs an equals method
+    * [DATA_JIRA-669] - Incompatibility with Querydsl 3.1.1
+    * [DATA_JIRA-676] - SimpleSequoiadbRepository fails if used with customized collection name
+    * [DATA_JIRA-677] - QueryMapper does not handled correctly Map with DBRef value
+    * [DATA_JIRA-679] - SequoiadbTemplate.doSave(…) passed a JSON String doesn't save it.
+    * [DATA_JIRA-683] - QueryMapper does not handle default _id when no MappingMetadata is present
+
+** Improvement
+    * [DATA_JIRA-140] - Add XML namespace element for SequoiadbTemplate
+    * [DATA_JIRA-545] - Add before delete and after delete events for AbstractSequoiadbEventListener
+    * [DATA_JIRA-554] - Add background attribute to @Indexed and @CompoundIndex
+    * [DATA_JIRA-569] - AbstractSequoiadbConfiguration cannot be used on CloudFoundry
+    * [DATA_JIRA-594] - cross-store=> Define document name using annotation
+    * [DATA_JIRA-631] - Explicitly prevent an Order instance set to ignore case from being piped into a query
+    * [DATA_JIRA-632] - Polish namespace XSD to avoid errors in STS
+    * [DATA_JIRA-633] - Upgrade to Querydsl 3.0.0
+    * [DATA_JIRA-634] - Inherit application scope from basic CDI bean of Spring Data Commons
+    * [DATA_JIRA-635] - Fix some Sonar warnings
+    * [DATA_JIRA-636] - Add support for countBy projections
+    * [DATA_JIRA-637] - Typo in Query.query(…)
+    * [DATA_JIRA-651] - WriteResult not available from thrown Exception
+    * [DATA_JIRA-652] - Add support for elemMatch and positional operator projections
+    * [DATA_JIRA-656] - Potential NullPointerException when debugging in SequoiadbTemplate
+    * [DATA_JIRA-657] - Allow to write Map value as DBRef
+    * [DATA_JIRA-666] - Fix architecture inconsistency created by SequoiadbDataIntegrityViolationException
+    * [DATA_JIRA-680] - SimpleSequoiadbRepository.exists(ID) improvement
+    * [DATA_JIRA-681] - Expose SequoiadbTemplate.exists() method
+    * [DATA_JIRA-682] - Remove performance hotspots
+
+** New Feature
+    * [DATA_JIRA-607] - Add an abbreviating field naming strategy
+    * [DATA_JIRA-628] - Add XML namespace elements for SequoiadbTemplate and GridFsTemplate
+
+** Task
+    * [DATA_JIRA-597] - Website is severely out-of-date
+    * [DATA_JIRA-658] - Minor formatting changes to README.md
+    * [DATA_JIRA-667] - Remove deprecations and further deprecate sorting/ordering types
+    * [DATA_JIRA-672] - Upgrade to latest Spring Data Build and Commons
+    * [DATA_JIRA-678] - Performance improvements in CustomConversions
+    * [DATA_JIRA-690] - Release 1.3 M1
+
+Changes in version 1.2.1.GA (2013-04-17)
+----------------------------------------
+** Bug
+    * [DATA_JIRA-571] - Spring Data for Sequoiadb doesn't save null values when @Version is added to domain class
+    * [DATA_JIRA-612] - Fix PDF reference documentation name
+    * [DATA_JIRA-613] - Images missing from reference documentation
+    * [DATA_JIRA-617] - NullPointerException in SequoiadbTemplate.initializeVersionProperty(…)
+    * [DATA_JIRA-620] - SequoiadbTemplate.doSaveVersioned(…) does not consider collection handed into the method
+    * [DATA_JIRA-621] - SequoiadbTemplate.initializeVersionProperty(…) does not use ConversionService
+    * [DATA_JIRA-622] - An unversioned object should be created using insert(…) instead of save.
+    * [DATA_JIRA-629] - Different results when using count and find with the same criteria with 'id' field
+    * [DATA_JIRA-638] - MappingContext should not create PersistentEntity instances for native maps
+    * [DATA_JIRA-640] - SequoiadbLog4jAppender suffers from potential NullPointerException when closing Sdb instance
+    * [DATA_JIRA-641] - SequoiadbLog4jAppender suffers from potential NullPointerException when closing Sdb instance
+    * [DATA_JIRA-642] - SequoiadbChangeSetPersister does not use mapped collection name
+    * [DATA_JIRA-646] - Can't insert DBObjects through SequoiadbTemplate
+    * [DATA_JIRA-648] - ID attributes in namespace shouldn't be XSD IDs
+
+** Improvement
+    * [DATA_JIRA-594] - cross-store=> Define document name using annotation
+    * [DATA_JIRA-632] - Polish namespace XSD to avoid errors in STS
+    * [DATA_JIRA-635] - Fix some Sonar warnings
+    * [DATA_JIRA-637] - Typo in Query.query(…)
+    * [DATA_JIRA-651] - WriteResult not available from thrown Exception
+    * [DATA_JIRA-656] - Potential NullPointerException when debugging in SequoiadbTemplate
+
+** Task
+    * [DATA_JIRA-597] - Website is severely out-of-date
+    * [DATA_JIRA-654] - Release 1.2.1
+
+Changes in version 1.2.0.GA (2013-02-08)
+----------------------------------------
+** Bug
+    * [DATA_JIRA-378] - MapReduceResults ClassCastException due to raw results counts as Long
+    * [DATA_JIRA-568] - SequoiadbTemplate.find(...)  method causes Nullpointer if query parameter is null
+    * [DATA_JIRA-570] - Query methods on @DBRef field with the qualifier isNull throws Exception
+    * [DATA_JIRA-583] - Check if you are using for loop with a DBCursor
+    * [DATA_JIRA-585] - Exception during authentication in multithreaded access
+    * [DATA_JIRA-588] - SequoiadbTemplate.insert does not initialize null versions to zero
+    * [DATA_JIRA-592] - Persisting Objects containing Objects with PersistenceConstructor causes MappingInstantiationException
+    * [DATA_JIRA-593] - Persisting objects containing primitive arrays with PersistenceConstructor causes MappingInstantiationException
+    * [DATA_JIRA-600] - Issues with polymorphism of nested types
+    * [DATA_JIRA-601] - Cannot get SequoiadbConnectionException should not print password in logfile
+    * [DATA_JIRA-603] - Results of geo queries in repository dont't get metrics of supplied distance applied
+
+** Improvement
+    * [DATA_JIRA-503] - GridFsTemplate is not setting the file Content-Type
+    * [DATA_JIRA-573] - Move to Logback for test logging
+    * [DATA_JIRA-580] - Polish BeanDefinitionParsers to avoid warnings in STS
+    * [DATA_JIRA-581] - Expose managed PersistentEntity in SequoiadbRepositoryFactoryBean
+    * [DATA_JIRA-606] - Register converter for JodaTime types if present on classpath
+
+** New Feature
+    * [DATA_JIRA-577] - Add support for auditing
+
+** Task
+    * [DATA_JIRA-81] - Create unit tests for exception translation in SequoiadbTemplate
+    * [DATA_JIRA-576] - Configure java.util.logging to reduce verbose test logging
+    * [DATA_JIRA-590] - Clean up code in SequoiadbTemplate
+    * [DATA_JIRA-598] - Upgrade to new build infrastructure
+    * [DATA_JIRA-609] - Release 1.2.0
+
+Changes in version 1.1.2.GA (2013-02-08)
+----------------------------------------
+** Bug
+    * [DATA_JIRA-562] - Cannot create entity with OptimisticLocking (@Version) and initial id
+    * [DATA_JIRA-568] - SequoiadbTemplate.find(...)  method causes Nullpointer if query parameter is null
+    * [DATA_JIRA-570] - Query methods on @DBRef field with the qualifier isNull throws Exception
+    * [DATA_JIRA-578] - pom version issues in 1.1.x branch
+    * [DATA_JIRA-583] - Check if you are using for loop with a DBCursor
+    * [DATA_JIRA-585] - Exception during authentication in multithreaded access
+    * [DATA_JIRA-588] - SequoiadbTemplate.insert does not initialize null versions to zero
+    * [DATA_JIRA-600] - Issues with polymorphism of nested types
+    * [DATA_JIRA-601] - CannotGetSequoiadbConnectionException should not print password in logfile
+
+** Improvement
+    * [DATA_JIRA-573] - Move to Logback for test logging
+    * [DATA_JIRA-580] - Polish BeanDefinitionParsers to avoid warnings in STS
+
+** Task
+    * [DATA_JIRA-81] - Create unit tests for exception translation in SequoiadbTemplate
+    * [DATA_JIRA-563] - Upgrade to SequoiaDB driver 2.9.2 as it fixes a serious regression introduced in 2.9.0
+    * [DATA_JIRA-576] - Configure java.util.logging to reduce verbose test logging
+    * [DATA_JIRA-590] - Clean up code in SequoiadbTemplate
+    * [DATA_JIRA-608] - Release 1.1.2
+
+Changes in version 1.1.1.GA (2012-10-17)
+----------------------------------------
+** Bug
+    * [DATA_JIRA-549] - SequoiadbTemplate.save(…) suffers from potential NullPointException
+    * [DATA_JIRA-550] - SequoiadbTemplate.save(BasicBSONObject, String) results in NPE (after upgrading to 1.1.0.RELEASE
+    * [DATA_JIRA-551] - SequoiadbTemplate.save(String, String) results in NPE (after upgrading to 1.1.0.RELEASE
+
+** Task
+    * [DATA_JIRA-559] - Release 1.1.1.RELEASE
+
+
+Changes in version 1.1.0.GA (2012-10-10)
+----------------------------------------
+** Bug
+    * [DATA_JIRA-523] - @TypeAlias annotation not used with AbstractSequoiadbConfiguration
+    * [DATA_JIRA-527] - Criteria.equals(…) broken for complex criterias
+    * [DATA_JIRA-530] - SequoiadbMappingContext.setApplicationContext(…) does not invoke superclass method
+    * [DATA_JIRA-531] - StackOverflowError when persisting Groovy beans
+    * [DATA_JIRA-532] - Multithreading authentication issue
+    * [DATA_JIRA-533] - Default SequoiadbPersistentEntityIndexCreator not registered if ApplicationContext already contains one for different MappingContext
+    * [DATA_JIRA-535] - Retrieve of existing Sdb DB from Transaction is not working
+    * [DATA_JIRA-539] - Document remove doesn't work when giving collection name as a parameter
+
+** Improvement
+    * [DATA_JIRA-279] - Optimistic locking using @Version field
+    * [DATA_JIRA-456] - XSD incorrectly states the default value for the sdb-ref attribute of the sdb:db-factory configuration element
+    * [DATA_JIRA-457] - broken links "Spring Data SequoiaDB - Reference Documentation"
+    * [DATA_JIRA-526] - Polish README.md
+    * [DATA_JIRA-529] - Improve Querydsl setup
+    * [DATA_JIRA-538] - Unify usage of Sort APIs in Query API
+
+** New Feature
+    * [DATA_JIRA-389] - stable release spring-data-sequoiadb should work with stable spring spring-data-jpa
+
+** Task
+    * [DATA_JIRA-484] - Migrate to latest SequoiaDB Java driver
+    * [DATA_JIRA-528] - Document GridFS support
+    * [DATA_JIRA-536] - Fix package cycle introduced by SerializationUtils
+    * [DATA_JIRA-541] - Release 1.1 GA
+    * [DATA_JIRA-543] - Polish reference documentation
+    * [DATA_JIRA-548] - Upgrade to Querydsl 2.8.0
+
+
+Changes in version 1.1.0.RC1 (2012-24-08)
+-----------------------------------------
+** Bug
+    * [DATA_JIRA-493] - Criteria.ne() method converts all value into ObjectId
+    * [DATA_JIRA-494] - $or/$nor expressions do not consider entity class mapping
+    * [DATA_JIRA-495] - JSON can't serialize Enum when printing Query in DEBUG message
+    * [DATA_JIRA-497] - Reading an empty List throws a MappingInstantiationException because it returns an HashSet instead of returning an ArrayList
+    * [DATA_JIRA-505] - Conversion of associations doesn't work for collection values
+    * [DATA_JIRA-508] - DBRef can accidentally get added as PersistentProperty
+    * [DATA_JIRA-517] - QueryMapping incorrectly translates complex keywords
+
+** Improvement
+    * [DATA_JIRA-496] - AbstractSequoiadbConfiguration.getMappingBasePackage() could default to config class' package
+    * [DATA_JIRA-499] - Namespace XSDs of current release version should refer to repositories XSD in version 1.0
+    * [DATA_JIRA-500] - Index creation reacts on events not intended for it
+    * [DATA_JIRA-502] - QueryMapper should transparently translate property names to field names
+    * [DATA_JIRA-509] - SimpleSequoiadbRepository.exists(…) can be improved.
+    * [DATA_JIRA-510] - Criteria should only use BasicBSONList internally
+    * [DATA_JIRA-511] - QueryMapper should correctly transform associations
+    * [DATA_JIRA-516] - Make Spring 3.1.2.RELEASE default Spring dependency version
+
+** Task
+    * [DATA_JIRA-513] - Release 1.1 RC1
+
+
+Changes in version 1.0.4.RELEASE SequoiaDB (2012-08-24)
+-----------------------------------------------------
+** Bug
+    * [DATA_JIRA-493] - Criteria.ne() method converts all value into ObjectId
+    * [DATA_JIRA-494] - $or/$nor expressions do not consider entity class mapping
+    * [DATA_JIRA-495] - JSON can't serialize Enum when printing Query in DEBUG message
+
+** Improvement
+    * [DATA_JIRA-499] - Namespace XSDs of current release version should refer to repositories XSD in version 1.0
+
+** Task
+    * [DATA_JIRA-514] - Release 1.0.4.
+
+Changes in version 1.1.0.M2 (2012-24-07)
+----------------------------------------
+** Bug
+    * [DATA_JIRA-378] - MapReduceResults ClassCastException due to raw results counts as Long
+    * [DATA_JIRA-424] - Declaring a list of DBRef in a domian class results in Null for each DBRef when reading from sdb database
+    * [DATA_JIRA-425] - Binding a Date to a manually defined repository query fails
+    * [DATA_JIRA-428] - ClassCastException when using outputDatabase option in map-reduce
+    * [DATA_JIRA-446] - Pageable query methods returning List are broken
+    * [DATA_JIRA-447] - Removal of Documents fails in in debug mode for Documents with complex ids
+    * [DATA_JIRA-450] - enabling DEBUG causes RuntimeException
+    * [DATA_JIRA-454] - ServerAddressPropertyEditor fails if a hostname is unresolvable
+    * [DATA_JIRA-458] - When reading back empty collections unmodifiable instances of Collections.emptyList/Set is returned.
+    * [DATA_JIRA-462] - findAll() fails with NPE - discovering the root cause
+    * [DATA_JIRA-465] - Sdb inserts document with "_id" as an integer but saves with "_id" as a string.
+    * [DATA_JIRA-467] - String @id field is not mapped to ObjectId when using QueryDSL ".id" path
+    * [DATA_JIRA-469] - Query creation from method names using AND criteria does not work anymore
+    * [DATA_JIRA-474] - Wrong property is used for Id mapping
+    * [DATA_JIRA-475] - 'group' operation fails where query references non primitive property
+    * [DATA_JIRA-480] - The WriteResultChecking is not used in case of insert or save of documents.
+    * [DATA_JIRA-483] - @Indexed(unique=true, name="foo") puts name's value to the 'key' in the SequoiaDB
+    * [DATA_JIRA-489] - ClassCastException when loading Map<String, String[]>
+
+** Improvement
+    * [DATA_JIRA-448] - Remove the need for Converters for complex classes that are used as IDs
+    * [DATA_JIRA-455] - Document how to use raw queries using BasicQuery
+    * [DATA_JIRA-460] - Improve Querydsl implementation internals
+    * [DATA_JIRA-466] - QueryMapper shouldn't map id properties of nested classes
+    * [DATA_JIRA-470] - Criteria and Query should have proper equals(…) and hashCode() method.
+    * [DATA_JIRA-477] - Change upper bound of Google Guava package import to 13
+    * [DATA_JIRA-482] - typo in documentation - 2 i's in usiing
+    * [DATA_JIRA-486] - Polish namspace implementation
+    * [DATA_JIRA-491] - Release 1.1.0.M2
+
+** New Feature
+    * [DATA_JIRA-476] - JavaConfig support for Sdb repositories
+
+** Task
+    * [DATA_JIRA-451] - Tweak pom.xml to let Sonar build run without Bundlor
+    * [DATA_JIRA-490] - Fix minor typos
+
+
+Changes in version 1.0.3.RELEASE (2012-24-07)
+---------------------------------------------
+** Bug
+    * [DATA_JIRA-467] - String @id field is not mapped to ObjectId when using QueryDSL ".id" path
+    * [DATA_JIRA-469] - Query creation from method names using AND criteria does not work anymore
+    * [DATA_JIRA-474] - Wrong property is used for Id mapping
+    * [DATA_JIRA-475] - 'group' operation fails where query references non primitive property
+    * [DATA_JIRA-480] - The WriteResultChecking is not used in case of insert or save of documents.
+    * [DATA_JIRA-483] - @Indexed(unique=true, name="foo") puts name's value to the 'key' in the SequoiaDB
+    * [DATA_JIRA-489] - ClassCastException when loading Map<String, String[]>
+
+** Improvement
+    * [DATA_JIRA-466] - QueryMapper shouldn't map id properties of nested classes
+    * [DATA_JIRA-470] - Criteria and Query should have proper equals(…) and hashCode() method.
+    * [DATA_JIRA-482] - typo in documentation - 2 i's in usiing
+
+** Task
+    * [DATA_JIRA-492] - Release 1.0.3
+
+
+Changes in version 1.0.2.RELEASE (2012-06-20)
+---------------------------------------------
+** Bug
+    * [DATA_JIRA-360] - java.lang.ClassCastException when placing GeospatialIndex into IndexOperations and invoking IndexOperations.getIndexInfo()
+    * [DATA_JIRA-366] - Chapter 3.2. points to wrong bugtracker
+    * [DATA_JIRA-378] - MapReduceResults ClassCastException due to raw results counts as Long
+    * [DATA_JIRA-382] - ClassCastException: "com.sequoiadb.BasicBSONObject cannot be cast to com.sequoiadb.BasicBSONList" during find()
+    * [DATA_JIRA-411] - Potential ClassCastExceptions in SequoiadbPersistentEntityIndexCreator
+    * [DATA_JIRA-412] - getUserCredentials() is called twice in AbstractSequoiadbConfiguration::sequoiadbFactory()
+    * [DATA_JIRA-413] - Using "Or" in repository query yields a ClassCastException
+    * [DATA_JIRA-422] - UUIDToBinaryConverter not compatible with sdb java driver
+    * [DATA_JIRA-423] - Criteria.regex should use java.util.Pattern instead of $regex
+    * [DATA_JIRA-425] - Binding a Date to a manually defined repository query fails
+    * [DATA_JIRA-428] - ClassCastException when using outputDatabase option in map-reduce
+    * [DATA_JIRA-429] - using @Query annotation, arrays are translated somewhere between query creation and sdb interpretation
+    * [DATA_JIRA-446] - Pageable query methods returning List are broken
+    * [DATA_JIRA-447] - Removal of Documents fails in in debug mode for Documents with complex ids
+    * [DATA_JIRA-450] - enabling DEBUG causes RuntimeException
+    * [DATA_JIRA-454] - ServerAddressPropertyEditor fails if a hostname is unresolvable
+    * [DATA_JIRA-461] - MappedConstructor potentially throws NullPointerException
+    * [DATA_JIRA-462] - findAll() fails with NPE - discovering the root cause
+
+** Improvement
+    * [DATA_JIRA-448] - Remove the need for Converters for complex classes that are used as IDs
+    * [DATA_JIRA-455] - Document how to use raw queries using BasicQuery
+
+** Task
+    * [DATA_JIRA-463] - Release 1.0.2
+
+
+Changes in version 1.1.0.M1 (2012-05-07)
+----------------------------------------
+
+** Bug
+    * [DATA_JIRA-299] - Sequoiadb Query Does not allow for multiple query conditionals of the same time.
+    * [DATA_JIRA-360] - java.lang.ClassCastException when placing GeospatialIndex into IndexOperations and invoking IndexOperations.getIndexInfo()
+    * [DATA_JIRA-363] - Criteria.and() cannot be chained when using Criteria.gte and Criteria.lte
+    * [DATA_JIRA-364] - Chaining of Criteria when including a GeoSpatial field is inconsistent.
+    * [DATA_JIRA-366] - Chapter 3.2. points to wrong bugtracker
+    * [DATA_JIRA-368] - Empty values in collections are not supported
+    * [DATA_JIRA-369] - Wrong query created when one value is a BSONObject
+    * [DATA_JIRA-373] - QueryMapper is getting a ClassCasteException When trying to Convert an ArrayList to a BSONList
+    * [DATA_JIRA-376] - Fix potential NPE in SpringDataSequoiadbSerializer
+    * [DATA_JIRA-380] - maps with sdb reserved characters for keys generate on save: java.lang.IllegalArgumentException: fields stored in the db can't have . in them
+    * [DATA_JIRA-387] - Executing query methods with GeoPage results doesn't work
+    * [DATA_JIRA-401] - StringBasedSequoiadbQuery suffers from NullPointerException in case a null parameter gets bound to a parameter placeholder
+    * [DATA_JIRA-402] - Inner class not supported
+    * [DATA_JIRA-403] - Conflicts between SequoiaDB and JPA
+    * [DATA_JIRA-411] - Potential ClassCastExceptions in SequoiadbPersistentEntityIndexCreator
+    * [DATA_JIRA-412] - getUserCredentials() is called twice in AbstractSequoiadbConfiguration::sequoiadbFactory()
+    * [DATA_JIRA-413] - Using "Or" in repository query yields a ClassCastException
+    * [DATA_JIRA-423] - Criteria.regex should use java.util.Pattern instead of $regex
+
+** Defect
+    * [DATA_JIRA-429] - using @Query annotation, arrays are translated somewhere between query creation and sdb interpretation
+
+** Improvement
+    * [DATA_JIRA-347] - Repositories and DBRef
+    * [DATA_JIRA-375] - Polish versions of referenced XSD schemas
+    * [DATA_JIRA-379] - Exception when trying to instantiate an entity having a primitive constructor argument and no according document field
+    * [DATA_JIRA-390] - Add Converter for UUID
+    * [DATA_JIRA-391] - Move to SLF4J for logging
+    * [DATA_JIRA-397] - SequoiadbRepositoryFactoryBean should refer to SequoiadbOperations instead of SequoiadbTemplate
+    * [DATA_JIRA-441] - Improve SequoiadbUtils API
+
+** New Feature
+    * [DATA_JIRA-6] - Integration with GridFS features
+    * [DATA_JIRA-36] - Validation support to SequoiadbTemplate
+    * [DATA_JIRA-356] - Provide CDI integration
+    * [DATA_JIRA-418] - Add support for newly introduced StartingWith, EndingWith and Containing keywords
+    * [DATA_JIRA-427] - Support After and Before keywords for query creation
+
+** Refactoring
+    * [DATA_JIRA-383] - Adapt new entity instantiation API from Spring Data Commons
+    * [DATA_JIRA-431] - Adapt changes in CrudRepository
+
+** Task
+    * [DATA_JIRA-443] - Upgrade to Querydsl 2.5.0
+    * [DATA_JIRA-394] - Upgrade to Querydsl 2.3.2
+    * [DATA_JIRA-396] - Release 1.1.0.M1.
+    * [DATA_JIRA-432] - Upgrade to Spring Data Commons 1.3.0.RC1
+    * [DATA_JIRA-439] - Add performance tests
+
+Changes in version 1.0.1.RELEASE SequoiaDB (2012-02-11)
+-----------------------------------------------------
+
+** Bug
+    * [DATA_JIRA-363] - Criteria.and() cannot be chained when using Criteria.gte and Criteria.lte
+    * [DATA_JIRA-364] - Chaining of Criteria when including a GeoSpatial field is inconsistent.
+    * [DATA_JIRA-368] - Empty values in collections are not supported
+    * [DATA_JIRA-369] - Wrong query created when one value is a BSONObject
+    * [DATA_JIRA-376] - Fix potential NPE in SpringDataSequoiadbSerializer
+    * [DATA_JIRA-380] - maps with sdb reserved characters for keys generate on save: java.lang.IllegalArgumentException: fields stored in the db can't have . in them
+    * [DATA_JIRA-387] - Executing query methods with GeoPage results doesn't work
+    * [DATA_JIRA-401] - StringBasedSequoiadbQuery suffers from NullPointerException in case a null parameter gets bound to a parameter placeholder
+
+** Improvement
+    * [DATA_JIRA-375] - Polish versions of referenced XSD schemas
+    * [DATA_JIRA-379] - Exception when trying to instantiate an entity having a primitive constructor argument and no according document field
+    * [DATA_JIRA-390] - Add Converter for UUID
+    * [DATA_JIRA-397] - SequoiadbRepositoryFactoryBean should refer to SequoiadbOperations instead of SequoiadbTemplate
+
+** Task
+    * [DATA_JIRA-395] - Release 1.0.1.
+
+
+Changes in version 1.0.0.RELEASE SequoiaDB (2011-12-22)
+-----------------------------------------------------
+
+** Bug
+    * [DATA_JIRA-260] - MapReduce fails when using with Long as key-type.
+    * [DATA_JIRA-319] - WriteConcern not parsed correctly in namespace handlers
+    * [DATA_JIRA-336] - SequoiaDB GeoNear returning  null pointer exception when giving data more precision than test data
+    * [DATA_JIRA-343] - ServerAddressPropertyEditor disables default Spring conversion
+    * [DATA_JIRA-346] - SequoiadbTemplate.remove(Object arg) not working
+    * [DATA_JIRA-349] - remove doesn't work in RC1 for sdb db
+
+** Improvement
+    * [DATA_JIRA-139] - Startup behavior should be that SequoiadbTemplate does not eagerly try to connect to SequoiaDB
+    * [DATA_JIRA-296] - Add hook to use SequoiadbConverter for Querydsl argument handling
+    * [DATA_JIRA-326] - Enums can't be used in Criteria
+    * [DATA_JIRA-341] - Tighten implementation of SequoiadbTemplate's geoNear(...) methods
+
+** Task
+    * [DATA_JIRA-81] - Create unit tests for exception translation in SequoiadbTemplate
+    * [DATA_JIRA-93] - Create integration tests for authentication
+    * [DATA_JIRA-257] - Document TypeMapper abstraction to control how type information is stored and retrieved from documents
+    * [DATA_JIRA-330] - Document classpath scanning for Converters
+    * [DATA_JIRA-350] - Upgrade to latest Querydsl
+    * [DATA_JIRA-355] - Upgrade to Spring 3.0.7
+    * [DATA_JIRA-357] - Release 1.0 GA
+
+
+Changes in version 1.0.0.RC1 SequoiaDB (2011-12-6)
+------------------------------------------------
+
+** Bug
+    * [DATA_JIRA-199] - Synchronisation during performance tests
+    * [DATA_JIRA-298] - Spring custom converters do not work for subclasses of java.lang.Number
+    * [DATA_JIRA-306] - NullPointerException if sdb factory created via URI with out credentials
+    * [DATA_JIRA-309] - POJO containing a List of Maps not persisting properly
+    * [DATA_JIRA-312] - Cannot retrieve persisted Enum implementing an abstract method
+    * [DATA_JIRA-315] - SequoiadbTemplate.findOne(query) methods ignore SortOrder on query
+    * [DATA_JIRA-316] - Replica Set configuration via properties file throws ArrayIndexOutOfBoundsException
+    * [DATA_JIRA-318] - Distinguishing write errors and writes with zero documents affected
+    * [DATA_JIRA-321] - An ID field of type integer is always saved as zero if not set by the user before calling save.  Throw exception to indicate an int field will not be autopopulated.
+    * [DATA_JIRA-322] - Throw exception in a save operation if the POJO's ID field is null and field type is not String, BigInteger or ObjectId.
+    * [DATA_JIRA-325] - SequoiadbTemplate fails to correctly report a js file not found on classpath while calling mapReduce
+    * [DATA_JIRA-328] - Fix the import statement in sequoiadb manifest
+    * [DATA_JIRA-329] - Map value not converted correctly
+    * [DATA_JIRA-333] - AbstractSequoiadbEventListener throws NullPointerException if used without generic parameter
+
+** Improvement
+    * [DATA_JIRA-26] - Investigate performance of POJO serialization.
+    * [DATA_JIRA-174] - Add additional constructor to SequoiadbTemplate that take com.sequoiadb.Sdb, database name, user credentials and SequoiadbConverter.
+    * [DATA_JIRA-208] - Add suppoprt for group() operation on collection in SequoiadbOperations
+    * [DATA_JIRA-213] - Provide additional options for setting WriteConcern on a per operation basis
+    * [DATA_JIRA-234] - SequoiadbTemplate should support the findAndModify operation to update version fields
+    * [DATA_JIRA-292] - Several sdb for different database names
+    * [DATA_JIRA-301] - Allow converters to be included through scanning
+    * [DATA_JIRA-305] - Remove synchronized(this) from sort() and fields() methods in the Query class
+    * [DATA_JIRA-310] - Allow Collections as parameters in @Query
+    * [DATA_JIRA-320] - Remove use of slaveOk boolean option in SequoiadbTemplate as it is deprecated.  Replace with ReadPreference
+    * [DATA_JIRA-323] - Using @Query and a Sort parameter on the same method should produce sorted results
+    * [DATA_JIRA-324] - Support for JSON in sdb template
+    * [DATA_JIRA-337] - The "nin" and "all" methods on Criteria should take a collection like the "in" method.
+    * [DATA_JIRA-338] - Add query derivation implementations for newly introduced Regex, Exists, True and False keywords
+
+** New Feature
+    * [DATA_JIRA-185] - Add hint to Query
+    * [DATA_JIRA-251] - Support geting index information on a collection or mapped class.
+    * [DATA_JIRA-308] - Add support for upsert methods
+
+** Refactoring
+    * [DATA_JIRA-304] - Change package name for Class SequoiadbLog4jAppender
+    * [DATA_JIRA-313] - Use SequoiadbOperations interface instead of SequoiadbTemplate class
+
+** Task
+    * [DATA_JIRA-195] - Add description of @Field mapping annotation to reference docs
+    * [DATA_JIRA-262] - Ensure Cloud Foundry Runtime works with RC1
+    * [DATA_JIRA-263] - Ensure Cloud Foundry Examples work with RC1
+    * [DATA_JIRA-311] - Update SequoiaDB driver to v 2.7.x
+    * [DATA_JIRA-332] - Update reference documentation to list correct necessary dependencies
+    * [DATA_JIRA-334] - Use repository URLs pointing to Artifactory
+    * [DATA_JIRA-335] - Create hybrid Spring 3.0.6 / 3.1 build
+
+
+Changes in version 1.0.0.M5 SequoiaDB (2011-10-24)
+------------------------------------------------
+
+** Bug
+    * [DATA_JIRA-259] - Maps inside collections are not written correctly
+    * [DATA_JIRA-268] - CustomConversions is too liberal in registering "simple types" (asymmetric conversion)
+    * [DATA_JIRA-269] - XML configuration for replica sets is not working
+    * [DATA_JIRA-275] - DBRef fields and collections are returning nulls
+    * [DATA_JIRA-281] - Improve the <sdb:db-factory> to handle blank username and password when using property placholders like ${sdb.username}
+    * [DATA_JIRA-282] - Cannot create a "range" query
+    * [DATA_JIRA-284] - Execution of Querydsl query maps id incorrectly
+    * [DATA_JIRA-285] - NPE in MappingSequoiadbConverter.writeMapInternal when saving a Map<String,Object> with val instance of Collection
+    * [DATA_JIRA-288] - querying same property multiple times produces incorrect query
+    * [DATA_JIRA-289] - AbstractSequoiadbEventListener will never call onAfterLoad
+    * [DATA_JIRA-294] - List elements nested in Map lose their type when persisted
+
+** Improvement
+    * [DATA_JIRA-65] - Allow Spring EL usage in collection name attribute of @Document
+    * [DATA_JIRA-183] - Query count() support for pagination
+    * [DATA_JIRA-258] - M4 documentation states SD Commons 1.1.0.M1 required but actually needs 1.2.0.M1
+    * [DATA_JIRA-261] - Reference documentation for geoNear queries has no stable section id
+    * [DATA_JIRA-270] - Approach Sonar results to improve code quality
+    * [DATA_JIRA-271] - Remove 'document' from cross-store package names
+    * [DATA_JIRA-272] - Namespace configuration file still resides in 'document' package
+    * [DATA_JIRA-276] - QueryUtils should be public
+    * [DATA_JIRA-280] - Add maxAutoConnectRetryTime for <sdb:db-factory> and  SequoiadbOptionsFactoryBean
+    * [DATA_JIRA-283] - $and support
+    * [DATA_JIRA-286] - SequoiaDB Repository no query methods for $lte and $gte
+    * [DATA_JIRA-291] - Path expressions in repository methods should honour mapping metadata
+    * [DATA_JIRA-293] - Add support for new polygon based within search in Sdb 2.0.
+    * [DATA_JIRA-295] - Allow SequoiadbTemplate to be configured using SequoiadbURI
+    * [DATA_JIRA-300] - Re-work the Query/Criteria to better support $and, $or and $nor queries
+    * [DATA_JIRA-302] - Consistently handle null values given to CrudRepository implementation
+
+** New Feature
+    * [DATA_JIRA-230] - SequoiadbTemplate missing method remove(Object object, String collectionName)
+
+** Refactoring
+    * [DATA_JIRA-274] - Split up repository package according to the structure in Spring Data JPA
+
+** Task
+    * [DATA_JIRA-264] - Ensure Data Document examples work
+    * [DATA_JIRA-265] - Create new github repository for sequoiadb
+    * [DATA_JIRA-266] - Create new github repository for CouchDB
+    * [DATA_JIRA-297] - Prune project directory
+    * [DATA_JIRA-303] - Update to QueryDsl 2.2.4
+
+
+Changes in version 1.0.0.M4 SequoiaDB (2011-09-01)
+------------------------------------------------
+
+** Bug
+    * [DATADOC-134] - SequoiaDB: No exception when saving duplicate value to an attribute annotated with @Indexed(unique=true)
+    * [DATADOC-162] - Exception thrown on toString of Point class
+    * [DATADOC-167] - @Document annotation is not inherited
+    * [DATADOC-168] - Registering a custom converter from String to UUID causes all Strings to be converted to UUIDs
+    * [DATADOC-172] - Unable to force property order when saving document
+    * [DATADOC-176] - @DBRef annotation only supports ids of type ObjectId
+    * [DATADOC-177] - Sorting on multiple fields does not maintain order
+    * [DATADOC-181] - SequoiadbFactoryBean does not call Sdb.close() on shutdown
+    * [DATADOC-190] - SimpleSequoiadbRepository.exists(…) returns false for existing entities with non-ObjectId id
+    * [DATADOC-192] - MappingSequoiadbConverter does not read empty Sets correctly
+    * [DATADOC-199] - Synchronisation during performance tests
+    * [DATADOC-207] - MappingSequoiadbConverter fails when reading empty java.util.SortedMaps
+    * [DATADOC-209] - Collections of enums not handled correctly
+    * [DATADOC-210] - spring-data-sequoiadb requires Java 1.6, should require 1.5
+    * [DATADOC-212] - NPE during SequoiadbTemplate.update() if no ID field is defined (via field name or annotation)
+    * [DATADOC-217] - Set cannot be used as a collection in a Document
+    * [DATADOC-218] - Adding of custom simple types is not easy
+    * [DATADOC-221] - BigDecimal values not read correctly in maps
+    * [DATADOC-224] - MappingSequoiadbConverter does not inspect value type for Object properties
+    * [DATADOC-228] - NullPointerException when persiting Map with null values
+    * [DATADOC-229] - When a parameterized List is used in the PersistentConstructor, conversion fail
+    * [DATADOC-231] - spring-data-sequoiadb does not work in an OSGi server because of unresolved dependencies
+    * [DATADOC-232] - sequoiadb allow to $inc many fields in one query, but Updat().inc(firs).inc(last)  do only last inc
+    * [DATADOC-235] - Unable to map unstructured data
+    * [DATADOC-236] - Repository queries do not honour order defined in method name
+    * [DATADOC-237] - @Indexed annotation doesn't honor field name from @Field annotation
+    * [DATADOC-240] - Update with id key is not working
+    * [DATADOC-243] - sdb:mapping-converter schema does not allow db-factory-ref
+    * [DATADOC-246] - Stack overflow when Update.pushAll(push)
+    * [DATADOC-247] - QueryMapper does not handle BigInteger ids correctly
+    * [DATADOC-248] - SequoiaDB Query and Collection mapping
+    * [DATADOC-249] - ConcurrentModificationException when calling SequoiadbTemplate.updateFirst
+    * [DATADOC-254] - SimpleSequoiadbFactory should handle dots in database names correctly
+
+** Improvement
+    * [DATADOC-32] - SimpleSequoiadbConverter could support identifying Spring EL expressions in keys
+    * [DATADOC-63] - Converters to support use of a 'typeId' strategy to determine class to marshall/unmarshal from Sdb
+    * [DATADOC-166] - Check for null if various template CRUD methods
+    * [DATADOC-169] - Registering custom converters for a type requires treating the type as simple in mapping context
+    * [DATADOC-171] - IllegalArgumentException when persisting entity with BigDecimal field
+    * [DATADOC-178] - System.out.println in the in method of Criteria. Line 179.
+    * [DATADOC-188] - Allow means to disable repository infrastructure creating indexes
+    * [DATADOC-189] - Improve extensibility of SequoiadbRepositoryFactoryBean
+    * [DATADOC-215] - Allow configuring WriteConcern via SequoiadbFactoryBean and thus the namespace
+    * [DATADOC-223] - Registering of customSimpleTypes should be available through the sdb namespace of spring-data-sequoiadb
+    * [DATADOC-225] - BasicSequoiadbPersistentEntity shouldn't reject root entities without an id property
+    * [DATADOC-241] - Allow Map conversion behavior overriding
+    * [DATADOC-255] - Add to SequoiadbOperations and executeCommand with an additional integer options argument
+    * [DATADOC-256] - Update to use SequoiaDB driver version 2.6.5
+
+** New Feature
+    * [DATADOC-7] - Support for map-reduce operations in SequoiadbTemplate
+    * [DATADOC-64] - Allow defining the collections a query is ran against on finder methods
+    * [DATADOC-68] - Support for geoNear command
+    * [DATADOC-87] - Provide @GeoSpatialIndexed annotation that mirrors GeoSpatialIndex class for use in mapping.
+    * [DATADOC-100] - Provide means to externalize manually defined queries
+    * [DATADOC-202] - Add a 'DocumentCallbackHandler' so that a callback can process each BSONObject returned from a query
+    * [DATADOC-216] - Allow configuring a WriteConcern on SimpleSequoiadbFactory for DB wide WriteConcern
+    * [DATADOC-226] - Add QuerydslRepositorySupport helper class similar to the one in Spring Data JPA
+
+** Refactoring
+    * [DATADOC-170] - Review listener design
+    * [DATADOC-191] - Remove 'document' from package names
+    * [DATADOC-214] - SequoiadbConverter refactorings
+
+** Task
+    * [DATADOC-91] - Add more TestCases for the basic functionality
+    * [DATADOC-152] - Investigate failing of test for repository.findbyLocationWithinBox
+    * [DATADOC-175] - Review DSM matrix and remove package cycles if found.
+    * [DATADOC-194] - Remove use of Class.forName to support use in an OSGi environment
+    * [DATADOC-206] - Upgrade to Querydsl 2.2.0
+    * [DATADOC-253] - Upgrade to Spring 3.0.6
+
+
+Changes in version 1.0.0.M3 SequoiaDB (2011-06-02)
+------------------------------------------------
+
+General
+* [DATADOC-92] - Exception translation to catch RuntimeException instead of BaseException
+* [DATADOC-111] - Ensure all SequoiadbTemplate methods execute within the context of a callback method.
+* [DATADOC-120] - Remove SequoiadbReaderWriter
+* [DATADOC-160] - Review SequoiadbOperations and make the parameter ordering more consistent across methods
+
+Core Data Access
+* [DATADOC-80] - Rename addConverters to setCustomConverters in MappingSequoiadbConverter and SimpleSequoiadbConverter
+* [DATADOC-89] - Support setting slaveOk in SequoiadbTemplate per query
+* [DATADOC-108] - Add findById method to SequoiadbTemplate.
+* [DATADOC-112] - Storing a DBRef uses the wrong collection name
+* [DATADOC-116] - Nesting DBRefs doesn't work > 1 layers
+* [DATADOC-117] - Remove the default collection name on the SequoiadbTemplate
+* [DATADOC-118] - Remove SequoiadbTemplate methods that take a Reader/Writer parameter
+* [DATADOC-121] - Deprecate SimpleSequoiadbConverter
+* [DATADOC-124] - Add method to MappingContext to get the collection name used for a specific type
+* [DATADOC-127] - @Document(collection="SOME_COLLECTION_NAME") doesn't take effect
+* [DATADOC-141] - Provide a prepareCollection protected method in SequoiadbTemplate to allow customization of behavior such as slaveOk or writeConcern via a subclass
+* [DATADOC-142] - Change constructors in SequoiadbTemplate that take Sdb object
+* [DATADOC-143] - MappingSequoiadbConverter should be SequoiadbTemplate's default converter
+* [DATADOC-149] - Remove setter for SequoiadbFactory from MappingSequoiadbConverter
+* [DATADOC-157] - SequoiadbTemplate updateFirst/updateMulti methods to take java.lang.Class parameter as last in method param list to be consistent with other usage
+* [DATADOC-158] - Change default conventions of java.lang.Class to collection name in MappingSequoiadbConverter to be first letter lower case camel casing.
+
+Configuration
+* [DATADOC-42] - Provide option for configuring replica sets using the Sdb namespace
+* [DATADOC-88] - Create SequoiadbFactory to consolidate DB, Server location, and user credentials into one location
+* [DATADOC-119] - Modify XML schema and @Configuration base class to make it easy to register custom Spring converters with the mapper.
+* [DATADOC-133] - Support Property Placeholder as SequoiaDB Port Number in Application Context Configuration
+* [DATADOC-135] - <sdb:options /> should use - instead of camel case to be consistent with other attribute names
+* [DATADOC-138] - Expose all properties of the SequoiadbOptions class in Sdb namespace
+
+Querying / Updating
+* [DATADOC-43] - Query creator should support Near and Within keyword
+* [DATADOC-96] - Query#or(Query) does not work
+* [DATADOC-102] - Update does not let you $set across multiple fields
+* [DATADOC-106] - Add additional sdb operators to Criteria class
+* [DATADOC-107] - Criteria "in" operator should correctly handle passing in a collection instead of an array.
+* [DATADOC-113] - NotNull/IsNotNull not implemented in SequoiadbQueryCreator
+* [DATADOC-146] - Advanced Regexp Queries
+
+Mapping
+* [DATADOC-95] - Can not save an object that has not had any of its properties set
+* [DATADOC-97] - ID replacement not working correctly when using updateFirst/updateMulti
+* [DATADOC-98] - Collection<Collection> or Object[][] doesn't save correctly
+* [DATADOC-109] - Add MappingContext to SequoiadbConverter interface
+* [DATADOC-110] - Improve implementation of substituteMappedIdIfNecessary
+* [DATADOC-101] - Explicit Converters only registered one way.
+* [DATADOC-114] - UpdateFirst/Multi operations on SequoiadbTemplate not properly using converter to store objects.
+* [DATADOC-122] - Use same default collection name for MappingSequoiadbConverter and SimpleSequoiadbConverter
+* [DATADOC-123] - Use the same id/_id mapping for MappingSequoiadbConverter and SimpleSequoiadbConverter
+* [DATADOC-128] - Support inheritance with Document mappings
+* [DATADOC-130] - Problem with Converters (java.util.Locale)
+* [DATADOC-144] - Add an @Key annotation to allow defining the key a property is stored under
+* [DATADOC-145] - MappingSequoiadbConverter does not convert objects for collections of interfaces
+* [DATADOC-155] - Need to support plain POJOs with non-ObjectId-compatible ID properties
+* [DATADOC-156] - SequoiadbOperations.find(query(where("id").in(ids)) fails where ids aren't ObjectIds
+* [DATADOC-159] - Saving the same Entity multiple times creates multiple entries in the database
+* [DATADOC-161] - MappingSequoiadbConverter now supports nested Maps
+
+Repository
+* [DATADOC-115] - Upgrade to QueryDsl 2.2.0-beta4
+* [DATADOC-137] - Parameter values in SequoiaDB JSON Query are not being replaced properly
+
+Documentation
+* [DATADOC-99] - Reference documentation shows invalid field spec for @Query usage with repositories
+
+
+Changes in version 1.0.0.M2 SequoiaDB (2011-04-09)
+------------------------------------------------
+
+General
+* Spring configuration support using Java based @Configuration classes
+
+Core Data Access
+* Persistence and mapping lifecycle events
+* GeoSpatial integration
+* [DATADOC-76] - Add support for findAndRemove to SequoiadbTemplate/SequoiadbOperations
+* [DATADOC-5] - Provide detailed mapping of Sdb errors onto Spring DAO exception
+* [DATADOC-51] - Fixed issue with exceptions thrown when authenticating multiple times for sam eDB instance
+
+Querying
+* [DATADOC-72] - Add support for Sdb's $elemMatch and chained Criteria
+* [DATADOC-77] - Rename "and" method in Query to "addCritera"
+* [DATADOC-67] - Criteria API to support keywords for geo search
+
+Mapping
+* Feature Rich Object Mapping integrated with Spring's Conversion Service
+* Annotation based mapping metadata but extensible to support other metadata formats
+* [DATADOC-60] - Add namespace support to setup a MappingSequoiadbConverter
+* [DATADOC-33] - Introduce annotation to demarcate id field in a domain object
+
+Repository
+* [DATADOC-47, DATACMNS-17] - Adapted new metamodel API
+* [DATADOC-46] - Added support for 'In' and 'NotIn' keyword
+* [DATADOC-49] - Fixed 'And' and 'Or' keywords
+* [DATADOC-41] - Added support for executing QueryDsl predicates
+* [DATADOC-69] - Let repository namespace pickup the default mapping context bean and allow configuration
+* [DATADOC-24] - Allow use of @Query annotation to define queries
+* [DATADOC-34] - Create indexes for columns that are mentioned in query methods
+
+Cross-Store
+* [DATADOC-48] - Cross-store persistance - support for JPA Entities with fields transparently persisted/retrieved using SequoiaDB
+
+Logging
+* [DATADOC-66] - Log4j log appender
+
+Changes in version 1.0.0.M1 SequoiaDB (2011-02-14)
+------------------------------------------------
+
+General
+* BeanFactory for basic configuration of Sdb environment
+* Namespace for basic configuration of Sdb environment
+
+Core Data Access
+* Introduce SequoiadbTemplate implementation with methods defined in SequoiadbOperations interface
+* SequoiadbTemplate support for insert, find, save, update, remove
+* SequoiadbTemplate support for basic POJO serialization based on bean properties
+* Allow SequoiadbTemplate methods to use a default collection name
+* Exception translation in SequoiadbTemplate to Spring's DAO exception hierarchy
+* Support for update modifiers to allow for partial document updates
+* Expose WriteConcern settings on SequoiadbTemplate used for any write operations
+* Support in SequoiadbTemplate for enabling either logging or throwing exceptions based on value of WriteResult return value.
+
+Repository
+* Introducing generic repository implementation for SequoiaDB
+* Automatic implementation of interface query method names on repositories.
+* Namespace support for Sdb repositories
+* Allow usage of pagination and sorting with repositories
+

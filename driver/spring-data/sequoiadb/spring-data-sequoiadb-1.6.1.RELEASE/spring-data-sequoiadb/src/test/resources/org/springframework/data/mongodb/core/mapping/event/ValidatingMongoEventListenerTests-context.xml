@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:sdb="http://www.springframework.org/schema/data/sdb"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/sdb http://www.springframework.org/schema/data/sdb/spring-sdb.xsd
+			 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<sdb:db-factory dbname="validation" />
+
+	<sdb:mapping-converter base-package="org.springframework.data.sequoiadb.core" />
+
+	<bean id="sequoiadbTemplate" class="org.springframework.data.sequoiadb.core.SequoiadbTemplate">
+		<constructor-arg name="sequoiadbFactory" ref="sequoiadbFactory" />
+		<constructor-arg name="sequoiadbConverter" ref="mappingConverter" />
+	</bean>
+
+</beans>

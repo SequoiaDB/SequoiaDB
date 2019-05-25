@@ -1,0 +1,13 @@
+#!/bin/sh
+SCIPT=$(readlink -f "$0")
+SCRIPT_DIR=`dirname $SCIPT`
+if [ -f /etc/default/sequoiadb ] ; then
+    source /etc/default/sequoiadb
+else
+    INSTALL_DIR=/opt/sequoiadb
+fi
+
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${INSTALL_DIR}/tools/server/php/libxml2/lib/
+
+$SCRIPT_DIR/php-bin -c ${INSTALL_DIR}/tools/server/php/lib/php.ini -t ${INSTALL_DIR}/www $*
+

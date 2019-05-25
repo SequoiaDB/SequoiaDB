@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{99B0CB56-7B4B-473A-BBA5-BA616F49BE68}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SequoiaDB</RootNamespace>
+    <AssemblyName>SequoiaDB</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="base\ClientOptions.cs" />
+    <Compile Include="base\CollectionSpace.cs" />
+    <Compile Include="base\DataCenter.cs" />
+    <Compile Include="base\DBCollection.cs" />
+    <Compile Include="base\DBCursor.cs" />
+    <Compile Include="base\DBLob.cs" />
+    <Compile Include="base\DBQuery.cs" />
+    <Compile Include="base\Domain.cs" />
+    <Compile Include="base\Node.cs" />
+    <Compile Include="base\ReplicaGroup.cs" />
+    <Compile Include="base\SDBConst.cs" />
+    <Compile Include="base\SDBMessage.cs" />
+    <Compile Include="base\Sequoiadb.cs" />
+    <Compile Include="base\SequoiadbConstants.cs" />
+    <Compile Include="exception\BaseException.cs" />
+    <Compile Include="exception\Errors.cs" />
+    <Compile Include="exception\SDBError.cs" />
+    <Compile Include="exception\SDBErrorLookup.cs" />
+    <Compile Include="net\ConfigOptions.cs" />
+    <Compile Include="net\ConnectionTCPImpl.cs" />
+    <Compile Include="net\IConnection.cs" />
+    <Compile Include="net\ServerAddress.cs" />
+    <Compile Include="net\TimeOutSocket.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="util\ByteBuffer.cs" />
+    <Compile Include="util\Helper.cs" />
+    <Compile Include="util\Logger.cs" />
+    <Compile Include="util\RunCommand.cs" />
+    <Compile Include="util\SDBMessageHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Bson\Bson.csproj">
+      <Project>{0E9A3A2A-49CD-4F6C-847C-DC79B4B65CE6}</Project>
+      <Name>Bson</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+   <meta http-equiv="Content-Language" content="UTF-8" />
+   <script type="text/javascript" src="js/common.js"></script>
+   <link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+   <title>PHP测试例程</title>
+</head>
+<body>
+<div id="centres">
+   <span style="font-size:25px">PHP测试例程</span>
+   <div style="margin-top:20px;">
+      <table border="0" width=100%>
+         <tr>
+            <td width=30%>
+               <ul id="menu">
+                  <li class="item">集合空间的操作
+                     <ul id="opt_1" class="optiton">
+                        <li><a href="javascript:showform(1);">添加集合空间</a></li>
+                        <li><a href="javascript:showform(2);">删除集合空间</a></li>
+                        <li><a href="javascript:showform(3);">枚举集合空间</a></li>
+                     </ul>
+                  </li>
+                  <li class="item">集合的操作
+                     <ul id="opt_2" class="optiton">
+                        <li><a href="javascript:showform(4);">添加集合</a></li>
+                        <li><a href="javascript:showform(5);">删除集合</a></li>
+                        <li><a href="javascript:showform(6);">枚举集合</a></li>
+                        <li><a href="javascript:showform(20);">更改集合名</a></li>
+                     </ul>
+                  </li>
+                  <li class="item">增删改查总
+                     <ul id="opt_3" class="optiton">
+                        <li><a href="javascript:showform(7);">查询</a></li>
+                        <li><a href="javascript:showform(8);">插入</a></li>
+                        <li><a href="javascript:showform(9);">更新</a></li>
+                        <li><a href="javascript:showform(10);">删除</a></li>
+                        <li><a href="javascript:showform(11);">求总</a></li>
+                     </ul>
+                  </li>
+                  <li class="item">索引的操作
+                     <ul id="opt_4" class="optiton">
+                        <li><a href="javascript:showform(12);">创建索引</a></li>
+                        <li><a href="javascript:showform(21);">查询索引</a></li>
+                        <li><a href="javascript:showform(13);">删除索引</a></li>
+                     </ul>
+                  </li>
+                  <li class="item">游标的操作
+                     <ul id="opt_5" class="optiton">
+                        <li><a href="javascript:showform(14);">查询当前游标</a></li>
+                        <li><a href="javascript:showform(15);">更新当前游标</a></li>
+                        <li><a href="javascript:showform(16);">删除当前游标</a></li>
+                     </ul>
+                  </li>
+                  <li class="item">快照和列表操作
+                     <ul id="opt_6" class="optiton">
+                        <li><a href="javascript:showform(17);">得到快照信息</a></li>
+                        <li><a href="javascript:showform(18);">重置快照信息</a></li>
+                        <li><a href="javascript:showform(19);">得到列表信息</a></li>
+                     </ul>
+                  </li>
+               </ul>
+            </td>
+            <td>
+               <div  align="left" style="margin-left:30px;">
+                  <span id="output"></span>
+                  <table style="display:none" id="table1">
+                     <tr id="Address">
+                        <td>sequoiadb Address</td>
+                        <td><input type="text" id="addr1" value="127.0.0.1"></td>
+                     </tr>
+                     <tr id="space">
+                        <td>collection space</td>
+                        <td><input type="text" id="space1"></td>
+                     </tr>
+                     <tr id="collection">
+                        <td>collection</td>
+                        <td><input type="text" id="collection1"></td>
+                     </tr>
+                     <tr id="condition">
+                        <td>condition</td>
+                        <td><input type="text" id="condition1"></td>
+                     </tr>
+                     <tr id="obj">
+                        <td>object</td>
+                        <td><input type="text" id="obj1"></td>
+                     </tr>
+                     <tr id="selected">
+                        <td>selected</td>
+                        <td><input type="text" id="selected1"></td>
+                     </tr>
+                     <tr id="orderBy">
+                        <td>orderBy</td>
+                        <td><input type="text" id="orderBy1"></td>
+                     </tr>
+                     <tr id="hint">
+                        <td>hint</td>
+                        <td><input type="text" id="hint1"></td>
+                     </tr>
+                     <tr id="numToSkip">
+                        <td>numToSkip</td>
+                        <td><input type="text" id="numToSkip1"></td>
+                     </tr>
+                     <tr id="numToReturn">
+                        <td>numToReturn</td>
+                        <td><input type="text" id="numToReturn1"></td>
+                     </tr>
+                     <tr id="rule">
+                        <td>rule</td>
+                        <td><input type="text" id="rule1"></td>
+                     </tr>
+                     <tr id="indexDef">
+                        <td>indexDef</td>
+                        <td><input type="text" id="indexDef1"></td>
+                     </tr>
+                     <tr id="index_pName">
+                        <td>index_pName</td>
+                        <td><input type="text" id="index_pName1"></td>
+                     </tr>
+                     <tr id="index_isUnique">
+                        <td>index_isUnique</td>
+                        <td><input type="text" id="index_isUnique1"></td>
+                     </tr>
+                     <tr id="listType">
+                        <td>listType</td>
+                        <td><input type="text" id="listType1"></td>
+                     </tr>
+                     <tr id="pName">
+                        <td>pName</td>
+                        <td><input type="text" id="pName1"></td>
+                     </tr>
+                     <tr>
+                        <td><input type="hidden" id="work1" value=""></td>
+                        <td><a href="javascript:sendMsg();"><div id="buttons">发送</div></a></td>
+                     </tr>
+                  </table>
+               </div>
+            </td>
+         </tr>
+      </table>
+   </div>
+</div>
+</body>
+</html>

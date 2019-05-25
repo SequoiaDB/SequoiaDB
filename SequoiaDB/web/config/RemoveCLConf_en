@@ -1,0 +1,11 @@
+[
+      {
+            "name": "ClName", 
+            "webName": "集合", 
+            "type": "select"
+      }, 
+      {
+            "type": "note", 
+            "text": "删除集合后数据将无法恢复。"
+      }
+]

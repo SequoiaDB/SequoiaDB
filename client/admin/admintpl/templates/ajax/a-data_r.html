@@ -1,0 +1,228 @@
+{{if $iscscl eq 1}}
+	<table class="table table-bordered" style="word-break:break-all;">
+		<tr>
+			<td>集合空间名</td>
+			<td>分页大小</td>
+			<td>集合数</td>
+		</tr>
+		<tr>
+			<td>{{if array_key_exists( "Name", $cs_info )}} {{$cs_info["Name"]}} {{/if}}</td>
+			<td>{{if array_key_exists( "PageSize", $cs_info )}} {{$cs_info["PageSize"]}} {{/if}}</td>
+			<td>{{if array_key_exists( "Collection", $cs_info )}} {{count($cs_info["Collection"])}} {{/if}}</td>
+		</tr>
+	</table>
+	{{if array_key_exists( "Group", $cs_info )}}
+		<table class="table table-bordered" style="word-break:break-all;">
+			<tr>
+				<td>所属分区组</td>
+			</tr>
+			{{foreach $cs_info["Group"] as $child}}
+			<tr>
+				<td>{{$child}}</td>
+			</tr>
+			{{/foreach}}
+		</table>
+	{{/if}}
+{{elseif $iscscl eq 2}}
+	{{if $pageturn neq 3}}
+	<div style="margin-bottom:20px;">
+		<div class="row">
+			<div class="col-md-3" style="padding-right:0px;">
+				<div class="input-group">
+					<span class="input-group-addon">共{{$pagesum}}页，页码</span>
+					<input id="pagenum" type="text" class="form-control" value="{{$pagenumber+1}}">
+				</div>
+			</div>
+            <div class="col-md-1" style="padding-left:0px;padding-right:0px;">
+            	<button class="btn btn-default" type="button" onclick="getnewdata2()">Go</button>
+            </div>
+			<div class="col-md-3">
+				<button type="button" onclick="getnewdata(0)" class="btn btn-primary" {{if $pageturn eq 1}}disabled="disabled"{{/if}}>上一页</button> 
+				<button type="button" onclick="getnewdata(1)" class="btn btn-primary" {{if $pageturn eq 2 or $pagesum lte ($pagenumber+1)}}disabled="disabled"{{/if}}>下一页</button>
+			</div>
+		</div>
+	</div>
+	{{/if}}
+<table class="table table-bordered table-hover" id="record_list" style="word-break:break-all;">
+	{{$record_num = 0}}
+	<tr>
+		<td>
+			当前页记录：{{count($cl_info)}} 条
+		</td>
+	</tr>
+	{{foreach $cl_info as $child}}
+	<tr>
+		<td>
+			<div style="display:none;" id="data_r_nature_{{$record_num}}">1</div>
+			<div id="data_r_record_{{$record_num}}">{{$child}}</div>
+		</td>
+	</tr>
+		{{$record_num = $record_num+1}}
+	{{/foreach}}
+</table>
+	{{if $pageturn neq 3}}
+	<div style="margin-bottom:20px;">
+		<button type="button" onclick="getnewdata(0)" class="btn btn-primary" {{if $pageturn eq 1}}disabled="disabled"{{/if}}>上一页</button>
+		<button type="button" onclick="getnewdata(1)" class="btn btn-primary" {{if $pageturn eq 2 or $pagesum lte ($pagenumber+1)}}disabled="disabled"{{/if}}>下一页</button>
+	</div>
+	{{/if}}
+{{elseif $iscscl eq 3}}
+<table class="table table-bordered" style="word-break:break-all;">
+	<tr>
+		<td></td>
+		<td>索引名</td>
+		<td>索引定义</td>
+		<td>唯一索引</td>
+		<td>强制唯一</td>
+	</tr>
+	{{$numid=1}}
+	{{foreach $index_info as $child}}
+		{{$indexdef = $child["IndexDef"]}}
+	<tr>
+		<td>{{$numid}}</td>
+		<td>{{$indexdef["name"]}}</td>
+		<td>{{json_encode($indexdef["key"])}}</td>
+		<td>
+			{{if $indexdef["unique"]}}
+				{{"true"}}
+			{{else}}
+				{{"false"}}
+			{{/if}}
+		</td>
+		<td>
+			{{if $indexdef["enforced"]}}
+				{{"true"}}
+			{{else}}
+				{{"false"}}
+			{{/if}}
+		</td>
+	</tr>
+		{{$numid=$numid+1}}
+	{{/foreach}}
+</table>
+{{elseif $iscscl eq 4}}
+	{{$isgroup=true}}
+	{{if array_key_exists( "Details", $cl_nature )}}
+		{{foreach $cl_nature["Details"] as $child}}
+			{{if array_key_exists( "GroupName", $child )}}
+				{{$isgroup=true}}
+				{{break}}
+			{{else}}
+				{{$isgroup=false}}
+				{{break}}
+			{{/if}}
+		{{/foreach}}
+	{{/if}}
+	{{$tablekeysnum = 0}}
+	{{$tableshownum = 0}}
+	{{if $isgroup}}
+		<table class="table table-bordered" style="word-break:break-all;">
+			<tr>
+				<td style="background-color:#F5F5F5;">对象</td>
+				<td style="background-color:#F5F5F5;">记录总数</td>
+				<td style="background-color:#F5F5F5;">同步写入副本数</td>
+				<td style="background-color:#F5F5F5;">压缩</td>
+				<td style="background-color:#F5F5F5;">分区类型</td>
+				<td style="background-color:#F5F5F5;">分区键</td>
+			</tr>
+			<tr>
+				<td>{{$cl_split["Name"]}}</td>
+				<td>{{$count_num}}</td>
+				<td>{{if array_key_exists("ReplSize",$cl_split)}}{{$cl_split["ReplSize"]}}{{/if}}</td>
+				<td>
+					{{if array_key_exists("Attribute",$cl_split)}}
+						{{if $cl_split["Attribute"]}}
+							{{"true"}}
+						{{else}}
+							{{"false"}}
+						{{/if}}
+					{{else}}
+						{{"false"}}
+					{{/if}}
+				</td>
+				<td>{{if array_key_exists( "ShardingType", $cl_split )}}{{$cl_split["ShardingType"]}}{{/if}}</td>
+				<td>{{if array_key_exists( "ShardingKey", $cl_split )}}{{json_encode($cl_split["ShardingKey"])}}{{/if}}</td>
+			</tr>
+			<tr>
+				<td colspan="6" style="background-color:#F5F5F5;">区间</td>
+			</tr>
+			{{if array_key_exists( "CataInfo", $cl_split )}}
+				{{foreach $cl_split["CataInfo"] as $child}}
+					<tr>
+						<td colspan="6">
+							<div style="margin-bottom:10px;">
+								<span id="tablekeysnum_{{$tablekeysnum}}" style="cursor:pointer;width:30px;" onclick='toggletable("tablekeysnum_{{$tablekeysnum}}","tableshownum_{{$tableshownum}}");'>[ + ]</span>			
+								{{if array_key_exists( "GroupName", $child )}}
+                                {{$child["GroupName"]}}
+                                {{/if}}
+							</div>
+							<div style="display:none;" id="tableshownum_{{$tableshownum}}">
+								<table class="table table-bordered" style="word-break:break-all;">
+										<tr>
+											<td width="50%" style="background-color:#F5F5F5;">下界</td>
+											<td width="50%" style="background-color:#F5F5F5;">上界</td>
+										</tr>
+										<tr>
+											<td width="50%">{{if array_key_exists( "LowBound", $child )}}{{json_encode($child["LowBound"])}}{{/if}}</td>
+											<td width="50%">{{if array_key_exists( "UpBound", $child )}}{{json_encode($child["UpBound"])}}{{/if}}</td>
+										</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+					{{$tablekeysnum=$tablekeysnum+1}}
+					{{$tableshownum=$tableshownum+1}}
+				{{/foreach}}
+			{{/if}}
+			{{if array_key_exists( "Details", $cl_nature )}}
+				<tr>
+					<td colspan="6" style="background-color:#F5F5F5;">索引</td>
+				</tr>
+				{{foreach $cl_nature["Details"] as $child}}
+					<tr>
+						<td colspan="6">
+							<div style="margin-bottom:10px;">
+								<span id="tablekeysnum_{{$tablekeysnum}}" style="cursor:pointer;width:30px;" onclick='toggletable("tablekeysnum_{{$tablekeysnum}}","tableshownum_{{$tableshownum}}");'>[ + ]</span>			
+								{{$child["GroupName"]}}
+							</div>
+							<div style="display:none;" id="tableshownum_{{$tableshownum}}">
+								<table class="table table-bordered" style="word-break:break-all;">
+										<tr>
+											<td width="50%" style="background-color:#F5F5F5;">所属节点</td>
+											<td width="50%" style="background-color:#F5F5F5;">索引数</td>
+										</tr>
+									{{if array_key_exists( "Group", $child )}}
+									{{foreach $child["Group"] as $child_child}}
+										<tr>
+											<td>{{$child_child["NodeName"]}}</td>
+											<td>{{$child_child["Indexes"]}}</td>
+										</tr>
+									{{/foreach}}
+									{{/if}}
+								</table>
+							</div>
+						</td>
+					</tr>
+					{{$tablekeysnum=$tablekeysnum+1}}
+					{{$tableshownum=$tableshownum+1}}
+				{{/foreach}}
+			{{/if}}
+		</table>
+	{{else}}
+    	{{$tempchild=$cl_nature["Details"]}}
+		<table class="table table-bordered" style="word-break:break-all;">
+        	<tr>
+        		<td style="background-color:#F5F5F5;">对象</td>
+				<td style="background-color:#F5F5F5;">记录总数</td>
+                <td style="background-color:#F5F5F5;">索引数</td>
+				<td style="background-color:#F5F5F5;">所属节点</td>
+            </tr>
+			<tr>
+				<td>{{$cl_nature["Name"]}}</td>
+				<td>{{$count_num}}</td>
+				<td>{{$child["Indexes"]}}</td>
+				<td>{{if array_key_exists( "NodeName", $child )}} {{$child["NodeName"]}} {{/if}}</td>
+			</tr>
+		</table>
+	{{/if}}
+{{/if}}

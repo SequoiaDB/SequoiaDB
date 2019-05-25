@@ -1,0 +1,70 @@
+[
+      {
+            "type": "table", 
+            "title": [
+                  {
+                        "text": "Cluster", 
+                        "width": "40%"
+                  }, 
+                  {
+                        "text": "描述", 
+                        "width": "30%"
+                  }, 
+                  {
+                        "text": "主机数", 
+                        "width": "15%"
+                  }, 
+                  {
+                        "text": "业务数", 
+                        "width": "15%"
+                  }
+            ], 
+            "rows": [
+                  [
+                        {
+                              "text": "cluster1", 
+                              "href": "#"
+                        }, 
+                        {
+                              "text": "cluster1"
+                        }, 
+                        {
+                              "text": "2"
+                        }, 
+                        {
+                              "text": "4"
+                        }
+                  ], 
+                  [
+                        {
+                              "text": "cluster2", 
+                              "href": "#"
+                        }, 
+                        {
+                              "text": "集群2"
+                        }, 
+                        {
+                              "text": "2"
+                        }, 
+                        {
+                              "text": "4"
+                        }
+                  ], 
+                  [
+                        {
+                              "text": "cluster3", 
+                              "href": "#"
+                        }, 
+                        {
+                              "text": "集群3"
+                        }, 
+                        {
+                              "text": "2"
+                        }, 
+                        {
+                              "text": "4"
+                        }
+                  ]
+            ]
+      }
+]

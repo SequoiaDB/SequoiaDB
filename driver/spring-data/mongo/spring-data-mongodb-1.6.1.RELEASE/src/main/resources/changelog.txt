@@ -1,0 +1,1234 @@
+Spring Data MongoDB Changelog
+=============================
+
+Changes in version 1.6.1.RELEASE (2014-10-30)
+---------------------------------------------
+* DATAMONGO-1080 - AbstractMongoQuery must not eagerly post-process results.
+* DATAMONGO-1079 - Release 1.6.1.
+* DATAMONGO-1077 - Update removes positional operator $ in key when used on DBRef property.
+* DATAMONGO-1076 - Finalizer hit db on lazy dbrefs.
+* DATAMONGO-1072 - Query placeholders in keys no longer correctly substituted.
+* DATAMONGO-1070 - Query annotation with $oid leads to a parse error.
+* DATAMONGO-1068 - elemMatch of Class Criteria fails to build special cirteria.
+* DATAMONGO-1063 - IllegalStateException using any().in().
+* DATAMONGO-1062 - Fix failing test in ServerAddressPropertyEditorUnitTests.
+* DATAMONGO-1058 - Using @Field("foo") with @Dbref breaking behavior.
+* DATAMONGO-1057 - AbstractMongoQuery.SlicedExecution#execute() skips every nth element.
+* DATAMONGO-1053 - In 1.6, any field in a mapped object named "language" will fail to map if it is a type other than String.
+* DATAMONGO-1049 - Reserved field name 'language' causes trouble.
+
+
+Changes in version 1.6.0.RELEASE (2014-09-05)
+---------------------------------------------
+* DATAMONGO-1046 - Release 1.6 GA.
+* DATAMONGO-1045 - Make sure Spring Data MongoDB can build against Spring 4.1.
+* DATAMONGO-1040 - deleteAll repository query don't use EntityMetadata collection name.
+* DATAMONGO-1039 - Polish implementation for cleaning up after tests.
+* DATAMONGO-1038 - Assert Mongo instances cleand up properly after test runs.
+* DATAMONGO-1036 - Custom repository implementations are not picked up when using CDI.
+* DATAMONGO-1034 - Improve error message when trying to convert incompatible types.
+* DATAMONGO-1032 - Polish Asciidoctor documentation.
+* DATAMONGO-1030 - Query methods retuning a single entity does not work with projecting types.
+* DATAMONGO-1027 - Collection inherits complex index from embedded class/object.
+* DATAMONGO-1025 - Duplicate index creation on embedded documents.
+
+
+Changes in version 1.5.4.RELEASE (2014-08-27)
+---------------------------------------------
+* DATAMONGO-1038 - Assert Mongo instances cleand up properly after test runs.
+* DATAMONGO-1034 - Improve error message when trying to convert incompatible types.
+* DATAMONGO-1033 - Release 1.5.4.
+* DATAMONGO-1030 - Query methods retuning a single entity does not work with projecting types.
+* DATAMONGO-1027 - Collection inherits complex index from embedded class/object.
+* DATAMONGO-1025 - Duplicate index creation on embedded documents.
+* DATAMONGO-1020 - LimitOperator should be a public class.
+* DATAMONGO-1008 - IndexOperations fail, when "2dsphere" index is present.
+
+
+Changes in version 1.6.0.RC1 (2014-08-13)
+-----------------------------------------
+* DATAMONGO-1024 - Upgrade to Java driver 2.12.3.
+* DATAMONGO-1021 - Release 1.6 RC1.
+* DATAMONGO-1020 - LimitOperator should be a public class.
+* DATAMONGO-1019 - Correct examples in reference documentation.
+* DATAMONGO-1017 - Add support for custom implementations in CDI repositories.
+* DATAMONGO-1016 - Remove deprecations in geospatial area.
+* DATAMONGO-1015 - Move to Asciidoctor for reference documentation.
+* DATAMONGO-1012 - Proxies for lazy DBRefs with field access should have their id values resolved eagerly.
+* DATAMONGO-1009 - Adapt to new multi-store configuration detection.
+* DATAMONGO-1008 - IndexOperations fail, when "2dsphere" index is present.
+* DATAMONGO-1005 - Improve cycle-detection for DbRef's.
+* DATAMONGO-1002 - Update.toString(…) might throw exception.
+* DATAMONGO-1001 - Can't save/update lazy load object.
+* DATAMONGO-999 - Multiple Mongo Instances always have the same MongoOption Reference - MongoOptionsFactoryBean has a static instance of MongoOptions.
+* DATAMONGO-996 - Pagination broken after introduction of the support for top/first.
+* DATAMONGO-995 - Parameter binding in String-based query does not bind all parameters.
+* DATAMONGO-993 - The system variables $$CURRENT and $$ROOT not handled correctly.
+* DATAMONGO-992 - Entity can't be deserialized if @TypeAlias is used.
+* DATAMONGO-991 - Adapt to deprecation removals in Spring Data Commons.
+* DATAMONGO-989 - MatchOperation should accept CriteriaDefinition.
+* DATAMONGO-987 - Problem with lazy loading in @DBRef when getting data using MongoTemplate.
+* DATAMONGO-974 - synthetic field target's name is returned instead of the alias name.
+* DATAMONGO-973 - Add support for deriving full text queries.
+* DATAMONGO-957 - Add support for query modifiers.
+* DATAMONGO-420 - Extra quotes being added to @Query values and fields.
+
+
+Changes in version 1.5.2.RELEASE (2014-07-28)
+---------------------------------------------
+* DATAMONGO-1007 - Release 1.5.2.
+* DATAMONGO-1002 - Update.toString(…) might throw exception.
+* DATAMONGO-1001 - Can't save/update lazy load object.
+* DATAMONGO-999 - Multiple Mongo Instances always have the same MongoOption Reference - MongoOptionsFactoryBean has a static instance of MongoOptions.
+* DATAMONGO-995 - Parameter binding in String-based query does not bind all parameters.
+* DATAMONGO-992 - Entity can't be deserialized if @TypeAlias is used.
+* DATAMONGO-989 - MatchOperation should accept CriteriaDefinition.
+* DATAMONGO-987 - Problem with lazy loading in @DBRef when getting data using MongoTemplate.
+* DATAMONGO-983 - Remove links to forum.spring.io.
+* DATAMONGO-982 - Assure compatibility with upcoming MongoDB driver versions.
+* DATAMONGO-978 - deleteBy/removeBy repository methods don't set type information in Before/AfterDeleteEvent.
+* DATAMONGO-972 - References are not handled properly in Querydsl integration.
+* DATAMONGO-969 - String @id field is not mapped to ObjectId when using QueryDSL .id.in(Collection<String>).
+* DATAMONGO-420 - Extra quotes being added to @Query values and fields.
+
+
+Changes in version 1.6.0.M1 (2014-07-10)
+----------------------------------------
+* DATAMONGO-983 - Remove links to forum.spring.io.
+* DATAMONGO-982 - Assure compatibility with upcoming MongoDB driver versions.
+* DATAMONGO-981 - Release 1.6 M1.
+* DATAMONGO-980 - Use meta annotations from spring data commons for @Score.
+* DATAMONGO-978 - deleteBy/removeBy repository methods don't set type information in Before/AfterDeleteEvent.
+* DATAMONGO-977 - Adapt to Spring 4 upgrade.
+* DATAMONGO-976 - Add support for reading $meta projection on textScore into document.
+* DATAMONGO-975 - Add support for date/time operators in aggregation framework.
+* DATAMONGO-973 - Add support for deriving full text queries.
+* DATAMONGO-972 - References are not handled properly in Querydsl integration.
+* DATAMONGO-970 - Id query cannot be created if object to remove is DBObject.
+* DATAMONGO-969 - String @id field is not mapped to ObjectId when using QueryDSL .id.in(Collection<String>).
+* DATAMONGO-968 - Add support for $meta projections and sorting for textScore metadata.
+* DATAMONGO-963 - Compound index with expireAfterSeconds causes repeating error on mongodb server.
+* DATAMONGO-962 - “Cycle found” with Spring Data Mongo 1.5.
+* DATAMONGO-960 - Allow to pass options to the Aggregation Pipeline.
+* DATAMONGO-958 - Move to FieldNamingStrategy SPI in Spring Data Commons.
+* DATAMONGO-954 - Add support for System Variables in Aggregations.
+* DATAMONGO-953 - Update object should have a proper equals/hashcode/toString.
+* DATAMONGO-952 - @Query annotation does not work with only field restrictions.
+* DATAMONGO-950 - Add support for limiting the query result in the query derivation mechanism.
+* DATAMONGO-949 - CyclicPropertyReferenceException in versions 1.5.0 + for MongoDB.
+* DATAMONGO-948 - Assertion error in MongoTemplate.getMappedSortObject.
+* DATAMONGO-944 - Add support $currentDate to Update.
+* DATAMONGO-938 - Exception when creating geo within Criteria using MapReduce.
+* DATAMONGO-937 - Add support for creating text index.
+* DATAMONGO-850 - Add support for text search using $text.
+* DATAMONGO-745 - @Query($in) and Pageable in result Page total = 0.
+
+
+Changes in version 1.4.3.RELEASE (2014-06-18)
+---------------------------------------------
+* DATAMONGO-955 - Release 1.4.3.
+* DATAMONGO-953 - Update object should have a proper equals/hashcode/toString.
+* DATAMONGO-952 - @Query annotation does not work with only field restrictions.
+* DATAMONGO-948 - Assertion error in MongoTemplate.getMappedSortObject.
+* DATAMONGO-938 - Exception when creating geo within Criteria using MapReduce.
+* DATAMONGO-924 - Aggregation not working with as() method in project() pipeline operator.
+* DATAMONGO-920 - Fix debug messages for delete events in AbstractMongoEventListener.
+* DATAMONGO-917 - DefaultDbRefResolver throws NPE when bundled into an uberjar.
+* DATAMONGO-914 - Improve resolving of LazyLoading proxies for classes that override equals/hashcode.
+* DATAMONGO-913 - Can't query using lazy DBRef objects.
+* DATAMONGO-912 - Aggregation#project followed by Aggregation#match with custom converter causes IllegalArgumentException.
+* DATAMONGO-898 - MapReduce seems not to work when javascript not being escaped.
+* DATAMONGO-847 - Allow usage of Criteria within Update.
+* DATAMONGO-745 - @Query($in) and Pageable in result Page total = 0.
+* DATAMONGO-647 - Using "OrderBy" in "query by method name" ignores the @Field annotation for field alias.
+
+
+Changes in version 1.5.0.RELEASE (2014-05-20)
+---------------------------------------------
+* DATAMONGO-936 - Release 1.5 GA.
+* DATAMONGO-929 - Index key should be the properties dot path when creating index using @Indexed / @CompoundIndex.
+* DATAMONGO-928 - Error when using field-naming-strategy-ref.
+* DATAMONGO-926 - Stack Overflow Error with 1.5.0.RC1 Release.
+* DATAMONGO-925 - MappingMongoConverterParser is incorrectly rejecting field-naming-strategy-ref XML configuration.
+* DATAMONGO-647 - Using "OrderBy" in "query by method name" ignores the @Field annotation for field alias.
+* DATAMONGO-367 - @Indexed field in embedded Object creates new collection.
+
+
+Changes in version 1.5.0.RC1 (2014-05-02)
+-----------------------------------------
+* DATAMONGO-924 - Aggregation not working with as() method in project() pipeline operator.
+* DATAMONGO-921 - Upgrade to MongoDB Java driver 2.12.1.
+* DATAMONGO-920 - Fix debug messages for delete events in AbstractMongoEventListener.
+* DATAMONGO-919 - Release 1.5 RC1.
+* DATAMONGO-917 - DefaultDbRefResolver throws NPE when bundled into an uberjar.
+* DATAMONGO-914 - Improve resolving of LazyLoading proxies for classes that override equals/hashcode.
+* DATAMONGO-913 - Can't query using lazy DBRef objects.
+* DATAMONGO-912 - Aggregation#project followed by Aggregation#match with custom converter causes IllegalArgumentException.
+* DATAMONGO-910 - Upgrade to latest MongoDB Java driver (2.12).
+* DATAMONGO-909 - @CompoundIndex on inherited entity classes.
+* DATAMONGO-908 - Nested field references in group operations broken.
+* DATAMONGO-907 - Assert compatibility with mongodb 2.6.0.
+* DATAMONGO-905 - Remove obsolete CGLib dependency from cross store module.
+* DATAMONGO-901 - MongoRepositoryConfigurationExtension fails to invoke super method.
+* DATAMONGO-899 - Overhaul automatic index creation.
+* DATAMONGO-898 - MapReduce seems not to work when javascript not being escaped.
+* DATAMONGO-897 - FindAndUpdate broken when using @DbRef and interface as target.
+* DATAMONGO-896 - Assert compatibility with latest MongoDB Java driver.
+* DATAMONGO-895 - Use most specific type for checks against values in DBObjects.
+* DATAMONGO-893 - Mapping Convertor does not remove "_class" property on collection of embedded objects.
+* DATAMONGO-892 - <mongo:mapping-converter> can't be configured as nested bean definition.
+* DATAMONGO-888 - Mapping is not applied to SortObject during queries.
+* DATAMONGO-866 - Add new field naming strategy and make it configurable through XML/Java config.
+* DATAMONGO-847 - Allow usage of Criteria within Update.
+* DATAMONGO-827 - @Indexed and @CompundIndex cannot be created without giving index name.
+
+
+Changes in version 1.4.2.RELEASE (2014-04-15)
+---------------------------------------------
+** Fix
+    * [DATAMONGO-880] - Improved handling of persistence of lazy-loaded DBRefs.
+    * [DATAMONGO-884] - Improved handling for Object methods in LazyLoadingInterceptor.
+    * [DATAMONGO-887] - Added unit tests to verify TreeMaps can be converted.
+    * [DATAMONGO-888] - Sorting now considers mapping information.
+    * [DATAMONGO-890] - Fixed Point.toString().
+    * [DATAMONGO-892] - Reject nested MappingMongoConverter declarations in XML.
+    * [DATAMONGO-893] - Converter must not write "_class" information for know types.
+    * [DATAMONGO-897] - Fixed potential NullPointerException in QueryMapper.
+    * [DATAMONGO-908] - Support for nested field references in group operations.
+
+** Improvement
+    * [DATAMONGO-881] - Allow custom conversions to override default conversions.
+
+** Task
+    * [DATAMONGO-895] - Use most specific type for checks against values in DBObjects.
+    * [DATAMONGO-896] - Assert compatibility with latest MongoDB Java driver.
+    * [DATAMONGO-905] - Removed obsolete dependency to CGLib from cross-store support.
+    * [DATAMONGO-907] - Assert compatibility with mongodb 2.6.
+    * [DATAMONGO-911] - Release 1.4.2
+
+Changes in version 1.5.0.M1 (2014-03-31)
+----------------------------------------
+** Fix
+    * [DATAMONGO-471] - Update operation $addToSet does not support adding a list with $each.
+    * [DATAMONGO-773] - Spring Data MongoDB projection search on @DBref fields.
+    * [DATAMONGO-821] - MappingException for $size queries on subcollections containing dbrefs.
+    * [DATAMONGO-829] - NearQuery, when used in conjunction with a Query, it sets num=0, unless Query specifies otherwise.
+    * [DATAMONGO-833] - EnumSet is not handled correctly.
+    * [DATAMONGO-843] - Unable to use @EnableMongoAuditing annotation in Java config.
+    * [DATAMONGO-862] - Update Array Field Using Positional Operator ($) Does Not Work.
+    * [DATAMONGO-863] - QueryMapper.getMappedValue Fails To Handle Arrays Mapped To $in.
+    * [DATAMONGO-868] - findAndModify method does not increment @Version field.
+    * [DATAMONGO-871] - Declarative query method with array return type causes NPE.
+    * [DATAMONGO-877] - AbstractMongoConfiguration.getMappingBasePackage() throws NullPointerException if config class resides in default package.
+    * [DATAMONGO-880] - Error when trying to persist an object containing a DBRef which was lazy loaded.
+    * [DATAMONGO-884] - Potential NullPointerException for lazy DBRefs.
+    * [DATAMONGO-887] - Repository not instantiated when entity contains field of type TreeMap.
+    * [DATAMONGO-890] - Point class toString method is confusing.
+
+** Improvement
+    * [DATAMONGO-809] - Make filename optional in GridFsOperations doc and GridFsTemplate implementation.
+    * [DATAMONGO-858] - Add support for common geospatial structures.
+    * [DATAMONGO-865] - Adjust test dependencies to avoid ClassNotFoundException during test runs.
+    * [DATAMONGO-881] - Cannot override default converters in CustomConversions.
+    * [DATAMONGO-882] - Adapt to removal of obsolete generics in BeanWrapper.
+
+** New Feature
+    * [DATAMONGO-566] - Provide support for removeBy… / deleteBy… methods like for findBy… on repository interfaces.
+    * [DATAMONGO-870] - Add support for sliced query method execution.
+
+** Task
+    * [DATAMONGO-876] - Adapt to changes introduced for property access configuration.
+    * [DATAMONGO-883] - Update auditing configuration to enable auditing annotations on accessors.
+    * [DATAMONGO-859] - Release 1.5 M1.
+
+Changes in version 1.4.1.RELEASE (2014-03-13)
+---------------------------------------------
+** Fix
+    * [DATAMONGO-773] - Verify that @DBRef fields can be included in query.
+    * [DATAMONGO-821] - Fixed handling of keyword expressions for DBRefs.
+    * [DATAMONGO-829] - NearQuery should not default 'num' to zero.
+    * [DATAMONGO-833] - Support for EnumSet and EnumMap in MappingMongoConverter.
+    * [DATAMONGO-843] - Back-port of defaulting of the MappingContext for auditing.
+    * [DATAMONGO-862] - Fixed handling of unmapped paths for updates.
+    * [DATAMONGO-863] - UpdateMapper doesn't convert raw DBObjects anymore.
+    * [DATAMONGO-868] - MongoTemplate.findAndModify(…) increases version if not handled manually.
+    * [DATAMONGO-871] - Add support for arrays as query method return types.
+    * [DATAMONGO-877] - Added guard against null-package in AbstractMappingConfiguration.
+
+** Improvement
+    * [DATAMONGO-865] - Adjust test dependencies to avoid ClassNotFoundException during test runs.
+
+Changes in version 1.3.5.RELEASE (2014-03-10)
+---------------------------------------------
+** Fix
+    * [DATAMONGO-829] - NearQuery, when used in conjunction with a Query, no longer sets num=0, unless Query specifies otherwise.
+    * [DATAMONGO-871] - Repository queries support array return type.
+
+** Improvement
+    * [DATAMONGO-865] - Avoid ClassNotFoundException during test runs.
+
+Changes in version 1.4.0.RELEASE (2014-02-24)
+---------------------------------------------
+
+** Fix
+    * [DATAMONGO-354] - MongoTemplate should support multiple $pushAll in one update.
+    * [DATAMONGO-404] - Removing a DBRef using pull does not work.
+    * [DATAMONGO-410] - Update with pushAll should recognize defined Converter.
+    * [DATAMONGO-812] - $pushAll is deprecated since mongodb 2.4 move to $push $each.
+    * [DATAMONGO-830] - Fix NPE during cache warmup in CustomConversions.
+    * [DATAMONGO-838] - Support for refering to expression based field in group operation.
+    * [DATAMONGO-840] - Support for nested MongoDB field references in SpEL expressions within Projections.
+    * [DATAMONGO-842] - Fix documentation error in GRIDFS section.
+    * [DATAMONGO-852] - Increase version for update should traverse DBObject correctly in order to find version property.
+
+** Improvement
+    * [DATAMONGO-468] - Simplification for updates of DBRef fields with mongoTemplate.
+    * [DATAMONGO-849] - Documentation on github should not reference invalid class.
+
+** Task
+    * [DATAMONGO-848] - Ensure compatibility with Mongo Java driver 2.12.
+    * [DATAMONGO-853] - Update no longer allows null keys.
+    * [DATAMONGO-856] - Update documentation.
+
+Changes in version 1.3.4.RELEASE (2014-02-17)
+---------------------------------------------
+** Bug
+    * [DATAMONGO-407] - Collection with generics losing element type after $set update
+    * [DATAMONGO-410] - Update with pushAll doesnt recognize defined Converter
+    * [DATAMONGO-686] - ClassCastException while reusing Query object
+    * [DATAMONGO-805] - Excluding DBRef field in a query causes a MappingException
+    * [DATAMONGO-807] - using findAndModify removes the _class field of encapsulated classes, causing MappingInstantiationException
+    * [DATAMONGO-808] - Spring data mongoDB not working with IPv6 address directly
+    * [DATAMONGO-811] - updateFirst methods do not increment @Version field
+    * [DATAMONGO-816] - Unable to execute query with DocumentCallbackHandler when query contains Criteria with enums.
+    * [DATAMONGO-828] - UpdateFirst throws OptimisticLockingFailureException when updating document that does not exist
+    * [DATAMONGO-830] - NPE during cache warmup in CustomConversions
+    * [DATAMONGO-842] - Documentation error in GRIDFS section
+** Improvement
+    * [DATAMONGO-813] - GridFsTemplate.getResource(location) throws NPE if don't find file
+** Task
+    * [DATAMONGO-824] - Add contribution guidelines
+    * [DATAMONGO-846] - Release 1.3.4
+
+Changes in version 1.4.0.RC1 (2014-01-29)
+---------------------------------------------
+
+** Bug
+    * [DATAMONGO-407] - Collection with generics losing element type after $set update
+    * [DATAMONGO-686] - ClassCastException while reusing Query object
+    * [DATAMONGO-726] - References to non existing classes in namespace XSD
+    * [DATAMONGO-804] - EnableMongoRepositories repositoryImplementationPostfix() default is empty String instead of "Impl"
+    * [DATAMONGO-805] - Excluding DBRef field in a query causes a MappingException
+    * [DATAMONGO-806] - Spring Data MongoDB - Aggregation Framework - No property _id found for type com.entity.User
+    * [DATAMONGO-807] - using findAndModify removes the _class field of encapsulated classes, causing MappingInstantiationException
+    * [DATAMONGO-808] - Spring data mongoDB not working with IPv6 address directly
+    * [DATAMONGO-811] - updateFirst methods do not increment @Version field
+    * [DATAMONGO-816] - Unable to execute query with DocumentCallbackHandler when query contains Criteria with enums.
+** Improvement
+    * [DATAMONGO-778] - Create geospatial index of type other than 2d with @GeoSpatialIndexed
+    * [DATAMONGO-785] - Add support for geospatial 2Dsphere and geohaystack index types
+    * [DATAMONGO-787] - Guard against SpEL issue in Spring 3.2.4
+    * [DATAMONGO-799] - Fix failing test in MongoTemplateTests on Mongo 2.5.x
+    * [DATAMONGO-802] - Change AbstractMongoConfiguration.mongoDbFactory() to return MongoDbFactory
+    * [DATAMONGO-813] - GridFsTemplate.getResource(location) throws NPE if don't find file
+    * [DATAMONGO-822] - Add support for eager CDI repository instantiation
+    * [DATAMONGO-823] - Add bucket attribute to <mongo:gridFsTemplate />
+    * [DATAMONGO-837] - Upgrade MongoDB Java driver to 2.11.4
+** Task
+    * [DATAMONGO-790] - Ensure compatibility with Spring Framework 4.0
+    * [DATAMONGO-824] - Add contribution guidelines
+    * [DATAMONGO-826] - Release Spring Data MongoDB 1.4.0.RC1
+    * [DATAMONGO-835] - Code cleanups
+
+Changes in version 1.3.3.RELEASE (2013-12-11)
+---------------------------------------------
+** Bug
+    * [DATAMONGO-726] - Fixed classname references in namespace XSDs.
+    * [DATAMONGO-788] - Projection operations do not render synthetic fields properly.
+    * [DATAMONGO-795] - When adding custom converters to the mongo template it is possible to get unpredictable behaviour
+    * [DATAMONGO-804] - Fix default annotation attribute value for repositoryImplementationPostfix().
+    * [DATAMONGO-806] - Fixed invalid rendering of id field references.
+    * [DATAMONGO-768] - Improve documentation of how to use @PersistenceConstructor
+
+** Improvement
+    * [DATAMONGO-791] - Added newAggregation(…) overloads to accept a List.
+    * [DATAMONGO-799] - Fix failing test in MongoTemplateTests on Mongo 2.5.x
+    * [DATAMONGO-800] - Improved AuditingIntegrationTests.
+** Task
+    * [DATAMONGO-810] - Release 1.3.3
+
+Changes in version 1.4.0.M1 (2013-11-19)
+---------------------------------------------
+** Bug
+    * [DATAMONGO-534] - The GridFs query execution does not return sorted resources, when the sorting fields are defined in the query definition
+    * [DATAMONGO-630] - Add support of $setOnInsert modifier for upsert
+    * [DATAMONGO-746] - IndexInfo cannot be read for indices created via mongo shell
+    * [DATAMONGO-752] - QueryMapper prevents searching for values that start with a $ [dollarsign]
+    * [DATAMONGO-753] - Add support for nested field references in group operations
+    * [DATAMONGO-758] - Reject excludes other than _id in projection operations
+    * [DATAMONGO-759] - Render group operation without non synthetic fields correctly.
+    * [DATAMONGO-761] - ClassCastException in SpringDataMongodbSerializer.getKeyForPath
+    * [DATAMONGO-768] - Improve documentation of how to use @PersistenceConstructor
+    * [DATAMONGO-788] - Projection operations do not render synthetic fields properly.
+    * [DATAMONGO-789] - Support login via different (e.g. admin) authentication database
+    * [DATAMONGO-795] - When adding custom converters to the mongo template it is possible to get unpredictable behaviour
+** Improvement
+    * [DATAMONGO-757] - Projections should follow mongodb conventions more precisely.
+    * [DATAMONGO-764] - Add support for SSL connections to Mongo
+    * [DATAMONGO-766] - Allow nested field references on properties through e.g. @Field("a.b")
+    * [DATAMONGO-769] - Support arithmetic operators for properties
+    * [DATAMONGO-770] - Repository - findBy<Field>IgnoreCase doesnt work
+    * [DATAMONGO-771] - Saving raw JSON through MongoTemplate.insert(…) fails
+    * [DATAMONGO-774] - Support SpEL expressions to define arithmetical projection operations in the aggregation framework
+    * [DATAMONGO-776] - TypeBasedAggregationOperationContext should use MappingContext.getPersistentPropertyPath(String, Class<?>)
+    * [DATAMONGO-780] - Add support for nested repositories
+    * [DATAMONGO-782] - Typo in reference documentation
+    * [DATAMONGO-785] - Add support for geospatial 2Dsphere and geohaystack index types
+    * [DATAMONGO-787] - Upgrade to Spring 3.2.4
+    * [DATAMONGO-791] - make newAggregation() method to accept list
+    * [DATAMONGO-793] - Adapt to changes in Spring Data Commons triggered by repository initialization changes
+    * [DATAMONGO-800] - AuditingIntegrationTests fail on fast machines
+** New Feature
+    * [DATAMONGO-348] - Lazy Load for DbRef
+    * [DATAMONGO-653] - Support for index operations in GridFsOperations
+    * [DATAMONGO-760] - Add support for custom findAll Queries
+    * [DATAMONGO-792] - Add support to configure Auditing via JavaConfig.
+** Task
+    * [DATAMONGO-777] - Upgrade to Mongo Java Driver in 2.11
+
+Changes in version 1.3.2.RELEASE (2013-10-25)
+---------------------------------------------
+** Bug
+    * [DATAMONGO-746] IndexInfo cannot be read for indices created via mongo shell
+    * [DATAMONGO-752] QueryMapper prevents searching for values that start with a $ [dollarsign]
+    * [DATAMONGO-753] Add support for nested field references in group operations
+    * [DATAMONGO-758] Reject excludes other than _id in projection operations
+    * [DATAMONGO-759] Render group operation without non synthetic fields correctly.
+    * [DATAMONGO-761] ClassCastException in SpringDataMongodbSerializer.getKeyForPath
+    * [DATAMONGO-768] Improve documentation of how to use @PersistenceConstructor
+
+** Improvement
+    * [DATAMONGO-757] - Projections should follow mongodb conventions more precisely.
+    * [DATAMONGO-769] - Support arithmetic operators for properties
+    * [DATAMONGO-771] - Saving raw JSON through MongoTemplate.insert(…) fails
+** Task
+    * [DATAMONGO-772] - Release 1.3.2
+
+Changes in version 1.3.1.RELEASE (2013-09-09)
+---------------------------------------------
+** Task
+    * [DATAMONGO-751] Upgraded to Spring Data Commons 1.6.1.
+
+Changes in version 1.3.0.RELEASE (2013-09-09)
+---------------------------------------------
+** Bug
+    * [DATAMONGO-540] MongoTemplate upsert and findOne handle id queries differently.
+    * [DATAMONGO-445] GeoNear Query Doesn't Work with Pageable.
+    * [DATAMONGO-507] Criteria not() is not working.
+    * [DATAMONGO-602] Querying with $in operator on the id field of type BigInteger returns zero results.
+
+** Improvement
+    * [DATAMONGO-725] Improve configurability and documentation of TypeMapper on MappingMongoConverter.
+    * [DATAMONGO-738] Add methods to MongoTemplate and MongoOperations to allow calling class to pass both the entityClass and the collectionName for the update and upsert methods.
+    * [DATAMONGO-737] Extra MongoSynchronizations cause TransactionSynchronizationManager to throw IllegalStateException on transaction complete.
+    * [DATAMONGO-743] Support returning raw json from a query.
+
+** Task
+    * [DATAMONGO-742] Document CDI integration in reference documentation.
+
+Changes in version 1.3.0.RC1 (2013-08-05)
+-----------------------------------------
+** Bug
+    * [DATAMONGO-392] - Updating an object does not write type information for objects to be updated
+    * [DATAMONGO-685] - JMX ServerInfo bean may return wrong info
+    * [DATAMONGO-688] - There is no precedence between @Id annotation and field named "id" - both are attempted to be used
+    * [DATAMONGO-693] - MongoFactoryBean should create a mongo instance with host/port if replicaset is null or empty
+    * [DATAMONGO-702] - Spring Data MongoDB projection search, is not properly configured with respective Java Pojo
+    * [DATAMONGO-704] - Remove references to SimpleMongoConverter from JavaDoc.
+    * [DATAMONGO-705] - QueryMapper doesn't handles exists query with DBRef field
+    * [DATAMONGO-706] - QueryMapper does not transform DBRefs in nested keywords correctly
+    * [DATAMONGO-709] - Polymorphic query on documents in same collection
+    * [DATAMONGO-717] - Application context is not properly distributed to persistent entities
+    * [DATAMONGO-721] - Polymorphic attribute type not persisted on update operations
+
+** Improvement
+    * [DATAMONGO-701] - Improve performance of indexed starts-with queries
+    * [DATAMONGO-713] - Typos in readme.md
+
+** New Feature
+    * [DATAMONGO-544] - Support for TTL collection via Indexed annotation
+    * [DATAMONGO-586] - Add support for new Aggregation Framework
+
+** Task
+    * [DATAMONGO-714] - Add latest formatter to project sources
+    * [DATAMONGO-723] - Clean up test cases
+    * [DATAMONGO-728] - Add missing package-info.java files
+    * [DATAMONGO-731] - Adapt refactorings in Spring Data Commons
+    * [DATAMONGO-732] - Release 1.3 RC1
+
+
+Changes in version 1.2.3.GA (2013-07-24)
+----------------------------------------
+** Task
+    * [DATAMONGO-728] - Add missing package-info.java files
+    * [DATAMONGO-729] - Release 1.2.3.
+
+
+Changes in version 1.2.2.GA (2013-07-19)
+----------------------------------------
+** Bug
+    * [DATAMONGO-663] - org.springframework.data.mongodb.core.query.Field needs an equals method
+    * [DATAMONGO-677] - QueryMapper does not handled correctly Map with DBRef value
+    * [DATAMONGO-679] - MongoTemplate.doSave(…) passed a JSON String doesn't save it.
+    * [DATAMONGO-683] - QueryMapper does not handle default _id when no MappingMetadata is present
+    * [DATAMONGO-685] - JMX ServerInfo bean may return wrong info
+    * [DATAMONGO-693] - MongoFactoryBean should create a mongo instance with host/port if replicaset is null or empty
+    * [DATAMONGO-704] - Remove references to SimpleMongoConverter from JavaDoc.
+    * [DATAMONGO-705] - QueryMapper doesn't handles exists query with DBRef field
+    * [DATAMONGO-706] - QueryMapper does not transform DBRefs in nested keywords correctly
+    * [DATAMONGO-717] - Application context is not properly distributed to persistent entities
+
+** Improvement
+    * [DATAMONGO-682] - Remove performance hotspots
+    * [DATAMONGO-701] - Improve performance of indexed starts-with queries
+
+** Task
+    * [DATAMONGO-658] - Minor formatting changes to README.md
+    * [DATAMONGO-678] - Performance improvements in CustomConversions
+    * [DATAMONGO-714] - Add latest formatter to project sources
+    * [DATAMONGO-723] - Clean up test cases
+    * [DATAMONGO-727] - Release 1.2.2
+
+
+Changes in version 1.3.0.M1 (2013-06-04)
+----------------------------------------
+** Bug
+    * [DATAMONGO-571] - Spring Data for MongoDb doesn't save null values when @Version is added to domain class
+    * [DATAMONGO-612] - Fix PDF reference documentation name
+    * [DATAMONGO-613] - Images missing from reference documentation
+    * [DATAMONGO-617] - NullPointerException in MongoTemplate.initializeVersionProperty(…)
+    * [DATAMONGO-620] - MongoTemplate.doSaveVersioned(…) does not consider collection handed into the method
+    * [DATAMONGO-621] - MongoTemplate.initializeVersionProperty(…) does not use ConversionService
+    * [DATAMONGO-622] - An unversioned object should be created using insert(…) instead of save.
+    * [DATAMONGO-629] - Different results when using count and find with the same criteria with 'id' field
+    * [DATAMONGO-638] - MappingContext should not create PersistentEntity instances for native maps
+    * [DATAMONGO-640] - MongoLog4jAppender suffers from potential NullPointerException when closing Mongo instance
+    * [DATAMONGO-641] - MongoLog4jAppender suffers from potential NullPointerException when closing Mongo instance
+    * [DATAMONGO-642] - MongoChangeSetPersister does not use mapped collection name
+    * [DATAMONGO-646] - Can't insert DBObjects through MongoTemplate
+    * [DATAMONGO-648] - ID attributes in namespace shouldn't be XSD IDs
+    * [DATAMONGO-663] - org.springframework.data.mongodb.core.query.Field needs an equals method
+    * [DATAMONGO-669] - Incompatibility with Querydsl 3.1.1
+    * [DATAMONGO-676] - SimpleMongoRepository fails if used with customized collection name
+    * [DATAMONGO-677] - QueryMapper does not handled correctly Map with DBRef value
+    * [DATAMONGO-679] - MongoTemplate.doSave(…) passed a JSON String doesn't save it.
+    * [DATAMONGO-683] - QueryMapper does not handle default _id when no MappingMetadata is present
+
+** Improvement
+    * [DATAMONGO-140] - Add XML namespace element for MongoTemplate
+    * [DATAMONGO-545] - Add before delete and after delete events for AbstractMongoEventListener
+    * [DATAMONGO-554] - Add background attribute to @Indexed and @CompoundIndex
+    * [DATAMONGO-569] - AbstractMongoConfiguration cannot be used on CloudFoundry
+    * [DATAMONGO-594] - cross-store=> Define document name using annotation
+    * [DATAMONGO-631] - Explicitly prevent an Order instance set to ignore case from being piped into a query
+    * [DATAMONGO-632] - Polish namespace XSD to avoid errors in STS
+    * [DATAMONGO-633] - Upgrade to Querydsl 3.0.0
+    * [DATAMONGO-634] - Inherit application scope from basic CDI bean of Spring Data Commons
+    * [DATAMONGO-635] - Fix some Sonar warnings
+    * [DATAMONGO-636] - Add support for countBy projections
+    * [DATAMONGO-637] - Typo in Query.query(…)
+    * [DATAMONGO-651] - WriteResult not available from thrown Exception
+    * [DATAMONGO-652] - Add support for elemMatch and positional operator projections
+    * [DATAMONGO-656] - Potential NullPointerException when debugging in MongoTemplate
+    * [DATAMONGO-657] - Allow to write Map value as DBRef
+    * [DATAMONGO-666] - Fix architecture inconsistency created by MongoDataIntegrityViolationException
+    * [DATAMONGO-680] - SimpleMongoRepository.exists(ID) improvement
+    * [DATAMONGO-681] - Expose MongoTemplate.exists() method
+    * [DATAMONGO-682] - Remove performance hotspots
+
+** New Feature
+    * [DATAMONGO-607] - Add an abbreviating field naming strategy
+    * [DATAMONGO-628] - Add XML namespace elements for MongoTemplate and GridFsTemplate
+
+** Task
+    * [DATAMONGO-597] - Website is severely out-of-date
+    * [DATAMONGO-658] - Minor formatting changes to README.md
+    * [DATAMONGO-667] - Remove deprecations and further deprecate sorting/ordering types
+    * [DATAMONGO-672] - Upgrade to latest Spring Data Build and Commons
+    * [DATAMONGO-678] - Performance improvements in CustomConversions
+    * [DATAMONGO-690] - Release 1.3 M1
+
+Changes in version 1.2.1.GA (2013-04-17)
+----------------------------------------
+** Bug
+    * [DATAMONGO-571] - Spring Data for MongoDb doesn't save null values when @Version is added to domain class
+    * [DATAMONGO-612] - Fix PDF reference documentation name
+    * [DATAMONGO-613] - Images missing from reference documentation
+    * [DATAMONGO-617] - NullPointerException in MongoTemplate.initializeVersionProperty(…)
+    * [DATAMONGO-620] - MongoTemplate.doSaveVersioned(…) does not consider collection handed into the method
+    * [DATAMONGO-621] - MongoTemplate.initializeVersionProperty(…) does not use ConversionService
+    * [DATAMONGO-622] - An unversioned object should be created using insert(…) instead of save.
+    * [DATAMONGO-629] - Different results when using count and find with the same criteria with 'id' field
+    * [DATAMONGO-638] - MappingContext should not create PersistentEntity instances for native maps
+    * [DATAMONGO-640] - MongoLog4jAppender suffers from potential NullPointerException when closing Mongo instance
+    * [DATAMONGO-641] - MongoLog4jAppender suffers from potential NullPointerException when closing Mongo instance
+    * [DATAMONGO-642] - MongoChangeSetPersister does not use mapped collection name
+    * [DATAMONGO-646] - Can't insert DBObjects through MongoTemplate
+    * [DATAMONGO-648] - ID attributes in namespace shouldn't be XSD IDs
+
+** Improvement
+    * [DATAMONGO-594] - cross-store=> Define document name using annotation
+    * [DATAMONGO-632] - Polish namespace XSD to avoid errors in STS
+    * [DATAMONGO-635] - Fix some Sonar warnings
+    * [DATAMONGO-637] - Typo in Query.query(…)
+    * [DATAMONGO-651] - WriteResult not available from thrown Exception
+    * [DATAMONGO-656] - Potential NullPointerException when debugging in MongoTemplate
+
+** Task
+    * [DATAMONGO-597] - Website is severely out-of-date
+    * [DATAMONGO-654] - Release 1.2.1
+
+Changes in version 1.2.0.GA (2013-02-08)
+----------------------------------------
+** Bug
+    * [DATAMONGO-378] - MapReduceResults ClassCastException due to raw results counts as Long
+    * [DATAMONGO-568] - MongoTemplate.find(...)  method causes Nullpointer if query parameter is null
+    * [DATAMONGO-570] - Query methods on @DBRef field with the qualifier isNull throws Exception
+    * [DATAMONGO-583] - Check if you are using for loop with a DBCursor
+    * [DATAMONGO-585] - Exception during authentication in multithreaded access
+    * [DATAMONGO-588] - MongoTemplate.insert does not initialize null versions to zero
+    * [DATAMONGO-592] - Persisting Objects containing Objects with PersistenceConstructor causes MappingInstantiationException
+    * [DATAMONGO-593] - Persisting objects containing primitive arrays with PersistenceConstructor causes MappingInstantiationException
+    * [DATAMONGO-600] - Issues with polymorphism of nested types
+    * [DATAMONGO-601] - CannotGetMongoDbConnectionException should not print password in logfile
+    * [DATAMONGO-603] - Results of geo queries in repository dont't get metrics of supplied distance applied
+
+** Improvement
+    * [DATAMONGO-503] - GridFsTemplate is not setting the file Content-Type
+    * [DATAMONGO-573] - Move to Logback for test logging
+    * [DATAMONGO-580] - Polish BeanDefinitionParsers to avoid warnings in STS
+    * [DATAMONGO-581] - Expose managed PersistentEntity in MongoRepositoryFactoryBean
+    * [DATAMONGO-606] - Register converter for JodaTime types if present on classpath
+
+** New Feature
+    * [DATAMONGO-577] - Add support for auditing
+
+** Task
+    * [DATAMONGO-81] - Create unit tests for exception translation in MongoTemplate
+    * [DATAMONGO-576] - Configure java.util.logging to reduce verbose test logging
+    * [DATAMONGO-590] - Clean up code in MongoTemplate
+    * [DATAMONGO-598] - Upgrade to new build infrastructure
+    * [DATAMONGO-609] - Release 1.2.0
+
+Changes in version 1.1.2.GA (2013-02-08)
+----------------------------------------
+** Bug
+    * [DATAMONGO-562] - Cannot create entity with OptimisticLocking (@Version) and initial id
+    * [DATAMONGO-568] - MongoTemplate.find(...)  method causes Nullpointer if query parameter is null
+    * [DATAMONGO-570] - Query methods on @DBRef field with the qualifier isNull throws Exception
+    * [DATAMONGO-578] - pom version issues in 1.1.x branch
+    * [DATAMONGO-583] - Check if you are using for loop with a DBCursor
+    * [DATAMONGO-585] - Exception during authentication in multithreaded access
+    * [DATAMONGO-588] - MongoTemplate.insert does not initialize null versions to zero
+    * [DATAMONGO-600] - Issues with polymorphism of nested types
+    * [DATAMONGO-601] - CannotGetMongoDbConnectionException should not print password in logfile
+
+** Improvement
+    * [DATAMONGO-573] - Move to Logback for test logging
+    * [DATAMONGO-580] - Polish BeanDefinitionParsers to avoid warnings in STS
+
+** Task
+    * [DATAMONGO-81] - Create unit tests for exception translation in MongoTemplate
+    * [DATAMONGO-563] - Upgrade to MongoDB driver 2.9.2 as it fixes a serious regression introduced in 2.9.0
+    * [DATAMONGO-576] - Configure java.util.logging to reduce verbose test logging
+    * [DATAMONGO-590] - Clean up code in MongoTemplate
+    * [DATAMONGO-608] - Release 1.1.2
+
+Changes in version 1.1.1.GA (2012-10-17)
+----------------------------------------
+** Bug
+    * [DATAMONGO-549] - MongoTemplate.save(…) suffers from potential NullPointException
+    * [DATAMONGO-550] - MongoTemplate.save(BasicDBObject, String) results in NPE (after upgrading to 1.1.0.RELEASE
+    * [DATAMONGO-551] - MongoTemplate.save(String, String) results in NPE (after upgrading to 1.1.0.RELEASE
+
+** Task
+    * [DATAMONGO-559] - Release 1.1.1.RELEASE
+
+
+Changes in version 1.1.0.GA (2012-10-10)
+----------------------------------------
+** Bug
+    * [DATAMONGO-523] - @TypeAlias annotation not used with AbstractMongoConfiguration
+    * [DATAMONGO-527] - Criteria.equals(…) broken for complex criterias
+    * [DATAMONGO-530] - MongoMappingContext.setApplicationContext(…) does not invoke superclass method
+    * [DATAMONGO-531] - StackOverflowError when persisting Groovy beans
+    * [DATAMONGO-532] - Multithreading authentication issue
+    * [DATAMONGO-533] - Default MongoPersistentEntityIndexCreator not registered if ApplicationContext already contains one for different MappingContext
+    * [DATAMONGO-535] - Retrieve of existing Mongo DB from Transaction is not working
+    * [DATAMONGO-539] - Document remove doesn't work when giving collection name as a parameter
+
+** Improvement
+    * [DATAMONGO-279] - Optimistic locking using @Version field
+    * [DATAMONGO-456] - XSD incorrectly states the default value for the mongo-ref attribute of the mongo:db-factory configuration element
+    * [DATAMONGO-457] - broken links "Spring Data MongoDB - Reference Documentation"
+    * [DATAMONGO-526] - Polish README.md
+    * [DATAMONGO-529] - Improve Querydsl setup
+    * [DATAMONGO-538] - Unify usage of Sort APIs in Query API
+
+** New Feature
+    * [DATAMONGO-389] - stable release spring-data-mongodb should work with stable spring spring-data-jpa
+
+** Task
+    * [DATAMONGO-484] - Migrate to latest MongoDB Java driver
+    * [DATAMONGO-528] - Document GridFS support
+    * [DATAMONGO-536] - Fix package cycle introduced by SerializationUtils
+    * [DATAMONGO-541] - Release 1.1 GA
+    * [DATAMONGO-543] - Polish reference documentation
+    * [DATAMONGO-548] - Upgrade to Querydsl 2.8.0
+
+
+Changes in version 1.1.0.RC1 (2012-24-08)
+-----------------------------------------
+** Bug
+    * [DATAMONGO-493] - Criteria.ne() method converts all value into ObjectId
+    * [DATAMONGO-494] - $or/$nor expressions do not consider entity class mapping
+    * [DATAMONGO-495] - JSON can't serialize Enum when printing Query in DEBUG message
+    * [DATAMONGO-497] - Reading an empty List throws a MappingInstantiationException because it returns an HashSet instead of returning an ArrayList
+    * [DATAMONGO-505] - Conversion of associations doesn't work for collection values
+    * [DATAMONGO-508] - DBRef can accidentally get added as PersistentProperty
+    * [DATAMONGO-517] - QueryMapping incorrectly translates complex keywords
+
+** Improvement
+    * [DATAMONGO-496] - AbstractMongoConfiguration.getMappingBasePackage() could default to config class' package
+    * [DATAMONGO-499] - Namespace XSDs of current release version should refer to repositories XSD in version 1.0
+    * [DATAMONGO-500] - Index creation reacts on events not intended for it
+    * [DATAMONGO-502] - QueryMapper should transparently translate property names to field names
+    * [DATAMONGO-509] - SimpleMongoRepository.exists(…) can be improved.
+    * [DATAMONGO-510] - Criteria should only use BasicDBList internally
+    * [DATAMONGO-511] - QueryMapper should correctly transform associations
+    * [DATAMONGO-516] - Make Spring 3.1.2.RELEASE default Spring dependency version
+
+** Task
+    * [DATAMONGO-513] - Release 1.1 RC1
+
+
+Changes in version 1.0.4.RELEASE MongoDB (2012-08-24)
+-----------------------------------------------------
+** Bug
+    * [DATAMONGO-493] - Criteria.ne() method converts all value into ObjectId
+    * [DATAMONGO-494] - $or/$nor expressions do not consider entity class mapping
+    * [DATAMONGO-495] - JSON can't serialize Enum when printing Query in DEBUG message
+
+** Improvement
+    * [DATAMONGO-499] - Namespace XSDs of current release version should refer to repositories XSD in version 1.0
+
+** Task
+    * [DATAMONGO-514] - Release 1.0.4.
+
+Changes in version 1.1.0.M2 (2012-24-07)
+----------------------------------------
+** Bug
+    * [DATAMONGO-378] - MapReduceResults ClassCastException due to raw results counts as Long
+    * [DATAMONGO-424] - Declaring a list of DBRef in a domian class results in Null for each DBRef when reading from mongo database
+    * [DATAMONGO-425] - Binding a Date to a manually defined repository query fails
+    * [DATAMONGO-428] - ClassCastException when using outputDatabase option in map-reduce
+    * [DATAMONGO-446] - Pageable query methods returning List are broken
+    * [DATAMONGO-447] - Removal of Documents fails in in debug mode for Documents with complex ids
+    * [DATAMONGO-450] - enabling DEBUG causes RuntimeException
+    * [DATAMONGO-454] - ServerAddressPropertyEditor fails if a hostname is unresolvable
+    * [DATAMONGO-458] - When reading back empty collections unmodifiable instances of Collections.emptyList/Set is returned.
+    * [DATAMONGO-462] - findAll() fails with NPE - discovering the root cause
+    * [DATAMONGO-465] - Mongo inserts document with "_id" as an integer but saves with "_id" as a string.
+    * [DATAMONGO-467] - String @id field is not mapped to ObjectId when using QueryDSL ".id" path
+    * [DATAMONGO-469] - Query creation from method names using AND criteria does not work anymore
+    * [DATAMONGO-474] - Wrong property is used for Id mapping
+    * [DATAMONGO-475] - 'group' operation fails where query references non primitive property
+    * [DATAMONGO-480] - The WriteResultChecking is not used in case of insert or save of documents.
+    * [DATAMONGO-483] - @Indexed(unique=true, name="foo") puts name's value to the 'key' in the MongoDB
+    * [DATAMONGO-489] - ClassCastException when loading Map<String, String[]>
+
+** Improvement
+    * [DATAMONGO-448] - Remove the need for Converters for complex classes that are used as IDs
+    * [DATAMONGO-455] - Document how to use raw queries using BasicQuery
+    * [DATAMONGO-460] - Improve Querydsl implementation internals
+    * [DATAMONGO-466] - QueryMapper shouldn't map id properties of nested classes
+    * [DATAMONGO-470] - Criteria and Query should have proper equals(…) and hashCode() method.
+    * [DATAMONGO-477] - Change upper bound of Google Guava package import to 13
+    * [DATAMONGO-482] - typo in documentation - 2 i's in usiing
+    * [DATAMONGO-486] - Polish namspace implementation
+    * [DATAMONGO-491] - Release 1.1.0.M2
+
+** New Feature
+    * [DATAMONGO-476] - JavaConfig support for Mongo repositories
+
+** Task
+    * [DATAMONGO-451] - Tweak pom.xml to let Sonar build run without Bundlor
+    * [DATAMONGO-490] - Fix minor typos
+
+
+Changes in version 1.0.3.RELEASE (2012-24-07)
+---------------------------------------------
+** Bug
+    * [DATAMONGO-467] - String @id field is not mapped to ObjectId when using QueryDSL ".id" path
+    * [DATAMONGO-469] - Query creation from method names using AND criteria does not work anymore
+    * [DATAMONGO-474] - Wrong property is used for Id mapping
+    * [DATAMONGO-475] - 'group' operation fails where query references non primitive property
+    * [DATAMONGO-480] - The WriteResultChecking is not used in case of insert or save of documents.
+    * [DATAMONGO-483] - @Indexed(unique=true, name="foo") puts name's value to the 'key' in the MongoDB
+    * [DATAMONGO-489] - ClassCastException when loading Map<String, String[]>
+
+** Improvement
+    * [DATAMONGO-466] - QueryMapper shouldn't map id properties of nested classes
+    * [DATAMONGO-470] - Criteria and Query should have proper equals(…) and hashCode() method.
+    * [DATAMONGO-482] - typo in documentation - 2 i's in usiing
+
+** Task
+    * [DATAMONGO-492] - Release 1.0.3
+
+
+Changes in version 1.0.2.RELEASE (2012-06-20)
+---------------------------------------------
+** Bug
+    * [DATAMONGO-360] - java.lang.ClassCastException when placing GeospatialIndex into IndexOperations and invoking IndexOperations.getIndexInfo()
+    * [DATAMONGO-366] - Chapter 3.2. points to wrong bugtracker
+    * [DATAMONGO-378] - MapReduceResults ClassCastException due to raw results counts as Long
+    * [DATAMONGO-382] - ClassCastException: "com.mongodb.BasicDBObject cannot be cast to com.mongodb.BasicDBList" during find()
+    * [DATAMONGO-411] - Potential ClassCastExceptions in MongoPersistentEntityIndexCreator
+    * [DATAMONGO-412] - getUserCredentials() is called twice in AbstractMongoConfiguration::mongoDbFactory()
+    * [DATAMONGO-413] - Using "Or" in repository query yields a ClassCastException
+    * [DATAMONGO-422] - UUIDToBinaryConverter not compatible with mongo java driver
+    * [DATAMONGO-423] - Criteria.regex should use java.util.Pattern instead of $regex
+    * [DATAMONGO-425] - Binding a Date to a manually defined repository query fails
+    * [DATAMONGO-428] - ClassCastException when using outputDatabase option in map-reduce
+    * [DATAMONGO-429] - using @Query annotation, arrays are translated somewhere between query creation and mongo interpretation
+    * [DATAMONGO-446] - Pageable query methods returning List are broken
+    * [DATAMONGO-447] - Removal of Documents fails in in debug mode for Documents with complex ids
+    * [DATAMONGO-450] - enabling DEBUG causes RuntimeException
+    * [DATAMONGO-454] - ServerAddressPropertyEditor fails if a hostname is unresolvable
+    * [DATAMONGO-461] - MappedConstructor potentially throws NullPointerException
+    * [DATAMONGO-462] - findAll() fails with NPE - discovering the root cause
+
+** Improvement
+    * [DATAMONGO-448] - Remove the need for Converters for complex classes that are used as IDs
+    * [DATAMONGO-455] - Document how to use raw queries using BasicQuery
+
+** Task
+    * [DATAMONGO-463] - Release 1.0.2
+
+
+Changes in version 1.1.0.M1 (2012-05-07)
+----------------------------------------
+
+** Bug
+    * [DATAMONGO-299] - Mongodb Query Does not allow for multiple query conditionals of the same time.
+    * [DATAMONGO-360] - java.lang.ClassCastException when placing GeospatialIndex into IndexOperations and invoking IndexOperations.getIndexInfo()
+    * [DATAMONGO-363] - Criteria.and() cannot be chained when using Criteria.gte and Criteria.lte
+    * [DATAMONGO-364] - Chaining of Criteria when including a GeoSpatial field is inconsistent.
+    * [DATAMONGO-366] - Chapter 3.2. points to wrong bugtracker
+    * [DATAMONGO-368] - Empty values in collections are not supported
+    * [DATAMONGO-369] - Wrong query created when one value is a DBObject
+    * [DATAMONGO-373] - QueryMapper is getting a ClassCasteException When trying to Convert an ArrayList to a BSONList
+    * [DATAMONGO-376] - Fix potential NPE in SpringDataMongodbSerializer
+    * [DATAMONGO-380] - maps with mongo reserved characters for keys generate on save: java.lang.IllegalArgumentException: fields stored in the db can't have . in them
+    * [DATAMONGO-387] - Executing query methods with GeoPage results doesn't work
+    * [DATAMONGO-401] - StringBasedMongoQuery suffers from NullPointerException in case a null parameter gets bound to a parameter placeholder
+    * [DATAMONGO-402] - Inner class not supported
+    * [DATAMONGO-403] - Conflicts between MongoDB and JPA
+    * [DATAMONGO-411] - Potential ClassCastExceptions in MongoPersistentEntityIndexCreator
+    * [DATAMONGO-412] - getUserCredentials() is called twice in AbstractMongoConfiguration::mongoDbFactory()
+    * [DATAMONGO-413] - Using "Or" in repository query yields a ClassCastException
+    * [DATAMONGO-423] - Criteria.regex should use java.util.Pattern instead of $regex
+
+** Defect
+    * [DATAMONGO-429] - using @Query annotation, arrays are translated somewhere between query creation and mongo interpretation
+
+** Improvement
+    * [DATAMONGO-347] - Repositories and DBRef
+    * [DATAMONGO-375] - Polish versions of referenced XSD schemas
+    * [DATAMONGO-379] - Exception when trying to instantiate an entity having a primitive constructor argument and no according document field
+    * [DATAMONGO-390] - Add Converter for UUID
+    * [DATAMONGO-391] - Move to SLF4J for logging
+    * [DATAMONGO-397] - MongoRepositoryFactoryBean should refer to MongoOperations instead of MongoTemplate
+    * [DATAMONGO-441] - Improve MongoDbUtils API
+
+** New Feature
+    * [DATAMONGO-6] - Integration with GridFS features
+    * [DATAMONGO-36] - Validation support to MongoTemplate
+    * [DATAMONGO-356] - Provide CDI integration
+    * [DATAMONGO-418] - Add support for newly introduced StartingWith, EndingWith and Containing keywords
+    * [DATAMONGO-427] - Support After and Before keywords for query creation
+
+** Refactoring
+    * [DATAMONGO-383] - Adapt new entity instantiation API from Spring Data Commons
+    * [DATAMONGO-431] - Adapt changes in CrudRepository
+
+** Task
+    * [DATAMONGO-443] - Upgrade to Querydsl 2.5.0
+    * [DATAMONGO-394] - Upgrade to Querydsl 2.3.2
+    * [DATAMONGO-396] - Release 1.1.0.M1.
+    * [DATAMONGO-432] - Upgrade to Spring Data Commons 1.3.0.RC1
+    * [DATAMONGO-439] - Add performance tests
+
+Changes in version 1.0.1.RELEASE MongoDB (2012-02-11)
+-----------------------------------------------------
+
+** Bug
+    * [DATAMONGO-363] - Criteria.and() cannot be chained when using Criteria.gte and Criteria.lte
+    * [DATAMONGO-364] - Chaining of Criteria when including a GeoSpatial field is inconsistent.
+    * [DATAMONGO-368] - Empty values in collections are not supported
+    * [DATAMONGO-369] - Wrong query created when one value is a DBObject
+    * [DATAMONGO-376] - Fix potential NPE in SpringDataMongodbSerializer
+    * [DATAMONGO-380] - maps with mongo reserved characters for keys generate on save: java.lang.IllegalArgumentException: fields stored in the db can't have . in them
+    * [DATAMONGO-387] - Executing query methods with GeoPage results doesn't work
+    * [DATAMONGO-401] - StringBasedMongoQuery suffers from NullPointerException in case a null parameter gets bound to a parameter placeholder
+
+** Improvement
+    * [DATAMONGO-375] - Polish versions of referenced XSD schemas
+    * [DATAMONGO-379] - Exception when trying to instantiate an entity having a primitive constructor argument and no according document field
+    * [DATAMONGO-390] - Add Converter for UUID
+    * [DATAMONGO-397] - MongoRepositoryFactoryBean should refer to MongoOperations instead of MongoTemplate
+
+** Task
+    * [DATAMONGO-395] - Release 1.0.1.
+
+
+Changes in version 1.0.0.RELEASE MongoDB (2011-12-22)
+-----------------------------------------------------
+
+** Bug
+    * [DATAMONGO-260] - MapReduce fails when using with Long as key-type.
+    * [DATAMONGO-319] - WriteConcern not parsed correctly in namespace handlers
+    * [DATAMONGO-336] - MongoDB GeoNear returning  null pointer exception when giving data more precision than test data
+    * [DATAMONGO-343] - ServerAddressPropertyEditor disables default Spring conversion
+    * [DATAMONGO-346] - MongoTemplate.remove(Object arg) not working
+    * [DATAMONGO-349] - remove doesn't work in RC1 for mongo db
+
+** Improvement
+    * [DATAMONGO-139] - Startup behavior should be that MongoTemplate does not eagerly try to connect to MongoDB
+    * [DATAMONGO-296] - Add hook to use MongoConverter for Querydsl argument handling
+    * [DATAMONGO-326] - Enums can't be used in Criteria
+    * [DATAMONGO-341] - Tighten implementation of MongoTemplate's geoNear(...) methods
+
+** Task
+    * [DATAMONGO-81] - Create unit tests for exception translation in MongoTemplate
+    * [DATAMONGO-93] - Create integration tests for authentication
+    * [DATAMONGO-257] - Document TypeMapper abstraction to control how type information is stored and retrieved from documents
+    * [DATAMONGO-330] - Document classpath scanning for Converters
+    * [DATAMONGO-350] - Upgrade to latest Querydsl
+    * [DATAMONGO-355] - Upgrade to Spring 3.0.7
+    * [DATAMONGO-357] - Release 1.0 GA
+
+
+Changes in version 1.0.0.RC1 MongoDB (2011-12-6)
+------------------------------------------------
+
+** Bug
+    * [DATAMONGO-199] - Synchronisation during performance tests
+    * [DATAMONGO-298] - Spring custom converters do not work for subclasses of java.lang.Number
+    * [DATAMONGO-306] - NullPointerException if mongo factory created via URI with out credentials
+    * [DATAMONGO-309] - POJO containing a List of Maps not persisting properly
+    * [DATAMONGO-312] - Cannot retrieve persisted Enum implementing an abstract method
+    * [DATAMONGO-315] - MongoTemplate.findOne(query) methods ignore SortOrder on query
+    * [DATAMONGO-316] - Replica Set configuration via properties file throws ArrayIndexOutOfBoundsException
+    * [DATAMONGO-318] - Distinguishing write errors and writes with zero documents affected
+    * [DATAMONGO-321] - An ID field of type integer is always saved as zero if not set by the user before calling save.  Throw exception to indicate an int field will not be autopopulated.
+    * [DATAMONGO-322] - Throw exception in a save operation if the POJO's ID field is null and field type is not String, BigInteger or ObjectId.
+    * [DATAMONGO-325] - MongoTemplate fails to correctly report a js file not found on classpath while calling mapReduce
+    * [DATAMONGO-328] - Fix the import statement in mongodb manifest
+    * [DATAMONGO-329] - Map value not converted correctly
+    * [DATAMONGO-333] - AbstractMongoEventListener throws NullPointerException if used without generic parameter
+
+** Improvement
+    * [DATAMONGO-26] - Investigate performance of POJO serialization.
+    * [DATAMONGO-174] - Add additional constructor to MongoTemplate that take com.mongodb.Mongo, database name, user credentials and MongoConverter.
+    * [DATAMONGO-208] - Add suppoprt for group() operation on collection in MongoOperations
+    * [DATAMONGO-213] - Provide additional options for setting WriteConcern on a per operation basis
+    * [DATAMONGO-234] - MongoTemplate should support the findAndModify operation to update version fields
+    * [DATAMONGO-292] - Several mongo for different database names
+    * [DATAMONGO-301] - Allow converters to be included through scanning
+    * [DATAMONGO-305] - Remove synchronized(this) from sort() and fields() methods in the Query class
+    * [DATAMONGO-310] - Allow Collections as parameters in @Query
+    * [DATAMONGO-320] - Remove use of slaveOk boolean option in MongoTemplate as it is deprecated.  Replace with ReadPreference
+    * [DATAMONGO-323] - Using @Query and a Sort parameter on the same method should produce sorted results
+    * [DATAMONGO-324] - Support for JSON in mongo template
+    * [DATAMONGO-337] - The "nin" and "all" methods on Criteria should take a collection like the "in" method.
+    * [DATAMONGO-338] - Add query derivation implementations for newly introduced Regex, Exists, True and False keywords
+
+** New Feature
+    * [DATAMONGO-185] - Add hint to Query
+    * [DATAMONGO-251] - Support geting index information on a collection or mapped class.
+    * [DATAMONGO-308] - Add support for upsert methods
+
+** Refactoring
+    * [DATAMONGO-304] - Change package name for Class MongoLog4jAppender
+    * [DATAMONGO-313] - Use MongoOperations interface instead of MongoTemplate class
+
+** Task
+    * [DATAMONGO-195] - Add description of @Field mapping annotation to reference docs
+    * [DATAMONGO-262] - Ensure Cloud Foundry Runtime works with RC1
+    * [DATAMONGO-263] - Ensure Cloud Foundry Examples work with RC1
+    * [DATAMONGO-311] - Update MongoDB driver to v 2.7.x
+    * [DATAMONGO-332] - Update reference documentation to list correct necessary dependencies
+    * [DATAMONGO-334] - Use repository URLs pointing to Artifactory
+    * [DATAMONGO-335] - Create hybrid Spring 3.0.6 / 3.1 build
+
+
+Changes in version 1.0.0.M5 MongoDB (2011-10-24)
+------------------------------------------------
+
+** Bug
+    * [DATAMONGO-259] - Maps inside collections are not written correctly
+    * [DATAMONGO-268] - CustomConversions is too liberal in registering "simple types" (asymmetric conversion)
+    * [DATAMONGO-269] - XML configuration for replica sets is not working
+    * [DATAMONGO-275] - DBRef fields and collections are returning nulls
+    * [DATAMONGO-281] - Improve the <mongo:db-factory> to handle blank username and password when using property placholders like ${mongo.username}
+    * [DATAMONGO-282] - Cannot create a "range" query
+    * [DATAMONGO-284] - Execution of Querydsl query maps id incorrectly
+    * [DATAMONGO-285] - NPE in MappingMongoConverter.writeMapInternal when saving a Map<String,Object> with val instance of Collection
+    * [DATAMONGO-288] - querying same property multiple times produces incorrect query
+    * [DATAMONGO-289] - AbstractMongoEventListener will never call onAfterLoad
+    * [DATAMONGO-294] - List elements nested in Map lose their type when persisted
+
+** Improvement
+    * [DATAMONGO-65] - Allow Spring EL usage in collection name attribute of @Document
+    * [DATAMONGO-183] - Query count() support for pagination
+    * [DATAMONGO-258] - M4 documentation states SD Commons 1.1.0.M1 required but actually needs 1.2.0.M1
+    * [DATAMONGO-261] - Reference documentation for geoNear queries has no stable section id
+    * [DATAMONGO-270] - Approach Sonar results to improve code quality
+    * [DATAMONGO-271] - Remove 'document' from cross-store package names
+    * [DATAMONGO-272] - Namespace configuration file still resides in 'document' package
+    * [DATAMONGO-276] - QueryUtils should be public
+    * [DATAMONGO-280] - Add maxAutoConnectRetryTime for <mongo:db-factory> and  MongoOptionsFactoryBean
+    * [DATAMONGO-283] - $and support
+    * [DATAMONGO-286] - MongoDB Repository no query methods for $lte and $gte
+    * [DATAMONGO-291] - Path expressions in repository methods should honour mapping metadata
+    * [DATAMONGO-293] - Add support for new polygon based within search in Mongo 2.0.
+    * [DATAMONGO-295] - Allow MongoTemplate to be configured using MongoURI
+    * [DATAMONGO-300] - Re-work the Query/Criteria to better support $and, $or and $nor queries
+    * [DATAMONGO-302] - Consistently handle null values given to CrudRepository implementation
+
+** New Feature
+    * [DATAMONGO-230] - MongoTemplate missing method remove(Object object, String collectionName)
+
+** Refactoring
+    * [DATAMONGO-274] - Split up repository package according to the structure in Spring Data JPA
+
+** Task
+    * [DATAMONGO-264] - Ensure Data Document examples work
+    * [DATAMONGO-265] - Create new github repository for mongodb
+    * [DATAMONGO-266] - Create new github repository for CouchDB
+    * [DATAMONGO-297] - Prune project directory
+    * [DATAMONGO-303] - Update to QueryDsl 2.2.4
+
+
+Changes in version 1.0.0.M4 MongoDB (2011-09-01)
+------------------------------------------------
+
+** Bug
+    * [DATADOC-134] - MongoDB: No exception when saving duplicate value to an attribute annotated with @Indexed(unique=true)
+    * [DATADOC-162] - Exception thrown on toString of Point class
+    * [DATADOC-167] - @Document annotation is not inherited
+    * [DATADOC-168] - Registering a custom converter from String to UUID causes all Strings to be converted to UUIDs
+    * [DATADOC-172] - Unable to force property order when saving document
+    * [DATADOC-176] - @DBRef annotation only supports ids of type ObjectId
+    * [DATADOC-177] - Sorting on multiple fields does not maintain order
+    * [DATADOC-181] - MongoFactoryBean does not call Mongo.close() on shutdown
+    * [DATADOC-190] - SimpleMongoRepository.exists(…) returns false for existing entities with non-ObjectId id
+    * [DATADOC-192] - MappingMongoConverter does not read empty Sets correctly
+    * [DATADOC-199] - Synchronisation during performance tests
+    * [DATADOC-207] - MappingMongoConverter fails when reading empty java.util.SortedMaps
+    * [DATADOC-209] - Collections of enums not handled correctly
+    * [DATADOC-210] - spring-data-mongodb requires Java 1.6, should require 1.5
+    * [DATADOC-212] - NPE during MongoTemplate.update() if no ID field is defined (via field name or annotation)
+    * [DATADOC-217] - Set cannot be used as a collection in a Document
+    * [DATADOC-218] - Adding of custom simple types is not easy
+    * [DATADOC-221] - BigDecimal values not read correctly in maps
+    * [DATADOC-224] - MappingMongoConverter does not inspect value type for Object properties
+    * [DATADOC-228] - NullPointerException when persiting Map with null values
+    * [DATADOC-229] - When a parameterized List is used in the PersistentConstructor, conversion fail
+    * [DATADOC-231] - spring-data-mongodb does not work in an OSGi server because of unresolved dependencies
+    * [DATADOC-232] - mongodb allow to $inc many fields in one query, but Updat().inc(firs).inc(last)  do only last inc
+    * [DATADOC-235] - Unable to map unstructured data
+    * [DATADOC-236] - Repository queries do not honour order defined in method name
+    * [DATADOC-237] - @Indexed annotation doesn't honor field name from @Field annotation
+    * [DATADOC-240] - Update with id key is not working
+    * [DATADOC-243] - mongo:mapping-converter schema does not allow db-factory-ref
+    * [DATADOC-246] - Stack overflow when Update.pushAll(push)
+    * [DATADOC-247] - QueryMapper does not handle BigInteger ids correctly
+    * [DATADOC-248] - MongoDB Query and Collection mapping
+    * [DATADOC-249] - ConcurrentModificationException when calling MongoTemplate.updateFirst
+    * [DATADOC-254] - SimpleMongoDbFactory should handle dots in database names correctly
+
+** Improvement
+    * [DATADOC-32] - SimpleMongoConverter could support identifying Spring EL expressions in keys
+    * [DATADOC-63] - Converters to support use of a 'typeId' strategy to determine class to marshall/unmarshal from Mongo
+    * [DATADOC-166] - Check for null if various template CRUD methods
+    * [DATADOC-169] - Registering custom converters for a type requires treating the type as simple in mapping context
+    * [DATADOC-171] - IllegalArgumentException when persisting entity with BigDecimal field
+    * [DATADOC-178] - System.out.println in the in method of Criteria. Line 179.
+    * [DATADOC-188] - Allow means to disable repository infrastructure creating indexes
+    * [DATADOC-189] - Improve extensibility of MongoRepositoryFactoryBean
+    * [DATADOC-215] - Allow configuring WriteConcern via MongoFactoryBean and thus the namespace
+    * [DATADOC-223] - Registering of customSimpleTypes should be available through the mongo namespace of spring-data-mongodb
+    * [DATADOC-225] - BasicMongoPersistentEntity shouldn't reject root entities without an id property
+    * [DATADOC-241] - Allow Map conversion behavior overriding
+    * [DATADOC-255] - Add to MongoOperations and executeCommand with an additional integer options argument
+    * [DATADOC-256] - Update to use MongoDB driver version 2.6.5
+
+** New Feature
+    * [DATADOC-7] - Support for map-reduce operations in MongoTemplate
+    * [DATADOC-64] - Allow defining the collections a query is ran against on finder methods
+    * [DATADOC-68] - Support for geoNear command
+    * [DATADOC-87] - Provide @GeoSpatialIndexed annotation that mirrors GeoSpatialIndex class for use in mapping.
+    * [DATADOC-100] - Provide means to externalize manually defined queries
+    * [DATADOC-202] - Add a 'DocumentCallbackHandler' so that a callback can process each DBObject returned from a query
+    * [DATADOC-216] - Allow configuring a WriteConcern on SimpleMongoDbFactory for DB wide WriteConcern
+    * [DATADOC-226] - Add QuerydslRepositorySupport helper class similar to the one in Spring Data JPA
+
+** Refactoring
+    * [DATADOC-170] - Review listener design
+    * [DATADOC-191] - Remove 'document' from package names
+    * [DATADOC-214] - MongoConverter refactorings
+
+** Task
+    * [DATADOC-91] - Add more TestCases for the basic functionality
+    * [DATADOC-152] - Investigate failing of test for repository.findbyLocationWithinBox
+    * [DATADOC-175] - Review DSM matrix and remove package cycles if found.
+    * [DATADOC-194] - Remove use of Class.forName to support use in an OSGi environment
+    * [DATADOC-206] - Upgrade to Querydsl 2.2.0
+    * [DATADOC-253] - Upgrade to Spring 3.0.6
+
+
+Changes in version 1.0.0.M3 MongoDB (2011-06-02)
+------------------------------------------------
+
+General
+* [DATADOC-92] - Exception translation to catch RuntimeException instead of MongoException
+* [DATADOC-111] - Ensure all MongoTemplate methods execute within the context of a callback method.
+* [DATADOC-120] - Remove MongoReaderWriter
+* [DATADOC-160] - Review MongoOperations and make the parameter ordering more consistent across methods
+
+Core Data Access
+* [DATADOC-80] - Rename addConverters to setCustomConverters in MappingMongoConverter and SimpleMongoConverter
+* [DATADOC-89] - Support setting slaveOk in MongoTemplate per query
+* [DATADOC-108] - Add findById method to MongoTemplate.
+* [DATADOC-112] - Storing a DBRef uses the wrong collection name
+* [DATADOC-116] - Nesting DBRefs doesn't work > 1 layers
+* [DATADOC-117] - Remove the default collection name on the MongoTemplate
+* [DATADOC-118] - Remove MongoTemplate methods that take a Reader/Writer parameter
+* [DATADOC-121] - Deprecate SimpleMongoConverter
+* [DATADOC-124] - Add method to MappingContext to get the collection name used for a specific type
+* [DATADOC-127] - @Document(collection="SOME_COLLECTION_NAME") doesn't take effect
+* [DATADOC-141] - Provide a prepareCollection protected method in MongoTemplate to allow customization of behavior such as slaveOk or writeConcern via a subclass
+* [DATADOC-142] - Change constructors in MongoTemplate that take Mongo object
+* [DATADOC-143] - MappingMongoConverter should be MongoTemplate's default converter
+* [DATADOC-149] - Remove setter for MongoDbFactory from MappingMongoConverter
+* [DATADOC-157] - MongoTemplate updateFirst/updateMulti methods to take java.lang.Class parameter as last in method param list to be consistent with other usage
+* [DATADOC-158] - Change default conventions of java.lang.Class to collection name in MappingMongoConverter to be first letter lower case camel casing.
+
+Configuration
+* [DATADOC-42] - Provide option for configuring replica sets using the Mongo namespace
+* [DATADOC-88] - Create MongoDbFactory to consolidate DB, Server location, and user credentials into one location
+* [DATADOC-119] - Modify XML schema and @Configuration base class to make it easy to register custom Spring converters with the mapper.
+* [DATADOC-133] - Support Property Placeholder as MongoDB Port Number in Application Context Configuration
+* [DATADOC-135] - <mongo:options /> should use - instead of camel case to be consistent with other attribute names
+* [DATADOC-138] - Expose all properties of the MongoOptions class in Mongo namespace
+
+Querying / Updating
+* [DATADOC-43] - Query creator should support Near and Within keyword
+* [DATADOC-96] - Query#or(Query) does not work
+* [DATADOC-102] - Update does not let you $set across multiple fields
+* [DATADOC-106] - Add additional mongo operators to Criteria class
+* [DATADOC-107] - Criteria "in" operator should correctly handle passing in a collection instead of an array.
+* [DATADOC-113] - NotNull/IsNotNull not implemented in MongoQueryCreator
+* [DATADOC-146] - Advanced Regexp Queries
+
+Mapping
+* [DATADOC-95] - Can not save an object that has not had any of its properties set
+* [DATADOC-97] - ID replacement not working correctly when using updateFirst/updateMulti
+* [DATADOC-98] - Collection<Collection> or Object[][] doesn't save correctly
+* [DATADOC-109] - Add MappingContext to MongoConverter interface
+* [DATADOC-110] - Improve implementation of substituteMappedIdIfNecessary
+* [DATADOC-101] - Explicit Converters only registered one way.
+* [DATADOC-114] - UpdateFirst/Multi operations on MongoTemplate not properly using converter to store objects.
+* [DATADOC-122] - Use same default collection name for MappingMongoConverter and SimpleMongoConverter
+* [DATADOC-123] - Use the same id/_id mapping for MappingMongoConverter and SimpleMongoConverter
+* [DATADOC-128] - Support inheritance with Document mappings
+* [DATADOC-130] - Problem with Converters (java.util.Locale)
+* [DATADOC-144] - Add an @Key annotation to allow defining the key a property is stored under
+* [DATADOC-145] - MappingMongoConverter does not convert objects for collections of interfaces
+* [DATADOC-155] - Need to support plain POJOs with non-ObjectId-compatible ID properties
+* [DATADOC-156] - MongoOperations.find(query(where("id").in(ids)) fails where ids aren't ObjectIds
+* [DATADOC-159] - Saving the same Entity multiple times creates multiple entries in the database
+* [DATADOC-161] - MappingMongoConverter now supports nested Maps
+
+Repository
+* [DATADOC-115] - Upgrade to QueryDsl 2.2.0-beta4
+* [DATADOC-137] - Parameter values in MongoDB JSON Query are not being replaced properly
+
+Documentation
+* [DATADOC-99] - Reference documentation shows invalid field spec for @Query usage with repositories
+
+
+Changes in version 1.0.0.M2 MongoDB (2011-04-09)
+------------------------------------------------
+
+General
+* Spring configuration support using Java based @Configuration classes
+
+Core Data Access
+* Persistence and mapping lifecycle events
+* GeoSpatial integration
+* [DATADOC-76] - Add support for findAndRemove to MongoTemplate/MongoOperations
+* [DATADOC-5] - Provide detailed mapping of Mongo errors onto Spring DAO exception
+* [DATADOC-51] - Fixed issue with exceptions thrown when authenticating multiple times for sam eDB instance
+
+Querying
+* [DATADOC-72] - Add support for Mongo's $elemMatch and chained Criteria
+* [DATADOC-77] - Rename "and" method in Query to "addCritera"
+* [DATADOC-67] - Criteria API to support keywords for geo search
+
+Mapping
+* Feature Rich Object Mapping integrated with Spring's Conversion Service
+* Annotation based mapping metadata but extensible to support other metadata formats
+* [DATADOC-60] - Add namespace support to setup a MappingMongoConverter
+* [DATADOC-33] - Introduce annotation to demarcate id field in a domain object
+
+Repository
+* [DATADOC-47, DATACMNS-17] - Adapted new metamodel API
+* [DATADOC-46] - Added support for 'In' and 'NotIn' keyword
+* [DATADOC-49] - Fixed 'And' and 'Or' keywords
+* [DATADOC-41] - Added support for executing QueryDsl predicates
+* [DATADOC-69] - Let repository namespace pickup the default mapping context bean and allow configuration
+* [DATADOC-24] - Allow use of @Query annotation to define queries
+* [DATADOC-34] - Create indexes for columns that are mentioned in query methods
+
+Cross-Store
+* [DATADOC-48] - Cross-store persistance - support for JPA Entities with fields transparently persisted/retrieved using MongoDB
+
+Logging
+* [DATADOC-66] - Log4j log appender
+
+Changes in version 1.0.0.M1 MongoDB (2011-02-14)
+------------------------------------------------
+
+General
+* BeanFactory for basic configuration of Mongo environment
+* Namespace for basic configuration of Mongo environment
+
+Core Data Access
+* Introduce MongoTemplate implementation with methods defined in MongoOperations interface
+* MongoTemplate support for insert, find, save, update, remove
+* MongoTemplate support for basic POJO serialization based on bean properties
+* Allow MongoTemplate methods to use a default collection name
+* Exception translation in MongoTemplate to Spring's DAO exception hierarchy
+* Support for update modifiers to allow for partial document updates
+* Expose WriteConcern settings on MongoTemplate used for any write operations
+* Support in MongoTemplate for enabling either logging or throwing exceptions based on value of WriteResult return value.
+
+Repository
+* Introducing generic repository implementation for MongoDB
+* Automatic implementation of interface query method names on repositories.
+* Namespace support for Mongo repositories
+* Allow usage of pagination and sorting with repositories
+

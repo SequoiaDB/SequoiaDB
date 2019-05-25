@@ -1,0 +1,78 @@
+EnsureSConsVersion( 1, 1, 0 )
+
+import platform
+import os
+
+options = {}
+options_topass = {}
+
+def add_option( name, help , nargs , contibutesToVariantDir , dest=None ):
+
+    if dest is None:
+        dest = name
+
+    AddOption( "--" + name , 
+               dest=dest,
+               type="string",
+               nargs=nargs,
+               action="store",
+               help=help )
+
+    options[name] = { "help" : help ,
+                      "nargs" : nargs , 
+                      "contibutesToVariantDir" : contibutesToVariantDir ,
+                      "dest" : dest } 
+
+def get_option( name ):
+    return GetOption( name )
+    
+def _has_option( name ):
+    x = get_option( name )
+    if x is None:
+        return False
+
+    if x == False:
+        return False
+
+    if x == "":
+        return False
+
+    return True
+
+def has_option( name ):
+    x = _has_option(name)
+
+    if name not in options_topass:
+        # if someone already set this, don't overwrite
+        options_topass[name] = x
+
+    return x
+
+def GuessOS():
+	id = platform.system()
+	if id == 'Linux':
+		return 'linux'
+	elif id == 'Windows' or id == 'Microsoft':
+		return 'win32'
+	else:
+		return None
+
+add_option( "dd" , "debug build no optimization, additional debug logging, etc..." , 0 , False )   
+add_option( "language" , "description language" , 1 , False )      
+      
+language = get_option ( "language" )
+isDebug = has_option ( "dd" )
+if language is None:
+   os.system ( "scons -C ../../misc/autogen" )
+else:
+   os.system ( "scons -C ../../misc/autogen --language=" + language )     
+
+guess_os = GuessOS()
+csEnv = Environment()
+
+Export("csEnv")
+Export("isDebug")
+if guess_os == 'win32' and isDebug:
+   csEnv.SConscript( 'Sconscript', variant_dir='build/debug', duplicate=False )
+elif guess_os == 'win32':
+   csEnv.SConscript( 'Sconscript', variant_dir='build/release', duplicate=False )

@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>SequoiaDB</title>
+   <link rel="stylesheet" media="all" href="./style/sdbcss.css">
+   <link rel="stylesheet" media="all" href="./images/icon/css/font-awesome.css">
+   <!--[if IE 7]>
+      <link rel="stylesheet" media="all" href="./images/icon/css/font-awesome-ie7.min.css">
+   <![endif]-->
+   <!--[if lte IE 7]>
+      <script src="./scripts/angular/angular.ie7.js"></script>
+   <![endif]-->
+   <script src="./scripts/angular/angular.min.js"></script>
+   <!--[if lte IE 8]>
+      <script src="./scripts/json/json2.js"></script>
+      <meta http-equiv="X-UA-Compatible" content="IE=7" />
+   <![endif]-->
+   <!--[if gt IE 8]>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <![endif]-->
+   <script src="./scripts/angular/angular-route.js"></script>
+   <script src="./scripts/jquery/jquery-1.11.1.min.js"></script>
+   <script src="./scripts/jquery/jquery.cookie.js"></script>
+   <script src="./scripts/jquery/jquery.md5.js"></script>
+   <script src="./scripts/xml/ObjTree.js"></script>
+   <script src="./scripts/xml/jkl-dumper.js"></script>
+   <script src="./scripts/saver/FileSaver.js"></script>
+   <script src="./scripts/echarts/echarts-all.js"></script>
+   <script src="./scripts/raphael/raphael-min.js"></script>
+   <script src="./app/other/lib/function.js"></script>
+   <script src="./app/other/lib/private.js"></script>
+   <script src="./app/app.js"></script>
+   <script src="./app/config/Route.js"></script>
+   <script src="./app/config/RouteProvider.js"></script>
+   <script src="./app/config/echart.js"></script>
+   <script src="./app/config/Operate.js"></script>
+   <script src="./app/service/Function.js"></script>
+   <script src="./app/service/Rest.js"></script>
+   <script src="./app/service/Components.js"></script>
+   <script src="./app/directive/directive.js"></script>
+   <script src="./app/controller/Public.js"></script>
+</head>
+<body id="ng-app" ng-app="sacApp" ng-cloak>
+
+   <div id="PublicLayout" ng-controller="Index.Ctrl" ng-container="{}">
+
+      <div id="PublicTop" ng-container="layout.top">
+         <div ng-include="Templates.Top"></div>
+      </div>
+
+      <div class="relativeBox" ng-container="layout.content">
+         <div id="PublicLeft" class="absoluteLeftBox" ng-container="layout.left">
+            <div ng-include="Templates.Left" ng-container="{}"></div>
+         </div>
+
+         <div id="PublicCentre" ng-container="layout.centre">
+
+            <div style="background-color:#5B5B6B;" ng-container="{height:2}"></div>
+            <div class="relativeBox" ng-container="{offsetY:-42}">
+               <div style="height:100%;zoom:1;" ng-view></div>
+            </div>
+            <div id="PublicBottom" ng-container="layout.bottom">
+               <div ng-include="Templates.Bottom"></div>
+            </div>
+
+         </div>
+      </div>
+      <div style="height:0" create-modal para="Components.Modal" ng-if="Components.Modal.isShow || !Components.Modal.isClose"></div>
+      <div style="height:0" create-confirm para="Components.Confirm"></div>
+      <div french-window="Components.French"></div>
+   </div>
+</body>
+</html>

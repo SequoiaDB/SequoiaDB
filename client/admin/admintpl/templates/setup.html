@@ -1,0 +1,896 @@
+   <div id="h_c_box" class="parent_box">
+      <div class="left_box">
+         <div id="config_title" class="left_box_title_box">
+         	<div class="config_title_div">
+               <!-- 左边的步骤数字 -->
+               <div class="left_box_title_box_number">1.</div>
+               <!-- 左边的步骤总结 -->
+               <div class="left_box_title_box_sumup">设置全局参数</div>
+               <!-- 左边的步骤描述 -->
+               <div class="left_box_title_box_describe">校验安装文件</div>
+            </div>
+            <div class="config_title_div" style="display:none;">
+               <!-- 左边的步骤数字 -->
+               <div class="left_box_title_box_number">2.</div>
+               <!-- 左边的步骤总结 -->
+               <div class="left_box_title_box_sumup">设置主机参数</div>
+               <!-- 左边的步骤描述 -->
+               <div class="left_box_title_box_describe">扫描在线主机</div>
+            </div>
+            <div class="config_title_div" style="display:none;">
+               <!-- 左边的步骤数字 -->
+               <div class="left_box_title_box_number">3.</div>
+               <!-- 左边的步骤总结 -->
+               <div class="left_box_title_box_sumup">配置协调节点</div>
+               <!-- 左边的步骤描述 -->
+               <div class="left_box_title_box_describe">批量添加协调节点</div>
+            </div>
+            <div class="config_title_div" style="display:none;">
+               <!-- 左边的步骤数字 -->
+               <div class="left_box_title_box_number">4.</div>
+               <!-- 左边的步骤总结 -->
+               <div class="left_box_title_box_sumup">配置编目节点</div>
+               <!-- 左边的步骤描述 -->
+               <div class="left_box_title_box_describe">批量添加编目节点</div>
+            </div>
+            <div class="config_title_div" style="display:none;">
+               <!-- 左边的步骤数字 -->
+               <div class="left_box_title_box_number">5.</div>
+               <!-- 左边的步骤总结 -->
+               <div class="left_box_title_box_sumup">配置数据节点</div>
+               <!-- 左边的步骤描述 -->
+               <div class="left_box_title_box_describe">批量添加数据节点</div>
+            </div>
+            <div class="config_title_div" style="display:none;">
+               <!-- 左边的步骤数字 -->
+               <div class="left_box_title_box_number">6.</div>
+               <!-- 左边的步骤总结 -->
+               <div class="left_box_title_box_sumup">集群配置总结</div>
+               <!-- 左边的步骤描述 -->
+               <div class="left_box_title_box_describe">检查集群配置</div>
+            </div>
+            <div class="config_title_div" style="display:none;">
+               <!-- 左边的步骤数字 -->
+               <div class="left_box_title_box_number">7.</div>
+               <!-- 左边的步骤总结 -->
+               <div class="left_box_title_box_sumup">检查系统环境</div>
+               <!-- 左边的步骤描述 -->
+               <div class="left_box_title_box_describe"></div>
+            </div>
+            <div class="config_title_div" style="display:none;">
+               <!-- 左边的步骤数字 -->
+               <div class="left_box_title_box_number">8.</div>
+               <!-- 左边的步骤总结 -->
+               <div class="left_box_title_box_sumup">部署集群</div>
+               <!-- 左边的步骤描述 -->
+               <div class="left_box_title_box_describe">部署集群系统</div>
+            </div>
+         </div>
+         <!-- 左边的步骤列表 -->
+         <div id="config_title_img" class="left_box_setup_list_box">
+            <div class="left_box_setup_list_box_line" onclick=""><img src="./images/status_2.png" /> <span>设置全局参数</span></div>
+            <div class="left_box_setup_list_box_line" onclick=""><img src="./images/status_3.png" /> <span>设置主机参数</span></div>
+            <div class="left_box_setup_list_box_line" onclick=""><img src="./images/status_3.png" /> <span>配置协调节点</span></div>
+            <div class="left_box_setup_list_box_line" onclick=""><img src="./images/status_3.png" /> <span>配置编目节点</span></div>
+            <div class="left_box_setup_list_box_line" onclick=""><img src="./images/status_3.png" /> <span>配置数据节点</span></div>
+            <div class="left_box_setup_list_box_line" onclick=""><img src="./images/status_3.png" /> <span>集群配置总结</span></div>
+            <div class="left_box_setup_list_box_line" onclick=""><img src="./images/status_3.png" /> <span>检查系统环境</span></div>
+            <div class="left_box_setup_list_box_line" onclick=""><img src="./images/status_3.png" /> <span>部署集群</span></div>
+         </div>
+      </div>
+
+      <!-- 右边的内容框 -->
+      <div id="h_context" class="right_box">
+      	<!-- 步骤 1 -->
+         <div id="step_1" style="display:block;">
+            <div class="right_box_title_box">
+               <b>全局参数</b>
+            </div>
+            <div class="right_box_hint_box">
+               <b>配置全局参数前，请把SequoiaDB安装文件放到PHP服务端中。</b>
+            </div>
+            <div class="right_box_context_box">
+               <div class="right_box_context_box_setup_1">
+                  <div class="right_box_context_box_setup_1_title">调试信息输出</div>
+                  <div class="right_box_context_box_setup_1_input"><input type="text" id="step_1_debug" class="form-control" placeholder="" value="1" disabled></div>
+                  <div class="right_box_context_box_setup_1_describe">填入数值, 1: 输出调试信息,2: 输出普通信息,3: 不输出</div>
+               </div>
+               <div class="right_box_context_box_setup_1">
+                  <div class="right_box_context_box_setup_1_title">安装程序路径</div>
+                  <div class="right_box_context_box_setup_1_input"><input type="text" id="step_1_path" class="form-control" placeholder="例如：/home/sequoiadb.run" value=""></div>
+                  <div class="right_box_context_box_setup_1_describe">SequoiaDB安装程序路径(绝对路径)</div>
+               </div>
+               <div class="right_box_context_box_setup_1">
+                  <div class="right_box_context_box_setup_1_title">sdbcm端口</div>
+                  <div class="right_box_context_box_setup_1_input"><input type="text" id="step_1_sdbcm" class="form-control" placeholder="" value="11790"></div>
+                  <div class="right_box_context_box_setup_1_describe"></div>
+               </div>
+               <div class="right_box_context_box_setup_1">
+                  <div class="right_box_context_box_setup_1_title">开机自动启动服务</div>
+                  <div class="right_box_context_box_setup_1_input">
+                  	<select class="form-control" id="step_1_autostart">
+                     	<option value="true" selected>true</option>
+                        <option value="false">false</option>
+                     </select>
+                  </div>
+                  <div class="right_box_context_box_setup_1_describe">是否允许SequoiaDB相关进程开机自启动</div>
+               </div>
+            </div>
+         </div>
+			<!-- 步骤 1 底部 -->
+
+         <!-- 步骤 2 -->
+         <div id="step_2" style="display:none;">
+            <div class="right_box_title_box">
+               <b>主机参数</b>
+            </div>
+            <div class="right_box_context_box">
+               <div class="right_box_context_box_navigation_box">
+                  <ul class="nav nav-tabs">
+                     <ul class="nav nav-pills">
+                        <li>
+                        	<a href="#" data-toggle="modal" data-target="#addhost" onclick="$('#scan_tab_ul a[href=\'#scan_tab_1\']').tab('show');">
+                           	添加主机
+                           </a>
+                        </li>
+                        <li>
+                           <a href="#" onclick="delete_table_rows('step_2_tab_table')">
+                           	删除主机
+                           </a>
+                        </li>
+                        <li>
+                           <a href="#" data-toggle="modal" data-target="#host_config">
+                           	配置主机参数
+                           </a>
+                        </li>
+                     </ul>
+                  </ul>
+               </div>
+               <div class="right_box_context_box_title_box">
+               	<b>已添加的主机</b>
+               </div>
+               <!-- 主机列表 -->
+               <div class="right_box_table_box_2">
+                  <table id="step_2_tab_table" class="table table-condensed table-striped" style="margin:0px;">
+                     <thead>
+                        <tr>
+                        	<th><input type="checkbox" onchange="set_all_checkbox('step_2_tab_table',this)"></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_2_tab_table',1);">IP&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_2_tab_table',2);">主机名&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_2_tab_table',3);">安装路径&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_2_tab_table',4);">系统用户组&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_2_tab_table',5);">系统用户名&nbsp;<span class="caret"></span></a></th>
+                           <th>密码</th>
+                        </tr>
+                     </thead>
+                  </table>
+               </div>
+               <div style="clear:both"></div>
+            </div>
+         </div>
+			<!-- 步骤 2 底部 -->
+
+         <!-- 步骤 3 -->
+         <div id="step_3" style="display:none;">
+            <div class="right_box_title_box">
+               <b>配置协调节点</b>
+            </div>
+            <div class="right_box_context_box">
+            	<div class="right_box_context_box_navigation_box">
+                  <ul class="nav nav-tabs">
+                     <ul class="nav nav-pills">
+                        <li>
+                        	<a href="#" data-toggle="modal" data-target="#gethostlist" onclick="add_host_list_to_node_list('step_2_tab_table','batch_add_node_table','add_list_node_config_table','coord|step_3_tab_table');">
+                           	批量添加节点
+                           </a>
+                        </li>
+                        <li>
+                           <a href="#" data-toggle="modal" data-target="#node_config" onclick="batch_conf_node_buttun('node_config_table','options_conf_coord','save_node_config_table','coord|step_3_tab_table');">
+                           	批量配置节点
+                           </a>
+                        </li>
+                        <li class="dropdown">
+                           <a class="dropdown-toggle" data-toggle="dropdown" href="#">编辑 <span class="caret"></span></a>
+                           <ul class="dropdown-menu">
+                           	<li><a href="#" onclick="set_all_checkbox_true('step_3_tab_table')">全选</a></li>
+                              <li><a href="#" onclick="set_all_checkbox_false('step_3_tab_table')">反选</a></li>
+                              <li><a href="#" onclick="set_all_checkbox_not_set('step_3_tab_table')">选择未配置的</a></li>
+                              <li><a href="#" onclick="set_all_checkbox_is_set('step_3_tab_table')">选择已配置的</a></li>
+									</ul>
+                        </li>
+                        <li>
+                           <a class="dropdown-toggle" data-toggle="dropdown" href="#">操作 <span class="caret"></span></a>
+                           <ul class="dropdown-menu">
+                           	<li><a href="#" onclick="remove_table_rows_conf('step_3_tab_table')">清除节点配置</a></li>
+                              <li><a href="#" onclick="remove_table_all_rows_conf('step_3_tab_table')">清除全部节点配置</a></li>
+                           	<li><a href="#" onclick="delete_table_rows('step_3_tab_table')">删除节点</a></li>
+                              <li><a href="#" onclick="delete_table_all_rows('step_3_tab_table')">删除全部节点</a></li>
+									</ul>
+                        </li>
+                     </ul>
+                  </ul>
+               </div>
+            	<div class="right_box_table_box_2">
+                  <table id="step_3_tab_table" class="table table-striped" style="margin:0px;">
+                  	<thead>
+                        <tr>
+                           <th><input type="checkbox" onchange="set_all_checkbox('step_3_tab_table',this)"></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_3_tab_table',1);">IP&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_3_tab_table',2);">主机名&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_3_tab_table',3);">端口&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_3_tab_table',4);">路径&nbsp;<span class="caret"></span></a></th>
+                           <th style="display:none;">
+                              {{foreach $setup_options_conf as $temp}}
+                              <div></div>
+                              {{/foreach}}
+                           </th>
+                        </tr>
+                     </thead>
+                  </table>
+               </div>
+            </div>
+         </div>
+         <!-- 步骤 3 底部 -->
+
+         <!-- 步骤 4 -->
+         <div id="step_4" style="display:none;">
+            <div class="right_box_title_box">
+               <b>配置编目节点</b>
+            </div>
+            <div class="right_box_context_box">
+            	<div class="right_box_context_box_navigation_box">
+                  <ul class="nav nav-tabs">
+                     <ul class="nav nav-pills">
+                        <li>
+                        	<a href="#" data-toggle="modal" data-target="#gethostlist" onclick="add_host_list_to_node_list('step_2_tab_table','batch_add_node_table','add_list_node_config_table','cata|step_4_tab_table');">
+                           	批量添加节点
+                           </a>
+                        </li>
+                        <li>
+                           <a href="#" data-toggle="modal" data-target="#node_config" onclick="batch_conf_node_buttun('node_config_table','options_conf_cata','save_node_config_table','cata|step_4_tab_table');">
+                           	批量配置节点
+                           </a>
+                        </li>
+                        <li class="dropdown">
+                           <a class="dropdown-toggle" data-toggle="dropdown" href="#">编辑 <span class="caret"></span></a>
+                           <ul class="dropdown-menu">
+                           	<li><a href="#" onclick="set_all_checkbox_true('step_4_tab_table')">全选</a></li>
+                              <li><a href="#" onclick="set_all_checkbox_false('step_4_tab_table')">反选</a></li>
+                              <li><a href="#" onclick="set_all_checkbox_not_set('step_4_tab_table')">选择未配置的</a></li>
+                              <li><a href="#" onclick="set_all_checkbox_is_set('step_4_tab_table')">选择已配置的</a></li>
+									</ul>
+                        </li>
+                        <li>
+                           <a class="dropdown-toggle" data-toggle="dropdown" href="#">操作 <span class="caret"></span></a>
+                           <ul class="dropdown-menu">
+                           	<li><a href="#" onclick="remove_table_rows_conf('step_4_tab_table')">清除节点配置</a></li>
+                              <li><a href="#" onclick="remove_table_all_rows_conf('step_4_tab_table')">清除全部节点配置</a></li>
+                           	<li><a href="#" onclick="delete_table_rows('step_4_tab_table')">删除节点</a></li>
+                              <li><a href="#" onclick="delete_table_all_rows('step_4_tab_table')">删除全部节点</a></li>
+									</ul>
+                        </li>
+                     </ul>
+                  </ul>
+               </div>
+            	<div class="right_box_table_box_2">
+                  <table id="step_4_tab_table" class="table table-striped" style="margin:0px;">
+                  	<thead>
+                        <tr>
+                           <th><input type="checkbox" onchange="set_all_checkbox('step_4_tab_table',this)"></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_4_tab_table',1);">IP&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_4_tab_table',2);">主机名&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_4_tab_table',3);">端口&nbsp;<span class="caret"></span></a></th>
+                           <th><a href="#" onclick="table_sort_col(this,'step_4_tab_table',4);">路径&nbsp;<span class="caret"></span></a></th>
+                           <th style="display:none;">
+                              {{foreach $setup_options_conf as $temp}}
+                              <div></div>
+                              {{/foreach}}
+                           </th>
+                        </tr>
+                     </thead>
+                  </table>
+               </div>
+            </div>
+         </div>
+         <!-- 步骤 4 底部 -->
+
+			<!-- 步骤 5 -->
+         <div id="step_5" style="display:none;">
+            <div class="right_box_title_box">
+               <b>配置数据节点</b>
+            </div>
+            <div class="right_box_context_box">
+            	<div class="right_box_context_box_navigation_box">
+                  <ul class="nav nav-tabs">
+                     <ul class="nav nav-pills">
+                        <li class="dropdown">
+                        	<a class="dropdown-toggle" data-toggle="dropdown" href="#">分区组操作 <span class="caret"></span></a>
+                           <ul class="dropdown-menu">
+                           	<li><a href="#" data-toggle="modal" data-target="#addgroups">添加分区组</a></li>
+                              <li><a href="#" onclick="delete_group_table_rows('step_5_tab_table')">删除分区组</a></li>
+                              <li><a href="#" onclick="delete_group_table_all_rows('step_5_tab_table')">删除全部分区组</a></li>
+                              <li>
+                                 <a href="#" data-toggle="modal" data-target="#gethostlist" onclick="add_host_list_to_node_list('step_2_tab_table','batch_add_node_table','add_list_node_config_table','data|step_5_tab_table');">
+                                    添加节点
+                                 </a>
+                              </li>
+                           </ul>
+                        </li>
+                        <li class="dropdown">
+                        	<a class="dropdown-toggle" data-toggle="dropdown" href="#">节点操作 <span class="caret"></span></a>
+                           <ul class="dropdown-menu">
+                              <li>
+                                 <a href="#" data-toggle="modal" data-target="#node_config" onclick="batch_conf_node_buttun('node_config_table','options_conf_data','save_node_config_table','data|step_5_tab_table');">
+                                    批量配置节点
+                                 </a>
+                              </li>
+                              <li><a href="#" onclick="delete_group_table_node_rows('step_5_tab_table')">删除节点</a></li>
+                              <li><a href="#" onclick="delete_group_table_node_all_rows('step_5_tab_table')">删除全部节点</a></li>
+                              <li><a href="#" onclick="remove_group_table_rows_conf('step_5_tab_table')">清除节点配置</a></li>
+                              <li><a href="#" onclick="remove_group_table_all_rows_conf('step_5_tab_table')">清除全部节点配置</a></li>
+                           </ul>
+                        </li>
+                     </ul>
+                  </ul>
+               </div>
+            	<div class="right_box_table_box_2">
+	               <table id="step_5_tab_table" class="table table-striped" style="margin:0px;">
+                  	<thead>
+                     	<tr>
+                        	<th></th>
+                           <th></th>
+                           <th>分区组</th>
+                           <th>节点数</th>
+                        </tr>
+                        <tr>
+                           <th colspan="4" style="display:none;">
+                              {{foreach $setup_options_conf as $temp}}
+                              <div></div>
+                              {{/foreach}}
+                           </th>
+                        </tr>
+                     </thead>
+                  </table>
+               </div>
+            </div>
+         </div>
+         <!-- 步骤 5 底部 -->
+
+			<!-- 步骤 6 -->
+         <div id="step_6" style="display:none;">
+            <div class="right_box_title_box">
+               <b>集群配置总结</b>
+            </div>
+            <div class="right_box_context_box">
+            	<div class="right_box_context_box_navigation_box">
+                  <ul class="nav nav-tabs">
+                     <li class="active"><a href="#cluster_conf_host" data-toggle="tab">主机</a></li>
+                     <li><a href="#cluster_conf_group" data-toggle="tab">分区组</a></li>
+                     <li><a href="#cluster_conf_node" data-toggle="tab">节点</a></li>
+                  </ul>
+               </div>
+               <!-- 第一页(主机) -->
+               <div class="tab-content">
+                  <div class="right_box_table_box_2 tab-pane fade in active" id="cluster_conf_host">
+                     <table id="step_6_tab_table_1" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                              <th></th>
+                              <th>IP</th>
+                              <th>主机名</th>
+                              <th>节点数</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第一页底部 -->
+   
+                  <!-- 第二页(分区组) -->
+                  <div class="right_box_table_box_2 tab-pane fade" id="cluster_conf_group">
+                     <table id="step_6_tab_table_2" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                              <th></th>
+                              <th>分区组</th>
+                              <th>节点数</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第二页底部 -->
+   
+                  <!-- 第三页(节点) -->
+                  <div class="right_box_table_box_2 tab-pane fade" id="cluster_conf_node">
+                     <table id="step_6_tab_table_3" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                              <th>IP</th>
+                              <th>主机名</th>
+                              <th>端口</th>
+                              <th>角色</th>
+                              <th>所属分区组</th>
+                              <th>数据存储路径</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第三页底部 -->
+               </div>
+            </div>
+         </div>
+         <!-- 步骤 6 底部 -->
+
+         <!-- 步骤 7 -->
+         <div id="step_7" style="display:none;">
+            <div class="right_box_title_box">
+               <b>检查系统环境</b>
+            </div>
+            <div class="right_box_context_box">
+					<div class="right_box_table_box_2">
+                  <table id="step_7_tab_table" class="table table-condensed table-striped" style="margin:0px;">
+                  	<thead>
+                        <tr>
+                           <th></th>
+                           <th>IP</th>
+                           <th>主机名</th>
+                           <th>状态</th>
+                        </tr>
+                     </thead>
+                  </table>
+               </div>
+            </div>
+         </div>
+         <!-- 步骤 7 底部 -->
+
+			<!-- 步骤 8 -->
+         <div id="step_8" style="display:none;">
+            <div class="right_box_title_box">
+               <b>部署集群</b>
+            </div>
+            <div class="right_box_context_box">
+            	<div class="right_box_context_box_navigation_box">
+                  <ul id="step_8_tab_ul" class="nav nav-tabs">
+                     <li class="active"><a href="#step_8_send" onclick="">分发SequoiaDB安装包</a></li>
+                     <li><a href="#step_8_install" onclick="">安装SequoiaDB</a></li>
+                     <li><a href="#step_8_coord" onclick="">启动协调节点</a></li>
+                     <li><a href="#step_8_cata" onclick="">启动编目节点</a></li>
+                     <li><a href="#step_8_data" onclick="">创建数据节点</a></li>
+                     <li><a href="#step_8_group" onclick="">激活分区组</a></li>
+                  </ul>
+               </div>
+               <!-- 第一页(分发) -->
+               <div class="tab-content">
+                  <div class="right_box_table_box_2 tab-pane fade in active" id="step_8_send">
+                     <table id="step_8_tab_table_1" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                              <th></th>
+                              <th>IP</th>
+                              <th>主机名</th>
+                              <th>状态</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第一页底部 -->
+   
+                  <!-- 第二页(安装) -->
+                  <div class="right_box_table_box_2 tab-pane fade" id="step_8_install">
+                     <table id="step_8_tab_table_2" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                              <th></th>
+                              <th>IP</th>
+                              <th>主机名</th>
+                              <th>状态</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第二页底部 -->
+   
+                  <!-- 第三页(启动协调) -->
+                  <div class="right_box_table_box_2 tab-pane fade" id="step_8_coord">
+                     <table id="step_8_tab_table_3" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                           	<th></th>
+                              <th>IP</th>
+                              <th>主机名</th>
+                              <th>端口</th>
+                              <th>状态</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第三页底部 -->
+                  
+                  <!-- 第四页(启动编目) -->
+                  <div class="right_box_table_box_2 tab-pane fade" id="step_8_cata">
+                     <table id="step_8_tab_table_4" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                           	<th></th>
+                              <th>IP</th>
+                              <th>主机名</th>
+                              <th>端口</th>
+                              <th>状态</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第四页底部 -->
+                  
+                  <!-- 第五页(创建数据节点) -->
+                  <div class="right_box_table_box_2 tab-pane fade" id="step_8_data">
+                     <table id="step_8_tab_table_5" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                           	<th></th>
+                              <th>IP</th>
+                              <th>主机名</th>
+                              <th>端口</th>
+                              <th>状态</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第五页底部 -->
+                  
+                  <!-- 第六页(激活分区组) -->
+                  <div class="right_box_table_box_2 tab-pane fade" id="step_8_group">
+                     <table id="step_8_tab_table_6" class="table table-hover" style="margin:0px;">
+                        <thead>
+                           <tr>
+                           	<th></th>
+                              <th>分区组</th>
+                              <th>状态</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+                  <!-- 第六页底部 -->
+               </div>
+            </div>
+         </div>
+         <!-- 步骤 8 底部 -->
+
+      </div>
+      <!-- 右边的内容框底部 -->
+   </div>
+   <div style="clear:both;"></div>
+
+	<!-- 隐藏弹出框 -->
+   <!-- 添加主机的弹出框 -->
+   <div class="modal fade" id="addhost" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width:800px;">
+         <div class="modal-content" style="width:799px;">
+            <div class="modal-header" style="width:797px;">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">添加指定主机</h4>
+            </div>
+            <div class="modal-body" style="width:800px;">
+            	<div style="width:800px;margin-bottom:20px;">
+               	<div style="width:700px;margin-bottom:20px;">
+                     <ul id="scan_tab_ul" class="nav nav-tabs">
+                        <li class="active"><a href="#scan_tab_1" data-toggle="tab">新主机</a></li>
+                        <li><a href="#scan_tab_2" data-toggle="tab">已扫描主机</a></li>
+                     </ul>
+                  </div>
+                  <!-- 切换主页的顶部 -->
+                  <div id="scan_tab" class="tab-content">
+                     <!-- 添加主机的弹出框 第 1 页 -->
+                     <div style="width:700px;" class="tab-pane fade in active" id="scan_tab_1">
+                        <div style="width:700px;margin-bottom:10px;">
+                           <textarea id="scan_tab_1_host_text" class="form-control" rows="5">192.168.1.[1-10]</textarea>
+                        </div>
+                        <div style="width:700px;" align="right">
+                           <div style="float:right;width:70px;">
+                              <button type="button" class="btn btn-primary" onclick="f_scaning()">扫描</button>
+                           </div>
+                           <div style="float:right;width:100px;">
+                              <input type="text" class="form-control" value="22" disabled>
+                           </div>
+                           <div style="float:right;width:100px; line-height:30px;">
+                              SSH 端口： 
+                           </div>
+                           <div style="clear:none;"></div>
+                        </div>
+                     </div>
+                     <!-- 添加主机的弹出框 第 2 页 -->
+                     <div style="width:700px;" class="tab-pane fade" id="scan_tab_2">
+                        <!-- 进度条面板 -->
+                        <div class="well" style="width:700px;margin-bottom:20px;height:65px;">
+                           <div id="scan_load_1" style="width:700px;">
+                              <div style="float:left;width:32px;height:33px;">
+                                 <img src="./images/loading.gif" /> 
+                              </div>
+                              <div style="float:left;width:600px;height:20px;margin-left:10px;margin-top:5px;">
+                                 <div class="progress">
+                                    <div id="scan_load_pic" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:0%;"></div>
+                                 </div>
+                              </div>
+                              <div style="clear:none;"></div>
+                           </div>
+                           <div id="scan_load_2" style="width:650px;display:none;" align="right">
+                              已扫描 4 台主机，其中 2 台已连接成功连接SSH
+                           </div>
+                        </div>
+                        <!-- 扫描的主机列表 -->
+                        <div id="scan_tab_scoll" style="width:700px;margin-bottom:10px;border:#D2D2D2 solid 1px;max-height:350px;overflow:auto;">
+                           <table id="scan_tab_table" class="table table-condensed table-striped" style="margin:0px;">
+                           	<thead>
+                                 <tr>
+                                    <th><input type="checkbox" onchange="set_all_checkbox('scan_tab_table',this)"></th>
+                                    <th>已查询</th>
+                                    <th>主机名</th>
+                                    <th>结果</th>
+                                 </tr>
+                              </thead>
+                           </table>
+                        </div>
+                        <div style="width:700px;" align="right">
+                           <div style="float:right;width:700px;">
+                              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="add_link_host_to_list('scan_tab_table','step_2_tab_table')">
+                              	添加到主机列表
+                              </button>
+                           </div>
+                           <div style="clear:none;"></div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- 切换主页的底部 -->
+               </div>
+            </div>
+            <div class="modal-footer">
+            	<!--<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            	<button type="button" class="btn btn-primary" onclick="addhostdiv()">搜索</button>-->
+            </div>
+         </div>
+      </div>
+   </div>
+   
+   <!-- 配置主机的弹出框 -->
+   <div class="modal fade" id="host_config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width:800px;">
+         <div class="modal-content" style="width:799px;">
+            <div class="modal-header" style="width:797px;">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">批量配置主机</h4>
+            </div>
+            <div class="modal-body" style="width:800px;">
+               <div style="width:800px;margin-bottom:20px;">
+                  <!-- 参数列表 -->
+                  <div style="width:700px;margin-bottom:10px;padding-right:10px;overflow:auto;border:#D2D2D2 solid 1px;">
+                     <table id="host_config_table" class="table table-striped" style="margin:0px;">
+                     	<thead>
+                           <tr>
+                              <th width="200">参数</th>
+                              <th>值</td>
+                              <th width="200">描述</th>
+                        	</tr>
+                        </thead>
+                        <tr>
+                        	<td>安装路径</td>
+                           <td>
+                              <input type="text" class="form-control input-sm" value="/opt/sequoiadb">
+                           </td>
+                           <td>安装包安装路径</td>
+                        </tr>
+                        <tr>
+                        	<td>系统用户组</td>
+                           <td>
+                              <input type="text" class="form-control input-sm" value="sdbadmin_group">
+                           </td>
+                           <td>创建系统用户组</td>
+                        </tr>
+                        <tr>
+                        	<td>系统用户名</td>
+                           <td>
+                              <input type="text" class="form-control input-sm" value="sdbadmin">
+                           </td>
+                           <td>创建系统用户名</td>
+                        </tr>
+                        <tr>
+                        	<td>密码</td>
+                           <td>
+                              <input type="text" class="form-control input-sm" value="sequoiadb">
+                           </td>
+                           <td>创建系统用户名的密码</td>
+                        </tr>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_host_conf_table()" value="">保存</button>
+            </div>
+         </div>
+      </div>
+   </div>
+
+	<!-- 报错用的弹出框 -->
+   <div class="modal fade" id="errorprowin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width:800px;">
+         <div class="modal-content" style="width:799px;">
+            <div class="modal-header" style="width:797px;">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">错误：</h4>
+            </div>
+            <div class="modal-body" style="width:800px;">
+            	<div id="error_context" class="alert alert-danger"></div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   
+   <!-- 日志查看的弹出框 -->
+   <div class="modal fade" id="diaryprowin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width:800px;">
+         <div class="modal-content" style="width:799px;">
+            <div class="modal-header" style="width:797px;">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">日志：</h4>
+            </div>
+            <div class="modal-body" style="width:800px;">
+            	<div id="diary_context" style="background:#F0F0F0;border:#D2D2D2 solid 1px;width:700px;height:500px;overflow:auto;padding-left:10px;">
+               </div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+         </div>
+      </div>
+   </div>
+
+	<!-- 添加分区组的弹出框 -->
+   <div class="modal fade" id="addgroups" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width:800px;">
+         <div class="modal-content" style="width:799px;">
+            <div class="modal-header" style="width:797px;">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">添加分区组</h4>
+            </div>
+            <div class="modal-body" style="width:800px;">
+               <div style="width:800px;margin-bottom:20px;">
+                  <!-- 主机列表 -->
+                  <div style="width:700px;margin-bottom:10px;">
+                     <textarea id="group_list_input" class="form-control" rows="4"></textarea>
+               		<span class="help-block">填写分区组名，多个以英文标点 ',' 分隔，如：g1,g2,g3</span>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="add_groups_to_list();">
+               	添加到列表
+               </button>
+            </div>
+         </div>
+      </div>
+   </div>
+
+	<!-- 主机列表的弹出框 -->
+   <div class="modal fade" id="gethostlist" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width:800px;">
+         <div class="modal-content" style="width:799px;">
+            <div class="modal-header" style="width:797px;">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">批量添加节点</h4>
+            </div>
+            <div class="modal-body" style="width:800px;">
+               <div style="width:800px;margin-bottom:20px;">
+                  <!-- 主机列表 -->
+                  <div style="width:700px;margin-bottom:10px;border:#D2D2D2 solid 1px;">
+                     <table id="batch_add_node_table" class="table table-condensed table-striped" style="margin:0px;">
+                     	<thead>
+                           <tr>
+                              <th><input type="checkbox" onchange="set_all_checkbox('batch_add_node_table',this)"></th>
+                              <th><a href="#" onclick="table_sort_col(this,'batch_add_node_table',1);">IP&nbsp;<span class="caret"></span></a></th>
+                              <th><a href="#" onclick="table_sort_col(this,'batch_add_node_table',2);">主机名&nbsp;<span class="caret"></span></a></th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+            	<button type="button" id="add_list_node_config_table" class="btn btn-primary" data-dismiss="modal" onclick="add_host_to_node('batch_add_node_table',this)">
+               	添加到列表
+               </button>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <!-- 配置节点的弹出框 -->
+   <div class="modal fade" id="node_config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width:800px;">
+         <div class="modal-content" style="width:799px;">
+            <div class="modal-header" style="width:797px;">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">批量配置节点</h4>
+            </div>
+            <div class="modal-body" style="width:800px;">
+               <div style="width:800px;margin-bottom:20px;">
+                  <!-- 参数列表 -->
+                  <div style="width:700px;margin-bottom:10px;height:550px;padding-right:10px;overflow:auto;border:#D2D2D2 solid 1px;">
+                     <table id="node_config_table" class="table table-striped" style="margin:0px;">
+                     	<thead>
+                           <tr>
+                              <th width="200">参数</th>
+                              <th>值</td>
+                              <th width="200">描述</th>
+                        	</tr>
+                        </thead>
+                        {{foreach $setup_options_conf as $child}}
+                        	{{if $child[4] eq ""}}
+                        <tr style="display:none;">
+                           {{else}}
+                        <tr class="options_conf_{{$child[4]}}">
+                        	{{/if}}
+                        	<td>{{$child[0]}}</td>
+                           <td>
+                           	{{if $child[1] eq "input"}}
+                              	<input type="text" class="form-control input-sm" value="{{$child[5]}}">
+                              {{elseif $child[1] eq "textarea"}}
+                              	<textarea class="form-control" rows="3">{{$child[5]}}</textarea>
+                              {{elseif $child[1] eq "select"}}
+                                 {{if is_array($child[2])}}
+                                 <select class="form-control">
+                                 	{{foreach $child[2] as $select_child}}
+                                    	{{if $select_child eq $child[5]}}
+                                    		<option value ="{{$select_child}}" selected="selected">{{$select_child}}</option>
+                                       {{else}}
+                                    		<option value ="{{$select_child}}">{{$select_child}}</option>
+                                    	{{/if}}
+                                    {{/foreach}}
+                                 </select>
+                                 {{else}}
+                                 <select class="form-control" onfocus="{{$child[2]}}">
+                                 </select>
+                                 {{/if}}
+                              {{/if}}
+                           </td>
+                           <td>{{$child[3]}}</td>
+                        </tr>
+                        {{/foreach}}
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+            	<button id="save_node_config_table" type="button" class="btn btn-primary" data-dismiss="modal" onclick="save_button_to_table(this,'node_config_table')" value="">保存</button>
+            </div>
+         </div>
+      </div>
+   </div>
+
+	<!-- 底部 -->
+   <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+   	<div style="background:#EBEBEB;border-top:#D2D2D2 solid 1px;padding-left:50px;padding-right:50px;">
+      	<span class="navbar-text navbar-left">
+         	<button type="button" class="btn btn-default" onclick="step_selector_return();"><span class="glyphicon glyphicon-chevron-left"></span> 返回</button>
+         </span>
+         <span class="navbar-text navbar-left">
+         	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#diaryprowin">
+            	查看日志
+            </button>
+         </span>
+         <span class="navbar-text navbar-right">
+         	<div id="setup_button_m">
+               <div>
+                  <button type="button" class="btn btn-primary" onclick="step_selector();">下一步 <span class="glyphicon glyphicon-chevron-right"></span></button>
+               </div>
+               <div style="display:none;">
+                  <button type="button" class="btn btn-primary" onclick="switchstart();">开始 <span class="glyphicon glyphicon-play"></span></button>
+               </div>
+               <div style="display:none;">
+                  <button type="button" class="btn btn-primary" onclick="goon_switch_next_setp()">继续 <span class="glyphicon glyphicon-play"></span></button>
+               </div>
+            </div>
+         </span>
+      </div>
+	</nav>

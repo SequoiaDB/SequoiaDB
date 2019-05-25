@@ -1,0 +1,392 @@
+<Property type="array">
+	<FILLER>
+		<Name>dbpath</Name>
+		<WebName>Data Path</WebName>
+		<Type>path</Type>
+		<Default>/opt/sequoiadb/database/standalone</Default>
+		<Valid></Valid>
+		<Display>text box</Display>
+		<Edit>true</Edit>
+		<Desc>Data storing path</Desc>
+		<Level>0</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>false</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>svcname</Name>
+		<WebName>service name</WebName>
+		<Type>string</Type>
+		<Default>11810</Default>
+		<Valid></Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Local service port</Desc>
+		<Level>0</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>false</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>diaglevel</Name>
+		<WebName>Print level of diagnose log</WebName>
+		<Type>int</Type>
+		<Default>3</Default>
+		<Valid>0,1,2,3,4,5</Valid>
+		<Display>select box</Display>
+		<Edit>true</Edit>
+		<Desc>Set the print level of diagnose log. In SequoiaDB, diagnose log is from 0~5 , and they stand for:SEVERE,ERROR,EVENT,WARNING,INFO,DEBUG</Desc>
+		<Level>0</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>role</Name>
+		<WebName>role</WebName>
+		<Type>string</Type>
+		<Default>standalone</Default>
+		<Valid>standalone,catalog,coord,data</Valid>
+		<Display>hidden</Display>
+		<Edit>true</Edit>
+		<Desc></Desc>
+		<Level>0</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>logfilesz</Name>
+		<WebName>Log file size</WebName>
+		<Type>int</Type>
+		<Default>64</Default>
+		<Valid>64-2048</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Set log file size, legal input is 64~2048 (MB) </Desc>
+		<Level>0</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>logfilenum</Name>
+		<WebName>Sync log file number.</WebName>
+		<Type>int</Type>
+		<Default>20</Default>
+		<Valid>1-11800</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Set sync log file number, legal input is 1~11800 </Desc>
+		<Level>0</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>transactionon</Name>
+		<WebName>Transaction</WebName>
+		<Type>bool</Type>
+		<Default>false</Default>
+		<Valid>true,false</Valid>
+		<Display>select box</Display>
+		<Edit>true</Edit>
+		<Desc>Whether turn on Transaction</Desc>
+		<Level>0</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>preferedinstance</Name>
+		<WebName>Instance Mode</WebName>
+		<Type>string</Type>
+		<Default>M</Default>
+		<Valid>M,S,A,1,2,3,4,5,6,7</Valid>
+		<Display>select box</Display>
+		<Edit>true</Edit>
+		<Desc>Set priory selecting instances when executing read request. M -- R/W instance； S -- Read Only Instance； A -- Any Instance； 1~7 --  n th instance</Desc>
+		<Level>0</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>numpreload</Name>
+		<WebName>Page preload proxy data</WebName>
+		<Type>int</Type>
+		<Default>0</Default>
+		<Valid>0-100</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Page preload proxy data, default is 0, value range:[0,100]</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>maxprefpool</Name>
+		<WebName>Max number of data preloading proxy pool</WebName>
+		<Type>int</Type>
+		<Default>200</Default>
+		<Valid>0-1000</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Max number of data preloading proxy pool, default is 200, value range:[0,1000]</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>maxreplsync</Name>
+		<WebName>Max concurrency of log syncronizing</WebName>
+		<Type>int</Type>
+		<Default>10</Default>
+		<Valid>0-200</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Max concurrency of log syncronizing,default is 10, value range:[0,200], 0 stands for not using log concurrently syncronizing.</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>logbuffsize</Name>
+		<WebName>Replicate Log Buffer Page Number.</WebName>
+		<Type>int</Type>
+		<Default>1024</Default>
+		<Valid>512-1024000</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Replicate Log Buffer Page Number,default value:1024, value range:[512,1024000], but log buffer size can't exceed the total log file size, each page is 64 KB</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>sortbuf</Name>
+		<WebName>Sorting buffer size</WebName>
+		<Type>int</Type>
+		<Default>256</Default>
+		<Valid>128-</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Sorting buffer size(MB), default value :256, min value:128</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>hjbuf</Name>
+		<WebName>Hash continuous buffer size</WebName>
+		<Type>int</Type>
+		<Default>128</Default>
+		<Valid>64-</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>Hash continuous buffer size（MB）,default value:128,min value:64</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>syncstrategy</Name>
+		<WebName>Data syncronizing strategy between replica groups</WebName>
+		<Type>string</Type>
+		<Default>keepnormal</Default>
+		<Valid>none,keepnormal,keepall</Valid>
+		<Display>select box</Display>
+		<Edit>true</Edit>
+		<Desc>Data syncronizing strategy between replica groups, Value:none,keepnormal,keepall, Default is:keepnormal</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>weight</Name>
+		<WebName>weight of election</WebName>
+		<Type>int</Type>
+		<Default>10</Default>
+		<Valid>1-100</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>The weight of election, default value :10, value range:[1,100]</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>maxsyncjob</Name>
+		<WebName>data-sync's maxinum task count</WebName>
+		<Type>int</Type>
+		<Default>10</Default>
+		<Valid>2-200</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>The maximum number of data-sync threads, default:10, value range:[2, 200]</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>syncinterval</Name>
+		<WebName>the interval time of data-sync</WebName>
+		<Type>int</Type>
+		<Default>10000</Default>
+		<Valid>0-</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>The interval time(unit:ms) of data-sync, default:10000, 0 means disable data-sync by time</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>syncrecordnum</Name>
+		<WebName>the trigger condition of record number of data-sync</WebName>
+		<Type>int</Type>
+		<Default>0</Default>
+		<Valid>0-</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>The trigger condition of record number of data-sync, default:0, 0 means disable data-sync by record</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>syncdeep</Name>
+		<WebName>turn on deep mode in data-sync</WebName>
+		<Type>bool</Type>
+		<Default>false</Default>
+		<Valid>true,false</Valid>
+		<Display>select box</Display>
+		<Edit>true</Edit>
+		<Desc>Turn on deep mode in data-sync, default:FALSE</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>archiveon</Name>
+		<WebName>turn on replica log archive</WebName>
+		<Type>bool</Type>
+		<Default>false</Default>
+		<Valid>true,false</Valid>
+		<Display>select box</Display>
+		<Edit>true</Edit>
+		<Desc>Turn on replica log archive, default false</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>archivecompresson</Name>
+		<WebName>turn on replica log archive compression</WebName>
+		<Type>bool</Type>
+		<Default>true</Default>
+		<Valid>true,false</Valid>
+		<Display>select box</Display>
+		<Edit>true</Edit>
+		<Desc>Turn on replica log archive compression, default true</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>archivepath</Name>
+		<WebName>archive log file path</WebName>
+		<Type>string</Type>
+		<Default></Default>
+		<Valid></Valid>
+		<Display>text box</Display>
+		<Edit>true</Edit>
+		<Desc>Archive log file path</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>false</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>archivetimeout</Name>
+		<WebName>timeout interval for archiving</WebName>
+		<Type>int</Type>
+		<Default>600</Default>
+		<Valid>0-</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>The timeout interval for archiving( in seconds ), default:600, 0 for no-timeout.</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>archiveexpired</Name>
+		<WebName>expired time for archive log file</WebName>
+		<Type>int</Type>
+		<Default>240</Default>
+		<Valid>0-</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>The expired time for archive log file ( in hours ), default:240, 0 for no-expired.</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>archivequota</Name>
+		<WebName>disk quota for archive log directory</WebName>
+		<Type>int</Type>
+		<Default>10</Default>
+		<Valid>0-</Valid>
+		<Display>edit box</Display>
+		<Edit>true</Edit>
+		<Desc>The disk quota for archive log directory ( in GB ), default:10, 0 for no limit.</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>true</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>indexpath</Name>
+		<WebName>Index Path</WebName>
+		<Type>string</Type>
+		<Default></Default>
+		<Valid></Valid>
+		<Display>text box</Display>
+		<Edit>true</Edit>
+		<Desc>Index storing path,Default is 'dbpath'</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>false</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>bkuppath</Name>
+		<WebName>Backup Path</WebName>
+		<Type>string</Type>
+		<Default></Default>
+		<Valid></Valid>
+		<Display>text box</Display>
+		<Edit>true</Edit>
+		<Desc>Backup storing path, Default is 'dbpath/bakfile'</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>false</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>lobpath</Name>
+		<WebName>Lob Data Path</WebName>
+		<Type>string</Type>
+		<Default></Default>
+		<Valid></Valid>
+		<Display>text box</Display>
+		<Edit>true</Edit>
+		<Desc>Lob data file storing path, Default is 'dbpath'</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>false</BatchEdit>
+	</FILLER>
+	<FILLER>
+		<Name>lobmetapath</Name>
+		<WebName>Lob Meta Path</WebName>
+		<Type>string</Type>
+		<Default></Default>
+		<Valid></Valid>
+		<Display>text box</Display>
+		<Edit>true</Edit>
+		<Desc>Lob meta file storing path, Default is 'dbpath'</Desc>
+		<Level>1</Level>
+		<DynamicEdit>false</DynamicEdit>
+		<BatchEdit>false</BatchEdit>
+	</FILLER>
+</Property>
