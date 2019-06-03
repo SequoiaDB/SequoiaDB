@@ -24,7 +24,7 @@
    Change Activity:
    defect Date        Who Description
    ====== =========== === ==============================================
-          01/18/2016  Li Jianhua  Initial Draft
+          03/13/2018  XJH Initial Draft
 
    Last Changed =
 
@@ -39,13 +39,100 @@ namespace engine
 {
 
    /*
+      _omStrategyMetaInfo implement
+   */
+   _omStrategyMetaInfo::_omStrategyMetaInfo()
+   {
+      _version = OM_TASK_STRATEGY_INVALID_VER ;
+   }
+
+   _omStrategyMetaInfo::~_omStrategyMetaInfo()
+   {
+   }
+
+   void _omStrategyMetaInfo::setVersion( INT32 version )
+   {
+      _version = version ;
+   }
+
+   void _omStrategyMetaInfo::setClusterName( const string &name )
+   {
+      _clsName = name ;
+   }
+
+   void _omStrategyMetaInfo::setBusinessName( const string &name )
+   {
+      _bizName = name ;
+   }
+
+   BSONObj _omStrategyMetaInfo::toBSON() const
+   {
+      return BSON( FIELD_NAME_VERSION << getVersion() <<
+                   OM_BSON_CLUSTER_NAME << getClusterName() <<
+                   OM_BSON_BUSINESS_NAME << getBusinessName() <<
+                   FIELD_NAME_NAME << OM_STRATEGY_BS_TASK_META_NAME ) ;
+   }
+
+   INT32 _omStrategyMetaInfo::fromBSON( const BSONObj &obj )
+   {
+      INT32 rc = SDB_OK ;
+      BSONElement beField ;
+
+      beField = obj.getField( FIELD_NAME_VERSION ) ;
+      if ( !beField.isNumber() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be number",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setVersion( beField.numberInt() ) ;
+
+      beField = obj.getField( OM_BSON_CLUSTER_NAME ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setClusterName( beField.str() ) ;
+
+      beField = obj.getField( OM_REST_BUSINESS_NAME ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setBusinessName( beField.str() ) ;
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   /*
       _omTaskStrategyInfo implement
    */
    _omTaskStrategyInfo::_omTaskStrategyInfo()
    {
-      _id         = 0 ;
-      _nice       = 0 ;
-      _taskID     = 0 ;
+      _ruleID     = OM_TASK_STRATEGY_INVALID_RULE_ID ;
+      _nice       = OM_TASK_STRATEGY_NICE_DFT ;
+      _taskID     = OM_TASK_STRATEGY_TASK_ID_DFT ;
+      _sortID     = OM_TASK_STRATEGY_INVALID_SORTID ;
+      _status     = OM_STRATEGY_STATUS_ENABLE ;
+   }
+
+   _omTaskStrategyInfo::~_omTaskStrategyInfo()
+   {
+   }
+
+   BOOLEAN _omTaskStrategyInfo::isEnabled() const
+   {
+      return OM_STRATEGY_STATUS_ENABLE == _status ? TRUE : FALSE ;
    }
 
    void _omTaskStrategyInfo::setTaskID( INT64 newTaskID )
@@ -62,9 +149,29 @@ namespace engine
       return TRUE ;
    }
 
-   void _omTaskStrategyInfo::setID( INT64 id )
+   void _omTaskStrategyInfo::setRuleID( INT64 ruleID )
    {
-      _id = id ;
+      _ruleID = ruleID ;
+   }
+
+   void _omTaskStrategyInfo::setSortID( INT64 sortID )
+   {
+      _sortID = sortID ;
+   }
+
+   void _omTaskStrategyInfo::setStatus( INT32 status )
+   {
+      _status = status ;
+   }
+
+   void _omTaskStrategyInfo::enable()
+   {
+      setStatus( OM_STRATEGY_STATUS_ENABLE ) ;
+   }
+
+   void _omTaskStrategyInfo::disable()
+   {
+      setStatus( OM_STRATEGY_STATUS_DISABLE ) ;
    }
 
    void _omTaskStrategyInfo::setNice( INT32 nice )
@@ -93,6 +200,21 @@ namespace engine
       _userName = userName ;
    }
 
+   void _omTaskStrategyInfo::setClusterName( const string &name )
+   {
+      _clsName = name ;
+   }
+
+   void _omTaskStrategyInfo::setBusinessName( const string &name )
+   {
+      _bizName = name ;
+   }
+
+   void _omTaskStrategyInfo::setContainerName( const string &name )
+   {
+      _containerName = name ;
+   }
+
    void _omTaskStrategyInfo::clearIPSet()
    {
       _ips.clear() ;
@@ -117,10 +239,14 @@ namespace engine
    {
       BSONObjBuilder builder( 1024 ) ;
 
-      builder.append( OM_REST_FIELD_RULE_ID, getID() ) ;
-      builder.append( OM_REST_FIELD_TASK_ID, getTaskID() ) ;
+      builder.append( OM_BSON_CLUSTER_NAME, getClusterName() ) ;
+      builder.append( OM_BSON_BUSINESS_NAME, getBusinessName() ) ;
       builder.append( OM_REST_FIELD_TASK_NAME, getTaskName() ) ;
+      builder.append( OM_REST_FIELD_RULE_ID, getRuleID() ) ;
+      builder.append( OM_REST_FIELD_TASK_ID, getTaskID() ) ;
+      builder.append( OM_REST_FIELD_SORT_ID, getSortID() ) ;
       builder.append( OM_REST_FIELD_NICE, getNice() ) ;
+      builder.append( OM_REST_FIELD_STATUS, getStatus() ) ;
       builder.append( OM_REST_FIELD_USER_NAME, getUserName() ) ;
 
       BSONArrayBuilder arr( builder.subarrayStart( OM_REST_FIELD_IPS ) ) ;
@@ -154,7 +280,7 @@ namespace engine
          rc = SDB_INVALIDARG ;
          goto error ;
       }
-      setID( beField.numberLong() ) ;
+      setRuleID( beField.numberLong() ) ;
 
       beField = obj.getField( OM_REST_FIELD_TASK_ID ) ;
       if ( !beField.isNumber() )
@@ -166,15 +292,15 @@ namespace engine
       }
       setTaskID( beField.numberLong() ) ;
 
-      beField = obj.getField( OM_REST_FIELD_TASK_NAME ) ;
-      if ( String != beField.type() )
+      beField = obj.getField( OM_REST_FIELD_SORT_ID ) ;
+      if ( !beField.isNumber() )
       {
-         PD_LOG( PDERROR, "Field[%s] must be string",
+         PD_LOG( PDERROR, "Field[%s] must be number",
                  beField.toString( TRUE, TRUE ).c_str() ) ;
          rc = SDB_INVALIDARG ;
          goto error ;
       }
-      setTaskName( beField.str() ) ;
+      setSortID( beField.numberLong() ) ;
 
       beField = obj.getField( OM_REST_FIELD_NICE ) ;
       if ( !beField.isNumber() )
@@ -186,6 +312,16 @@ namespace engine
       }
       setNice( beField.numberInt() ) ;
 
+      beField = obj.getField( OM_REST_FIELD_STATUS ) ;
+      if ( !beField.isNumber() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be number",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setStatus( beField.numberInt() ) ;
+
       beField = obj.getField( OM_REST_FIELD_USER_NAME ) ;
       if ( String != beField.type() )
       {
@@ -195,6 +331,36 @@ namespace engine
          goto error ;
       }
       setUserName( beField.str() ) ;
+
+      beField = obj.getField( OM_REST_FIELD_TASK_NAME ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setTaskName( beField.str() ) ;
+
+      beField = obj.getField( OM_BSON_CLUSTER_NAME ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setClusterName( beField.str() ) ;
+
+      beField = obj.getField( OM_BSON_BUSINESS_NAME ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setBusinessName( beField.str() ) ;
 
       beField = obj.getField( OM_REST_FIELD_IPS ) ;
       if ( Array != beField.type() )
@@ -229,6 +395,164 @@ namespace engine
             }
          }
       }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   /*
+      _omTaskInfo implement
+   */
+   _omTaskInfo::_omTaskInfo()
+   {
+      _taskID        = OM_TASK_STRATEGY_TASK_ID_DFT ;
+      _status        = OM_STRATEGY_STATUS_ENABLE ;
+   }
+
+   _omTaskInfo::~_omTaskInfo()
+   {
+   }
+
+   void _omTaskInfo::setTaskID( INT64 taskID )
+   {
+      _taskID = taskID ;
+   }
+
+   void _omTaskInfo::enable()
+   {
+      _status = OM_STRATEGY_STATUS_ENABLE ;
+   }
+
+   void _omTaskInfo::disable()
+   {
+      _status = OM_STRATEGY_STATUS_DISABLE ;
+   }
+
+   void _omTaskInfo::setStatus( INT32 status )
+   {
+      _status = status ;
+   }
+
+   void _omTaskInfo::setCreateTime( INT64 time )
+   {
+      _createTime = time ;
+   }
+
+   void _omTaskInfo::makeCreateTime()
+   {
+      setCreateTime( time( NULL ) ) ;
+   }
+
+   void _omTaskInfo::setClusterName( const string &name )
+   {
+      _clsName = name ;
+   }
+
+   void _omTaskInfo::setBusinessName( const string &name )
+   {
+      _bizName = name ;
+   }
+
+   void _omTaskInfo::setTaskName( const string &name )
+   {
+      _taskName = name ;
+   }
+
+   void _omTaskInfo::setCreator( const string &name )
+   {
+      _createUser = name ;
+   }
+
+   BSONObj _omTaskInfo::toBSON() const
+   {
+      BSONObjBuilder objBuilder( 256 ) ;
+      objBuilder.append( OM_REST_FIELD_TASK_ID, getTaskID() ) ;
+      objBuilder.append( OM_REST_FIELD_STATUS, getStatus() ) ;
+      objBuilder.append( OM_BSON_CLUSTER_NAME, getClusterName() ) ;
+      objBuilder.append( OM_BSON_BUSINESS_NAME, getBusinessName() ) ;
+      objBuilder.append( OM_REST_FIELD_TASK_NAME, getTaskName() ) ;
+      objBuilder.append( OM_REST_FIELD_CREATE_USER, getCreator() ) ;
+      objBuilder.append( OM_REST_FIELD_CREATE_TIME, getCreateTime() ) ;
+
+      return objBuilder.obj() ;
+   }
+
+   INT32 _omTaskInfo::fromBSON( const BSONObj &obj )
+   {
+      INT32 rc = SDB_OK ;
+      BSONElement beField ;
+
+      beField = obj.getField( OM_REST_FIELD_TASK_ID ) ;
+      if ( !beField.isNumber() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be number",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setTaskID( beField.numberLong() ) ;
+
+      beField = obj.getField( OM_REST_FIELD_STATUS ) ;
+      if ( !beField.isNumber() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be number",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setStatus( beField.numberInt() ) ;
+
+      beField = obj.getField( OM_BSON_CLUSTER_NAME ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setClusterName( beField.str() ) ;
+
+      beField = obj.getField( OM_BSON_BUSINESS_NAME ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setBusinessName( beField.str() ) ;
+
+      beField = obj.getField( OM_REST_FIELD_TASK_NAME ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setTaskName( beField.str() ) ;
+
+      beField = obj.getField( OM_REST_FIELD_CREATE_USER ) ;
+      if ( String != beField.type() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be string",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setCreator( beField.str() ) ;
+
+      beField = obj.getField( OM_REST_FIELD_CREATE_TIME ) ;
+      if ( !beField.isNumber() )
+      {
+         PD_LOG( PDERROR, "Field[%s] must be number",
+                 beField.toString( TRUE, TRUE ).c_str() ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+      setCreateTime( beField.numberLong() ) ;
 
    done:
       return rc ;

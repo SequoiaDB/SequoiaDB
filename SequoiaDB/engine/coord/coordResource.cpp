@@ -45,6 +45,7 @@
 #include "pmd.hpp"
 #include "rtnCB.hpp"
 #include "rtn.hpp"
+#include "coordOmProxy.hpp"
 #include "../bson/bson.h"
 #include "utilArray.hpp"
 
@@ -85,6 +86,8 @@ namespace engine
       _cataAddrChanged = FALSE ;
       _pAgent = NULL ;
       _pOptionsCB = NULL ;
+      _pOmProxy = NULL ;
+      _pOmStrategyAgent = NULL ;
    }
 
    _coordResource::~_coordResource()
@@ -96,6 +99,7 @@ namespace engine
    {
       INT32 rc = SDB_OK ;
       CoordGroupInfo *pCataGroup = NULL ;
+      coordOmProxy *pOmProxy = NULL ;
 
       if ( !pAgent || !pOptionsCB )
       {
@@ -114,11 +118,60 @@ namespace engine
          goto error ;
       }
       _cataGroupInfo = CoordGroupInfoPtr( pCataGroup ) ;
+      pCataGroup = NULL ;
       _emptyGroupPtr = _cataGroupInfo ;
+      _omGroupInfo = _emptyGroupPtr ;
 
-      _initAddressFromOption( _cataNodeAddrList ) ;
+      _initAddressFromPair( _pOptionsCB->catAddrs(),
+                            MSG_ROUTE_CAT_SERVICE,
+                            _cataNodeAddrList ) ;
+
+      _initAddressFromPair( _pOptionsCB->omAddrs(),
+                            MSG_ROUTE_OM_SERVICE,
+                            _omNodeAddrList ) ;
+
+      rc = _buildOmGroupInfo() ;
+      if ( rc )
+      {
+         PD_LOG( PDERROR, "Build OM group info failed, rc: %d", rc ) ;
+         goto error ;
+      }
+
+      pOmProxy = SDB_OSS_NEW coordOmProxy() ;
+      if ( !_pOmProxy )
+      {
+         PD_LOG( PDERROR, "Allocate om proxy failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+      _pOmProxy = pOmProxy ;
+
+      rc = pOmProxy->init( this ) ;
+      if ( rc )
+      {
+         PD_LOG( PDERROR, "Init om proxy failed, rc: %d", rc ) ;
+         goto error ;
+      }
+
+      _pOmStrategyAgent = SDB_OSS_NEW coordOmStrategyAgent() ;
+      if ( !_pOmStrategyAgent )
+      {
+         PD_LOG( PDERROR, "Allocate om strategy agent failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+      rc = _pOmStrategyAgent->init() ;
+      if ( rc )
+      {
+         PD_LOG( PDERROR, "Init om strategy agent failed, rc: %d", rc ) ;
+         goto error ;
+      }
 
    done:
+      if ( pCataGroup )
+      {
+         SDB_OSS_DEL pCataGroup ;
+      }
       return rc ;
    error:
       goto done ;
@@ -129,6 +182,19 @@ namespace engine
       _mapCataInfo.clear() ;
       _mapGroupInfo.clear() ;
       _mapGroupName.clear() ;
+
+      if ( _pOmStrategyAgent )
+      {
+         _pOmStrategyAgent->fini() ;
+         SDB_OSS_DEL _pOmStrategyAgent ;
+         _pOmStrategyAgent = NULL ;
+      }
+
+      if ( _pOmProxy )
+      {
+         SDB_OSS_DEL _pOmProxy ;
+         _pOmProxy = NULL ;
+      }
    }
 
    _netRouteAgent* _coordResource::getRouteAgent()
@@ -136,34 +202,141 @@ namespace engine
       return _pAgent ;
    }
 
-   void _coordResource::_initAddressFromOption( CoordVecNodeInfo &vecAddr )
+   _IOmProxy* _coordResource::getOmProxy()
    {
-      vector< _pmdAddrPair > catAddrs = _pOptionsCB->catAddrs() ;
+      return _pOmProxy ;
+   }
+
+   _coordOmStrategyAgent* _coordResource::getOmStrategyAgent()
+   {
+      return _pOmStrategyAgent ;
+   }
+
+   INT32 _coordResource::_buildOmGroupInfo()
+   {
+      INT32 rc = SDB_OK ;
+      CoordGroupInfo *pGroupInfo = NULL ;
+
+      if ( !_omNodeAddrList.empty() )
+      {
+         try
+         {
+            BSONObjBuilder builder( 1024 ) ;
+            BSONObj objOMGroup ;
+
+            CoordVecNodeInfo::iterator it ;
+
+            builder.append( CAT_GROUPID_NAME, OM_GROUPID ) ;
+            builder.append( CAT_GROUPNAME_NAME, OM_GROUPNAME ) ;
+            builder.append( CAT_ROLE_NAME, SDB_ROLE_OM ) ;
+            builder.append( FIELD_NAME_SECRETID, (INT32)0 ) ;
+            builder.append( CAT_VERSION_NAME, (INT32)1 ) ;
+            builder.append( CAT_PRIMARY_NAME, (INT32)OM_NODE_ID_BEGIN ) ;
+            BSONArrayBuilder arrGroup( builder.subarrayStart( CAT_GROUP_NAME ) ) ;
+
+            for ( it = _omNodeAddrList.begin() ;
+                  it != _omNodeAddrList.end() ;
+                  ++it )
+            {
+               clsNodeItem &nodeItem = *it ;
+
+               BSONObjBuilder node( arrGroup.subobjStart() ) ;
+               node.append( CAT_NODEID_NAME, (INT32)OM_NODE_ID_BEGIN ) ;
+               node.append( CAT_HOST_FIELD_NAME, nodeItem._host ) ;
+               node.append( CAT_STATUS_NAME, (INT32)SDB_CAT_GRP_ACTIVE ) ;
+               BSONArrayBuilder arrSvc( node.subarrayStart(
+                                        CAT_SERVICE_FIELD_NAME ) ) ;
+               BSONObjBuilder svc( arrSvc.subobjStart() ) ;
+               svc.append( CAT_SERVICE_TYPE_FIELD_NAME,
+                           (INT32)MSG_ROUTE_OM_SERVICE ) ;
+               svc.append( CAT_SERVICE_NAME_FIELD_NAME,
+                           nodeItem._service[ MSG_ROUTE_OM_SERVICE ] ) ;
+
+               svc.done() ;
+               arrSvc.done() ;
+               node.done() ;
+            }
+            arrGroup.done() ;
+
+            objOMGroup = builder.obj() ;
+
+            pGroupInfo = SDB_OSS_NEW CoordGroupInfo( OM_GROUPID ) ;
+            if ( NULL == pGroupInfo )
+            {
+               rc = SDB_OOM ;
+               PD_LOG ( PDERROR, "Alloc group info failed" ) ;
+               goto error ;
+            }
+
+            rc = pGroupInfo->updateGroupItem( objOMGroup ) ;
+            if ( rc )
+            {
+               PD_LOG( PDERROR, "Update group info from bson[%s] failed, "
+                       "rc: %d", objOMGroup.toString().c_str(), rc ) ;
+               goto error ;
+            }
+         }
+         catch( std::exception &e )
+         {
+            rc = SDB_SYS ;
+            PD_LOG ( PDERROR, "Occur exception: %s", e.what() ) ;
+            goto error ;
+         }
+
+         _omGroupInfo = CoordGroupInfoPtr( pGroupInfo ) ;
+         pGroupInfo = NULL ;
+
+         rc = _updateRouteInfo( _omGroupInfo, MSG_ROUTE_OM_SERVICE ) ;
+         if ( rc )
+         {
+            PD_LOG( PDERROR, "Update om group's om serivce route info "
+                    "failed, rc: %d", rc ) ;
+            goto error ;
+         }
+      }
+
+   done:
+      if ( pGroupInfo )
+      {
+         SDB_OSS_DEL pGroupInfo ;
+      }
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   void _coordResource::_initAddressFromPair( const vector< pmdAddrPair > &vecAddrPair,
+                                              INT32 serviceType,
+                                              CoordVecNodeInfo &vecAddr )
+   {
       MsgRouteID routeID ;
       routeID.value = MSG_INVALID_ROUTEID ;
-      for ( UINT32 i = 0 ; i < catAddrs.size() ; ++i )
+
+      for ( UINT32 i = 0 ; i < vecAddrPair.size() ; ++i )
       {
-         if ( 0 == catAddrs[i]._host[ 0 ] )
+         if ( 0 == vecAddrPair[i]._host[ 0 ] )
          {
             break ;
          }
-         _addCataAddrNode( routeID, catAddrs[i]._host,
-                           catAddrs[i]._service,
-                           vecAddr ) ;
+         _addAddrNode( routeID, vecAddrPair[i]._host,
+                       vecAddrPair[i]._service,
+                       serviceType,
+                       vecAddr ) ;
       }
       std::sort( vecAddr.begin(), vecAddr.end(), cmpNodeInfo() ) ;
    }
 
-   void _coordResource::_addCataAddrNode( const MsgRouteID &id,
-                                          const CHAR *pHostName,
-                                          const CHAR *pSvcName,
-                                          CoordVecNodeInfo &vecAddr )
+   void _coordResource::_addAddrNode( const MsgRouteID &id,
+                                      const CHAR *pHostName,
+                                      const CHAR *pSvcName,
+                                      INT32 serviceType,
+                                      CoordVecNodeInfo &vecAddr )
    {
       CoordNodeInfo nodeInfo ;
       nodeInfo._id.value = id.value ;
       ossStrncpy( nodeInfo._host, pHostName, OSS_MAX_HOSTNAME );
       nodeInfo._host[OSS_MAX_HOSTNAME] = 0 ;
-      nodeInfo._service[MSG_ROUTE_CAT_SERVICE] = pSvcName ;
+      nodeInfo._service[ serviceType ] = pSvcName ;
 
       vecAddr.push_back( nodeInfo ) ;
    }
@@ -197,7 +370,9 @@ namespace engine
       }
 
       routeID.value = MSG_INVALID_ROUTEID ;
-      _addCataAddrNode( routeID, pHostName, pSvcName, _cataNodeAddrList ) ;
+      _addAddrNode( routeID, pHostName, pSvcName,
+                    MSG_ROUTE_CAT_SERVICE,
+                    _cataNodeAddrList ) ;
 
       _cataAddrChanged = TRUE ;
       add = TRUE ;
@@ -222,8 +397,9 @@ namespace engine
          while ( SDB_OK == groupPtr->getNodeInfo( pos, id, hostName, svcName,
                                                   MSG_ROUTE_CAT_SERVICE ) )
          {
-            _addCataAddrNode( id, hostName.c_str(), svcName.c_str(),
-                              _cataNodeAddrList ) ;
+            _addAddrNode( id, hostName.c_str(), svcName.c_str(),
+                          MSG_ROUTE_CAT_SERVICE,
+                          _cataNodeAddrList ) ;
             ++pos ;
          }
       }
@@ -244,7 +420,9 @@ namespace engine
       }
 
       _cataAddrChanged = FALSE ;
-      _initAddressFromOption( vecNodes ) ;
+      _initAddressFromPair( _pOptionsCB->catAddrs(),
+                            MSG_ROUTE_CAT_SERVICE,
+                            vecNodes ) ;
       bSame = coordIsCataAddrSame( vecNodes, _cataNodeAddrList ) ;
 
       if ( !force && bSame )
@@ -279,17 +457,25 @@ namespace engine
                                        CoordGroupInfoPtr &groupPtr )
    {
       INT32 rc = SDB_OK ;
-      MAP_GROUP_INFO_IT it  ;
-      ossScopedLock lock( &_nodeMutex, SHARED ) ;
 
-      it = _mapGroupInfo.find( groupID ) ;
-      if ( it != _mapGroupInfo.end() )
+      if ( OM_GROUPID == groupID )
       {
-         groupPtr = it->second ;
+         groupPtr = getOmGroupInfo() ;
       }
       else
       {
-         rc = SDB_COOR_NO_NODEGROUP_INFO ;
+         MAP_GROUP_INFO_IT it  ;
+         ossScopedLock lock( &_nodeMutex, SHARED ) ;
+
+         it = _mapGroupInfo.find( groupID ) ;
+         if ( it != _mapGroupInfo.end() )
+         {
+            groupPtr = it->second ;
+         }
+         else
+         {
+            rc = SDB_COOR_NO_NODEGROUP_INFO ;
+         }
       }
 
       return rc ;
@@ -299,19 +485,28 @@ namespace engine
                                        CoordGroupInfoPtr &groupPtr )
    {
       INT32 rc = SDB_COOR_NO_NODEGROUP_INFO ;
-      MAP_GROUP_INFO_IT it  ;
-      MAP_GROUP_NAME_IT itName ;
 
-      ossScopedLock lock( &_nodeMutex, SHARED ) ;
-
-      itName = _mapGroupName.find( groupName ) ;
-      if ( itName != _mapGroupName.end() )
+      if ( 0 == ossStrcmp( OM_GROUPNAME, groupName ) )
       {
-         it = _mapGroupInfo.find( itName->second ) ;
-         if ( it != _mapGroupInfo.end() )
+         groupPtr = getOmGroupInfo() ;
+         rc = SDB_OK ;
+      }
+      else
+      {
+         MAP_GROUP_INFO_IT it  ;
+         MAP_GROUP_NAME_IT itName ;
+
+         ossScopedLock lock( &_nodeMutex, SHARED ) ;
+
+         itName = _mapGroupName.find( groupName ) ;
+         if ( itName != _mapGroupName.end() )
          {
-            groupPtr = it->second ;
-            rc = SDB_OK ;
+            it = _mapGroupInfo.find( itName->second ) ;
+            if ( it != _mapGroupInfo.end() )
+            {
+               groupPtr = it->second ;
+               rc = SDB_OK ;
+            }
          }
       }
 
@@ -386,6 +581,10 @@ namespace engine
       {
          rc = updateCataGroupInfo( groupPtr, cb ) ;
       }
+      else if ( OM_GROUPID == groupID )
+      {
+         goto done ;
+      }
       else
       {
          MsgCatGroupReq msgGroupReq ;
@@ -429,6 +628,10 @@ namespace engine
       if ( 0 == ossStrcmp( groupName, CATALOG_GROUPNAME ) )
       {
          rc = updateCataGroupInfo( groupPtr, cb ) ;
+      }
+      else if ( 0 == ossStrcmp( groupName, OM_GROUPNAME ) )
+      {
+         goto done ;
       }
       else
       {
@@ -677,6 +880,11 @@ namespace engine
       tmpPtr = _cataGroupInfo ;
 
       return tmpPtr ;
+   }
+
+   CoordGroupInfoPtr _coordResource::getOmGroupInfo()
+   {
+      return _omGroupInfo ;
    }
 
    INT32 _coordResource::groupID2Name( UINT32 id, std::string &name )

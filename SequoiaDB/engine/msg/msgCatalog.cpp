@@ -93,7 +93,8 @@ namespace engine
       if ( MSG_ROUTE_REPL_SERVICE == beServID.Int() ||
            MSG_ROUTE_SHARD_SERVCIE == beServID.Int() ||
            MSG_ROUTE_CAT_SERVICE == beServID.Int() ||
-           MSG_ROUTE_LOCAL_SERVICE == beServID.Int() )
+           MSG_ROUTE_LOCAL_SERVICE == beServID.Int() ||
+           MSG_ROUTE_OM_SERVICE == beServID.Int() )
       {
          servID = (UINT16)beServID.Int() ;
       }
