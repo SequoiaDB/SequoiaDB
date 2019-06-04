@@ -260,14 +260,27 @@ namespace engine
       _pEDUCB = cb ;
       _evtOut.reset() ;
       _evtIn.signal() ;
+
+      _onAttach() ;
+
       return SDB_OK ;
    }
 
    INT32 _rtnBaseJob::attachOut ()
    {
+      _onDetach() ;
+
       _evtOut.signal() ;
       _pEDUCB = NULL ;
       return SDB_OK ;      
+   }
+
+   void _rtnBaseJob::_onAttach()
+   {
+   }
+
+   void _rtnBaseJob::_onDetach()
+   {
    }
 
    INT32 _rtnBaseJob::waitAttach ( INT64 millsec )

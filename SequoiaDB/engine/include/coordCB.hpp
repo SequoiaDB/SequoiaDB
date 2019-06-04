@@ -84,6 +84,7 @@ namespace engine
 
          coordResource* getResource() ;
          netRouteAgent* getRouteAgent() ;
+         pmdRemoteSessionMgr* getRSManager() ;
 
       protected:
          virtual void onTimer ( UINT64 timerID, UINT32 interval ) ;

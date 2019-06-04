@@ -11044,7 +11044,7 @@ namespace engine
                               &pValTmp ) ;
       if ( pValTmp != NULL )
       {
-         inputInfo.setID( ossAtoll( pValTmp ) ) ;
+         inputInfo.setRuleID( ossAtoll( pValTmp ) ) ;
       }
 
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_USER_NAME,

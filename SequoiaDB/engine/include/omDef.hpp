@@ -309,11 +309,14 @@ _IDX1\",key: {"OM_RELATIONSHIP_FIELD_NAME":1}, unique: true, enforced: true }"
    /********** SYSSTRATEGY **********/
    #define OM_CS_STRATEGY                       "SYSSTRATEGY"
 
-   /********** SYSBUSINESSTASKPROPERTY **********/
-   #define OM_CS_STRATEGY_CL_BUSINESS_TASK_PRO  OM_CS_STRATEGY".SYSBUSINESSTASKPROPERTY"
-   #define OM_STRATEGY_FIELD_TASKID             FIELD_NAME_TASKID
-   #define OM_STRATEGY_BUSINESSTASKPROIDX1      "{name:\"OM_STRATEGY_BUSINESSTASKPROIDX1\",\
-key: {"OM_STRATEGY_FIELD_TASKID":1} }"
+   /********** SYSTASKPROPERTY **********/
+   #define OM_CS_STRATEGY_CL_TASK_PRO           OM_CS_STRATEGY".SYSTASKPROPERTY"
+
+   /********** SYSSTRATEGYPROPERTY **********/
+   #define OM_CS_STRATEGY_CL_STRATEGY_PRO       OM_CS_STRATEGY".SYSSTRATEGYPROPERTY"
+
+   /********** SYSMETADATA **********/
+   #define OM_CS_STRATEGY_CL_META_DATA          OM_CS_STRATEGY".SYSMETADATA"
 
 
    #define OM_PATH_WEB                       "web"
@@ -561,12 +564,19 @@ key: {"OM_STRATEGY_FIELD_TASKID":1} }"
    #define  OM_DISCOVER_BUSINESS_REQ         "discover business"
    #define  OM_UNDISCOVER_BUSINESS_REQ       "undiscover business"
 
-   #define  OM_TASK_STRATEGY_LIST_REQ        "list task strategy"
-   #define  OM_TASK_STRATEGY_ADD_REQ         "add task strategy"
-   #define  OM_TASK_STRATEGY_UPDATE_NICE_REQ "update task strategy nice"
-   #define  OM_TASK_STRATEGY_ADD_IPS_REQ     "add task strategy ips"
-   #define  OM_TASK_STRATEGY_DEL_IPS_REQ     "del task strategy ips"
-   #define  OM_TASK_STRATEGY_DEL_REQ         "del task strategy"
+   #define  OM_TASK_STRATEGY_LIST_REQ        "list svc task strategy"
+   #define  OM_TASK_STRATEGY_ADD_REQ         "add svc task strategy"
+   #define  OM_TASK_STRATEGY_UPDATE_NICE_REQ "update svc task strategy nice"
+   #define  OM_TASK_STRATEGY_ADD_IPS_REQ     "add svc task strategy ips"
+   #define  OM_TASK_STRATEGY_DEL_IPS_REQ     "del svc task strategy ips"
+   #define  OM_TASK_STRATEGY_DEL_REQ         "del svc task strategy"
+   #define  OM_TASK_STRATEGY_UPDATE_STAT_REQ "update svc task strategy status"
+   #define  OM_TASK_STRATEGY_UPDATE_SORT_REQ "update svc task strategy sort"
+   #define  OM_TASK_LIST_REQ                 "list svc task"
+   #define  OM_TASK_ADD_REQ                  "add svc task"
+   #define  OM_TASK_UPDATE_STATUS_REQ        "update svc task status"
+   #define  OM_TASK_DEL_REQ                  "del svc task"
+   #define  OM_TASK_STRATEGY_FLUSH           "flush svc task strategy"
 
    #define  OM_UPDATE_HOST_INFO_REQ          "update host info"
 
@@ -604,10 +614,15 @@ key: {"OM_STRATEGY_FIELD_TASKID":1} }"
 
    #define  OM_REST_FIELD_TASK_ID            "TaskID"
    #define  OM_REST_FIELD_RULE_ID            "RuleID"
+   #define  OM_REST_FIELD_MAX_RULE_ID        "MaxRuleID"
    #define  OM_REST_FIELD_USER_NAME          "UserName"
    #define  OM_REST_FIELD_TASK_NAME          "TaskName"
    #define  OM_REST_FIELD_IPS                "IPs"
    #define  OM_REST_FIELD_NICE               "Nice"
+   #define  OM_REST_FIELD_SORT_ID            "SortID"
+   #define  OM_REST_FIELD_STATUS             "Status"
+   #define  OM_REST_FIELD_CREATE_USER        "CreateUser"
+   #define  OM_REST_FIELD_CREATE_TIME        "CreateTime"
 
    #define  OM_REST_FIELD_ADDRESS            "Address"
    #define  OM_BSON_FIELD_HOST_INFO          OM_REST_FIELD_HOST_INFO
@@ -617,7 +632,7 @@ key: {"OM_STRATEGY_FIELD_TASKID":1} }"
    #define  OM_BSON_FIELD_HOST_PASSWD        OM_HOST_FIELD_PASSWORD
    #define  OM_BSON_FIELD_HOST_SSHPORT       OM_HOST_FIELD_SSHPORT
    #define  OM_BSON_FIELD_AGENT_PORT         OM_HOST_FIELD_AGENT_PORT
-   #define  OM_BSON_FIELD_SCAN_STATUS        "Status"
+   #define  OM_BSON_FIELD_SCAN_STATUS        OM_REST_FIELD_STATUS
    #define  OM_SCAN_HOST_STATUS_FINISH       "finish"
    #define  OM_BSON_FIELD_OS                 OM_HOST_FIELD_OS
    #define  OM_BSON_FIELD_OMA                OM_HOST_FIELD_OMA

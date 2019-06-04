@@ -64,6 +64,8 @@ namespace engine
       RTN_JOB_OPT_PLAN_CLEAR     = 18, // opt plan clear job
       RTN_JOB_PAGEMAPPING        = 19, // page mapping job
 
+      RTN_JOB_UPDATESTRATEGY     = 20,
+
       RTN_JOB_MAX
    } ;
 
@@ -132,6 +134,10 @@ namespace engine
          virtual INT32 doit () = 0 ;
 
          virtual BOOLEAN reuseEDU() const { return FALSE ; }
+
+      protected:
+         virtual void _onAttach() ;
+         virtual void _onDetach() ;
 
       private:
          ossEvent             _evtIn ;

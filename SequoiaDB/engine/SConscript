@@ -534,7 +534,12 @@ coordFiles = [
       "coord/coordLobOperator.cpp",
       "coord/coordCommands.cpp",
       "coord/coordMsgEventHandler.cpp",
-      "coord/coordContext.cpp"
+      "coord/coordContext.cpp",
+      "coord/coordOmOperator.cpp",
+      "coord/coordOmProxy.cpp",
+      "coord/coordOmStrategyAccessor.cpp",
+      "coord/coordOmCache.cpp",
+      "coord/coordOmStrategyJob.cpp"
       ]
 
 aggrFiles = [

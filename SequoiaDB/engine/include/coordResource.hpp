@@ -38,6 +38,7 @@
 
 #include "coordDef.hpp"
 #include "pmdOptionsMgr.hpp"
+#include "coordOmCache.hpp"
 #include "../bson/bson.h"
 
 using namespace bson ;
@@ -47,6 +48,7 @@ namespace engine
 
    class _pmdEDUCB ;
    class _netRouteAgent ;
+   class _IOmProxy ;
 
    /*
       _coordResource define
@@ -87,7 +89,9 @@ namespace engine
          void        invalidateCataInfo() ;
          void        invalidateGroupInfo( UINT64 identify = 0 ) ;
 
-         _netRouteAgent* getRouteAgent() ;
+         _netRouteAgent*   getRouteAgent() ;
+         _IOmProxy*        getOmProxy() ;
+         _coordOmStrategyAgent* getOmStrategyAgent() ;
 
       public:
 
@@ -150,6 +154,8 @@ namespace engine
          BOOLEAN     addCataNodeAddrWhenEmpty( const CHAR *pHostName,
                                                const CHAR *pSvcName ) ;
 
+         CoordGroupInfoPtr    getOmGroupInfo() ;
+
       public:
 
          void        addCataInfo( CoordCataInfoPtr &cataPtr ) ;
@@ -203,12 +209,15 @@ namespace engine
                                        MSG_ROUTE_SERVICE_TYPE type,
                                        CoordGroupInfoPtr &groupPtr ) ;
 
-         void        _addCataAddrNode( const MsgRouteID &id,
-                                       const CHAR *pHostName,
-                                       const CHAR *pSvcName,
-                                       CoordVecNodeInfo &vecAddr ) ;
+         void        _addAddrNode( const MsgRouteID &id,
+                                   const CHAR *pHostName,
+                                   const CHAR *pSvcName,
+                                   INT32 serviceType,
+                                   CoordVecNodeInfo &vecAddr ) ;
 
-         void        _initAddressFromOption( CoordVecNodeInfo &vecAddr ) ;
+         void        _initAddressFromPair( const vector< pmdAddrPair > &vecAddrPair,
+                                           INT32 serviceType,
+                                           CoordVecNodeInfo &vecAddr ) ;
 
          INT32       _updateCataInfo( const BSONObj &obj,
                                       const CHAR *collectionName,
@@ -219,16 +228,21 @@ namespace engine
                                            const CHAR *collectionName,
                                            CoordCataInfoPtr &cataPtr ) ;
 
+         INT32       _buildOmGroupInfo() ;
+
       private:
          MAP_GROUP_INFO                   _mapGroupInfo ;
          MAP_GROUP_NAME                   _mapGroupName ;
          ossSpinSLatch                    _nodeMutex ;
 
          CoordGroupInfoPtr                _cataGroupInfo ;
+         CoordGroupInfoPtr                _omGroupInfo ;
 
          UINT64                           _upGrpIndentify ;
          CoordVecNodeInfo                 _cataNodeAddrList ;
          BOOLEAN                          _cataAddrChanged ;
+
+         CoordVecNodeInfo                 _omNodeAddrList ;
 
          MAP_CATA_INFO                    _mapCataInfo ;
          ossSpinSLatch                    _cataMutex ;
@@ -236,6 +250,9 @@ namespace engine
          _netRouteAgent                   *_pAgent ;
          pmdOptionsCB                     *_pOptionsCB ;
          CoordGroupInfoPtr                _emptyGroupPtr ;
+
+         _IOmProxy                        *_pOmProxy ;
+         _coordOmStrategyAgent            *_pOmStrategyAgent ;
 
    } ;
    typedef _coordResource coordResource ;

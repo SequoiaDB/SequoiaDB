@@ -605,6 +605,7 @@
 #define CATALOG_GROUPNAME                    SYS_PREFIX"CatalogGroup"
 #define COORD_GROUPNAME                      SYS_PREFIX"Coord"
 #define SPARE_GROUPNAME                      SYS_PREFIX"Spare"
+#define OM_GROUPNAME                         SYS_PREFIX"OM"
 #define NODE_NAME_SERVICE_SEP                ":"
 #define NODE_NAME_SERVICE_SEPCHAR            (((CHAR*)NODE_NAME_SERVICE_SEP)[0])
 #define INVALID_NODEID                       0

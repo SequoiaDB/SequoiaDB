@@ -148,7 +148,7 @@ namespace engine
          /* Enable preRead in Coord context (send GetMore in advanced) */
          virtual BOOLEAN _flagCoordCtxPreRead () { return TRUE ; }
 
-      private:
+      protected:
 
          INT32 _processSucReply( ROUTE_REPLY_MAP &okReply,
                                  rtnContextCoord *pContext ) ;
