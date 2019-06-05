@@ -41,7 +41,7 @@ class SequoiaDB
    /** Get the snapshot of the system. */
    define( "SDB_SNAP_SYSTEM",              7 ) ;
    /** Get the snapshot of the catalog. */
-   define( "SDB_SNAP_CATA",                8 ) ;
+   define( "SDB_SNAP_CATALOG",                8 ) ;
    /** Get the snapshot of all the transactions. */
    define( "SDB_SNAP_TRANSACTIONS",        9 ) ;
    /** Get the snapshot of current transaction. */
@@ -74,9 +74,9 @@ class SequoiaDB
     *
     * @deprecated
     *
-    * @see SDB_SNAP_CATA
+    * @see SDB_SNAP_CATALOG
    */
-   define( "SDB_SNAP_CATALOG",             8 ) ;
+   define( "SDB_SNAP_CATA",             8 ) ;
 
    /**
     * Get the snapshot of all the transactions.
@@ -95,7 +95,7 @@ class SequoiaDB
     * @see SDB_SNAP_TRANSACTIONS_CURRENT
    */
    define( "SDB_SNAP_TRANSACTION_CURRENT", 10 ) ;
-  
+
    /** Get the list of the contexts. */
    define( "SDB_LIST_CONTEXTS",         0 ) ;
    /** Get the list of current context. */
@@ -299,7 +299,7 @@ class SequoiaDB
     * @endcode
    */
    public function getError(){}
-   
+
    /**
     * Connect to database.
     *
@@ -528,7 +528,7 @@ class SequoiaDB
     * }
     * while( $record = $cursor -> next() ) {
     *    var_dump( $record ) ;
-    * } 
+    * }
     * @endcode
    */
    public function snapshot( integer $type, array|string $condition = null, array|string $selector = null, array|string $orderBy = null, array|string $hint = null ){}
@@ -545,7 +545,7 @@ class SequoiaDB
     *                          "health"
     *                          "all"
     *        SessionID       : (Int32) Specify the session ID to be reset.
-    *        Other Options   : Some of other options are as below:(please visit the official website to search "Location Elements" for more detail.) 
+    *        Other Options   : Some of other options are as below:(please visit the official website to search "Location Elements" for more detail.)
     *                          GroupID:INT32,
     *                          GroupName:String,
     *                          NodeID:INT32,
@@ -625,7 +625,7 @@ class SequoiaDB
     * }
     * while( $record = $cursor -> next() ) {
     *    var_dump( $record ) ;
-    * } 
+    * }
     * @endcode
    */
    public function list( integer $type, array|string $condition = null, array|string $selector = null, array|string $orderBy = null, array|string $hint = null ){}
@@ -661,11 +661,11 @@ class SequoiaDB
     * }
     * while( $record = $cursor -> next() ) {
     *    var_dump( $record ) ;
-    * } 
+    * }
     * @endcode
    */
    public function listCS( array|string $condition = null, array|string $selector = null, array|string $orderBy = null, array|string $hint = null ){}
-   
+
    /**
     * Get the specified collection space, if is not exist,will auto create.
     *
@@ -702,7 +702,7 @@ class SequoiaDB
     * @endcode
    */
    public function selectCS( string $name, array|string $options = null ){}
-   
+
    /**
     * Get the specified collection space, if is not exist,will auto create.
     *
@@ -854,7 +854,7 @@ class SequoiaDB
     * }
     * while( $record = $cursor -> next() ) {
     *    var_dump( $record ) ;
-    * } 
+    * }
     * @endcode
    */
    public function listCL( array|string $condition = null, array|string $selector = null, array|string $orderBy = null, array|string $hint = null ){}
@@ -1040,7 +1040,7 @@ class SequoiaDB
     * @endcode
    */
    public function dropDomain( string $name ){}
-   
+
    /**
     * List all the replica groups of current database.
     *
@@ -1188,7 +1188,7 @@ class SequoiaDB
     * @endcode
    */
    public function createCataGroup( string $hostName, string $serviceName, string $databasePath, array|string $configure = null ){}
-   
+
    /**
     * Executing SQL command.
     *
@@ -1245,7 +1245,7 @@ class SequoiaDB
     * @endcode
    */
    public function execUpdateSQL( string $sql ){}
-   
+
    /**
     * Create an account.
     *
@@ -1303,7 +1303,7 @@ class SequoiaDB
     * @endcode
    */
    public function removeUser( string $userName, string $passwd ){}
-   
+
    /**
     * Flush the options to configure file.
     *
@@ -1337,7 +1337,7 @@ class SequoiaDB
     * @endcode
    */
    public function flushConfigure( array|string $options ){}
-   
+
    /**
     * List store procedures.
     *
