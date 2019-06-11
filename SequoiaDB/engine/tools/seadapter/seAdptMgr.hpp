@@ -232,7 +232,8 @@ namespace seadapter
       INT32 _onCatalogResMsg( NET_HANDLE handle, MsgHeader *msg ) ;
       INT32 _sendCataQueryReq( const BSONObj &query, const BSONObj &selector,
                                UINT64 requestID, _pmdEDUCB *cb ) ;
-      INT32 _updateIndexInfo( BSONObj &obj, BOOLEAN &updated ) ;
+      INT32 _updateIndexInfo( BSONObj &obj, BOOLEAN &updated,
+                              BOOLEAN &upgrade ) ;
       INT32 _parseIndexInfo( const BSONElement *ele, seIndexMeta &idxMeta ) ;
 
       void _genESIdxName( UINT32 csLID, UINT32 clLID, INT32 idxLID,
