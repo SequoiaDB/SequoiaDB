@@ -704,7 +704,8 @@ namespace seadapter
       goto done ;
    }
 
-   INT32 _seAdptCB::_updateIndexInfo( BSONObj &obj, BOOLEAN &updated )
+   INT32 _seAdptCB::_updateIndexInfo( BSONObj &obj, BOOLEAN &updated,
+                                      BOOLEAN &upgrade )
    {
       INT32 rc = SDB_OK ;
       INT64 peerVersion = -1 ;
@@ -734,6 +735,7 @@ namespace seadapter
                   PD_LOG( PDEVENT, "Peer node is primary. Search engine adapter"
                           " switch from READONLY mode to READWRITE mode" ) ;
                   setDataNodePrimary( TRUE ) ;
+                  upgrade = TRUE ;
                }
             }
             else
@@ -1378,6 +1380,7 @@ namespace seadapter
       vector<BSONObj> objVec ;
       BSONElement ele ;
       BOOLEAN updated = FALSE ;
+      BOOLEAN upgrade = FALSE ;
 
       rc = msgExtractReply( (CHAR *)msg, &flag, &contextID, &startFrom,
                             &numReturned, objVec ) ;
@@ -1393,11 +1396,11 @@ namespace seadapter
          goto error ;
       }
 
-      rc = _updateIndexInfo( objVec[0], updated ) ;
+      rc = _updateIndexInfo( objVec[0], updated, upgrade ) ;
       PD_RC_CHECK( rc, PDERROR, "Update indices information failed[ %d ]",
                    rc ) ;
 
-      if ( updated && isDataNodePrimary() )
+      if ( ( updated && isDataNodePrimary() ) || upgrade )
       {
          rc = _idxSessionMgr.refreshTasks( objVec[0] ) ;
          PD_RC_CHECK( rc, PDERROR, "Update text index information failed[ %d ]",

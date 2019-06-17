@@ -248,7 +248,7 @@ namespace seadapter
    void _seIdxMetaMgr::cleanByVer( INT64 excludeVer )
    {
       for ( IDX_META_MAP_ITR mItr = _idxMetaMap.begin();
-            mItr != _idxMetaMap.end(); ++mItr )
+            mItr != _idxMetaMap.end(); )
       {
          IDX_META_VEC &metaVec = mItr->second ;
          for ( IDX_META_VEC_ITR vItr = metaVec.begin();
@@ -266,7 +266,11 @@ namespace seadapter
 
          if ( 0 == metaVec.size() )
          {
-            _idxMetaMap.erase( mItr ) ;
+            _idxMetaMap.erase( mItr++ ) ;
+         }
+         else
+         {
+            mItr++ ;
          }
       }
    }
