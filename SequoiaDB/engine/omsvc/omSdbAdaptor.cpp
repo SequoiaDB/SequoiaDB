@@ -34,6 +34,7 @@
 #include "pmdOptions.h"
 #include "omDef.hpp"
 #include "msgDef.h"
+#include "msgMessage.hpp"
 #include "rtn.hpp"
 #include "omSdbConnector.hpp"
 #include "pd.hpp"
@@ -439,7 +440,7 @@ namespace engine
          goto error ;
       }
 
-      rc = connector->recvMessage( &pReply ) ;
+      rc = connector.recvMessage( &pReply ) ;
       if ( rc )
       {
          PD_LOG( PDERROR, "Recieve response from node[%s:%s] failed, rc: %d",
