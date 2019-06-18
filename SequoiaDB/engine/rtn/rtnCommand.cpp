@@ -2244,7 +2244,7 @@ namespace engine
                {
                   if ( TRUE == rebootFirstEntry )
                   {
-                     returnStr += "config" ;
+                     returnStr += "Config" ;
                      returnStr += " '" ;
                      returnStr +=  ele.valuestr() ;
                      rebootFirstEntry = FALSE ;
@@ -2285,7 +2285,7 @@ namespace engine
                {
                   if ( TRUE == forbidFirstEntry )
                   {
-                     returnStr += " config" ;
+                     returnStr += " Config" ;
                      returnStr += " '" ;
                      returnStr +=  ele.valuestr() ;
                      forbidFirstEntry = FALSE ;
@@ -2405,7 +2405,7 @@ namespace engine
                {
                   if ( TRUE == rebootFirstEntry )
                   {
-                     returnStr += "config" ;
+                     returnStr += "Config" ;
                      returnStr += " '" ;
                      returnStr +=  ele.valuestr() ;
                      rebootFirstEntry = FALSE ;
@@ -2446,7 +2446,7 @@ namespace engine
                {
                   if ( TRUE == forbidFirstEntry )
                   {
-                     returnStr += " config" ;
+                     returnStr += " Config" ;
                      returnStr += " '" ;
                      returnStr +=  ele.valuestr() ;
                      forbidFirstEntry = FALSE ;
