@@ -116,6 +116,7 @@ namespace seadapter
       INT32 _bulkPrepare() ;
       INT32 _bulkProcess( const utilESBulkActionBase &actionItem ) ;
       INT32 _bulkFinish() ;
+      INT32 _createIndex( BOOLEAN force = FALSE ) ;
 
       OSS_INLINE INT32 _findRecWithLID( INT64 logicalID, BOOLEAN &found ) ;
 

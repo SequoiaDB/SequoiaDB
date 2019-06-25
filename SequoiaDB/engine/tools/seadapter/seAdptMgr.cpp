@@ -328,13 +328,6 @@ namespace seadapter
          goto error ;
       }
 
-      rc = _initSearchEngineAddr() ;
-      if ( rc )
-      {
-         PD_LOG( PDERROR, "Init search engine address failed[ %d ]", rc ) ;
-         goto error ;
-      }
-
       rc = _idxSessionMgr.init( &_indexNetRtAgent, &_indexTimerHandler,
                                 5 * OSS_ONE_SEC ) ;
       PD_RC_CHECK( rc, PDERROR, "Init index session manager failed[ %d ]",
@@ -1027,28 +1020,6 @@ namespace seadapter
          goto error ;
       }
 
-   done:
-      return rc ;
-   error:
-      goto done ;
-   }
-
-   INT32 _seAdptCB::_initSearchEngineAddr()
-   {
-      INT32 rc = SDB_OK ;
-      MsgRouteID nodeID ;
-
-      nodeID.columns.groupID = INVALID_GROUPID ;
-      nodeID.columns.nodeID = INVALID_NODEID ;
-      nodeID.columns.serviceID = 0 ;
-
-      rc = _indexNetRtAgent.updateRoute( nodeID, _options.getSeHost(),
-                                         _options.getSeService() ) ;
-      if ( rc )
-      {
-         PD_LOG( PDERROR, "Update route failed[ %d ]", rc ) ;
-         goto error ;
-      }
    done:
       return rc ;
    error:
