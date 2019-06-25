@@ -248,7 +248,6 @@ rtnFiles = [
       "rtn/rtnDictCreatorJob.cpp",
       "rtn/rtnAnalyze.cpp",
       "rtn/rtnOperator.cpp",
-      "rtn/rtnQueryOperator.cpp",
       "rtn/rtnExtDataHandler.cpp",
       "rtn/rtnExtDataProcessor.cpp",
       "rtn/rtnSimpleCondNode.cpp",

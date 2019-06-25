@@ -214,7 +214,6 @@ namespace seadapter
    private:
       INT32 _startSvcListener() ;
       INT32 _initSdbAddr() ;
-      INT32 _initSearchEngineAddr() ;
       INT32 _sendRegisterMsg() ;
       INT32 _resumeRegister() ;
       INT32 _startEDU( INT32 type, EDU_STATUS waitStatus,
