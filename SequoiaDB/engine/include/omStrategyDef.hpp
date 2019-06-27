@@ -106,7 +106,10 @@ namespace engine
          _omTaskStrategyInfo() ;
          ~_omTaskStrategyInfo() ;
 
+         BOOLEAN  isValid() const ;
+
          BSONObj  toBSON() const ;
+         BSONObj  toMatcher() const ;
          INT32    fromBSON( const BSONObj &obj ) ;
 
          BOOLEAN  isMatch( const string &userName, const string &ip ) const ;
@@ -169,6 +172,8 @@ namespace engine
          _omTaskInfo() ;
          ~_omTaskInfo() ;
 
+         BOOLEAN        isValid() const ;
+
          INT64          getTaskID() const { return _taskID ; }
          INT32          getStatus() const { return _status ; }
          INT64          getCreateTime() const { return _createTime ; }
@@ -191,6 +196,7 @@ namespace engine
 
          BSONObj        toBSON() const ;
          INT32          fromBSON( const BSONObj &obj ) ;
+         BSONObj        toMatcher() const ;
 
       private:
          INT64             _taskID ;

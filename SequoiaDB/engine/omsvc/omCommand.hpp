@@ -1196,7 +1196,19 @@ namespace engine
          map < string, string > _publicAccessFiles ;
    };
 
-   class omTaskStrategyInsert : public omRestCommandBase
+   class omStrategyCmdBase : public omRestCommandBase
+   {
+      public:
+         omStrategyCmdBase( restAdaptor *pRestAdaptor,
+                            pmdRestSession *pRestSession ) ;
+         virtual ~omStrategyCmdBase() ;
+
+      protected:
+         INT32    _getAndCheckBusiness( string &clsName,
+                                        string &bizName ) ;
+   } ;
+
+   class omStrategyTaskInsert : public omStrategyCmdBase
    {
       public:
 
@@ -1204,13 +1216,13 @@ namespace engine
 
       public:
 
-         omTaskStrategyInsert( restAdaptor *pRestAdaptor,
+         omStrategyTaskInsert( restAdaptor *pRestAdaptor,
                                pmdRestSession *pRestSession ) ;
 
-         ~omTaskStrategyInsert() ;
-   };
+         ~omStrategyTaskInsert() ;
+   } ;
 
-   class omTaskStrategyList : public omRestCommandBase
+   class omStrategyTaskList : public omStrategyCmdBase
    {
       public:
 
@@ -1218,13 +1230,13 @@ namespace engine
 
       public:
 
-         omTaskStrategyList( restAdaptor *pRestAdaptor,
+         omStrategyTaskList( restAdaptor *pRestAdaptor,
                              pmdRestSession *pRestSession ) ;
 
-         ~omTaskStrategyList() ;
+         ~omStrategyTaskList() ;
    };
 
-   class omTaskStrategyUpdateNice : public omRestCommandBase
+   class omStrategyUpdateTaskStatus : public omStrategyCmdBase
    {
       public:
 
@@ -1232,53 +1244,151 @@ namespace engine
 
       public:
 
-         omTaskStrategyUpdateNice( restAdaptor *pRestAdaptor,
-                                   pmdRestSession *pRestSession ) ;
+         omStrategyUpdateTaskStatus( restAdaptor *pRestAdaptor,
+                                     pmdRestSession *pRestSession ) ;
 
-         ~omTaskStrategyUpdateNice() ;
+         ~omStrategyUpdateTaskStatus() ;
    };
 
-   class omTaskStrategyAddIps : public omRestCommandBase
+   class omStrategyTaskDel : public omStrategyCmdBase
    {
       public:
 
-         virtual INT32   doCommand() ;
+         virtual INT32 doCommand() ;
 
       public:
 
-         omTaskStrategyAddIps( restAdaptor *pRestAdaptor,
-                               pmdRestSession *pRestSession ) ;
-
-         ~omTaskStrategyAddIps() ;
-   };
-
-   class omTaskStrategyDelIps : public omRestCommandBase
-   {
-      public:
-
-         virtual INT32   doCommand() ;
-
-      public:
-
-         omTaskStrategyDelIps( restAdaptor *pRestAdaptor,
-                               pmdRestSession *pRestSession ) ;
-
-         ~omTaskStrategyDelIps() ;
-   };
-
-   class omTaskStrategyDel : public omRestCommandBase
-   {
-      public:
-
-         virtual INT32   doCommand() ;
-
-      public:
-
-         omTaskStrategyDel( restAdaptor *pRestAdaptor,
+         omStrategyTaskDel( restAdaptor *pRestAdaptor, 
                             pmdRestSession *pRestSession ) ;
 
-         ~omTaskStrategyDel() ;
+         ~omStrategyTaskDel() ;
    };
+
+   class omStrategyInsert : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32 doCommand() ;
+
+      public:
+
+         omStrategyInsert( restAdaptor *pRestAdaptor, 
+                           pmdRestSession *pRestSession ) ;
+
+         ~omStrategyInsert() ;
+   } ;
+
+   class omStrategyList : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32   doCommand() ;
+
+      public:
+
+         omStrategyList( restAdaptor *pRestAdaptor, 
+                         pmdRestSession *pRestSession ) ;
+
+         ~omStrategyList() ;
+   } ;
+
+   class omStrategyUpdateNice : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32   doCommand() ;
+
+      public:
+
+         omStrategyUpdateNice( restAdaptor *pRestAdaptor,
+                               pmdRestSession *pRestSession ) ;
+
+         ~omStrategyUpdateNice() ;
+   };
+
+   class omStrategyAddIps : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32   doCommand() ;
+
+      public:
+
+         omStrategyAddIps( restAdaptor *pRestAdaptor,
+                           pmdRestSession *pRestSession ) ;
+
+         ~omStrategyAddIps() ;
+   };
+
+   class omStrategyDelIps : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32   doCommand() ;
+
+      public:
+
+         omStrategyDelIps( restAdaptor *pRestAdaptor,
+                           pmdRestSession *pRestSession ) ;
+
+         ~omStrategyDelIps() ;
+   };
+
+   class omStrategyDel : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32   doCommand() ;
+
+      public:
+
+         omStrategyDel( restAdaptor *pRestAdaptor,
+                        pmdRestSession *pRestSession ) ;
+
+         ~omStrategyDel() ;
+   };
+
+   class omStrategyUpdateStatus : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32   doCommand() ;
+
+      public:
+
+         omStrategyUpdateStatus( restAdaptor *pRestAdaptor, 
+                                 pmdRestSession *pRestSession ) ;
+
+         ~omStrategyUpdateStatus() ;
+   };
+
+   class omStrategyUpdateSortID : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32   doCommand() ;
+
+      public:
+
+         omStrategyUpdateSortID( restAdaptor *pRestAdaptor, 
+                                 pmdRestSession *pRestSession ) ;
+
+         ~omStrategyUpdateSortID() ;
+   } ;
+
+   class omStrategyFlush : public omStrategyCmdBase
+   {
+      public:
+
+         virtual INT32   doCommand() ;
+
+      public:
+
+         omStrategyFlush( restAdaptor *pRestAdaptor, 
+                          pmdRestSession *pRestSession ) ;
+
+         ~omStrategyFlush() ;
+   } ;
 
    class omGetSystemInfoCommand : public omAuthCommand
    {

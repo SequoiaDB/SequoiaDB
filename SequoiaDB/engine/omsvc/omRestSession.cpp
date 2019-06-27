@@ -1033,34 +1033,69 @@ namespace engine
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_TASK_STRATEGY_LIST_REQ ) == 0 )
       {
-         commandIf = SDB_OSS_NEW omTaskStrategyList( pAdptor, this ) ;
+         commandIf = SDB_OSS_NEW omStrategyTaskList( pAdptor, this ) ;
       }
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_TASK_STRATEGY_ADD_REQ ) == 0 )
       {
-         commandIf = SDB_OSS_NEW omTaskStrategyInsert( pAdptor, this ) ;
+         commandIf = SDB_OSS_NEW omStrategyTaskInsert( pAdptor, this ) ;
       }
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_TASK_STRATEGY_UPDATE_NICE_REQ ) == 0 )
       {
-         commandIf = SDB_OSS_NEW omTaskStrategyUpdateNice( pAdptor, this ) ;
+         commandIf = SDB_OSS_NEW omStrategyUpdateNice( pAdptor, this ) ;
       }
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_TASK_STRATEGY_ADD_IPS_REQ ) == 0 )
       {
-         commandIf = SDB_OSS_NEW omTaskStrategyAddIps( pAdptor, this ) ;
+         commandIf = SDB_OSS_NEW omStrategyAddIps( pAdptor, this ) ;
       }
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_TASK_STRATEGY_DEL_IPS_REQ ) == 0 )
       {
-         commandIf = SDB_OSS_NEW omTaskStrategyDelIps( pAdptor, this ) ;
+         commandIf = SDB_OSS_NEW omStrategyDelIps( pAdptor, this ) ;
       }
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_TASK_STRATEGY_DEL_REQ ) == 0 )
       {
-         commandIf = SDB_OSS_NEW omTaskStrategyDel( pAdptor, this ) ;
+         commandIf = SDB_OSS_NEW omStrategyDel( pAdptor, this ) ;
       }
-      
+      else if ( ossStrcasecmp( pSubCommand, 
+                               OM_TASK_STRATEGY_UPDATE_STAT_REQ ) == 0 )
+      {
+         commandIf = SDB_OSS_NEW omStrategyUpdateStatus( pAdptor, this ) ;
+      }
+      else if ( ossStrcasecmp( pSubCommand,
+                               OM_TASK_STRATEGY_UPDATE_SORT_REQ ) == 0 )
+      {
+         commandIf = SDB_OSS_NEW omStrategyUpdateSortID( pAdptor, this ) ;
+      }
+      else if ( ossStrcasecmp( pSubCommand, 
+                               OM_TASK_ADD_REQ ) == 0 )
+      {
+         commandIf = SDB_OSS_NEW omStrategyTaskInsert( pAdptor, this ) ;
+      }
+      else if ( ossStrcasecmp( pSubCommand, 
+                               OM_TASK_LIST_REQ ) == 0 )
+      {
+         commandIf = SDB_OSS_NEW omStrategyTaskList( pAdptor, this ) ;
+      }
+      else if ( ossStrcasecmp( pSubCommand, 
+                               OM_TASK_UPDATE_STATUS_REQ ) == 0 )
+      {
+         commandIf = SDB_OSS_NEW omStrategyUpdateTaskStatus( pAdptor, this ) ;
+      }
+      else if ( ossStrcasecmp( pSubCommand, 
+                               OM_TASK_DEL_REQ ) == 0 )
+      {
+         commandIf = SDB_OSS_NEW omStrategyTaskDel( pAdptor, this ) ;
+      }
+      else if ( ossStrcasecmp( pSubCommand,
+                               OM_TASK_STRATEGY_FLUSH ) == 0 )
+      {
+         commandIf = SDB_OSS_NEW omStrategyFlush( pAdptor, this ) ;
+      }
+
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_LIST_HOST_BUSINESS_REQ ) == 0 )
       {
