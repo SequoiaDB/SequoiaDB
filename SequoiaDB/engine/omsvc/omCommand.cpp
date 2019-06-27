@@ -10999,31 +10999,361 @@ namespace engine
       return true ;
    }
 
-   omTaskStrategyInsert::omTaskStrategyInsert( restAdaptor *pRestAdaptor,
-                                               pmdRestSession *pRestSession )
+   omStrategyCmdBase::omStrategyCmdBase( restAdaptor *pRestAdaptor,
+                                         pmdRestSession *pRestSession )
    : omRestCommandBase( pRestAdaptor, pRestSession )
    {
    }
 
-   omTaskStrategyInsert::~omTaskStrategyInsert()
+   omStrategyCmdBase::~omStrategyCmdBase()
    {
    }
 
-   INT32 omTaskStrategyInsert::doCommand()
+   INT32 omStrategyCmdBase::_getAndCheckBusiness( string &clsName,
+                                                  string &bizName )
    {
       INT32 rc = SDB_OK ;
       const CHAR *pValTmp = NULL ;
-      string errorDetail ;
-      omTaskStrategyInfo inputInfo ;
+
+      _restAdaptor->getQuery( _restSession, OM_BSON_CLUSTER_NAME,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                 OM_BSON_CLUSTER_NAME")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      clsName = pValTmp ;
+
+      _restAdaptor->getQuery( _restSession, OM_BSON_BUSINESS_NAME,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                  OM_BSON_BUSINESS_NAME")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      bizName = pValTmp ;
+
+      if ( !_isBusinessExist( clsName, bizName ) )
+      {
+         _errorDetail = string( "cluster or business is not exist" ) ;
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   omStrategyTaskInsert::omStrategyTaskInsert( restAdaptor *pRestAdaptor,
+                                               pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
+   {
+   }
+
+   omStrategyTaskInsert::~omStrategyTaskInsert()
+   {
+   }
+
+   INT32 omStrategyTaskInsert::doCommand()
+   {
+      INT32 rc = SDB_OK ;
+      const CHAR *pValTmp = NULL ;
+      omTaskInfo inputInfo ;
+      string clsName, bizName ;
+
       SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
                   "_restAdaptor and _restSession can't be null!" ) ;
+
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+      inputInfo.setClusterName( clsName ) ;
+      inputInfo.setBusinessName( bizName ) ;
 
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_TASK_NAME,
                               &pValTmp ) ;
       if ( NULL == pValTmp )
       {
-          errorDetail = string( "Failed to get the field("
-                                OM_REST_FIELD_TASK_NAME")" ) ;
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_TASK_NAME")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      inputInfo.setTaskName( pValTmp ) ;
+
+      inputInfo.setCreator( _restSession->getLoginUserName() ) ;
+      inputInfo.makeCreateTime() ;
+
+      rc = omGetStrategyMgr()->insertTask( inputInfo, _cb ) ;
+      if ( rc != SDB_OK )
+      {
+         _errorDetail = string( "Failed to add the task" );
+         goto error ;
+      }
+
+      _sendOKRes2Web() ;
+
+   done:
+      return rc ;
+   error:
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
+      goto done ;
+   }
+
+   omStrategyTaskList::omStrategyTaskList( restAdaptor *pRestAdaptor,
+                                           pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
+   {
+   }
+
+   omStrategyTaskList::~omStrategyTaskList()
+   {
+   }
+
+   INT32 omStrategyTaskList::doCommand()
+   {
+      INT32 rc = SDB_OK ;
+      SINT64 contextID = - 1 ;
+      const SINT32 maxNumToReturn = 1000 ;
+      const CHAR *pValTmp = NULL ;
+      string clsName, bizName ;
+      rtnContextBuf buffObj ;
+      BSONObj objTmp ;
+
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
+      rc = omGetStrategyMgr()->queryTasks( clsName, bizName,
+                                           contextID, _cb ) ;
+      if ( rc != SDB_OK )
+      {
+         _errorDetail = string( "Failed to list task" ) ;
+         goto error ;
+      }
+
+      while ( TRUE )
+      {
+         rc = rtnGetMore( contextID, maxNumToReturn, buffObj,
+                          _cb, _pRTNCB ) ;
+         if ( rc != SDB_OK )
+         {
+            contextID = -1 ;
+            if ( SDB_DMS_EOC == rc )
+            {
+               rc = SDB_OK ;
+               break ;
+            }
+            else
+            {
+               _errorDetail = string( "Getmore failed" ) ;
+               goto error ;
+            }
+         }
+
+         while( TRUE )
+         {
+            rc = buffObj.nextObj( objTmp ) ;
+            if ( rc != SDB_OK )
+            {
+               if ( SDB_DMS_EOC == rc )
+               {
+                  rc = SDB_OK ;
+                  break ;
+               }
+               else
+               {
+                  _errorDetail = string( "Failed to parse record" ) ;
+                  goto error ;
+               }
+            }
+            rc = _restAdaptor->appendHttpBody( _restSession, objTmp.objdata(),
+                                               objTmp.objsize(), 1 ) ;
+            if ( rc )
+            {
+               PD_LOG_MSG( PDERROR, "failed to append http body:rc=%d", rc ) ;
+               _errorDetail = pmdGetThreadEDUCB()->getInfo( EDU_INFO_ERROR ) ;
+               goto error ;
+            }
+         }
+      }
+      _sendOKRes2Web() ;
+
+   done:
+      if ( -1 != contextID )
+      {
+         rtnKillContexts( 1, &contextID, _cb, _pRTNCB ) ;
+      }
+      return rc ;
+   error:
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
+      goto done ;
+   }
+
+   omStrategyUpdateTaskStatus::omStrategyUpdateTaskStatus( restAdaptor *pRestAdaptor,
+                                                           pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
+   {
+   }
+
+   omStrategyUpdateTaskStatus::~omStrategyUpdateTaskStatus()
+   {
+   }
+
+   INT32 omStrategyUpdateTaskStatus::doCommand()
+   {
+      INT32 rc = SDB_OK ;
+      INT32 status = 0 ;
+      const CHAR *pValTmp = NULL ;
+      string clsName, bizName, taskName ;
+
+      SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
+                  "_restAdaptor and _restSession can't be null!" ) ;
+
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_TASK_NAME,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_TASK_NAME")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      taskName = pValTmp ;
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_STATUS,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_STATUS")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      status = ossAtoi( pValTmp ) ;
+
+      rc = omGetStrategyMgr()->updateTaskStatus( clsName, bizName, taskName,
+                                                 status, _cb ) ;
+      if ( rc )
+      {
+         _errorDetail = string( "Failed to update task status" );
+         goto error ;
+      }
+      _sendOKRes2Web() ;
+
+   done:
+      return rc ;
+   error:
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
+      goto done ;
+   }
+
+   omStrategyTaskDel::omStrategyTaskDel( restAdaptor * pRestAdaptor,
+                                         pmdRestSession * pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
+   {
+   }
+
+   omStrategyTaskDel::~omStrategyTaskDel()
+   {
+   }
+
+   INT32 omStrategyTaskDel::doCommand()
+   {
+      INT32 rc = SDB_OK ;
+      const CHAR *pValTmp = NULL ;
+      string clsName, bizName, taskName ;
+
+      SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
+                  "_restAdaptor and _restSession can't be null!" ) ;
+
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_TASK_NAME,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_TASK_NAME")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      taskName = pValTmp ;
+
+      rc = omGetStrategyMgr()->delTask( clsName, bizName,
+                                        taskName, _cb ) ;
+      if ( rc != SDB_OK )
+      {
+         _errorDetail = string( "Failed to delete task" );
+         goto error ;
+      }
+      _sendOKRes2Web() ;
+
+   done:
+      return rc ;
+   error:
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
+      goto done ;
+   }
+
+   omStrategyInsert::omStrategyInsert( restAdaptor *pRestAdaptor, 
+                                       pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
+   {
+   }
+
+   omStrategyInsert::~omStrategyInsert()
+   {
+   }
+
+   INT32 omStrategyInsert::doCommand()
+   {
+      INT32 rc = SDB_OK ;
+      const CHAR *pValTmp = NULL ;
+      omTaskStrategyInfo inputInfo ;
+      string clsName, bizName ;
+
+      SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
+                  "_restAdaptor and _restSession can't be null!" ) ;
+
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+      inputInfo.setClusterName( clsName ) ;
+      inputInfo.setBusinessName( bizName ) ;
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_TASK_NAME,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_TASK_NAME")" ) ;
           rc = SDB_INVALIDARG ;
           goto error ;
       }
@@ -11031,20 +11361,21 @@ namespace engine
 
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_NICE,
                               &pValTmp ) ;
-      if ( NULL == pValTmp )
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
       {
-          errorDetail = string( "Failed to get the field("
-                                OM_REST_FIELD_NICE")" ) ;
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_NICE")" ) ;
           rc = SDB_INVALIDARG ;
           goto error ;
       }
       inputInfo.setNice( ossAtoi( pValTmp ) ) ;
 
-      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_RULE_ID,
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_SORT_ID,
                               &pValTmp ) ;
       if ( pValTmp != NULL )
       {
-         inputInfo.setRuleID( ossAtoll( pValTmp ) ) ;
+         inputInfo.setSortID( ossAtoll( pValTmp ) ) ;
       }
 
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_USER_NAME,
@@ -11062,17 +11393,17 @@ namespace engine
          rc = _parseIPsField( pValTmp, ipSet ) ;
          if ( rc != SDB_OK )
          {
-            errorDetail = string( "Failed to parse the field("
-                                  OM_REST_FIELD_IPS")" ) ;
+            _errorDetail = string( "Failed to parse the field("
+                                   OM_REST_FIELD_IPS")" ) ;
             goto error ;
          }
          inputInfo.setIPSet( ipSet ) ;
       }
 
-      rc = omGetStrategyMgr()->insertTask( inputInfo, _cb ) ;
+      rc = omGetStrategyMgr()->insertStrategy( inputInfo, _cb ) ;
       if ( rc != SDB_OK )
       {
-         errorDetail = string( "Failed to add the strategy" );
+         _errorDetail = string( "Failed to add the strategy" );
          goto error ;
       }
 
@@ -11081,43 +11412,63 @@ namespace engine
    done:
       return rc ;
    error:
-      _sendErrorRes2Web( rc, errorDetail ) ;
-      PD_LOG( PDERROR, "%s, rc: %d", errorDetail.c_str(), rc ) ;
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
       goto done ;
    }
 
-   omTaskStrategyList::omTaskStrategyList( restAdaptor *pRestAdaptor,
-                                           pmdRestSession *pRestSession )
-   : omRestCommandBase( pRestAdaptor, pRestSession )
+   omStrategyList::omStrategyList( restAdaptor *pRestAdaptor, 
+                                   pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
    {
    }
 
-   omTaskStrategyList::~omTaskStrategyList()
+   omStrategyList::~omStrategyList()
    {
    }
 
-   INT32 omTaskStrategyList::doCommand()
+   INT32 omStrategyList::doCommand()
    {
       INT32 rc = SDB_OK ;
       SINT64 contextID = - 1 ;
       const SINT32 maxNumToReturn = 1000 ;
-      string errorDetail, resultObjs ;
       rtnContextBuf buffObj ;
       BSONObj objTmp ;
+      const CHAR *pValTmp = NULL ;
+      string clsName, bizName, taskName ;
 
-      rc = omGetStrategyMgr()->queryTasks( contextID, _cb ) ;
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_TASK_NAME,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_TASK_NAME")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      taskName = pValTmp ;
+
+      rc = omGetStrategyMgr()->queryStrategys( clsName, bizName,
+                                               taskName, contextID,
+                                               _cb ) ;
       if ( rc != SDB_OK )
       {
-         errorDetail = string( "Failed to list task-strategy" ) ;
+         _errorDetail = string( "Failed to list task-strategy" ) ;
          goto error ;
       }
 
       while ( TRUE )
       {
-         rc = rtnGetMore( contextID, maxNumToReturn, buffObj,
-                          _cb, _pRTNCB ) ;
+         rc = rtnGetMore( contextID, maxNumToReturn, buffObj, _cb, _pRTNCB ) ;
          if ( rc != SDB_OK )
          {
+            contextID = -1 ;
             if ( SDB_DMS_EOC == rc )
             {
                rc = SDB_OK ;
@@ -11125,12 +11476,11 @@ namespace engine
             }
             else
             {
-               errorDetail = string( "Getmore failed" ) ;
+               _errorDetail = string( "Getmore failed" ) ;
                goto error ;
             }
          }
-
-         while( TRUE )
+         while ( TRUE )
          {
             rc = buffObj.nextObj( objTmp ) ;
             if ( rc != SDB_OK )
@@ -11142,53 +11492,68 @@ namespace engine
                }
                else
                {
-                  errorDetail = string( "Failed to parse record" ) ;
+                  _errorDetail = string( "Failed to parse record" ) ;
                   goto error ;
                }
             }
-            resultObjs.append( objTmp.toString() ) ;
+            rc = _restAdaptor->appendHttpBody( _restSession, objTmp.objdata(),
+                                               objTmp.objsize(), 1 ) ;
+            if ( rc )
+            {
+               PD_LOG_MSG( PDERROR, "failed to append http body:rc=%d", rc ) ;
+               _errorDetail = pmdGetThreadEDUCB()->getInfo( EDU_INFO_ERROR ) ;
+               goto error ;
+            }
          }
       }
-      _sendErrorRes2Web( SDB_OK, resultObjs ) ;
+      _sendOKRes2Web() ;
 
    done:
-      if ( rc != SDB_DMS_EOC && contextID != -1 )
+      if ( -1 != contextID )
       {
          rtnKillContexts( 1, &contextID, _cb, _pRTNCB ) ;
       }
       return rc ;
    error:
-      _sendErrorRes2Web( rc, errorDetail ) ;
-      PD_LOG( PDERROR, "%s, rc: %d", errorDetail.c_str(), rc ) ;
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
       goto done ;
    }
 
-   omTaskStrategyUpdateNice::omTaskStrategyUpdateNice( restAdaptor *pRestAdaptor,
-                                                       pmdRestSession *pRestSession )
-   : omRestCommandBase( pRestAdaptor, pRestSession )
+   omStrategyUpdateNice::omStrategyUpdateNice( restAdaptor *pRestAdaptor,
+                                               pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
    {
    }
 
-   omTaskStrategyUpdateNice::~omTaskStrategyUpdateNice()
+   omStrategyUpdateNice::~omStrategyUpdateNice()
    {
    }
 
-   INT32 omTaskStrategyUpdateNice::doCommand()
+   INT32 omStrategyUpdateNice::doCommand()
    {
       INT32 rc = SDB_OK ;
       INT32 nice = 0 ;
       INT64 ruleId = 0 ;
       const CHAR *pValTmp = NULL ;
-      string errorDetail ;
+      string clsName, bizName ;
+
       SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
                   "_restAdaptor and _restSession can't be null!" ) ;
 
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_NICE,
                               &pValTmp ) ;
-      if ( NULL == pValTmp )
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
       {
-          errorDetail = string( "Failed to get the field("
-                                 OM_REST_FIELD_NICE")" ) ;
+          _errorDetail = string( "Failed to get the field("
+                                  OM_REST_FIELD_NICE")" ) ;
           rc = SDB_INVALIDARG ;
           goto error ;
       }
@@ -11196,19 +11561,22 @@ namespace engine
 
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_RULE_ID,
                               &pValTmp ) ;
-      if ( NULL == pValTmp )
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
       {
-          errorDetail = string( "Failed to get the field("
-                                 OM_REST_FIELD_RULE_ID")" ) ;
+          _errorDetail = string( "Failed to get the field("
+                                  OM_REST_FIELD_RULE_ID")" ) ;
           rc = SDB_INVALIDARG ;
           goto error ;
       }
       ruleId = ossAtoll( pValTmp ) ;
 
-      rc = omGetStrategyMgr()->updateTaskNiceById( nice, ruleId, _cb ) ;
+      rc = omGetStrategyMgr()->updateStrategyNiceById( nice, ruleId,
+                                                       clsName, bizName,
+                                                       _cb ) ;
       if ( rc != SDB_OK )
       {
-         errorDetail = string( "Failed to update nice" ) ;
+         _errorDetail = string( "Failed to update nice" ) ;
          goto error ;
       }
       _sendOKRes2Web() ;
@@ -11216,37 +11584,45 @@ namespace engine
    done:
       return rc ;
    error:
-      _sendErrorRes2Web( rc, errorDetail ) ;
-      PD_LOG( PDERROR, "%s, rc: %d", errorDetail.c_str(), rc ) ;
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
       goto done ;
    }
 
-   omTaskStrategyAddIps::omTaskStrategyAddIps( restAdaptor *pRestAdaptor,
-                                               pmdRestSession *pRestSession )
-   : omRestCommandBase( pRestAdaptor, pRestSession )
+   omStrategyAddIps::omStrategyAddIps( restAdaptor *pRestAdaptor,
+                                       pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
    {
    }
 
-   omTaskStrategyAddIps::~omTaskStrategyAddIps()
+   omStrategyAddIps::~omStrategyAddIps()
    {
    }
 
-   INT32 omTaskStrategyAddIps::doCommand()
+   INT32 omStrategyAddIps::doCommand()
    {
       INT32 rc = SDB_OK ;
       INT64 ruleId = 0 ;
       set< string > IPs ;
       const CHAR *pValTmp = NULL ;
-      std::string errorDetail ;
+      string clsName, bizName ;
+
       SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
                   "_restAdaptor and _restSession can't be null!" ) ;
 
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_RULE_ID,
                               &pValTmp ) ;
-      if ( NULL == pValTmp )
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
       {
-          errorDetail = string( "Failed to get the field("
-                                 OM_REST_FIELD_RULE_ID")" ) ;
+          _errorDetail = string( "Failed to get the field("
+                                  OM_REST_FIELD_RULE_ID")" ) ;
           rc = SDB_INVALIDARG ;
           goto error ;
       }
@@ -11256,7 +11632,81 @@ namespace engine
                               &pValTmp ) ;
       if ( NULL == pValTmp )
       {
-          errorDetail = string( "Failed to get the field("
+          _errorDetail = string( "Failed to get the field("
+                                  OM_REST_FIELD_IPS")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      rc = _parseIPsField( pValTmp, IPs ) ;
+      if ( rc != SDB_OK )
+      {
+         _errorDetail = string( "Failed to parse the field("
+                                 OM_REST_FIELD_IPS")" ) ;
+         goto error ;
+      }
+
+      rc = omGetStrategyMgr()->addStrategyIpsById( IPs, ruleId,
+                                                   clsName, bizName,
+                                                   _cb ) ;
+      if ( rc != SDB_OK )
+      {
+         _errorDetail = string( "Failed to add ip" ) ;
+         goto error ;
+      }
+      _sendOKRes2Web() ;
+
+   done:
+      return rc ;
+   error:
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
+      goto done ;
+   }
+
+   omStrategyDelIps::omStrategyDelIps( restAdaptor *pRestAdaptor,
+                                       pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
+   {
+   }
+
+   omStrategyDelIps::~omStrategyDelIps()
+   {
+   }
+
+   INT32 omStrategyDelIps::doCommand()
+   {
+      INT32 rc = SDB_OK ;
+      INT64 ruleId = 0 ;
+      set< string > IPs ;
+      const CHAR *pValTmp = NULL ;
+      string clsName, bizName ;
+
+      SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
+                  "_restAdaptor and _restSession can't be null!" ) ;
+
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_RULE_ID,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                  OM_REST_FIELD_RULE_ID")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      ruleId = ossAtoll( pValTmp ) ;
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_IPS,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp )
+      {
+          _errorDetail = string( "Failed to get the field("
                                  OM_REST_FIELD_IPS")" ) ;
           rc = SDB_INVALIDARG ;
           goto error ;
@@ -11264,15 +11714,17 @@ namespace engine
       rc = _parseIPsField( pValTmp, IPs ) ;
       if ( rc != SDB_OK )
       {
-         errorDetail = string( "Failed to parse the field("
+         _errorDetail = string( "Failed to parse the field("
                                 OM_REST_FIELD_IPS")" ) ;
          goto error ;
       }
 
-      rc = omGetStrategyMgr()->addTaskIpsById( IPs, ruleId, _cb ) ;
+      rc = omGetStrategyMgr()->delStrategyIpsById( IPs, ruleId,
+                                                   clsName, bizName,
+                                                   _cb ) ;
       if ( rc != SDB_OK )
       {
-         errorDetail = string( "Failed to add ip" ) ;
+         _errorDetail = string( "Failed to delete ip" );
          goto error ;
       }
       _sendOKRes2Web() ;
@@ -11280,63 +11732,55 @@ namespace engine
    done:
       return rc ;
    error:
-      _sendErrorRes2Web( rc, errorDetail ) ;
-      PD_LOG( PDERROR, "%s, rc: %d", errorDetail.c_str(), rc ) ;
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
       goto done ;
    }
 
-   omTaskStrategyDelIps::omTaskStrategyDelIps( restAdaptor *pRestAdaptor,
-                                               pmdRestSession *pRestSession )
-   : omRestCommandBase( pRestAdaptor, pRestSession )
+   omStrategyDel::omStrategyDel( restAdaptor *pRestAdaptor,
+                                 pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
    {
    }
 
-   omTaskStrategyDelIps::~omTaskStrategyDelIps()
+   omStrategyDel::~omStrategyDel()
    {
    }
 
-   INT32 omTaskStrategyDelIps::doCommand()
+   INT32 omStrategyDel::doCommand()
    {
       INT32 rc = SDB_OK ;
       INT64 ruleId = 0 ;
-      set< string > IPs ;
       const CHAR *pValTmp = NULL ;
-      string errorDetail ;
+      string clsName, bizName ;
+
       SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
                   "_restAdaptor and _restSession can't be null!" ) ;
 
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_RULE_ID,
                               &pValTmp ) ;
-      if ( NULL == pValTmp )
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
       {
-          errorDetail = string( "Failed to get the field("
+          _errorDetail = string( "Failed to get the field("
                                  OM_REST_FIELD_RULE_ID")" ) ;
           rc = SDB_INVALIDARG ;
           goto error ;
       }
       ruleId = ossAtoll( pValTmp ) ;
 
-      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_IPS,
-                              &pValTmp ) ;
-      if ( NULL == pValTmp )
-      {
-          errorDetail = string( "Failed to get the field("
-                                OM_REST_FIELD_IPS")" ) ;
-          rc = SDB_INVALIDARG ;
-          goto error ;
-      }
-      rc = _parseIPsField( pValTmp, IPs ) ;
+      rc = omGetStrategyMgr()->delStrategyById( ruleId,
+                                                clsName, bizName,
+                                                _cb ) ;
       if ( rc != SDB_OK )
       {
-         errorDetail = string( "Failed to parse the field("
-                               OM_REST_FIELD_IPS")" ) ;
-         goto error ;
-      }
-
-      rc = omGetStrategyMgr()->delTaskIpsById( IPs, ruleId, _cb ) ;
-      if ( rc != SDB_OK )
-      {
-         errorDetail = string( "Failed to delete ip" );
+         _errorDetail = string( "Failed to delete task strategy record" ) ;
          goto error ;
       }
       _sendOKRes2Web() ;
@@ -11344,45 +11788,67 @@ namespace engine
    done:
       return rc ;
    error:
-      _sendErrorRes2Web( rc, errorDetail ) ;
-      PD_LOG( PDERROR, "%s, rc: %d", errorDetail.c_str(), rc ) ;
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
       goto done ;
    }
 
-   omTaskStrategyDel::omTaskStrategyDel( restAdaptor *pRestAdaptor,
-                                         pmdRestSession *pRestSession )
-   : omRestCommandBase( pRestAdaptor, pRestSession )
+   omStrategyUpdateStatus::omStrategyUpdateStatus( restAdaptor *pRestAdaptor, 
+                                                   pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
    {
    }
 
-   omTaskStrategyDel::~omTaskStrategyDel()
+   omStrategyUpdateStatus::~omStrategyUpdateStatus()
    {
    }
 
-   INT32 omTaskStrategyDel::doCommand()
+   INT32 omStrategyUpdateStatus::doCommand()
    {
       INT32 rc = SDB_OK ;
       INT64 ruleId = 0 ;
+      INT32 status ;
       const CHAR *pValTmp = NULL ;
-      string errorDetail ;
+      string clsName, bizName ;
+
       SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
                   "_restAdaptor and _restSession can't be null!" ) ;
 
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_RULE_ID,
                               &pValTmp ) ;
-      if ( NULL == pValTmp )
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
       {
-          errorDetail = string( "Failed to get the field("
-                                OM_REST_FIELD_RULE_ID")" ) ;
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_RULE_ID")" ) ;
           rc = SDB_INVALIDARG ;
           goto error ;
       }
       ruleId = ossAtoll( pValTmp ) ;
 
-      rc = omGetStrategyMgr()->delTaskById( ruleId, _cb ) ;
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_STATUS,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_STATUS")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      status = ossAtoi( pValTmp ) ;
+
+      rc = omGetStrategyMgr()->updateStrategyStatusById( status, ruleId,
+                                                         clsName, bizName,
+                                                         _cb ) ;
       if ( rc != SDB_OK )
       {
-         errorDetail = string( "Failed to delete task strategy record" ) ;
+         _errorDetail = string( "Failed to update task strategy status" ) ;
          goto error ;
       }
       _sendOKRes2Web() ;
@@ -11390,8 +11856,112 @@ namespace engine
    done:
       return rc ;
    error:
-      _sendErrorRes2Web( rc, errorDetail ) ;
-      PD_LOG( PDERROR, "%s, rc: %d", errorDetail.c_str(), rc ) ;
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
+      goto done ;
+   }
+
+   omStrategyUpdateSortID::omStrategyUpdateSortID( restAdaptor *pRestAdaptor, 
+                                                   pmdRestSession *pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
+   {
+   }
+
+   omStrategyUpdateSortID::~omStrategyUpdateSortID()
+   {
+   }
+
+   INT32 omStrategyUpdateSortID::doCommand()
+   {
+      INT32 rc = SDB_OK ;
+      INT64 ruleId = 0 ;
+      INT64 sortId = 0 ;
+      const CHAR *pValTmp = NULL ;
+      string clsName, bizName ;
+
+      SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
+                  "_restAdaptor and _restSession can't be null!" ) ;
+
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_RULE_ID,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                 OM_REST_FIELD_RULE_ID")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      ruleId = ossAtoll( pValTmp ) ;
+
+      _restAdaptor->getQuery( _restSession, OM_REST_FIELD_SORT_ID,
+                              &pValTmp ) ;
+      if ( NULL == pValTmp || 0 == pValTmp[0] ||
+           !ossIsInteger( pValTmp ) )
+      {
+          _errorDetail = string( "Failed to get the field("
+                                  OM_REST_FIELD_SORT_ID")" ) ;
+          rc = SDB_INVALIDARG ;
+          goto error ;
+      }
+      sortId = ossAtoll( pValTmp ) ;
+
+      rc = omGetStrategyMgr()->updateStrategySortIDById( sortId, ruleId,
+                                                         clsName, bizName,
+                                                         _cb ) ;
+      if ( rc != SDB_OK )
+      {
+         _errorDetail = string( "Failed to update task strategy sortID" ) ;
+         goto error ;
+      }
+      _sendOKRes2Web() ;
+
+   done:
+      return rc ;
+   error:
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
+      goto done ;
+   }
+
+   omStrategyFlush::omStrategyFlush( restAdaptor * pRestAdaptor,
+                                     pmdRestSession * pRestSession )
+   : omStrategyCmdBase( pRestAdaptor, pRestSession )
+   {
+   }
+
+   omStrategyFlush::~omStrategyFlush()
+   {
+   }
+
+   INT32 omStrategyFlush::doCommand()
+   {
+      INT32 rc = SDB_OK ;
+      string clsName, bizName ;
+
+      SDB_ASSERT( _restAdaptor != NULL && _restSession != NULL,
+                  "_restAdaptor and _restSession can't be null!" ) ;
+
+      rc = _getAndCheckBusiness( clsName, bizName ) ;
+      if ( rc )
+      {
+         goto error ;
+      }
+
+      omGetStrategyMgr()->flushStrategy( clsName, bizName, _cb ) ;
+      _sendOKRes2Web() ;
+
+   done:
+      return rc ;
+   error:
+      _sendErrorRes2Web( rc, _errorDetail ) ;
+      PD_LOG( PDERROR, "%s, rc: %d", _errorDetail.c_str(), rc ) ;
       goto done ;
    }
 

@@ -130,6 +130,15 @@ namespace engine
    {
    }
 
+   BOOLEAN _omTaskStrategyInfo::isValid() const
+   {
+      if ( _clsName.empty() || _bizName.empty() || _taskName.empty() )
+      {
+         return FALSE ;
+      }
+      return TRUE ;
+   }
+
    BOOLEAN _omTaskStrategyInfo::isEnabled() const
    {
       return OM_STRATEGY_STATUS_ENABLE == _status ? TRUE : FALSE ;
@@ -161,7 +170,14 @@ namespace engine
 
    void _omTaskStrategyInfo::setStatus( INT32 status )
    {
-      _status = status ;
+      if ( OM_STRATEGY_STATUS_DISABLE == status )
+      {
+         _status = OM_STRATEGY_STATUS_DISABLE ;
+      }
+      else
+      {
+         _status = OM_STRATEGY_STATUS_ENABLE ;
+      }
    }
 
    void _omTaskStrategyInfo::enable()
@@ -233,6 +249,17 @@ namespace engine
    void _omTaskStrategyInfo::setIPSet( const SET_IP &ipSet )
    {
       _ips = ipSet ;
+   }
+
+   BSONObj _omTaskStrategyInfo::toMatcher() const
+   {
+      BSONObjBuilder builder( 128 ) ;
+
+      builder.append( OM_BSON_CLUSTER_NAME, getClusterName() ) ;
+      builder.append( OM_BSON_BUSINESS_NAME, getBusinessName() ) ;
+      builder.append( OM_REST_FIELD_TASK_ID, getTaskID() ) ;
+
+      return builder.obj() ;
    }
 
    BSONObj _omTaskStrategyInfo::toBSON() const
@@ -415,6 +442,16 @@ namespace engine
    {
    }
 
+   BOOLEAN _omTaskInfo::isValid() const
+   {
+      if ( _clsName.empty() || _bizName.empty() ||
+           _taskName.empty() )
+      {
+         return FALSE ;
+      }
+      return TRUE ;
+   }
+
    void _omTaskInfo::setTaskID( INT64 taskID )
    {
       _taskID = taskID ;
@@ -432,7 +469,14 @@ namespace engine
 
    void _omTaskInfo::setStatus( INT32 status )
    {
-      _status = status ;
+      if ( OM_STRATEGY_STATUS_DISABLE == status )
+      {
+         _status = OM_STRATEGY_STATUS_DISABLE ;
+      }
+      else
+      {
+         _status = OM_STRATEGY_STATUS_ENABLE ;
+      }
    }
 
    void _omTaskInfo::setCreateTime( INT64 time )
@@ -475,6 +519,16 @@ namespace engine
       objBuilder.append( OM_REST_FIELD_TASK_NAME, getTaskName() ) ;
       objBuilder.append( OM_REST_FIELD_CREATE_USER, getCreator() ) ;
       objBuilder.append( OM_REST_FIELD_CREATE_TIME, getCreateTime() ) ;
+
+      return objBuilder.obj() ;
+   }
+
+   BSONObj _omTaskInfo::toMatcher() const
+   {
+      BSONObjBuilder objBuilder( 128 ) ;
+      objBuilder.append( OM_BSON_CLUSTER_NAME, getClusterName() ) ;
+      objBuilder.append( OM_BSON_BUSINESS_NAME, getBusinessName() ) ;
+      objBuilder.append( OM_REST_FIELD_TASK_NAME, getTaskName() ) ;
 
       return objBuilder.obj() ;
    }

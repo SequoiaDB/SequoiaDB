@@ -311,12 +311,35 @@ _IDX1\",key: {"OM_RELATIONSHIP_FIELD_NAME":1}, unique: true, enforced: true }"
 
    /********** SYSTASKPROPERTY **********/
    #define OM_CS_STRATEGY_CL_TASK_PRO           OM_CS_STRATEGY".SYSTASKPROPERTY"
+   #define OM_CS_STRATEGY_CL_TASK_PRO_IDX1      BSON( "name" <<\
+"OM_CS_STRATEGY_CL_TASKPROIDX1" << "key" << BSON( OM_BSON_CLUSTER_NAME <<\
+1 << OM_BSON_BUSINESS_NAME << 1 << OM_REST_FIELD_TASK_ID << 1 ) <<\
+"unique" << true << "enforced" << true )
+   #define OM_CS_STRATEGY_CL_TASK_PRO_IDX2      BSON( "name" <<\
+"OM_CS_STRATEGY_CL_TASKPROIDX2" << "key" << BSON( OM_BSON_CLUSTER_NAME <<\
+1 << OM_BSON_BUSINESS_NAME << 1 << OM_REST_FIELD_TASK_NAME << 1 ) <<\
+"unique" << true << "enforced" << true )
+   #define OM_CS_STRATEGY_CL_TASK_PRO_IDX3      BSON( "name" <<\
+"OM_CS_STRATEGY_CL_TASKPROIDX3" << "key" << BSON( OM_BSON_CLUSTER_NAME <<\
+1 << OM_BSON_BUSINESS_NAME << 1 << OM_REST_FIELD_STATUS << 1 ) )
 
    /********** SYSSTRATEGYPROPERTY **********/
    #define OM_CS_STRATEGY_CL_STRATEGY_PRO       OM_CS_STRATEGY".SYSSTRATEGYPROPERTY"
+   #define OM_CS_STRATEGY_CL_STRATEGY_PRO_IDX1  BSON( "name" <<\
+"OM_CS_STRATEGY_CL_STRATEGYPROIDX1" << "key" << BSON( OM_BSON_CLUSTER_NAME <<\
+1 << OM_BSON_BUSINESS_NAME << 1 << OM_REST_FIELD_TASK_ID << 1 ) )
+   #define OM_CS_STRATEGY_CL_STRATEGY_PRO_IDX2  BSON( "name" <<\
+"OM_CS_STRATEGY_CL_STRATEGYPROIDX2" << "key" << BSON( OM_BSON_CLUSTER_NAME <<\
+1 << OM_BSON_BUSINESS_NAME << 1 << OM_REST_FIELD_RULE_ID << 1 ) <<\
+"unique" << true << "enforced" << true )
+   #define OM_CS_STRATEGY_CL_STRATEGY_PRO_IDX3  BSON( "name" <<\
+"OM_CS_STRATEGY_CL_STRATEGYPROIDX3" << "key" << BSON( OM_BSON_CLUSTER_NAME <<\
+1 << OM_BSON_BUSINESS_NAME << 1 << OM_REST_FIELD_STATUS << 1 ) )
 
    /********** SYSMETADATA **********/
    #define OM_CS_STRATEGY_CL_META_DATA          OM_CS_STRATEGY".SYSMETADATA"
+   #define OM_CS_STRATEGY_CL_META_DATA_IDX1     BSON("name" << \
+"OM_CS_STRATEGY_CL_METADATAIDX1" << "key" << BSON( FIELD_NAME_NAME << 1 ) )
 
 
    #define OM_PATH_WEB                       "web"

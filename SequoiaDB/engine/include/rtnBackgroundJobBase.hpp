@@ -65,6 +65,7 @@ namespace engine
       RTN_JOB_PAGEMAPPING        = 19, // page mapping job
 
       RTN_JOB_UPDATESTRATEGY     = 20,
+      RTN_JOB_STRATEGYOBSERVER   = 21,
 
       RTN_JOB_MAX
    } ;

@@ -462,6 +462,8 @@ omsvcFiles = [
       "omsvc/omConfigZoo.cpp",
       "omsvc/omConfigSsqlOlap.cpp",
       "omsvc/omConfigSsqlOltp.cpp",
+      "omsvc/omSdbAdaptor.cpp",
+      "omsvc/omStrategyObserverJob.cpp"
       ]
 
 barFiles = [

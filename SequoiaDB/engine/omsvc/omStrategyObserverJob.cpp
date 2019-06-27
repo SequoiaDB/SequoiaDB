@@ -78,7 +78,7 @@ namespace engine
             it = setBiz.begin() ;
             while( it != setBiz.end() )
             {
-               omStrategyChangeKey &item = *it ;
+               const omStrategyChangeKey &item = *it ;
                ++it ;
 
                pAdaptor->notifyStrategyChanged( item._clsName,

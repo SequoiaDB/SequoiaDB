@@ -225,7 +225,7 @@ do                                                            \
          _connection = NULL ;
       }
    }
-   
+
    void _sdbCursorImpl::_detachCollection()
    {
       if ( NULL != _collection )
@@ -913,7 +913,7 @@ do                                                            \
       _cursors.insert ( (ossValuePtr)cursor ) ;
       unlock () ;
    }
-      
+
    void _sdbCollectionImpl::_unregCursor ( _sdbCursorImpl * cursor )
    {
       lock () ;
@@ -4843,6 +4843,11 @@ error :
       INT32 rc = SDB_OK ;
       BSONObj query ;
 
+      if( NULL == oldName || NULL == newName )
+      {
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
       try
       {
          BSONObjBuilder queryBuilder ;
@@ -5372,9 +5377,9 @@ error :
          _connection = NULL ;
       }
    }
-   
+
    void _sdbLobImpl::_detachCollection()
-   { 
+   {
       _collection = NULL ;
    }
 
@@ -6195,7 +6200,7 @@ error :
       _cursors.insert ( (ossValuePtr)cursor ) ;
       unlock () ;
    }
-   
+
    void _sdbImpl::_regCollection ( _sdbCollectionImpl *collection )
    {
       lock () ;
@@ -9122,6 +9127,11 @@ error :
       BOOLEAN result = FALSE ;
       BOOLEAN locked = FALSE ;
 
+      if( NULL == msg )
+      {
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
       rc = clientBuildTestMsg( &_pSendBuffer, &_sendBufferSize, msg, 0,
                                _endianConvert ) ;
       if ( rc )
@@ -9158,6 +9168,11 @@ error :
       INT32 rc = SDB_OK ;
       BSONObj query ;
 
+      if( NULL == csName )
+      {
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
       try
       {
          BSONObjBuilder queryBuilder ;
@@ -9193,6 +9208,11 @@ error :
       INT32 rc = SDB_OK ;
       BSONObj query ;
 
+      if( NULL == csName )
+      {
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
       try
       {
          BSONObjBuilder queryBuilder ;
@@ -9398,6 +9418,11 @@ error :
       INT32 rc = SDB_OK ;
       BSONObj query ;
 
+      if( NULL == oldName || NULL == newName )
+      {
+         rc = SDB_INVALIDARG ;
+         goto error ;
+      }
       try
       {
          BSONObjBuilder queryBuilder ;
