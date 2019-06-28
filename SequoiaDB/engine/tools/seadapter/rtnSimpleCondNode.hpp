@@ -42,8 +42,9 @@
 #include "../bson/bson.h"
 
 using namespace bson ;
+using namespace engine ;
 
-namespace engine
+namespace seadapter
 {
    #define RTN_OPERATOR_STR_AND          "$and"
    #define RTN_OPERATOR_STR_OR           "$or"

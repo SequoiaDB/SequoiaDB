@@ -44,8 +44,9 @@
 #include "rtnSimpleCondNode.hpp"
 
 using namespace bson ;
+using namespace engine ;
 
-namespace engine
+namespace seadapter
 {
    class _rtnCondNodeFactory : public SDBObject
    {

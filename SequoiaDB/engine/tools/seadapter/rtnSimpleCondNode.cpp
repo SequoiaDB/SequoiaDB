@@ -41,7 +41,7 @@
 #include "rtnTrace.hpp"
 #include "rtnSimpleCondNode.hpp"
 
-namespace engine
+namespace seadapter 
 {
    _rtnCondNode::_rtnCondNode( rtnCondNodeAllocator *allocator )
    {
