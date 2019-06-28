@@ -42,7 +42,7 @@
 #include "pdTrace.hpp"
 #include "rtnTrace.hpp"
 
-namespace engine
+namespace seadapter 
 {
    #define UTIL_OPERATOR_EYECATCHER          '$'
    #define FIELD_NAME_TEXT                   "$Text"

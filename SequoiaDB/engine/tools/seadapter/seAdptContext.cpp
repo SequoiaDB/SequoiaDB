@@ -319,9 +319,26 @@ namespace seadapter
       rc = _esClt->initScroll( _scrollID, _indexName.c_str(), _type.c_str(),
                                queryCond, result, SEADPT_FETCH_BATCH_SIZE,
                                SEADPT_ES_ID_FILTER_PATH ) ;
-      PD_RC_CHECK( rc, PDERROR, "Initialize scroll for index[ %s ] and "
-                   "type[ %s ] failed[ %d ], query string: %s ",
-                   _indexName.c_str(), _type.c_str(), rc, queryCond.c_str() ) ;
+      if ( rc )
+      {
+         const CHAR *errMsg = _esClt->getLastErrMsg() ;
+         if ( errMsg )
+         {
+            PD_LOG_MSG( PDERROR, "Initialize scroll for index[ %s ] and "
+                        "type[ %s ] failed[ %d ], query string: %s. "
+                        "Error message: %s",
+                        _indexName.c_str(), _type.c_str(), rc,
+                        queryCond.c_str(), _esClt->getLastErrMsg() ) ;
+         }
+         else
+         {
+            PD_LOG_MSG( PDERROR, "Initialize scroll for index[ %s ] and "
+                        "type[ %s ] failed[ %d ], query string: %s."
+                        _indexName.c_str(), _type.c_str(), rc,
+                        queryCond.c_str() ) ;
+         }
+         goto error ;
+      }
 
    done:
       return rc ;
@@ -347,9 +364,26 @@ namespace seadapter
       }
 
       rc = _esClt->scrollNext( _scrollID, result, SEADPT_ES_ID_FILTER_PATH ) ;
-      PD_RC_CHECK( rc, PDERROR, "Scroll with id[ %s ] for index[ %s ] and "
-                   "type[ %s ] failed[ %d ]", _scrollID.c_str(),
-                   _indexName.c_str(), _type.c_str(), rc ) ;
+      if ( rc )
+      {
+         const CHAR *errMsg = _esClt->getLastErrMsg() ;
+         if ( errMsg )
+         {
+            PD_LOG_MSG( PDERROR, "Scroll with id[ %s ] for index[ %s ] and "
+                        "type[ %s ] failed[ %d ]. Error message: %s",
+                        _scrollID.c_str(), _indexName.c_str(), _type.c_str(),
+                        rc, _esClt->getLastErrMsg() ) ;
+         }
+         else
+         {
+            PD_LOG_MSG( PDERROR, "Scroll with id[ %s ] for index[ %s ] and "
+                        "type[ %s ] failed[ %d ].",
+                        _scrollID.c_str(), _indexName.c_str(),
+                        _type.c_str(), rc ) ;
+         }
+         goto error ;
+      }
+
    done:
       return rc ;
    error:

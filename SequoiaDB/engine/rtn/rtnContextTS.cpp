@@ -297,7 +297,7 @@ namespace engine
                if ( 0 != objList.size() )
                {
                   PD_LOG_MSG( PDERROR, "Error returned from remote: %s",
-                              objList.front().toString().c_str() ) ;
+                              objList.front().toString( FALSE, TRUE ).c_str() ) ;
                }
             }
             goto error ;

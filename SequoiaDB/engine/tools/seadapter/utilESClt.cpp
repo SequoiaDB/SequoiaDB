@@ -108,7 +108,8 @@ while ( 0 ) ;
 namespace seadapter
 {
    _utilESClt::_utilESClt()
-   : _readOnly( FALSE )
+   : _readOnly( FALSE ),
+     _errMsg( NULL )
    {
    }
 
@@ -713,6 +714,11 @@ namespace seadapter
       return rc ;
    error:
       goto done ;
+   }
+
+   const CHAR* _utilESClt::getLastErrMsg() const
+   {
+      return _errMsg ;
    }
 
    INT32 _utilESClt::_getResultObjs( const BSONObj &replyObj,
