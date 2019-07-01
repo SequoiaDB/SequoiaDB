@@ -394,13 +394,31 @@ int sdb_func_item::get_item_val( const char *field_name,
                }
             }
             else if( item_val->result_type() == DECIMAL_RESULT
-               || item_val->result_type() == STRING_RESULT )
+                     || item_val->result_type() == STRING_RESULT )
             {
+               char buff[MAX_FIELD_WIDTH]={0};
+               const char *p_str_tmp = NULL ;
+               String str( buff, sizeof(buff),
+                           item_val->charset_for_protocol() ) ;
+               if ( item_val->result_type() == STRING_RESULT )
+               {
+                  p_str_tmp = item_val->item_name.ptr() ;
+               }
+               else
+               {
+                  item_val->val_str( &str ) ;
+                  p_str_tmp = str.c_ptr() ;
+               }
+               if ( NULL == p_str_tmp )
+               {
+                  rc =  SDB_ERR_INVALID_ARG ;
+                  goto error ;
+               }
                if ( NULL == arr_builder )
                {
                   bson::BSONObjBuilder obj_builder ;
                   if( !obj_builder.appendDecimal( field_name,
-                                                  item_val->item_name.ptr() ))
+                                                  p_str_tmp ))
                   {
                      rc =  SDB_ERR_INVALID_ARG ;
                      goto error ;
@@ -417,7 +435,7 @@ int sdb_func_item::get_item_val( const char *field_name,
                      goto error ;
                   }
     
-                  rc = decimal.fromString( item_val->item_name.ptr() ) ;
+                  rc = decimal.fromString( p_str_tmp ) ;
                   if ( 0 != rc )
                   {
                      rc =  SDB_ERR_INVALID_ARG ;
