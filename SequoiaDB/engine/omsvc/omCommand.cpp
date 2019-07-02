@@ -11124,7 +11124,6 @@ namespace engine
       INT32 rc = SDB_OK ;
       SINT64 contextID = - 1 ;
       const SINT32 maxNumToReturn = 1000 ;
-      const CHAR *pValTmp = NULL ;
       string clsName, bizName ;
       rtnContextBuf buffObj ;
       BSONObj objTmp ;

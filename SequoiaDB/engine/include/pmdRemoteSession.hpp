@@ -483,6 +483,8 @@ namespace engine
                            IRemoteMgrHandle *pHandle = NULL ) ;
          INT32       fini() ;
 
+         netRouteAgent*          getAgent() ;
+
          pmdRemoteSessionSite*   registerEDU( _pmdEDUCB *cb ) ;
          void                    unregEUD( _pmdEDUCB *cb ) ;
 

@@ -94,7 +94,7 @@ namespace engine
       if ( 0 == omGroupPtr->nodeCount() )
       {
          PD_LOG( PDEVENT, "Om's address is not configured, stop "
-                 "OmStrategySyncJob job" ) ;
+                 "job[OmStrategySyncJob]" ) ;
          goto done ;
       }
 

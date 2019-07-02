@@ -110,14 +110,14 @@ namespace engine
       pmdOptionsCB *optCB = pmdGetOptionCB() ;
       const CHAR* hostName = pmdGetKRCB()->getHostName() ;
 
-      _pTimerHandler = SDB_OSS_NEW _coordTimerHandler() ;
+      _pTimerHandler = SDB_OSS_NEW pmdRemoteTimerHandler() ;
       if ( !_pTimerHandler )
       {
          PD_LOG( PDERROR, "Failed to alloc memory for timer handler" ) ;
          rc = SDB_OOM ;
          goto error ;
       }
-      _pMsgHandler = SDB_OSS_NEW _coordMsgHandler( &_remoteSessionMgr ) ;
+      _pMsgHandler = SDB_OSS_NEW pmdRemoteMsgHandler( &_remoteSessionMgr ) ;
       if ( !_pMsgHandler )
       {
          PD_LOG( PDERROR, "Failed to alloc memory for message handler" ) ;
@@ -292,6 +292,8 @@ namespace engine
       _pMsgHandler->detach() ;
       _pTimerHandler->detach() ;
       _remoteSessionMgr.unregEUD( cb ) ;
+
+      _pEDUCB = NULL ;
    }
 
    UINT32 _CoordCB::setTimer( UINT32 milliSec )
@@ -341,18 +343,6 @@ namespace engine
                   sizeof( MsgOpReply ) + replyDataLen ) ;
          rc = SDB_SYS ;
          goto error ;
-      }
-
-      if ( pReply->flags &&
-           pReply->header.messageLength == sizeof( MsgOpReply ) )
-      {
-         BSONObj errInfo ;
-         errInfo = utilGetErrorBson( pReply->flags,
-                                     _pEDUCB->getInfo( EDU_INFO_ERROR ) ) ;
-         pReplyData = errInfo.objdata() ;
-         replyDataLen = ( INT32 ) errInfo.objsize() ;
-         pReply->numReturned = 1 ;
-         pReply->header.messageLength += replyDataLen ;
       }
 
       if ( replyDataLen > 0 )
@@ -635,7 +625,7 @@ retry :
       switch ( pMsg->opCode )
       {
          case MSG_BS_QUERY_REQ:
-            rc = _processQueryMsg( pMsg, contextID );
+            rc = _processQueryMsg( pMsg, buffObj, contextID );
             break;
          case MSG_BS_GETMORE_REQ :
             rc = _processGetMoreMsg( pMsg, buffObj, contextID ) ;
@@ -684,26 +674,30 @@ retry :
                  pMsg->routeID.columns.serviceID, rc ) ;
       }
 
-      _replyHeader.header.messageLength = sizeof( MsgOpReply ) + buffObj.size();
-      _replyHeader.flags                = rc ;
-      _replyHeader.contextID            = contextID ;
-      if ( buffObj.size() > 0 )
+      if(  MSG_BS_QUERY_REQ == pMsg->opCode && contextID != -1 )
       {
-         _replyHeader.startFrom         = (INT32)buffObj.getStartFrom() ;
-         _replyHeader.numReturned       = buffObj.recordNum() ;
+         _addContext( handle, pMsg->TID, contextID );
       }
+
       if ( _needReply )
       {
-         rc = _reply( handle, &_replyHeader, buffObj.data(),
-                         buffObj.size() ) ;
-         if ( rc == SDB_OK )
+         if ( rc && 0 == buffObj.size() )
          {
-            if(  MSG_BS_QUERY_REQ == pMsg->opCode && contextID != -1 )
-            {
-               _addContext( handle, pMsg->TID, contextID );
-            }
+            _errorInfo = utilGetErrorBson( rc, _pEDUCB->getInfo(
+                                           EDU_INFO_ERROR ) ) ;
+            buffObj = rtnContextBuf( _errorInfo ) ;
          }
-         else
+
+         _replyHeader.header.messageLength = sizeof( MsgOpReply ) +
+                                             buffObj.size();
+         _replyHeader.flags                = rc ;
+         _replyHeader.contextID            = contextID ;
+         _replyHeader.startFrom            = (INT32)buffObj.getStartFrom() ;
+         _replyHeader.numReturned          = buffObj.recordNum() ;
+
+         rc = _reply( handle, &_replyHeader, buffObj.data(),
+                      buffObj.size() ) ;
+         if ( rc == SDB_OK )
          {
             PD_LOG ( PDERROR, "failed to send reply, rc: %d", rc ) ;
          }
@@ -722,6 +716,7 @@ retry :
       PD_TRACE_ENTRY ( SDB__COORDCB__GETMOREMSG ) ;
       INT32 rc         = SDB_OK ;
       INT32 numToRead  = 0 ;
+      BOOLEAN rtnDel   = TRUE ;
 
       rc = msgExtractGetMore( (CHAR*)pMsg, &numToRead, &contextID ) ;
       PD_RC_CHECK ( rc, PDERROR, "Extract GETMORE msg failed[rc:%d]", rc ) ;
@@ -731,21 +726,22 @@ retry :
                           contextID, numToRead ) ;
 
       rc = rtnGetMore ( contextID, numToRead, buffObj, _pEDUCB, _pRtnCB ) ;
-      if ( SDB_OK != rc )
+      if ( rc )
       {
-         _delContextByID( contextID, FALSE );
+         rtnDel = FALSE ;
          if ( SDB_DMS_EOC != rc )
          {
             PD_LOG ( PDERROR, "Failed to get more, rc: %d", rc ) ;
-            goto error ;
          }
-         goto done ;
+         goto error ;
       }
 
    done :
       PD_TRACE_EXITRC ( SDB__COORDCB__GETMOREMSG, rc ) ;
       return rc ;
    error :
+      _delContextByID( contextID, rtnDel ) ;
+      contextID = -1 ;
       goto done ;
    }
 
@@ -827,6 +823,7 @@ retry :
 
    // PD_TRACE_DECLARE_FUNCTION( SDB__COORDCB__QUERYMSG, "_CoordCB::_processQueryMsg" )
    INT32 _CoordCB::_processQueryMsg( MsgHeader *pMsg,
+                                     rtnContextBuf &buffObj,
                                      INT64 &contextID )
    {
       PD_TRACE_ENTRY ( SDB__COORDCB__QUERYMSG ) ;
@@ -957,8 +954,6 @@ retry :
                   routeID2String( localRouteID ).c_str() ) ;
       }
 
-      _replyHeader.header.messageLength = sizeof( MsgOpReply ) ;
-      _replyHeader.flags                = rc ;
       PD_TRACE_EXITRC ( SDB__COORDCB__SESSIONINIT, rc ) ;
       return rc ;
    }
@@ -1099,12 +1094,15 @@ retry :
    }
 
    void _CoordCB::_addContext( const UINT32 &handle, UINT32 tid,
-                              INT64 contextID )
+                               INT64 contextID )
    {
-      PD_LOG( PDDEBUG, "add context( handle=%u, contextID=%lld )",
-              handle, contextID );
-      ossScopedLock lock( &_contextLatch ) ;
-      _contextLst[ contextID ] = ossPack32To64( handle, tid ) ;
+      if ( -1 != contextID )
+      {
+         PD_LOG( PDDEBUG, "add context( handle=%u, contextID=%lld )",
+                 handle, contextID );
+         ossScopedLock lock( &_contextLatch ) ;
+         _contextLst[ contextID ] = ossPack32To64( handle, tid ) ;
+      }
    }
 
    /*

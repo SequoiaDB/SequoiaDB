@@ -43,11 +43,12 @@
 #include "rtnCB.hpp"
 #include "netRouteAgent.hpp"
 #include "pmdRemoteSession.hpp"
-#include "omMsgEventHandler.hpp"
+#include "pmdRemoteMsgEventHandler.hpp"
 
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 
 using namespace std ;
 using namespace bson ;
@@ -81,6 +82,8 @@ namespace engine
 
       typedef map< string, omAgentInfo >     MAP_HOST2ID ;
       typedef MAP_HOST2ID::iterator          MAP_HOST2ID_IT ;
+
+      typedef _utilMap< SINT64, UINT64, 20 >    CONTEXT_LIST ;
 
       public:
          _omManager() ;
@@ -129,9 +132,9 @@ namespace engine
          void              removeClusterVersion( string cluster ) ;
          void              updateClusterHostFilePrivilege( string clusterName,
                                                            BOOLEAN privilege ) ;
-         void getPluginPasswd( string &passwd ) ;
+         void              getPluginPasswd( string &passwd ) ;
 
-         void getUpdatePluginPasswdTimeDiffer( INT64 &differ ) ;
+         void              getUpdatePluginPasswdTimeDiffer( INT64 &differ ) ;
 
          omTaskManager     *getTaskManager() ;
 
@@ -142,6 +145,14 @@ namespace engine
 
       protected:
          virtual void      onTimer ( UINT64 timerID, UINT32 interval ) ;
+         virtual INT32     _defaultMsgFunc( NET_HANDLE handle,
+                                            MsgHeader *pMsg ) ;
+         void              _onMsgBegin( MsgHeader *pMsg ) ;
+         void              _onMsgEnd() ;
+         INT32             _reply ( const NET_HANDLE &handle,
+                                    MsgOpReply *pReply,
+                                    const CHAR *pReplyData = NULL,
+                                    UINT32 replyDataLen = 0 ) ;
 
          MsgRouteID        _incNodeID() ;
 
@@ -178,35 +189,75 @@ namespace engine
                                                pmdEDUCB *cb ) ;
          void              _readAgentPort() ;
 
-         INT32             _onAgentQueryTaskReq( NET_HANDLE handle, 
-                                                 MsgHeader *pMsg ) ;
-         INT32             _onAgentUpdateTaskReq( NET_HANDLE handle, 
-                                                  MsgHeader *pMsg ) ;
          BOOLEAN           _isCommand( const CHAR *pCheckName ) ;
+
          void              _sendResVector2Agent( NET_HANDLE handle, 
                                                  MsgHeader *pSrcMsg, 
                                                  INT32 flag, 
-                                                 vector < BSONObj > &objs ) ;
+                                                 vector < BSONObj > &objs,
+                                                 INT64 contextID = -1 ) ;
+
          void              _sendRes2Agent( NET_HANDLE handle, 
                                            MsgHeader *pSrcMsg, 
-                                           INT32 flag, BSONObj &obj ) ;
+                                           INT32 flag,
+                                           const BSONObj &obj,
+                                           INT64 contextID = -1 ) ;
+
          void              _sendRes2Agent( NET_HANDLE handle, 
                                            MsgHeader *pSrcMsg, 
                                            INT32 flag, 
-                                           rtnContextBuf &buffObj ) ;
+                                           const rtnContextBuf &buffObj,
+                                           INT64 contextID = -1 ) ;
 
          void              _checkTaskTimeout( const BSONObj &task ) ;
 
-         INT32 _updatePluginPasswd() ;
+         INT32             _updatePluginPasswd() ;
 
          void              _createVersionFile() ;
 
       private:
-         INT32 _appendClusterGrant( const string& clusertName,
-                                    const string& grantName,
-                                    BOOLEAN privilege ) ;
+         INT32             _appendClusterGrant( const string& clusertName,
+                                                const string& grantName,
+                                                BOOLEAN privilege ) ;
+
+         void              _addContext( const UINT32 &handle,
+                                        UINT32 tid,
+                                        INT64 contextID ) ;
+
+         void              _delContextByHandle( const UINT32 &handle ) ;
+
+         void              _delContext( const UINT32 &handle,
+                                        UINT32 tid ) ;
+
+         void              _delContextByID( INT64 contextID, BOOLEAN rtnDel ) ;
 
       protected:
+         INT32             _processMsg( const NET_HANDLE &handle,
+                                        MsgHeader *pMsg ) ;
+
+         INT32             _processQueryMsg( MsgHeader *pMsg,
+                                             rtnContextBuf &buf,
+                                             INT64 &contextID ) ;
+
+         INT32             _processGetMoreMsg( MsgHeader *pMsg,
+                                               rtnContextBuf &buf,
+                                               INT64 &contextID ) ;
+
+         INT32             _processKillContext( MsgHeader *pMsg ) ;
+
+         INT32             _processSessionInit( MsgHeader *pMsg ) ;
+
+         INT32             _processDisconnectMsg( NET_HANDLE handle,
+                                                  MsgHeader *pMsg ) ;
+
+         INT32             _processInterruptMsg( NET_HANDLE handle,
+                                                 MsgHeader *pMsg ) ;
+
+         INT32             _processRemoteDisc( NET_HANDLE handle,
+                                               MsgHeader *pMsg ) ;
+
+         INT32             _onAgentUpdateTaskReq( NET_HANDLE handle, 
+                                                  MsgHeader *pMsg ) ;
 
       private:
 
@@ -219,14 +270,15 @@ namespace engine
 
          pmdRemoteSessionMgr                    _rsManager ;
 
-         omMsgHandler                           _msgHandler ;
-         omTimerHandler                         _timerHandler ;
+         pmdRemoteMsgHandler                    _msgHandler ;
+         pmdRemoteTimerHandler                  _timerHandler ;
          netRouteAgent                          _netAgent ;
          MsgRouteID                             _myNodeID ;
 
          pmdKRCB*                               _pKrcb ;
          SDB_DMSCB*                             _pDmsCB ;
          SDB_RTNCB*                             _pRtnCB ;
+         pmdEDUCB                               *_pEDUCB ;
 
          string                                 _wwwRootPath ;
 
@@ -234,6 +286,12 @@ namespace engine
          omHostVersion                          *_hostVersion ;
 
          omTaskManager                          *_taskManager ;
+
+         CONTEXT_LIST                           _contextLst;
+         ossSpinXLatch                          _contextLatch ;
+         MsgOpReply                             _replyHeader ;
+         BOOLEAN                                _needReply ;
+         BSONObj                                _errorInfo ;
 
          INT64                                  _updateTimestamp ;
          UINT64                                 _updatePluinUsrTimer ;
