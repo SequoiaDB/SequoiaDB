@@ -47,6 +47,7 @@
 #include "ossVer.h"
 #include "omStrategyMgr.hpp"
 #include "omStrategyObserverJob.hpp"
+#include "rtnContextDump.hpp"
 
 using namespace bson ;
 
