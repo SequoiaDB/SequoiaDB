@@ -1107,6 +1107,11 @@ namespace engine
             rc = _processInterruptMsg( handle, pMsg ) ;
             break ;
          }
+      case MSG_BS_INTERRUPTE_SELF :
+         {
+            rc = SDB_OK ;
+            break ;
+         }
       case MSG_BS_DISCONNECT :
          {
             rc = _processDisconnectMsg( handle, pMsg ) ;

@@ -2127,6 +2127,9 @@ namespace engine
          case MSG_COM_REMOTE_DISC :
             rc = _processRemoteDisc( handle, pMsg ) ;
             break ;
+         case MSG_BS_INTERRUPTE_SELF :
+            rc = SDB_OK ;
+            break ;
          default :
             rc = SDB_CLS_UNKNOW_MSG ;
             break ;
