@@ -39,7 +39,7 @@
 #include "netRouteAgent.hpp"
 #include "ossUtil.h"
 #include "coordRemoteSession.hpp"
-#include "coordMsgEventHandler.hpp"
+#include "pmdRemoteMsgEventHandler.hpp"
 #include "sdbInterface.hpp"
 #include "dmsCB.hpp"
 #include "pmdEDU.hpp"
@@ -108,6 +108,7 @@ namespace engine
          INT32 _filterQueryCmd( _rtnCommand *pCommand,
                                 MsgHeader *pMsg ) ;
          INT32 _processQueryMsg( MsgHeader *pMsg,
+                                 rtnContextBuf &buffObj,
                                  INT64 &contextID ) ;
          INT32 _processSessionInit( MsgHeader *pMsg ) ;
          INT32 _processInterruptMsg( const NET_HANDLE & handle,
@@ -127,8 +128,8 @@ namespace engine
          pmdRemoteSessionMgr           _remoteSessionMgr ;
          coordSessionPropMgr           _sitePropMgr ;
 
-         coordMsgHandler               *_pMsgHandler ;
-         coordTimerHandler             *_pTimerHandler ;
+         pmdRemoteMsgHandler           *_pMsgHandler ;
+         pmdRemoteTimerHandler         *_pTimerHandler ;
          netRouteAgent                 *_pAgent ;
 
          UINT16                        _shardServiceID ;
@@ -152,6 +153,7 @@ namespace engine
 
          MsgOpReply                    _replyHeader ;
          BOOLEAN                       _needReply ;
+         BSONObj                       _errorInfo ;
    } ;
    typedef _CoordCB CoordCB ;
 

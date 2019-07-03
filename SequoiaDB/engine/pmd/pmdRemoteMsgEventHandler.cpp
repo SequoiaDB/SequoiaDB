@@ -15,7 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program. If not, see <http://www.gnu.org/license/>.
 
-   Source File Name = coordMsgEventHandler.cpp
+   Source File Name = pmdRemoteMsgEventHandler.cpp
 
    Dependencies: N/A
 
@@ -31,46 +31,44 @@
 *******************************************************************************/
 
 #include "pmdDef.hpp"
-#include "pmd.hpp"
-#include "coordMsgEventHandler.hpp"
+#include "pmdRemoteMsgEventHandler.hpp"
 #include "pmdEDU.hpp"
 #include "pmdRemoteSession.hpp"
 #include "msgMessageFormat.hpp"
 #include "pdTrace.hpp"
-#include "coordTrace.hpp"
-#include "coordCB.hpp"
+#include "pmdTrace.hpp"
 #include "msgMessage.hpp"
 
 namespace engine
 {
 
    /*
-      _coordMsgHandler implement
+      _pmdRemoteMsgHandler implement
    */
-   _coordMsgHandler::_coordMsgHandler( _pmdRemoteSessionMgr *pRSManager )
+   _pmdRemoteMsgHandler::_pmdRemoteMsgHandler( _pmdRemoteSessionMgr *pRSManager )
    {
       _pRSManager       = pRSManager ;
       _pMainCB          = NULL ;
    }
 
-   _coordMsgHandler::~_coordMsgHandler()
+   _pmdRemoteMsgHandler::~_pmdRemoteMsgHandler()
    {
       _pRSManager       = NULL ;
    }
 
-   void _coordMsgHandler::attach( _pmdEDUCB * cb )
+   void _pmdRemoteMsgHandler::attach( _pmdEDUCB * cb )
    {
       _pMainCB    = cb ;
    }
 
-   void _coordMsgHandler::detach()
+   void _pmdRemoteMsgHandler::detach()
    {
       _pMainCB    = NULL ;
    }
 
-   INT32 _coordMsgHandler::handleMsg( const NET_HANDLE &handle,
-                                      const _MsgHeader *header,
-                                      const CHAR *msg )
+   INT32 _pmdRemoteMsgHandler::handleMsg( const NET_HANDLE &handle,
+                                          const _MsgHeader *header,
+                                          const CHAR *msg )
    {
       INT32 rc = SDB_OK ;
 
@@ -89,8 +87,7 @@ namespace engine
          }
          else
          {
-            CoordCB *pCoord = pmdGetKRCB()->getCoordCB() ;
-            rc = pCoord->getRouteAgent()->syncSendRaw( handle,
+            rc = _pRSManager->getAgent()->syncSendRaw( handle,
                                                        (const CHAR *)pReply,
                                                        (UINT32)replySize ) ;
             goto done ;
@@ -119,8 +116,8 @@ namespace engine
       goto done ;
    }
 
-   void _coordMsgHandler::handleClose( const NET_HANDLE &handle,
-                                       _MsgRouteID id )
+   void _pmdRemoteMsgHandler::handleClose( const NET_HANDLE &handle,
+                                           _MsgRouteID id )
    {
       SDB_ASSERT( _pRSManager, "Remote session manager can't be NULL" ) ;
       _pRSManager->handleClose( handle, id ) ;
@@ -140,21 +137,21 @@ namespace engine
       PD_LOG ( PDDEBUG, "posting event handle close %u", (UINT32)handle ) ;
    }
 
-   void _coordMsgHandler::handleConnect( const NET_HANDLE &handle,
-                                         _MsgRouteID id,
-                                         BOOLEAN isPositive )
+   void _pmdRemoteMsgHandler::handleConnect( const NET_HANDLE &handle,
+                                             _MsgRouteID id,
+                                             BOOLEAN isPositive )
    {
       SDB_ASSERT( _pRSManager, "Remote session manager can't be NULL" ) ;
 
       _pRSManager->handleConnect( handle, id, isPositive ) ;
    }
 
-   // PD_TRACE_DECLARE_FUNCTION ( SDB__COORDMSGHDL__POSTMSG, "_coordMsgHandler::_postMsg" )
-   INT32 _coordMsgHandler::_postMsg( const NET_HANDLE &handle,
-                                     const MsgHeader *header,
-                                     const CHAR *msg )
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__PMDRMTMSGHDL__POSTMSG, "_pmdRemoteMsgHandler::_postMsg" )
+   INT32 _pmdRemoteMsgHandler::_postMsg( const NET_HANDLE &handle,
+                                         const MsgHeader *header,
+                                         const CHAR *msg )
    {
-      PD_TRACE_ENTRY ( SDB__COORDMSGHDL__POSTMSG );
+      PD_TRACE_ENTRY ( SDB__PMDRMTMSGHDL__POSTMSG );
 
       CHAR *pNewMsg = NULL ;
       INT32 rc = SDB_OK ;
@@ -193,36 +190,36 @@ namespace engine
                                         pNewMsg,
                                         (UINT64)handle ) ) ;
    done:
-      PD_TRACE_EXITRC ( SDB__COORDMSGHDL__POSTMSG, rc );
+      PD_TRACE_EXITRC ( SDB__PMDRMTMSGHDL__POSTMSG, rc );
       return rc ;
    error:
       goto done ;
    }
 
    /*
-      _coordTimerHandler implement
+      _pmdRemoteTimerHandler implement
    */
-   _coordTimerHandler::_coordTimerHandler()
+   _pmdRemoteTimerHandler::_pmdRemoteTimerHandler()
    {
       _pMainCB       = NULL ;
    }
 
-   _coordTimerHandler::~_coordTimerHandler()
+   _pmdRemoteTimerHandler::~_pmdRemoteTimerHandler()
    {
    }
 
-   void _coordTimerHandler::attach( _pmdEDUCB * cb )
+   void _pmdRemoteTimerHandler::attach( _pmdEDUCB * cb )
    {
       _pMainCB       = cb ;
    }
 
-   void _coordTimerHandler::detach()
+   void _pmdRemoteTimerHandler::detach()
    {
       _pMainCB       = NULL ;
    }
 
-   void _coordTimerHandler::handleTimeout( const UINT32 &millisec,
-                                           const UINT32 &id )
+   void _pmdRemoteTimerHandler::handleTimeout( const UINT32 &millisec,
+                                               const UINT32 &id )
    {
       if ( !_pMainCB )
       {

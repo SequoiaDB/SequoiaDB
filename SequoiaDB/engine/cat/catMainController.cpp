@@ -1107,6 +1107,11 @@ namespace engine
             rc = _processInterruptMsg( handle, pMsg ) ;
             break ;
          }
+      case MSG_BS_INTERRUPTE_SELF :
+         {
+            rc = SDB_OK ;
+            break ;
+         }
       case MSG_BS_DISCONNECT :
          {
             rc = _processDisconnectMsg( handle, pMsg ) ;
@@ -1422,10 +1427,13 @@ namespace engine
    void catMainController::addContext( const UINT32 &handle, UINT32 tid,
                                        INT64 contextID )
    {
-      PD_LOG( PDDEBUG, "add context( handle=%u, contextID=%lld )",
-              handle, contextID );
-      ossScopedLock lock( &_contextLatch ) ;
-      _contextLst[ contextID ] = ossPack32To64( handle, tid ) ;
+      if ( -1 != contextID )
+      {
+         PD_LOG( PDDEBUG, "add context( handle=%u, contextID=%lld )",
+                 handle, contextID );
+         ossScopedLock lock( &_contextLatch ) ;
+         _contextLst[ contextID ] = ossPack32To64( handle, tid ) ;
+      }
    }
 
    void catMainController::_delContextByHandle( const UINT32 &handle )

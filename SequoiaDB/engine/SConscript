@@ -104,7 +104,8 @@ pmdFiles = [
       "pmd/pmdProtocolEntryPoint.cpp",
       "pmd/pmdModuleLoader.cpp",
       "pmd/pmdRestSession.cpp",
-      "pmd/pmdEntryPoint.cpp"
+      "pmd/pmdEntryPoint.cpp",
+      "pmd/pmdRemoteMsgEventHandler.cpp"
       ]
 migFiles = [
       "mig/migLoad.cpp"
@@ -446,7 +447,6 @@ omsvcFiles = [
       "omsvc/omCmdRelationship.cpp",
       "omsvc/omCommandTool.cpp",
       "omsvc/omCommandInterface.cpp",
-      "omsvc/omMsgEventHandler.cpp",
       "omsvc/omManagerJob.cpp",
       "omsvc/omTaskManager.cpp",
       "omsvc/omRestSession.cpp",
@@ -533,7 +533,6 @@ coordFiles = [
       "coord/coordLobStream.cpp",
       "coord/coordLobOperator.cpp",
       "coord/coordCommands.cpp",
-      "coord/coordMsgEventHandler.cpp",
       "coord/coordContext.cpp",
       "coord/coordOmOperator.cpp",
       "coord/coordOmProxy.cpp",

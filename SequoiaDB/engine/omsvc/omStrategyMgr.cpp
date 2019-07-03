@@ -1458,7 +1458,6 @@ namespace engine
                                         BSONObj &obj,
                                         pmdEDUCB *cb )
    {
-      INT32 rc = SDB_OK ;
       BSONObj matcher ;
 
       matcher = BSON( FIELD_NAME_NAME << OM_STRATEGY_BS_TASK_META_NAME <<

@@ -1691,6 +1691,11 @@ namespace engine
       cb->detachRemoteSite() ;
    }
 
+   netRouteAgent* _pmdRemoteSessionMgr::getAgent()
+   {
+      return _pAgent ;
+   }
+
    pmdRemoteSessionSite* _pmdRemoteSessionMgr::getSite( _pmdEDUCB *cb )
    {
       return getSite( cb->getTID() ) ;

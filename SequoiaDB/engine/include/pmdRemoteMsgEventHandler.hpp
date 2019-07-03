@@ -15,7 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program. If not, see <http://www.gnu.org/license/>.
 
-   Source File Name = omMsgEventHandler.hpp
+   Source File Name = pmdRemoteMsgEventHandler.hpp
 
    Dependencies: N/A
 
@@ -24,16 +24,15 @@
    Change Activity:
    defect Date        Who Description
    ====== =========== === ==============================================
-          25/06/2014  XJH Initial Draft
+          05/03/2017  XJH Initial Draft
 
    Last Changed =
 
 *******************************************************************************/
 
-#ifndef OM_MSG_EVENT_HANDLER_HPP__
-#define OM_MSG_EVENT_HANDLER_HPP__
+#ifndef PMD_REMOTE_MSG_EVENT_HANDLER_HPP__
+#define PMD_REMOTE_MSG_EVENT_HANDLER_HPP__
 
-#include "omDef.hpp"
 #include "netMsgHandler.hpp"
 #include "netTimer.hpp"
 
@@ -43,13 +42,13 @@ namespace engine
    class _pmdEDUCB ;
 
    /*
-      _omMsgHandler define
+      _pmdRemoteMsgHandler define
    */
-   class _omMsgHandler : public _netMsgHandler
+   class _pmdRemoteMsgHandler : public _netMsgHandler
    {
       public:
-         _omMsgHandler( _pmdRemoteSessionMgr *pRSManager ) ;
-         virtual ~_omMsgHandler() ;
+         _pmdRemoteMsgHandler( _pmdRemoteSessionMgr *pRSManager ) ;
+         virtual ~_pmdRemoteMsgHandler() ;
 
          void  attach( _pmdEDUCB *cb ) ;
          void  detach() ;
@@ -61,22 +60,26 @@ namespace engine
          virtual void  handleConnect( const NET_HANDLE &handle,
                                       _MsgRouteID id,
                                       BOOLEAN isPositive ) ;
+      protected:
+         INT32 _postMsg( const NET_HANDLE &handle,
+                         const MsgHeader *header,
+                         const CHAR *msg = NULL ) ;
 
       protected:
          _pmdRemoteSessionMgr                *_pRSManager ;
          _pmdEDUCB                           *_pMainCB ;
 
    } ;
-   typedef _omMsgHandler omMsgHandler ;
+   typedef _pmdRemoteMsgHandler pmdRemoteMsgHandler ;
 
    /*
-      _omTimerHandler define
+      _pmdRemoteTimerHandler define
    */
-   class _omTimerHandler : public _netTimeoutHandler
+   class _pmdRemoteTimerHandler : public _netTimeoutHandler
    {
       public:
-         _omTimerHandler() ;
-         virtual ~_omTimerHandler() ;
+         _pmdRemoteTimerHandler() ;
+         virtual ~_pmdRemoteTimerHandler() ;
 
          void  attach( _pmdEDUCB *cb ) ;
          void  detach() ;
@@ -88,9 +91,9 @@ namespace engine
          _pmdEDUCB               *_pMainCB ;
 
    } ;
-   typedef _omTimerHandler omTimerHandler ;
+   typedef _pmdRemoteTimerHandler pmdRemoteTimerHandler ;
 
 }
 
-#endif // OM_MSG_EVENT_HANDLER_HPP__
+#endif // PMD_REMOTE_MSG_EVENT_HANDLER_HPP__
 
