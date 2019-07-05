@@ -113,9 +113,12 @@ namespace engine
                timeWait = COORD_OM_UPDATE_OPR_RETRY ;
             }
          }
+         else if ( SDB_OK == pOmAgent->waitChange( OSS_ONE_SEC ) )
+         {
+            timeCount = timeWait ;
+         }
          else
          {
-            ossSleep( OSS_ONE_SEC ) ;
             timeCount += OSS_ONE_SEC ;
          }
       }

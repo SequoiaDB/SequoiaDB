@@ -1028,18 +1028,9 @@ namespace engine
       goto done ;
    }
 
-   INT32 utilStopNode( utilNodeInfo & node, INT32 timeout, BOOLEAN force )
+   INT32 utilAsyncStopNode( utilNodeInfo &node )
    {
       INT32 rc = SDB_OK ;
-
-      if ( timeout < 0 )
-      {
-         timeout = 0x7FFFFFFF ;
-      }
-      else if ( timeout == 0 )
-      {
-         timeout = 1 ;
-      }
 
 #if defined( _LINUX )
       rc = ossTerminateProcess( node._pid, FALSE ) ;
@@ -1057,8 +1048,42 @@ namespace engine
       }
       else if ( rc )
       {
-         rc = SDB_OK ;
+         rc = SDB_CLS_NODE_NOT_EXIST ;
          goto done ;
+      }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   INT32 utilStopNode( utilNodeInfo & node, INT32 timeout,
+                       BOOLEAN force, BOOLEAN skipKill )
+   {
+      INT32 rc = SDB_OK ;
+
+      if ( timeout < 0 )
+      {
+         timeout = 0x7FFFFFFF ;
+      }
+      else if ( timeout == 0 )
+      {
+         timeout = 1 ;
+      }
+
+      if ( skipKill )
+      {
+         rc = utilAsyncStopNode( node ) ;
+         if ( rc )
+         {
+            if ( SDB_CLS_NODE_NOT_EXIST == rc )
+            {
+               rc = SDB_OK ;
+               goto done ;
+            }
+            goto error ;
+         }
       }
 
       while ( timeout > 0 )

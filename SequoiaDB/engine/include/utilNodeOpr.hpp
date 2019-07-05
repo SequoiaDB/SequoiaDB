@@ -177,7 +177,10 @@ namespace engine
    */
    INT32    utilStopNode ( utilNodeInfo &node,
                            INT32 timeout = UTIL_STOP_NODE_TIMEOUT,
-                           BOOLEAN force = FALSE ) ;
+                           BOOLEAN force = FALSE,
+                           BOOLEAN skipKill = FALSE ) ;
+
+   INT32    utilAsyncStopNode( utilNodeInfo &node ) ;
 
    /*
       Notiry the sdb node to end pipe dup

@@ -100,6 +100,7 @@ namespace engine
       INT32 rc = SDB_OK ;
       CoordGroupInfo *pCataGroup = NULL ;
       coordOmProxy *pOmProxy = NULL ;
+      CoordGroupInfoPtr tmpPtr ;
 
       if ( !pAgent || !pOptionsCB )
       {
@@ -130,10 +131,10 @@ namespace engine
                             MSG_ROUTE_OM_SERVICE,
                             _omNodeAddrList ) ;
 
-      rc = _buildOmGroupInfo() ;
+      rc = updateOmGroupInfo( tmpPtr, pmdGetThreadEDUCB() ) ;
       if ( rc )
       {
-         PD_LOG( PDERROR, "Build OM group info failed, rc: %d", rc ) ;
+         PD_LOG( PDERROR, "Update OM group info failed, rc: %d", rc ) ;
          goto error ;
       }
 
@@ -212,10 +213,69 @@ namespace engine
       return _pOmStrategyAgent ;
    }
 
-   INT32 _coordResource::_buildOmGroupInfo()
+   INT32 _coordResource::updateOmGroupInfo( CoordGroupInfoPtr &groupPtr,
+                                            _pmdEDUCB *cb )
    {
       INT32 rc = SDB_OK ;
       CoordGroupInfo *pGroupInfo = NULL ;
+
+      try
+      {
+         BSONObj obj = _buildOmGroupInfo() ;
+         if ( obj.isEmpty() )
+         {
+            goto done ;
+         }
+
+         pGroupInfo = SDB_OSS_NEW CoordGroupInfo( OM_GROUPID ) ;
+         if ( NULL == pGroupInfo )
+         {
+            rc = SDB_OOM ;
+            PD_LOG ( PDERROR, "Alloc group info failed" ) ;
+            goto error ;
+         }
+
+         rc = pGroupInfo->updateGroupItem( obj ) ;
+         if ( rc )
+         {
+            PD_LOG( PDERROR, "Update group info from bson[%s] failed, "
+                    "rc: %d", obj.toString().c_str(), rc ) ;
+            goto error ;
+         }
+
+         groupPtr = CoordGroupInfoPtr( pGroupInfo ) ;
+         pGroupInfo = NULL ;
+
+         rc = _updateRouteInfo( groupPtr, MSG_ROUTE_OM_SERVICE ) ;
+         if ( rc )
+         {
+            PD_LOG( PDERROR, "Update om group's om serivce route info "
+                    "failed, rc: %d", rc ) ;
+            goto error ;
+         }
+
+         setOmGroupInfo( groupPtr ) ;
+      }
+      catch( std::exception &e )
+      {
+         PD_LOG( PDERROR, "Occur exception: %s", e.what() ) ;
+         rc = SDB_SYS ;
+         goto error ;
+      }
+
+   done:
+      if ( pGroupInfo )
+      {
+         SDB_OSS_DEL pGroupInfo ;
+      }
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   BSONObj _coordResource::_buildOmGroupInfo()
+   {
+      BSONObj obj ;
 
       if ( !_omNodeAddrList.empty() )
       {
@@ -258,51 +318,15 @@ namespace engine
             }
             arrGroup.done() ;
 
-            objOMGroup = builder.obj() ;
-
-            pGroupInfo = SDB_OSS_NEW CoordGroupInfo( OM_GROUPID ) ;
-            if ( NULL == pGroupInfo )
-            {
-               rc = SDB_OOM ;
-               PD_LOG ( PDERROR, "Alloc group info failed" ) ;
-               goto error ;
-            }
-
-            rc = pGroupInfo->updateGroupItem( objOMGroup ) ;
-            if ( rc )
-            {
-               PD_LOG( PDERROR, "Update group info from bson[%s] failed, "
-                       "rc: %d", objOMGroup.toString().c_str(), rc ) ;
-               goto error ;
-            }
+            obj = builder.obj() ;
          }
          catch( std::exception &e )
          {
-            rc = SDB_SYS ;
             PD_LOG ( PDERROR, "Occur exception: %s", e.what() ) ;
-            goto error ;
-         }
-
-         _omGroupInfo = CoordGroupInfoPtr( pGroupInfo ) ;
-         pGroupInfo = NULL ;
-
-         rc = _updateRouteInfo( _omGroupInfo, MSG_ROUTE_OM_SERVICE ) ;
-         if ( rc )
-         {
-            PD_LOG( PDERROR, "Update om group's om serivce route info "
-                    "failed, rc: %d", rc ) ;
-            goto error ;
          }
       }
 
-   done:
-      if ( pGroupInfo )
-      {
-         SDB_OSS_DEL pGroupInfo ;
-      }
-      return rc ;
-   error:
-      goto done ;
+      return obj ;
    }
 
    void _coordResource::_initAddressFromPair( const vector< pmdAddrPair > &vecAddrPair,
@@ -404,6 +428,12 @@ namespace engine
          }
       }
       _cataGroupInfo = groupPtr ;
+   }
+
+   void _coordResource::setOmGroupInfo( CoordGroupInfoPtr &groupPtr )
+   {
+      ossScopedLock lock( &_nodeMutex, EXCLUSIVE ) ;
+      _omGroupInfo = groupPtr ;
    }
 
    INT32 _coordResource::syncAddress2Options( BOOLEAN flush, BOOLEAN force )
@@ -583,7 +613,7 @@ namespace engine
       }
       else if ( OM_GROUPID == groupID )
       {
-         goto done ;
+         rc = updateOmGroupInfo( groupPtr, cb ) ;
       }
       else
       {
@@ -631,7 +661,7 @@ namespace engine
       }
       else if ( 0 == ossStrcmp( groupName, OM_GROUPNAME ) )
       {
-         goto done ;
+         rc = updateOmGroupInfo( groupPtr, cb ) ;
       }
       else
       {
@@ -874,16 +904,13 @@ namespace engine
 
    CoordGroupInfoPtr _coordResource::getCataGroupInfo()
    {
-      CoordGroupInfoPtr tmpPtr ;
-
       ossScopedLock lock( &_nodeMutex, SHARED ) ;
-      tmpPtr = _cataGroupInfo ;
-
-      return tmpPtr ;
+      return _cataGroupInfo ;
    }
 
    CoordGroupInfoPtr _coordResource::getOmGroupInfo()
    {
+      ossScopedLock lock( &_nodeMutex, SHARED ) ;
       return _omGroupInfo ;
    }
 
@@ -1651,6 +1678,14 @@ namespace engine
          ++it ;
       }
       return count ;
+   }
+
+   void _coordResource::invalidateStrategy()
+   {
+      if ( _pOmStrategyAgent )
+      {
+         _pOmStrategyAgent->clear() ;
+      }
    }
 
    void _coordResource::invalidateCataInfo()
