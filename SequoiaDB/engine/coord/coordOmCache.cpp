@@ -189,7 +189,7 @@ namespace engine
 
    void _coordOmStrategyAgent::fini()
    {
-      clear( FALSE ) ;
+      clear() ;
    }
 
    BOOLEAN _coordOmStrategyAgent::isValid() const
@@ -232,7 +232,7 @@ namespace engine
       }
    }
 
-   void _coordOmStrategyAgent::clear( BOOLEAN hasLocked )
+   void _coordOmStrategyAgent::_clear( BOOLEAN hasLocked, BOOLEAN needNotify )
    {
       MAP_TASK_INFO_IT it ;
 
@@ -251,10 +251,20 @@ namespace engine
 
       _lastVersion = OM_TASK_STRATEGY_INVALID_VER ;
 
+      if ( needNotify )
+      {
+         _changeEvent.signal() ;
+      }
+
       if ( !hasLocked )
       {
          unlock( EXCLUSIVE ) ;
       }
+   }
+
+   void _coordOmStrategyAgent::clear()
+   {
+      _clear( FALSE, TRUE ) ;
    }
 
    void _coordOmStrategyAgent::_mergeRuleID( const SET_RULEID &left,
@@ -455,6 +465,11 @@ namespace engine
       return rc ;
    }
 
+   INT32 _coordOmStrategyAgent::waitChange( INT64 millisec )
+   {
+      return _changeEvent.wait( millisec ) ;
+   }
+
    INT32 _coordOmStrategyAgent::update( _pmdEDUCB *cb,
                                         INT64 timeout )
    {
@@ -476,12 +491,13 @@ namespace engine
          goto error ;
       }
 
-      if ( getLastVersion() == metaInfo.getVersion() )
+      if ( isValid() && getLastVersion() == metaInfo.getVersion() )
       {
          goto done ;
       }
 
-      clear( TRUE ) ;
+      _clear( TRUE, FALSE ) ;
+
       rc = accessor.getTaskInfoFromOm( vecTaskInfo, cb, NULL ) ;
       if ( rc )
       {

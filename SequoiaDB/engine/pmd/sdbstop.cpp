@@ -196,6 +196,7 @@ namespace engine
       CHAR verText[ OSS_MAX_PATHSIZE + 1 ] = { 0 } ;
       vector<string> listServices ;
       UTIL_VEC_NODES listNodes ;
+      UTIL_VEC_NODES::iterator itrNode ;
       BOOLEAN bFind = TRUE ;
       INT32 typeFilter = SDB_TYPE_DB ;
       INT32 roleFilter =  -1 ;
@@ -269,12 +270,14 @@ namespace engine
       utilListNodes( listNodes, typeFilter, NULL, OSS_INVALID_PID,
                      roleFilter ) ;
 
-      for ( UINT32 i = 0 ; i < listNodes.size() ; ++i )
+      itrNode = listNodes.begin() ;
+      while( itrNode != listNodes.end() )
       {
-         utilNodeInfo &info = listNodes[ i ] ;
+         utilNodeInfo &info = *itrNode ;
 
          if ( SDB_TYPE_OMA == info._type )
          {
+            itrNode = listNodes.erase( itrNode ) ;
             continue ;
          }
 
@@ -299,21 +302,55 @@ namespace engine
          if ( bFind )
          {
             ++total ;
-            ossPrintf ( "Terminating process %d: %s(%s)"OSS_NEWLINE,
-                        info._pid, utilDBTypeStr( (SDB_TYPE)info._type ),
-                        info._svcname.c_str() ) ;
+            rc = utilAsyncStopNode( info ) ;
+            if ( rc )
+            {
+               ossPrintf ( "Terminating process %d: %s(%s)"OSS_NEWLINE,
+                           info._pid, utilDBTypeStr( (SDB_TYPE)info._type ),
+                           info._svcname.c_str() ) ;
+               if ( SDB_CLS_NODE_NOT_EXIST == rc )
+               {
+                  rc = SDB_OK ;
+                  ++success ;
+                  ossPrintf ( "DONE"OSS_NEWLINE ) ;
+               }
+               else
+               {
+                  ossPrintf ( "FAILED"OSS_NEWLINE ) ;
+               }
 
-            rc = utilStopNode( info, UTIL_STOP_NODE_TIMEOUT, bForce ) ;
-            if ( SDB_OK == rc )
-            {
-               ++success ;
-               ossPrintf ( "DONE"OSS_NEWLINE ) ;
-            }
-            else
-            {
-               ossPrintf ( "FAILED"OSS_NEWLINE ) ;
+               itrNode = listNodes.erase( itrNode ) ;
+               continue ;
             }
          }
+         else
+         {
+            itrNode = listNodes.erase( itrNode ) ;
+            continue ;
+         }
+         ++itrNode ;
+      }
+
+      itrNode = listNodes.begin() ;
+      while( itrNode != listNodes.end() )
+      {
+         utilNodeInfo &info = *itrNode ;
+
+         ossPrintf ( "Terminating process %d: %s(%s)"OSS_NEWLINE,
+                     info._pid, utilDBTypeStr( (SDB_TYPE)info._type ),
+                     info._svcname.c_str() ) ;
+
+         rc = utilStopNode( info, UTIL_STOP_NODE_TIMEOUT, bForce, TRUE ) ;
+         if ( SDB_OK == rc )
+         {
+            ++success ;
+            ossPrintf ( "DONE"OSS_NEWLINE ) ;
+         }
+         else
+         {
+            ossPrintf ( "FAILED"OSS_NEWLINE ) ;
+         }
+         ++itrNode ;
       }
 
       ossPrintf ( "Total: %d; Success: %d; Failed: %d"OSS_NEWLINE,

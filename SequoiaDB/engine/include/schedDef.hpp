@@ -24,7 +24,7 @@
    Change Activity:
    defect Date        Who Description
    ====== =========== === ==============================================
-          05/04/2016  Li Jianhua  Initial Draft
+          03/16/2018  XJH Initial Draft
 
    Last Changed =
 
@@ -68,7 +68,20 @@ namespace engine
 
          void     reset() ;
 
-      public:
+         INT32    getNice() const { return _nice ; }
+         INT64    getTaskID() const { return _taskID ; }
+
+         const string&  getTaskName() const { return _taskName ; }
+         const string&  getContianerName() const { return _containerName ; }
+         const string&  getIP() const { return _ip ; }
+
+         void     setNice( INT32 nice ) ;
+         void     setTaskID( INT64 taskID ) ;
+         void     setTaskName( const string &taskName ) ;
+         void     setContainerName( const string &containerName ) ;
+         void     setIP( const string &ip ) ;
+
+      private:
          INT32                _nice ;
          INT64                _taskID ;
 

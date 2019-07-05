@@ -177,6 +177,7 @@ namespace engine
    {
       _pResource->invalidateCataInfo() ;
       _pResource->invalidateGroupInfo() ;
+      _pResource->invalidateStrategy() ;
       return SDB_OK ;
    }
 
