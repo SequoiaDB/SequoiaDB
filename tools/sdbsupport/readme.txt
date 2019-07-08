@@ -18,13 +18,13 @@
 二、使用指南
     1、使用sdbsupport工具
        >./sdbsupport.sh --help   "参数--help:显示sdbsupport工具的各类参数信息"
-       >./sdbsupport.sh          "不带参数：收集本机的所有信息[日志信息/快照信息/硬件信息/操作系统信息]"
+       >./sdbsupport.sh          "不带参数:收集本机的所有信息[日志信息/快照信息/硬件信息/操作系统信息]"
        >./sdbsupport.sh --all    "参数--all:收集集群所有主机的所有信息[日志信息/快照信息/硬件信息/操作系统信息]"
-       >./sdbsupport.sh -s hostname1   "参数-s：收集主机hostname1的所有信息"
+       >./sdbsupport.sh -s hostname1   "参数-s:收集主机hostname1的所有信息"
 
-       >./sdbsupport.sh -s hostname1：hostname2 -p 50000:30000 --snapshot  --hardware --osinfo
+       >./sdbsupport.sh -s hostname1:hostname2 -p 50000:30000 --snapshot  --hardware --osinfo
                "带如此参数收集主机：hostname1和hostname2的快照、硬件信息、操作系统信息及他们的50000和30000端口日志"
 
-       >./sdbsupport.sh -s hostname1：hostname2 -p 50000:30000 --group --memory --basicsys
+       >./sdbsupport.sh -s hostname1:hostname2 -p 50000:30000 --group --memory --basicsys
                "带此参数收集主机hostname1和hostname2的50000/30000端口日志、group快照、硬件信息中的内存信息[--memory]以及操作系统的基本信息[--basicsys]"
 
