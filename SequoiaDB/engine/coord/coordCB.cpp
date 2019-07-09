@@ -700,7 +700,7 @@ retry :
 
          rc = _reply( handle, &_replyHeader, buffObj.data(),
                       buffObj.size() ) ;
-         if ( rc == SDB_OK )
+         if ( rc )
          {
             PD_LOG ( PDERROR, "failed to send reply, rc: %d", rc ) ;
          }

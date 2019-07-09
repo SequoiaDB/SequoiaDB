@@ -736,7 +736,7 @@ namespace engine
       omRestCommandBase *pCommand = NULL ;
       restAdaptor *pAdptor = sdbGetPMDController()->getRestAdptor() ;
 
-      PD_LOG( PDEVENT, "OM: getfile command:file=%s", pFilePath ) ;
+      PD_LOG( PDDEBUG, "OM: getfile command:file=%s", pFilePath ) ;
 
       pCommand = SDB_OSS_NEW omGetFileCommand( pAdptor, this,
                                                _wwwRootPath.c_str(),
@@ -1038,7 +1038,7 @@ namespace engine
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_TASK_STRATEGY_ADD_REQ ) == 0 )
       {
-         commandIf = SDB_OSS_NEW omStrategyTaskInsert( pAdptor, this ) ;
+         commandIf = SDB_OSS_NEW omStrategyInsert( pAdptor, this ) ;
       }
       else if ( ossStrcasecmp( pSubCommand, 
                                OM_TASK_STRATEGY_UPDATE_NICE_REQ ) == 0 )
