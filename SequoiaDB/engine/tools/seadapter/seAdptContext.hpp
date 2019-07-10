@@ -41,6 +41,7 @@
 #include "pmdEDU.hpp"
 #include "utilCommObjBuff.hpp"
 #include "utilESClt.hpp"
+#include "utilESFetcher.hpp"
 #include "rtnSimpleCondParser.hpp"
 
 using namespace engine ;
@@ -124,16 +125,17 @@ namespace seadapter
       INT32 getMore( INT32 returnNum, utilCommObjBuff &objBuff ) ;
 
    private:
-      INT32 _fetchFirstBatch( const string &queryCond, utilCommObjBuff &result ) ;
-      INT32 _fetchNextBatch( utilCommObjBuff &result ) ;
-      INT32 _fetchAll( const string &queryCond,
+      INT32 _prepareSearch( const BSONObj &queryCond ) ;
+      INT32 _getMore( utilCommObjBuff &result ) ;
+      INT32 _fetchAll( const BSONObj &queryCond,
                        utilCommObjBuff &result, UINT32 limitNum ) ;
 
       INT32 _buildInCond( utilCommObjBuff &objBuff,
                           BSONObj &condition ) ;
    private:
-      seAdptQueryRebuilder _queryRebuilder ;
-      rtnSimpleCondParseTree _condTree ;
+      seAdptQueryRebuilder    _queryRebuilder ;
+      rtnSimpleCondParseTree  _condTree ;
+      utilESFetcher          *_esFetcher ;
    } ;
    typedef _seAdptContextQuery seAdptContextQuery ;
 }

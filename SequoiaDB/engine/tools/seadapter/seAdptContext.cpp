@@ -39,6 +39,7 @@
 #include "seAdptContext.hpp"
 #include "seAdptDef.hpp"
 #include "rtnSimpleCondParser.hpp"
+#include "utilESKeywordDef.hpp"
 
 using namespace bson ;
 
@@ -142,12 +143,17 @@ namespace seadapter
    _seAdptContextQuery::_seAdptContextQuery( const string &indexName,
                                              const string &typeName,
                                              utilESClt *seClt )
-   : _seAdptContextBase( indexName, typeName, seClt )
+   : _seAdptContextBase( indexName, typeName, seClt ),
+     _esFetcher( NULL )
    {
    }
 
    _seAdptContextQuery::~_seAdptContextQuery()
    {
+      if ( _esFetcher )
+      {
+         SDB_OSS_DEL _esFetcher ;
+      }
    }
 
    INT32 _seAdptContextQuery::open( const BSONObj &matcher,
@@ -158,7 +164,7 @@ namespace seadapter
                                     pmdEDUCB *eduCB )
    {
       INT32 rc = SDB_OK ;
-      string queryCond ;
+      BSONObj queryObj ;
       utilCommObjBuff searchResult ;
       BSONObj inCond ;
       BSONObj newQuery ;
@@ -203,7 +209,7 @@ namespace seadapter
             goto error ;
          }
 
-         queryCond = eleTmp.Obj().toString( FALSE, TRUE ) ;
+         queryObj = eleTmp.Obj() ;
       }
 
       rc = _queryRebuilder.init(  matcher, selector, orderBy, hint ) ;
@@ -221,14 +227,22 @@ namespace seadapter
 
       if ( _condTree.textNodeInNot() )
       {
-         rc = _fetchAll( queryCond, searchResult, SEADPT_FETCH_MAX_SIZE ) ;
+         rc = _fetchAll( queryObj, searchResult, SEADPT_FETCH_MAX_SIZE ) ;
          PD_RC_CHECK( rc, PDERROR, "Fetch all documents failed[ %d ]", rc ) ;
       }
       else
       {
-         rc = _fetchFirstBatch( queryCond, searchResult ) ;
-         PD_RC_CHECK( rc, PDERROR, "Fetch one batch of documents "
-                      "failed[ %d ]", rc ) ;
+         rc = _prepareSearch( queryObj ) ;
+         PD_RC_CHECK( rc, PDERROR, "Prepare search failed[ %d ]", rc ) ;
+         rc = _getMore( searchResult ) ;
+         if ( rc )
+         {
+            if ( SDB_DMS_EOC != rc )
+            {
+               PD_LOG( PDERROR, "Get more result failed[ %d ]", rc ) ;
+            }
+            goto error ;
+         }
       }
 
       if ( 0 == searchResult.getObjNum() )
@@ -274,15 +288,22 @@ namespace seadapter
       rc = searchResult.init() ;
       PD_RC_CHECK( rc, PDERROR, "Init result buffer failed[ %d ]", rc ) ;
 
-      rc = _fetchNextBatch( searchResult ) ;
-      PD_RC_CHECK( rc, PDERROR, "Get next batch of documents failed[ %d ]",
-                   rc ) ;
+      rc = _getMore( searchResult ) ;
+      if ( rc )
+      {
+         if ( SDB_DMS_EOC != rc )
+         {
+            PD_LOG( PDERROR, "Get more failed[ %d ]", rc ) ;
+         }
+         goto error ;
+      }
 
       if ( 0 == searchResult.getObjNum() )
       {
          rc = SDB_DMS_EOC ;
          goto error ;
       }
+
       rc = _buildInCond( searchResult, inCond ) ;
       PD_RC_CHECK( rc, PDERROR, "Build the $in condition failed[ %d ]", rc ) ;
 
@@ -305,38 +326,126 @@ namespace seadapter
       goto done ;
    }
 
-   INT32 _seAdptContextQuery::_fetchFirstBatch( const string &queryCond,
-                                                utilCommObjBuff &result )
+   INT32 _seAdptContextQuery::_prepareSearch( const BSONObj &queryCond )
    {
       INT32 rc = SDB_OK ;
 
-      if ( !_esClt->isActive() )
+      try
       {
-         rc = _esClt->active() ;
-         PD_RC_CHECK( rc, PDERROR, "Reactive ES client failed[ %d ]", rc ) ;
-      }
-
-      rc = _esClt->initScroll( _scrollID, _indexName.c_str(), _type.c_str(),
-                               queryCond, result, SEADPT_FETCH_BATCH_SIZE,
-                               SEADPT_ES_ID_FILTER_PATH ) ;
-      if ( rc )
-      {
-         const CHAR *errMsg = _esClt->getLastErrMsg() ;
-         if ( errMsg )
+         BOOLEAN rangeSet = FALSE ;
+         BSONElement eleFrom ;
+         BSONElement eleSize ;
+         INT64 from = 0 ;
+         INT64 size = 0 ;
+         eleFrom = queryCond.getField( ES_KEYWORD_FROM ) ;
+         if ( EOO != eleFrom.type() )
          {
-            PD_LOG_MSG( PDERROR, "Initialize scroll for index[ %s ] and "
-                        "type[ %s ] failed[ %d ], query string: %s. "
-                        "Error message: %s",
-                        _indexName.c_str(), _type.c_str(), rc,
-                        queryCond.c_str(), _esClt->getLastErrMsg() ) ;
+            if ( !eleFrom.isNumber() )
+            {
+               rc = SDB_INVALIDARG ;
+               PD_LOG_MSG( PDERROR, "Value of 'from' in full text search "
+                           "condition is not number" ) ;
+               goto error ;
+            }
+
+            from = eleFrom.numberLong() ;
+            rangeSet = TRUE ;
+         }
+
+         eleSize = queryCond.getField( ES_KEYWORD_SIZE ) ;
+         if ( EOO != eleSize.type() )
+         {
+            if ( !eleSize.isNumber() )
+            {
+               rc = SDB_INVALIDARG ;
+               PD_LOG_MSG( PDERROR, "Value of 'size' in full text search "
+                           "condition is not number" ) ;
+               goto error ;
+            }
+
+            size = eleSize.numberLong() ;
+            if ( !rangeSet )
+            {
+               rangeSet = TRUE ;
+            }
+         }
+
+         if ( _esFetcher )
+         {
+            SDB_OSS_DEL _esFetcher ;
+            _esFetcher = NULL ;
+         }
+
+         if ( rangeSet )
+         {
+            _esFetcher = SDB_OSS_NEW utilESPageFetcher( _indexName.c_str(),
+                                                        _type.c_str() ) ;
          }
          else
          {
-            PD_LOG_MSG( PDERROR, "Initialize scroll for index[ %s ] and "
-                        "type[ %s ] failed[ %d ], query string: %s.",
-                        _indexName.c_str(), _type.c_str(), rc,
-                        queryCond.c_str() ) ;
+            _esFetcher = SDB_OSS_NEW utilESScrollFetcher( _indexName.c_str(),
+                                                          _type.c_str() ) ;
          }
+
+         if ( !_esFetcher )
+         {
+            rc = SDB_OOM ;
+            PD_LOG( PDERROR, "Allocate memory for ES fetcher failed" ) ;
+            goto error ;
+         }
+
+         if ( 0 != size )
+         {
+            _esFetcher->setSize( size ) ;
+         }
+         if ( 0 != from )
+         {
+            ((utilESPageFetcher *)_esFetcher)->setFrom( from ) ;
+         }
+
+         _esFetcher->setFilterPath( SEADPT_ES_ID_FILTER_PATH ) ;
+         rc = _esFetcher->setCondition( queryCond ) ;
+         PD_RC_CHECK( rc, PDERROR, "Set ES query condition failed[ %d ]", rc ) ;
+         rc = _esFetcher->setClt( _esClt ) ;
+         PD_RC_CHECK( rc, PDERROR, "Set ES client failed[ %d ]", rc ) ;
+      }
+      catch ( std::exception &e )
+      {
+         rc = SDB_SYS ;
+         PD_LOG( PDERROR, "Unexpected exception occurred: %s", e.what() ) ;
+         goto error ;
+      }
+
+   done:
+      return rc ;
+   error:
+      if ( _esFetcher )
+      {
+         SDB_OSS_DEL _esFetcher ;
+         _esFetcher = NULL ;
+      }
+      goto done ;
+   }
+
+   INT32 _seAdptContextQuery::_getMore( utilCommObjBuff &result )
+   {
+      INT32 rc = SDB_OK ;
+
+      if ( !_esFetcher )
+      {
+         rc = SDB_SYS ;
+         PD_LOG( PDERROR, "ES fetcher has not been initialized yet" ) ;
+         goto error ;
+      }
+
+      if ( _esFetcher->more() )
+      {
+         rc = _esFetcher->fetch( result ) ;
+         PD_RC_CHECK( rc, PDERROR, "Fetch data from es failed[ %d ]", rc ) ;
+      }
+      else
+      {
+         rc = SDB_DMS_EOC ;
          goto error ;
       }
 
@@ -346,51 +455,7 @@ namespace seadapter
       goto done ;
    }
 
-   INT32 _seAdptContextQuery::_fetchNextBatch( utilCommObjBuff &result )
-   {
-      INT32 rc = SDB_OK ;
-
-      if ( _scrollID.empty() )
-      {
-         rc = SDB_INVALIDARG ;
-         PD_LOG( PDERROR, "Scroll ID is empty" ) ;
-         goto error ;
-      }
-
-      if ( !_esClt->isActive() )
-      {
-         rc = _esClt->active() ;
-         PD_RC_CHECK( rc, PDERROR, "Reactive ES client failed[ %d ]", rc ) ;
-      }
-
-      rc = _esClt->scrollNext( _scrollID, result, SEADPT_ES_ID_FILTER_PATH ) ;
-      if ( rc )
-      {
-         const CHAR *errMsg = _esClt->getLastErrMsg() ;
-         if ( errMsg )
-         {
-            PD_LOG_MSG( PDERROR, "Scroll with id[ %s ] for index[ %s ] and "
-                        "type[ %s ] failed[ %d ]. Error message: %s",
-                        _scrollID.c_str(), _indexName.c_str(), _type.c_str(),
-                        rc, _esClt->getLastErrMsg() ) ;
-         }
-         else
-         {
-            PD_LOG_MSG( PDERROR, "Scroll with id[ %s ] for index[ %s ] and "
-                        "type[ %s ] failed[ %d ].",
-                        _scrollID.c_str(), _indexName.c_str(),
-                        _type.c_str(), rc ) ;
-         }
-         goto error ;
-      }
-
-   done:
-      return rc ;
-   error:
-      goto done ;
-   }
-
-   INT32 _seAdptContextQuery::_fetchAll( const string &queryCond,
+   INT32 _seAdptContextQuery::_fetchAll( const BSONObj &queryCond,
                                          utilCommObjBuff &result,
                                          UINT32 limitNum )
    {
@@ -399,11 +464,24 @@ namespace seadapter
 
       result.reset() ;
 
-      rc = _fetchFirstBatch( queryCond, result ) ;
-      PD_RC_CHECK( rc, PDERROR, "Fetch one batch of documents failed[ %d ]",
-                   rc ) ;
+      rc = _prepareSearch( queryCond ) ;
+      PD_RC_CHECK( rc, PDERROR, "Prepare search failed[ %d ]", rc ) ;
       do
       {
+         rc = _getMore( result ) ;
+         if ( rc )
+         {
+            if ( SDB_DMS_EOC == rc )
+            {
+               break ;
+            }
+            else
+            {
+               PD_LOG( PDERROR, "Get more failed[ %d ]", rc ) ;
+               goto error ;
+            }
+         }
+
          totalNum = result.getObjNum() ;
 
          if ( totalNum > limitNum )
@@ -411,13 +489,6 @@ namespace seadapter
             rc = SDB_INVALIDARG ;
             PD_LOG( PDERROR, "Record number too large for the operation" ) ;
             goto error ;
-         }
-         rc = _fetchNextBatch( result ) ;
-         PD_RC_CHECK( rc, PDERROR, "Fetch next batch of documents failed[ %d ]",
-                      rc ) ;
-         if ( totalNum == result.getObjNum() )
-         {
-            break ;
          }
       } while ( TRUE ) ;
 
