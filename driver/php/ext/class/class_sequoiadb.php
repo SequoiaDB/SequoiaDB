@@ -493,7 +493,7 @@ class SequoiaDB
     *                                                               SDB_SNAP_COLLECTIONSPACES
     *                                                               SDB_SNAP_DATABASE
     *                                                               SDB_SNAP_SYSTEM
-    *                                                               SDB_SNAP_CATA
+    *                                                               SDB_SNAP_CATALOG
     *                                                               SDB_SNAP_TRANSACTIONS
     *                                                               SDB_SNAP_TRANSACTIONS_CURRENT
     *                                                               SDB_SNAP_ACCESSPLANS
