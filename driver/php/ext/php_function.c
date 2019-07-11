@@ -262,7 +262,16 @@ INT32 php_zval2Int( zval *pValue, INT32 *pIntValue TSRMLS_DC )
       }
       else if( Z_TYPE_P( pValue ) == IS_STRING )
       {
-         *pIntValue = ossAtoi( Z_STRVAL_P( pValue ) ) ;
+         const CHAR *pTmp = Z_STRVAL_P( pValue ) ;
+
+         if( isdigit( pTmp[0] ) )
+         {
+            *pIntValue = ossAtoi( pTmp ) ;
+         }
+         else
+         {
+            rc = SDB_INVALIDARG ;
+         }
       }
       else if( Z_TYPE_P( pValue ) == IS_OBJECT &&
                IS_CLASS( pValue, pSequoiadbInt64 ) )
@@ -323,7 +332,16 @@ INT32 php_zval2Long( zval *pValue, INT64 *pLongValue TSRMLS_DC )
       }
       else if( Z_TYPE_P( pValue ) == IS_STRING )
       {
-         *pLongValue = ossAtoll( Z_STRVAL_P( pValue ) ) ;
+         const CHAR *pTmp = Z_STRVAL_P( pValue ) ;
+
+         if( isdigit( pTmp[0] ) )
+         {
+            *pLongValue = ossAtoll( pTmp ) ;
+         }
+         else
+         {
+            rc = SDB_INVALIDARG ;
+         }
       }
       else if( Z_TYPE_P( pValue ) == IS_OBJECT &&
                IS_CLASS( pValue, pSequoiadbInt64 ) )
