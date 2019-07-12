@@ -11444,14 +11444,10 @@ namespace engine
 
       _restAdaptor->getQuery( _restSession, OM_REST_FIELD_TASK_NAME,
                               &pValTmp ) ;
-      if ( NULL == pValTmp || 0 == pValTmp[0] )
+      if ( pValTmp )
       {
-          _errorDetail = string( "Failed to get the field("
-                                 OM_REST_FIELD_TASK_NAME")" ) ;
-          rc = SDB_INVALIDARG ;
-          goto error ;
+         taskName = pValTmp ;
       }
-      taskName = pValTmp ;
 
       rc = omGetStrategyMgr()->queryStrategys( clsName, bizName,
                                                taskName, contextID,
