@@ -479,17 +479,29 @@ namespace engine
       SDB_RTNCB *rtnCB = krcb->getRTNCB() ;
       INT64 taskID = OM_TASK_STRATEGY_INVALID_TASK_ID ;
       BSONObj matcher ;
-      static BSONObj orderBy = BSON( OM_REST_FIELD_RULE_ID << 1 ) ;
+      BSONObj orderBy ;
 
-      rc = getTaskID( clsName, bizName, taskName, taskID, cb ) ;
-      if ( rc )
+      if ( taskName.empty() )
       {
-         goto error ;
+         orderBy = BSON( OM_REST_FIELD_TASK_NAME << 1 <<
+                         OM_REST_FIELD_RULE_ID << 1 ) ;
+         matcher = BSON( OM_BSON_CLUSTER_NAME << clsName <<
+                         OM_BSON_BUSINESS_NAME << bizName ) ;
+      }
+      else
+      {
+         rc = getTaskID( clsName, bizName, taskName, taskID, cb ) ;
+         if ( rc )
+         {
+            goto error ;
+         }
+
+         orderBy = BSON( OM_REST_FIELD_RULE_ID << 1 ) ;
+         matcher = BSON( OM_BSON_CLUSTER_NAME << clsName <<
+                         OM_BSON_BUSINESS_NAME << bizName <<
+                         OM_REST_FIELD_TASK_ID << taskID ) ;
       }
 
-      matcher = BSON( OM_BSON_CLUSTER_NAME << clsName <<
-                      OM_BSON_BUSINESS_NAME << bizName <<
-                      OM_REST_FIELD_TASK_ID << taskID ) ;
       rc = rtnQuery( OM_CS_STRATEGY_CL_STRATEGY_PRO,
                      s_emptyObj, matcher, orderBy, s_emptyObj,
                      0, cb, 0, -1,
