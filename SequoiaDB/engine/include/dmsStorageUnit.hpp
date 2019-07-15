@@ -503,7 +503,6 @@ namespace engine
          utilCacheUnit                       *_pCacheUnit ;
          dmsEventHolder                       _eventHolder ;
          dmsCacheHolder                       _cacheHolder ;
-         IDmsExtDataHandler                  *_extDataHandler ;
    } ;
 
    OSS_INLINE INT32 _dmsStorageUnit::extentRemoveRecord( dmsMBContext *context,

@@ -39,6 +39,7 @@
 #include "pmd.hpp"
 #include "rtn.hpp"
 #include "rtnTrace.hpp"
+#include "../bson/lib/md5.hpp"
 
 #define RTN_CAPPED_CL_MAXSIZE       ( 30 * 1024 * 1024 * 1024LL )
 #define RTN_CAPPED_CL_MAXRECNUM     0
@@ -491,16 +492,18 @@ namespace engine
       SDB_ASSERT( csName && clName && idxName, "Name is NULL" ) ;
       string srcStr = string( csName ) + string( clName ) + string( idxName ) ;
       UINT32 hashVal = ossHash( srcStr.c_str() ) ;
+      string md5Val = md5::md5simpledigest( srcStr.c_str() ) ;
+      ostringstream name ;
+      name << SYS_PREFIX"_" << hashVal << md5Val.substr( 0, 4 ) ;
       if ( extCSName && csNameBufSize > 0 )
       {
-         ossSnprintf( extCSName, csNameBufSize,
-                      SYS_PREFIX"_%u", hashVal ) ;
+         ossSnprintf( extCSName, csNameBufSize, name.str().c_str() ) ;
       }
 
       if ( extCLName && clNameBufSize )
       {
          ossSnprintf( extCLName, clNameBufSize,
-                      SYS_PREFIX"_%u."SYS_PREFIX"_%u", hashVal, hashVal ) ;
+                      "%s.%s", name.str().c_str(), name.str().c_str() ) ;
       }
       PD_TRACE_EXIT( SDB__RTNEXTDATAPROCESSOR_GETEXTDATANAMES ) ;
    }

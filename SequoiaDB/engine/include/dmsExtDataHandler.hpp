@@ -53,6 +53,10 @@ namespace engine
       virtual ~_IDmsExtDataHandler() {}
 
    public:
+      virtual INT32 getExtDataName( const CHAR *csName, const CHAR *clName,
+                                    const CHAR *idxName, CHAR *buff,
+                                    UINT32 buffSize ) = 0 ;
+
       virtual INT32 onOpenTextIdx( const CHAR *csName, const CHAR *clName,
                                    const CHAR *idxName ) = 0 ;
 
@@ -66,11 +70,11 @@ namespace engine
       virtual INT32 onDropTextIdx( const CHAR *csName, const CHAR *clName,
                                    const CHAR *idxName, _pmdEDUCB *cb,
                                    SDB_DPSCB *dpscb = NULL ) = 0 ;
-      
+
       virtual INT32 onRebuildTextIdx( const CHAR *csName, const CHAR *clName,
                                       const CHAR *idxName, _pmdEDUCB *cb,
                                       SDB_DPSCB *dpscb = NULL ) = 0 ;
-      
+
       virtual INT32 onInsert( const CHAR *csName, const CHAR *clName,
                               const CHAR *idxName, const ixmIndexCB &indexCB,
                               const BSONObj &object, _pmdEDUCB* cb,

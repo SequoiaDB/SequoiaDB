@@ -2780,6 +2780,19 @@ namespace engine
          indexItem._indexLID = indexCB.getLogicalID () ;
          indexItem._version = indexCB.version () ;
          indexItem._indexDef = indexCB.getDef().copy () ;
+         if ( IXM_EXTENT_HAS_TYPE( IXM_EXTENT_TYPE_TEXT,
+                                   indexCB.getIndexType() ) )
+         {
+            if ( _storageInfo._extDataHandler )
+            {
+               _storageInfo._extDataHandler->getExtDataName( CSName(),
+                                                mb->_collectionName,
+                                                indexCB.getName(),
+                                                indexItem._extDataName,
+                                                DMS_COLLECTION_FULL_NAME_SZ + 1 ) ;
+            }
+         }
+
          resultIndexes.push_back ( indexItem ) ;
       }
 
@@ -2816,6 +2829,18 @@ namespace engine
             resultIndex._indexLID = indexCB.getLogicalID () ;
             resultIndex._version = indexCB.version () ;
             resultIndex._indexDef = indexCB.getDef().copy () ;
+            if ( IXM_EXTENT_HAS_TYPE( IXM_EXTENT_TYPE_TEXT,
+                                      indexCB.getIndexType() ) )
+            {
+               if ( _storageInfo._extDataHandler )
+               {
+                  _storageInfo._extDataHandler->getExtDataName( CSName(),
+                                                   mb->_collectionName,
+                                                   indexCB.getName(),
+                                                   resultIndex._extDataName,
+                                                   DMS_COLLECTION_FULL_NAME_SZ + 1 ) ;
+               }
+            }
 
             rc = SDB_OK ;
             break ;
