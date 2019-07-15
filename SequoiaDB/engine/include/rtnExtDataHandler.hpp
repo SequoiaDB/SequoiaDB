@@ -169,6 +169,10 @@ namespace engine
       virtual ~_rtnExtDataHandler() ;
 
    public:
+      virtual INT32 getExtDataName( const CHAR *csName, const CHAR *clName,
+                                    const CHAR *idxName, CHAR *buff,
+                                    UINT32 buffSize ) ;
+
       virtual INT32 onOpenTextIdx( const CHAR *csName, const CHAR *clName,
                                    const CHAR *idxName ) ;
 

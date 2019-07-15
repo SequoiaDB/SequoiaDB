@@ -200,6 +200,7 @@
 #define FIELD_NAME_DICT_VERSION              "DictionaryVersion"
 #define FIELD_NAME_DICT_CREATE_TIME          "DictionaryCreateTime"
 #define FIELD_NAME_TYPE                      "Type"
+#define FIELD_NAME_EXTERNAL_DATA_NAME        "ExternalDataName"
 #define FIELD_NAME_TOTAL_RECORDS             "TotalRecords"
 #define FIELD_NAME_TOTAL_LOBS                "TotalLobs"
 #define FIELD_NAME_TOTAL_DATA_PAGES          "TotalDataPages"

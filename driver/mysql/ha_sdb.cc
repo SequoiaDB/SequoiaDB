@@ -1169,8 +1169,9 @@ enum_alter_inplace_result ha_sdb::check_if_supported_inplace_alter(
    if ( ha_alter_info->handler_flags & ~inplace_online_operations )
    {
       // include offline-operations
-      rs = handler::check_if_supported_inplace_alter(
-                                 altered_table, ha_alter_info ) ;
+      //rs = handler::check_if_supported_inplace_alter(
+      //                           altered_table, ha_alter_info ) ;
+      rs = HA_ALTER_INPLACE_NOT_SUPPORTED ;
       goto done ;
    }
 
@@ -1194,14 +1195,14 @@ enum_alter_inplace_result ha_sdb::check_if_supported_inplace_alter(
          keyPart->field = altered_table->field[keyPart->fieldnr] ;
          keyPart->null_offset = keyPart->field->null_offset() ;
          keyPart->null_bit = keyPart->field->null_bit ;
-         if( keyPart->field->flags & AUTO_INCREMENT_FLAG )
+         if ( keyPart->field->flags & AUTO_INCREMENT_FLAG )
          {
             rs = HA_ALTER_INPLACE_NOT_SUPPORTED ;
             goto done ;
          }
       }
    }
-   
+
    rs = HA_ALTER_INPLACE_NO_LOCK ;
 done:
    return rs ;
@@ -1210,7 +1211,7 @@ done:
 bool ha_sdb::prepare_inplace_alter_table( TABLE *altered_table,
                                           Alter_inplace_info *ha_alter_info )
 {
-   THD *thd = current_thd ;
+   /*THD *thd = current_thd ;
    bool rs = false ;
    switch( thd_sql_command(thd) )
    {
@@ -1225,7 +1226,8 @@ bool ha_sdb::prepare_inplace_alter_table( TABLE *altered_table,
 done:
    return rs ;
 error:
-   goto done ;
+   goto done ;*/
+   return false ;
 }
 
 int ha_sdb::create_index( Alter_inplace_info *ha_alter_info )
@@ -1248,10 +1250,12 @@ int ha_sdb::create_index( Alter_inplace_info *ha_alter_info )
             || ( keyPart->field->type() > MYSQL_TYPE_DOUBLE
                && keyPart->field->type() != MYSQL_TYPE_LONGLONG
                && keyPart->field->type() != MYSQL_TYPE_INT24
+               && keyPart->field->type() != MYSQL_TYPE_VAR_STRING
+               && keyPart->field->type() != MYSQL_TYPE_STRING
                && ( keyPart->field->type() != MYSQL_TYPE_BLOB
                     || keyPart->field->binary() )))
          {
-            rc = SDB_ERR_TYPE_UNSUPPORTED ;
+            rc = HA_ERR_UNSUPPORTED ;
             goto error ;
          }
          // TODO: ASC or DESC
@@ -1303,23 +1307,31 @@ bool ha_sdb::inplace_alter_table( TABLE *altered_table,
 {
    THD *thd = current_thd ;
    bool rs = false ;
-   switch( thd_sql_command(thd) )
+   Alter_inplace_info::HA_ALTER_FLAGS inplace_online_addidx
+      = Alter_inplace_info::ADD_INDEX
+      | Alter_inplace_info::ADD_UNIQUE_INDEX
+      | Alter_inplace_info::ADD_PK_INDEX ;
+
+   Alter_inplace_info::HA_ALTER_FLAGS inplace_online_dropidx
+      = Alter_inplace_info::DROP_INDEX
+      | Alter_inplace_info::DROP_UNIQUE_INDEX
+      | Alter_inplace_info::DROP_PK_INDEX ;
+
+   if ( ha_alter_info->handler_flags & inplace_online_addidx )
    {
-   case SQLCOM_CREATE_INDEX:
       if ( 0 != create_index( ha_alter_info ) )
       {
          rs = true ;
+         goto error ;
       }
-      break ;
-   case SQLCOM_DROP_INDEX:
+   }
+   if ( ha_alter_info->handler_flags & inplace_online_dropidx )
+   {
       if ( 0 != drop_index( ha_alter_info ) )
       {
          rs = true ;
+         goto error ;
       }
-      break ;
-   default:
-      rs = true ;
-      goto error ;
    }
 done:
    return rs ;

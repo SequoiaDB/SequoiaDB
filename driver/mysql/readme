@@ -18,7 +18,6 @@
 
 
 ***init database***
-# /opt/mysql/bin/mysql_install_db --datadir=/opt/mysql/data/
 # /opt/mysql/bin/mysqld --basedir=/opt/mysql/ --datadir=/opt/mysql/data/ --initialize-insecure
 # chown -R mysql:mysql /opt/mysql/
 

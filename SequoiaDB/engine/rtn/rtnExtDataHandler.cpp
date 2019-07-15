@@ -338,6 +338,34 @@ namespace engine
    {
    }
 
+   INT32 _rtnExtDataHandler::getExtDataName( const CHAR *csName,
+                                             const CHAR *clName,
+                                             const CHAR *idxName,
+                                             CHAR *buff, UINT32 buffSize )
+   {
+      INT32 rc = SDB_OK ;
+
+      SDB_ASSERT( csName && clName && idxName, "Names should not be NULL" ) ;
+      if ( !buff )
+      {
+         rc = SDB_INVALIDARG ;
+         PD_LOG( PDERROR, "Buffer is not valid" ) ;
+         goto error ;
+      }
+      else if ( buffSize < DMS_COLLECTION_FULL_NAME_SZ + 1 )
+      {
+         rc = SDB_INVALIDARG ;
+         PD_LOG( PDERROR, "Buffer size too small" ) ;
+         goto error ;
+      }
+      rtnExtDataProcessor::getExtDataNames( csName, clName, idxName, NULL, 0,
+                                            buff, buffSize ) ;
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAHANDLER_ONOPENTEXTIDX, "_rtnExtDataHandler::onOpenTextIdx" )
    INT32 _rtnExtDataHandler::onOpenTextIdx( const CHAR *csName,
                                             const CHAR *clName,

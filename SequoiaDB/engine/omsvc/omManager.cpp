@@ -1804,7 +1804,6 @@ namespace engine
       CHAR *pHintBuffer         = NULL ;
       SINT64 numToSkip          = -1 ;
       SINT64 numToReturn        = -1 ;
-      BOOLEAN needReply         = TRUE ;
 
       rc = msgExtractQuery ( (CHAR *)pMsg, &flags, &pCollectionName,
                              &numToSkip, &numToReturn, &pQuery,
