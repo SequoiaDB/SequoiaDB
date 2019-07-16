@@ -270,13 +270,14 @@ namespace engine
                MAP_K2V::iterator it = _pMapKeyField->find( pFieldName ) ;
                if ( _pMapKeyField->end() != it )
                {
-                  it->second._hasMapped = TRUE ;
-                  it->second._hasField = fieldStatus ;
+                  it->second._hasField = FALSE ;
+                  it->second._hasMapped = fieldStatus ;
                }
                else
                {
-                  (*_pMapKeyField)[ pFieldName ] = pmdParamValue( defaultValue, FALSE,
-                                                                  fieldStatus, 
+                  (*_pMapKeyField)[ pFieldName ] = pmdParamValue( defaultValue,
+                                                                  fieldStatus,
+                                                                  TRUE, 
                                                                   changeLevel ) ;
                }
             }
@@ -439,13 +440,14 @@ done:
                MAP_K2V::iterator it = _pMapKeyField->find( pFieldName ) ;
                if ( _pMapKeyField->end() != it )
                {
-                  it->second._hasMapped = TRUE ;
-                  it->second._hasField = fieldStatus ;
+                  it->second._hasField = FALSE ;
+                  it->second._hasMapped = fieldStatus ;
                }
                else
                {
-                  (*_pMapKeyField)[ pFieldName ] = pmdParamValue( pDefault, FALSE,
-                                                                  fieldStatus, 
+                  (*_pMapKeyField)[ pFieldName ] = pmdParamValue( pDefault,
+                                                                  fieldStatus,
+                                                                  TRUE, 
                                                                   changeLevel ) ;
                }
             }
