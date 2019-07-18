@@ -179,7 +179,8 @@ void sdb_cond_ctx::push( Item *cond_item )
                 && ( Item::FUNC_ITEM != cond_item->type()
                      || cond_item->const_item() )))*/
       if ( NULL == cond_item
-           || Item::FUNC_ITEM != cond_item->type() )
+           || ( Item::FUNC_ITEM != cond_item->type()
+                && Item::COND_ITEM != cond_item->type()) )
       {
          rc = cur_item->push( cond_item ) ;
          if ( 0 != rc )
