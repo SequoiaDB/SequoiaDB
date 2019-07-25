@@ -73,7 +73,7 @@ namespace engine
       return SDB_OK ;
    }
 
-   _rtnMsgHandler::_rtnMsgHandler( _pmdRemoteSessionMgr *pRSManager )
+   _rtnMsgHandler::_rtnMsgHandler( pmdRemoteSessionMgr *pRSManager )
    {
       _pRSManager = pRSManager ;
    }
@@ -176,6 +176,11 @@ namespace engine
       goto done ;
    }
 
+   void _rtnRemoteMessenger::deactive()
+   {
+      _routeAgent.stop() ;
+   }
+
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNREMOTEMESSENGER_SETTARGET, "_rtnRemoteMessenger::setTarget" )
    INT32 _rtnRemoteMessenger::setTarget( const _MsgRouteID &id,
                                          const CHAR *host, const CHAR *service )
@@ -204,8 +209,12 @@ namespace engine
             rc = SDB_OK ;
          }
       }
+
       _targetNodeID = id.value ;
-      _ready = TRUE ;
+      {
+         ossScopedRWLock lock( &_lock, EXCLUSIVE ) ;
+         _ready = TRUE ;
+      }
 
    done:
       PD_TRACE_EXITRC( SDB__RTNREMOTEMESSENGER_SETTARGET, rc ) ;
@@ -289,8 +298,13 @@ namespace engine
       subSession->setReqMsg( (MsgHeader *)msg, PMD_EDU_MEM_NONE ) ;
       subSession->resetForResend() ;
       rc = session->sendMsg( subSession ) ;
-      PD_RC_CHECK( rc, PDERROR, "Send message to search engine adapter "
+      if ( rc )
+      {
+         PD_LOG_MSG( PDERROR, "Send message to search engine adapter "
                    "failed[ %d ]", rc ) ;
+         goto error ;
+      }
+
    done:
       PD_TRACE_EXITRC( SDB__RTNREMOTEMESSENGER_SEND, rc ) ;
       return rc ;
