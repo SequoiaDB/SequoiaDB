@@ -2317,7 +2317,7 @@ namespace engine
       const CHAR *peerHost = NULL ;
       const CHAR *peerSvc = NULL ;
       SDB_RTNCB *rtnCB = pmdGetKRCB()->getRTNCB() ;
-      rtnRemoteMessenger *messenger = rtnCB->getRemoteMessenger() ;
+      rtnRemoteMessenger *messenger = NULL ;
       BSONObj myInfoObj ;
       BSONObjBuilder builder ;
       MsgAuthReply *reply = NULL ;
@@ -2329,7 +2329,15 @@ namespace engine
       MSG_ROUTE_SERVICE_TYPE svcType = MSG_ROUTE_CAT_SERVICE ;
       CHAR groupName[ OSS_MAX_GROUPNAME_SIZE + 1 ] = { 0 } ;
 
-      SDB_ASSERT( messenger, "Remote messenger should not be NULL" ) ;
+      messenger = rtnCB->getRemoteMessenger() ;
+      if ( !messenger )
+      {
+         rc = rtnCB->prepareRemoteMessenger() ;
+         PD_RC_CHECK( rc, PDERROR, "Prepare remote messenger failed[ %d ]",
+                      rc ) ;
+         messenger = rtnCB->getRemoteMessenger() ;
+      }
+
       rc = extractAuthMsg( msg, bodyObj ) ;
       PD_RC_CHECK( rc, PDERROR, "Extract auth message failed[ %d ]", rc ) ;
 

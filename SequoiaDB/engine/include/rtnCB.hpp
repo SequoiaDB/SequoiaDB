@@ -100,6 +100,8 @@ namespace engine
 
       rtnContext *contextFind ( SINT64 contextID, _pmdEDUCB *cb = NULL ) ;
 
+      INT32 prepareRemoteMessenger() ;
+
       OSS_INLINE INT32 contextNum ()
       {
          return _contextMap.size() ;

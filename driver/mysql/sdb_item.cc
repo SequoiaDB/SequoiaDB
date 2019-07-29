@@ -330,6 +330,26 @@ int sdb_func_item::get_item_val( const char *field_name,
       goto error ;
    }
 
+   if ( Item::NULL_ITEM == item_val->type() )
+   {
+      // "$isnull" appear in array is not support now
+      if ( NULL == arr_builder )
+      {
+         if ( type() == Item_func::EQ_FUNC )
+         {
+            obj = BSON( "$isnull" << 1 ) ;
+            goto done ;
+         }
+         else if ( type() == Item_func::NE_FUNC )
+         {
+            obj = BSON( "$isnull" << 0 ) ;
+            goto done ;
+         }
+      }
+      rc = SDB_ERR_OVF ;
+      goto error ;
+   }
+
    switch( field->type() )
    {
       case MYSQL_TYPE_TINY:
