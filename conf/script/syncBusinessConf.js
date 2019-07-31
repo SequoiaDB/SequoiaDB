@@ -126,6 +126,21 @@ function _getNodeList( db )
    return nodeList ;
 }
 
+function _updateConfig( hostName, svcname, agentService, config )
+{
+   var agentPort ;
+   if( typeof( agentService ) == 'string' && agentService.length > 0 )
+   {
+      agentPort = agentService ;
+   }
+   else
+   {
+      agentPort = Oma.getAOmaSvcName( hostName ) ;
+   }
+   var oma = new Oma( hostName, agentPort ) ;
+   oma.setNodeConfigs( svcname, config ) ;
+}
+
 function _getConfig( hostName, svcname, agentService )
 {
    var agentPort ;
@@ -194,6 +209,10 @@ function _getNodeConfig( hostRemoval, hostList, hostName, svcname, groupName )
       }
       PD_LOGGER.log( PDERROR, error ) ;
    }
+
+   config[FIELD_CLUSTER_NAME2] = clusterName ;
+   config[FIELD_BUSINESS_NAME2] = businessName ;
+   _updateConfig( hostName, svcname, null, config ) ;
 
    if( isNaN( index ) == true )
    {
