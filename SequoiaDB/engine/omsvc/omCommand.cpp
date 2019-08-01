@@ -6190,6 +6190,15 @@ namespace engine
             newNodeConfigBuilder.append( OM_TASKINFO_FIELD_INSTALLPATH,
                                          installPath ) ;
 
+            {
+               stringstream ss ;
+
+               ss << pmdGetKRCB()->getHostName() << ":"
+                  << pmdGetKRCB()->getOptionCB()->getOMService() ;
+
+               newNodeConfigBuilder.append( OM_BSON_OM_ADDR, ss.str() ) ;
+            }
+
             nodesConfigBuilder.append( newNodeConfigBuilder.obj() ) ;
 
             tmpResultEle = oneNodeConfig.filterFieldsUndotted( condition,
@@ -9737,9 +9746,20 @@ namespace engine
       {
          addressBuilder.append( OM_BSON_FIELD_AGENT_PORT, agentService ) ;
       }
+
       arrayBuilder.append( addressBuilder.obj() ) ;
 
       builder.append( OM_REST_FIELD_ADDRESS, arrayBuilder.arr() ) ;
+
+      {
+         stringstream ss ;
+
+         ss << pmdGetKRCB()->getHostName() << ":"
+            << pmdGetKRCB()->getOptionCB()->getOMService() ;
+
+         builder.append( OM_BSON_OM_ADDR, ss.str() ) ;
+      }
+
       request = builder.obj() ;
    }
 
@@ -12411,6 +12431,16 @@ namespace engine
       }
 
       builder.append( OM_REST_FIELD_ADDRESS, arrayBuilder.arr() ) ;
+
+      {
+         stringstream ss ;
+
+         ss << pmdGetKRCB()->getHostName() << ":"
+            << pmdGetKRCB()->getOptionCB()->getOMService() ;
+
+         builder.append( OM_BSON_OM_ADDR, ss.str() ) ;
+      }
+
       request = builder.obj() ;
    }
 
