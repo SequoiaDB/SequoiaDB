@@ -361,6 +361,7 @@ var FIELD_TO                               = "To" ;
 var FIELD_OPTIONS                          = "Options" ;
 var FIELD_HTTP_NAME                        = "httpname" ;
 var FIELD_DB_NAME                          = DbName ;
+var FIELD_OM_ADDR                          = "omaddr" ;
 
 // Async task step
 var STEP_GENERATE_PLAN                     = "Generate plan" ;

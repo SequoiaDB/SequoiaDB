@@ -165,6 +165,7 @@ function _getNodeConfig( hostRemoval, hostList, hostName, svcname, groupName )
    var config = {} ;
    var clusterName  = BUS_JSON[FIELD_CLUSTER_NAME] ;
    var businessName = BUS_JSON[FIELD_BUSINESS_NAME] ;
+   var omaddr = BUS_JSON[FIELD_OM_ADDR] ;
    var deployMod ;
    var index ;
 
@@ -212,6 +213,7 @@ function _getNodeConfig( hostRemoval, hostList, hostName, svcname, groupName )
 
    config[FIELD_CLUSTER_NAME2] = clusterName ;
    config[FIELD_BUSINESS_NAME2] = businessName ;
+   config[FIELD_OM_ADDR] = omaddr ;
    _updateConfig( hostName, svcname, null, config ) ;
 
    if( isNaN( index ) == true )
