@@ -124,28 +124,6 @@ class SequoiaGroup
     * @endcode
    */
    public function reelect( array|string $options = NULL ){}
-   
-   /**
-    * Get the status node number.
-    *
-    * @param $status	an integer argument. The node status, can not be null
-    *
-    * @return Returns the number of node.
-    *
-    * @retval integer Nodes number
-    *
-    * Example:
-    * @code
-    * $NodeNum = $groupObj -> getNodeNum() ;
-    * if( $NodeNum < 0 ) {
-    *    $err = $db -> getError() ;
-    *    echo "Failed to call getNodeNum, error code: ".$err['errno'] ;
-    *    return ;
-    * }
-    * echo "Node number: ".$NodeNum ;
-    * @endcode
-   */
-   public function getNodeNum( integer $status ){}
 
    /**
     * Get the group detail.
