@@ -190,6 +190,19 @@ class SequoiaCursor
 }
 
 /**
+ * SequoiaGroup Class. To get this Class object must be call SequoiaDB::getGroup.
+ */
+class SequoiaGroup
+{
+   /**
+    * Get the status node number.
+    *
+    * @deprecated This function is deprecated.
+   */
+   public function getNodeNum( integer $status ){}
+}
+
+/**
  * Class for create an object of the node
  */
 class SequoiaNode
