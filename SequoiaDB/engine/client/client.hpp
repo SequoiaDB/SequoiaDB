@@ -3290,6 +3290,12 @@ namespace sdbclient
       virtual INT32 reloadConfig(
          const bson::BSONObj &options = _sdbStaticObject ) = 0 ;
 
+      virtual INT32 updateConfig ( const bson::BSONObj &configs = _sdbStaticObject,
+                                   const bson::BSONObj &options = _sdbStaticObject ) = 0 ;
+
+      virtual INT32 deleteConfig ( const bson::BSONObj &configs = _sdbStaticObject,
+                                   const bson::BSONObj &options = _sdbStaticObject ) = 0 ;
+
       virtual INT32 setPDLevel( INT32 level,
          const bson::BSONObj &options = _sdbStaticObject ) = 0 ;
 
@@ -4853,6 +4859,50 @@ namespace sdbclient
          if( !pSDB )
             return SDB_NOT_CONNECTED ;
          return pSDB->reloadConfig( options ) ;
+      }
+
+      /** \fn INT32 updateConfig(const bson::BSONObj &configs, 
+                                 const bson::BSONObj &options)
+          \brief Force the node to reload config from file and take effect.
+          \param [in] configs the specific configuration parameters to update
+          \param [in] options The control options:(Only take effect in coordinate nodes)
+                GroupID:INT32,
+                GroupName:String,
+                NodeID:INT32,
+                HostName:String,
+                svcname:String,
+                ...
+          \retval SDB_OK Operation Success
+          \retval Others Operation Fail
+      */
+      INT32 updateConfig( const bson::BSONObj &configs = _sdbStaticObject, 
+                          const bson::BSONObj &options = _sdbStaticObject )
+      {
+         if( !pSDB )
+            return SDB_NOT_CONNECTED ;
+         return pSDB->updateConfig( configs, options ) ;
+      }
+
+      /** \fn INT32 deleteConfig(const bson::BSONObj &configs, 
+                                 const bson::BSONObj &options)
+          \brief Force the node to reload config from file and take effect.
+          \param [in] configs the specific configuration parameters to delete
+          \param [in] options The control options:(Only take effect in coordinate nodes)
+                GroupID:INT32,
+                GroupName:String,
+                NodeID:INT32,
+                HostName:String,
+                svcname:String,
+                ...
+          \retval SDB_OK Operation Success
+          \retval Others Operation Fail
+      */
+      INT32 deleteConfig( const bson::BSONObj &configs = _sdbStaticObject, 
+                          const bson::BSONObj &options = _sdbStaticObject )
+      {
+         if( !pSDB )
+            return SDB_NOT_CONNECTED ;
+         return pSDB->deleteConfig( configs, options ) ;
       }
 
       /** \fn INT32 setPDLevel(INT32 level,
