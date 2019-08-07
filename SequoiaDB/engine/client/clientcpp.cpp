@@ -9092,6 +9092,66 @@ error :
       goto done ;
    }
 
+   INT32 _sdbImpl::updateConfig( const BSONObj &configs,
+                                 const BSONObj &options )
+   {
+      INT32 rc = SDB_OK ;
+      BSONObj query ;
+
+      try
+      {
+         BSONObjBuilder queryBuilder ;
+         queryBuilder.appendElements( options ) ;
+         queryBuilder.append( FIELD_NAME_CONFIGS, configs ) ;
+         query = queryBuilder.obj() ;
+      }
+      catch( std::exception )
+      {
+         rc = SDB_DRIVER_BSON_ERROR ;
+         goto error ;
+      }
+      rc = _runCommand( (CMD_ADMIN_PREFIX CMD_NAME_UPDATE_CONFIG), &query ) ;
+      if( SDB_OK != rc )
+      {
+         goto error ;
+      }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   INT32 _sdbImpl::deleteConfig( const BSONObj &configs,
+                                 const BSONObj &options )
+   {
+      INT32 rc = SDB_OK ;
+      BSONObj query ;
+
+      try
+      {
+         BSONObjBuilder queryBuilder ;
+         queryBuilder.appendElements( options ) ;
+         queryBuilder.append( FIELD_NAME_CONFIGS, configs ) ;
+         query = queryBuilder.obj() ;
+      }
+      catch( std::exception )
+      {
+         rc = SDB_DRIVER_BSON_ERROR ;
+         goto error ;
+      }
+      rc = _runCommand( (CMD_ADMIN_PREFIX CMD_NAME_DELETE_CONFIG), &query ) ;
+      if( SDB_OK != rc )
+      {
+         goto error ;
+      }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
    INT32 _sdbImpl::setPDLevel( INT32 level, const BSONObj &options )
    {
       INT32 rc = SDB_OK ;

@@ -1307,6 +1307,12 @@ namespace sdbclient
 
       INT32 reloadConfig( const bson::BSONObj &options = _sdbStaticObject ) ;
 
+      INT32 updateConfig( const bson::BSONObj &configs,
+                          const bson::BSONObj &options ) ;
+
+      INT32 deleteConfig( const bson::BSONObj &configs,
+                          const bson::BSONObj &options ) ;
+
       INT32 setPDLevel( INT32 level,
                         const bson::BSONObj &options = _sdbStaticObject ) ;
 
