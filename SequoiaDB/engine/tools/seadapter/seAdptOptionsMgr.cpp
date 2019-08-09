@@ -42,6 +42,8 @@
 
 using namespace engine ;
 
+#define SEADPT_DFT_TIMEOUT    10000
+
 #define COMMANDS_OPTIONS \
    ( PMD_COMMANDS_STRING (PMD_OPTION_HELP, ",h"), "help" ) \
    ( PMD_OPTION_VERSION, "version" ) \
@@ -50,7 +52,8 @@ using namespace engine ;
    ( SDB_SEADPT_DNODE_HOST, boost::program_options::value<string>(), "Data node address" ) \
    ( SDB_SEADPT_DNODE_PORT, boost::program_options::value<string>(), "Data node service name or port" ) \
    ( SDB_SEADPT_SE_HOST, boost::program_options::value<string>(), "Search engine address" ) \
-   ( SDB_SEADPT_SE_PORT, boost::program_options::value<string>(), "Search engine service name or port" )
+   ( SDB_SEADPT_SE_PORT, boost::program_options::value<string>(), "Search engine service name or port" ) \
+   ( PMD_COMMANDS_STRING (PMD_OPTION_OPERATOR_TIMEOUT, ",t"), boost::program_options::value<int>(), "Rest operation timeout in millisecond,default:10000,value range[0-3600000]" )
 
 namespace seadapter
 {
@@ -63,6 +66,7 @@ namespace seadapter
       ossMemset( _seHost, 0, sizeof( _seHost ) ) ;
       ossMemset( _seService, 0, sizeof( _seService ) ) ;
       _diagLevel = PDWARNING ;
+      _timeout = SEADPT_DFT_TIMEOUT ;
    }
 
    INT32 _seAdptOptionsMgr::init( INT32 argc, CHAR **argv,
@@ -182,6 +186,8 @@ namespace seadapter
                  TRUE, PMD_CFG_CHANGE_FORBIDDEN, _seHost ) ;
       rdxString( pEX, SDB_SEADPT_SE_PORT, _seService,
                  sizeof( _seService ), TRUE, PMD_CFG_CHANGE_FORBIDDEN, _seService ) ;
+      rdxInt( pEX, PMD_OPTION_OPERATOR_TIMEOUT, _timeout,
+              FALSE, PMD_CFG_CHANGE_FORBIDDEN, _timeout ) ;
 
       return getResult() ;
    }
@@ -210,6 +216,11 @@ namespace seadapter
       }
 
       return level ;
+   }
+
+   INT32 _seAdptOptionsMgr::getTimeout() const
+   {
+      return _timeout ;
    }
 }
 

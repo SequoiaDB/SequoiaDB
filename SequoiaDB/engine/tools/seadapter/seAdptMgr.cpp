@@ -340,7 +340,7 @@ namespace seadapter
 
       seSvcPath = std::string( _options.getSeHost() ) + ":"
                   + std::string( _options.getSeService() ) ;
-      rc = _seCltMgr.init( seSvcPath ) ;
+      rc = _seCltMgr.init( seSvcPath, _options.getTimeout() ) ;
       if ( rc )
       {
          PD_LOG( PDERROR, "Init search engine client manager failed[ %d ]",

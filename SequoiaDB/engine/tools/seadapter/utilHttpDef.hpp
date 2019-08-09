@@ -59,7 +59,10 @@
 #define HTTP_REQ_POST_STR        "POST"
 #define HTTP_REQ_DELETE_STR      "DELETE"
 
-#define HTTP_DEF_BUF_SIZE        ( 1024 * 1024 )
+#undef   HTTP_DEF_BUF_SIZE
+#define  HTTP_DEF_BUF_SIZE        ( 1024 * 1024 )
+
+#define HTTP_OPRATION_TIMEOUT    10000
 
 #endif /* UTIL_HTTP_DEF_HPP_ */
 

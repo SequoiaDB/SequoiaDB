@@ -54,6 +54,7 @@
 #define UTIL_SE_MAX_URL_SIZE              2048
 #define UTIL_ES_DFT_SCROLL_SIZE           1000
 #define UTIL_SE_MAX_TYPE_SZ               255
+#define UTIL_SE_DFT_TIMEOUT               10000
 #define UTIL_SE_BULK_DFT_FILTERPATH       "filter_path=errors,took,items.index._id,items.index.status"
 using std::string ;
 
@@ -65,7 +66,8 @@ namespace seadapter
          _utilESClt();
          ~_utilESClt();
 
-         INT32 init( const string &uri, BOOLEAN readOnly = FALSE ) ;
+         INT32 init( const string &uri, BOOLEAN readOnly = FALSE,
+                     INT32 timeout = UTIL_SE_DFT_TIMEOUT ) ;
          BOOLEAN isActive() ;
          INT32 active() ;
          INT32 getSEInfo( BSONObj &infoObj ) ;
