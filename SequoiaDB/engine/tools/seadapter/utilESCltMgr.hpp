@@ -50,12 +50,13 @@ namespace seadapter
       _utilESCltMgr( UINT32 cacheNum = UTIL_ESCLT_DFT_CACHE_NUM ) ;
       ~_utilESCltMgr() ;
 
-      INT32 init( const std::string &url ) ;
+      INT32 init( const std::string &url, INT32 timeout ) ;
       INT32 getClt( utilESClt **seClt ) ;
       void releaseClt( utilESClt *&seClt ) ;
 
    private:
       std::string          _url ;      // Search engine address
+      INT32                _timeout ;
       UINT32               _cacheNum ;
       ossSpinXLatch        _latch ;
       vector<utilESClt *>  _vecSEClt ;

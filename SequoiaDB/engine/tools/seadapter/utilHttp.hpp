@@ -39,7 +39,6 @@
 #define UTIL_HTTP_HPP_
 
 #include "ossSocket.hpp"
-
 #include "utilHttpDef.hpp"
 #include "http_parser.hpp"
 #include <string>
@@ -66,7 +65,8 @@ namespace seadapter
          _utilHttp() ;
          ~_utilHttp() ;
 
-         INT32 init( const string &uri, BOOLEAN keepAlive = TRUE ) ;
+         INT32 init( const string &uri, BOOLEAN keepAlive = TRUE,
+                     INT32 timeout = HTTP_OPRATION_TIMEOUT ) ;
          void reset() ;
 
          OSS_INLINE BOOLEAN isConnected() const
@@ -193,6 +193,7 @@ namespace seadapter
 
          INT32 _extendRecvBuff() ;
          const CHAR* _getHeaderItemVal( const CHAR *key ) ;
+         void _cleanup() ;
 
    private:
       BOOLEAN        _init ;
@@ -201,6 +202,7 @@ namespace seadapter
       string         _urn ;
       INT32          _port ;
       ossSocket      *_socket ;
+      INT32          _timeout ;  // timeout for the socket to send and receive
       CHAR           *_sendBuf ;
       UINT32         _sendBufSize ;
       CHAR           *_recvBuf ;

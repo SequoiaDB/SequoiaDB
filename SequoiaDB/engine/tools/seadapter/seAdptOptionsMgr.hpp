@@ -58,6 +58,7 @@ namespace seadapter
       const CHAR* getSeHost() const { return _seHost ; }
       const CHAR* getSeService() const { return _seService ; }
       PDLEVEL     getDiagLevel() const ;
+      INT32       getTimeout() const ;
 
    protected:
       virtual INT32 doDataExchange( engine::pmdCfgExchange *pEX ) ;
@@ -70,6 +71,7 @@ namespace seadapter
       CHAR     _seHost[ OSS_MAX_PATHSIZE + 1 ] ;
       CHAR     _seService[ OSS_MAX_SERVICENAME + 1 ] ;
       INT32    _diagLevel ;
+      INT32    _timeout ;
    } ;
    typedef _seAdptOptionsMgr seAdptOptionsMgr ;
 }

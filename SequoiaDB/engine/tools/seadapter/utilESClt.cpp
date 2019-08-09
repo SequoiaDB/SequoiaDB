@@ -117,7 +117,7 @@ namespace seadapter
    {
    }
 
-   INT32 _utilESClt::init( const string &uri, BOOLEAN readOnly )
+   INT32 _utilESClt::init( const string &uri, BOOLEAN readOnly, INT32 timeout )
    {
       INT32 rc = SDB_OK ;
       if ( 0 == uri.size() )
@@ -128,7 +128,7 @@ namespace seadapter
          goto error ;
       }
 
-      rc = _http.init( uri, TRUE ) ;
+      rc = _http.init( uri, TRUE, timeout ) ;
       if ( rc )
       {
          PD_LOG( PDERROR, "Failed to init http connection with node: %s, "
