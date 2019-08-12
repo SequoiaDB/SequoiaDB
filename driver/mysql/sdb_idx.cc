@@ -250,17 +250,20 @@ void get_text_key_range_obj( const uchar *start_key_ptr,
                              bson::BSONObj &obj )
 {
    bson::BSONObjBuilder obj_builder ;
-   if ( HA_READ_KEY_EXACT == start_find_flag )
+   /*if ( HA_READ_KEY_EXACT == start_find_flag )
    {
       get_text_key_val( start_key_ptr, start_key_part_map,
                         key_part, obj_builder, "$et" ) ;
    }
-   else
+   else*/
    {
       get_text_key_val( start_key_ptr, start_key_part_map,
                         key_part, obj_builder, "$gte" ) ;
-      get_text_key_val( end_key_ptr, end_key_part_map,
-                        key_part, obj_builder, "$lte" ) ;
+      if ( HA_READ_BEFORE_KEY == end_find_flag )
+      {
+         get_text_key_val( end_key_ptr, end_key_part_map,
+                           key_part, obj_builder, "$lte" ) ;
+      }
    }
 
    obj = obj_builder.obj() ;
