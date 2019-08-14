@@ -2313,8 +2313,8 @@ SDB_EXPORT INT32 sdbGetSnapshot ( sdbConnectionHandle cHandle,
    case SDB_SNAP_HEALTH :
       p = CMD_ADMIN_PREFIX CMD_NAME_SNAPSHOT_HEALTH ;
       break ;
-   case SDB_SNAP_CONFIG :
-      p = CMD_ADMIN_PREFIX CMD_NAME_SNAPSHOT_CONFIG ;
+   case SDB_SNAP_CONFIGS :
+      p = CMD_ADMIN_PREFIX CMD_NAME_SNAPSHOT_CONFIGS ;
       break ;
    default :
       rc = SDB_INVALIDARG ;

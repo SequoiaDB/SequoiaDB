@@ -579,13 +579,13 @@ namespace engine
    /*
       _monHealthFetch define
    */
-   class _monConfigFetch : public rtnFetchBase
+   class _monConfigsFetch : public rtnFetchBase
    {
       DECLARE_FETCH_AUTO_REGISTER()
 
       public:
-         _monConfigFetch() ;
-         virtual ~_monConfigFetch() ;
+         _monConfigsFetch() ;
+         virtual ~_monConfigsFetch() ;
 
          virtual INT32        init( pmdEDUCB *cb,
                                     BOOLEAN isCurrent,
@@ -604,7 +604,7 @@ namespace engine
          BOOLEAN                 _hitEnd ;
 
    } ;
-   typedef _monConfigFetch monConfigFetch ;
+   typedef _monConfigsFetch monConfigsFetch ;
 
 }
 

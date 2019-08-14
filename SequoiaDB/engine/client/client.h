@@ -345,7 +345,7 @@ SDB_EXPORT INT32 sdbGetQueryMeta ( sdbCollectionHandle cHandle,
         SDB_SNAP_TRANSACTIONS_CURRENT : Get snapshot of all the transactions
         SDB_SNAP_ACCESSPLANS      : Get the snapshot of cached access plans
         SDB_SNAP_HEALTH           : Get snapshot of node health detection
-        SDB_SNAP_CONFIG           : Get snapshot of node configuration
+        SDB_SNAP_CONFIGS          : Get snapshot of node configurations
 
     \param [in] condition The matching rule, match all the documents if null
     \param [in] select The selective rule, return the whole document if null

@@ -19,7 +19,7 @@ const SDB_SNAP_TRANSACTIONS        = 9 ;
 const SDB_SNAP_TRANSACTIONS_CURRENT= 10 ;
 const SDB_SNAP_ACCESSPLANS         = 11 ;
 const SDB_SNAP_HEALTH              = 12 ;
-const SDB_SNAP_CONFIG              = 13 ;
+const SDB_SNAP_CONFIGS             = 13 ;
 
 const SDB_LIST_CONTEXTS            = 0 ;
 const SDB_LIST_CONTEXTS_CURRENT    = 1 ;

@@ -854,7 +854,7 @@ done:
       pmdCfgExchange ex2( &mapKeyField, userConfig, TRUE, PMD_CFG_STEP_CHG ) ;
       pmdCfgExchange ex3( &mapKeyField, userConfig, TRUE, PMD_CFG_STEP_RESTORE ) ;
 
-      rc = toBSON( oldCfg, PMD_CFG_MASK_SKIP_UNFIELD ) ;
+      rc = toBSON( oldCfg, 0 ) ;
       PD_RC_CHECK( rc, PDERROR, "Save old config failed, rc: %d", rc ) ;
 
       rc = doDataExchange( &ex1 ) ;
