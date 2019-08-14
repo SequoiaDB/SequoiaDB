@@ -3652,19 +3652,19 @@ namespace engine
    /*
       _monConfigFetch implement
    */
-   IMPLEMENT_FETCH_AUTO_REGISTER( _monConfigFetch, RTN_FETCH_CONFIG )
+   IMPLEMENT_FETCH_AUTO_REGISTER( _monConfigsFetch, RTN_FETCH_CONFIGS )
 
-   _monConfigFetch::_monConfigFetch()
+   _monConfigsFetch::_monConfigsFetch()
    {
       _addInfoMask   = 0 ;
       _hitEnd        = TRUE ;
    }
 
-   _monConfigFetch::~_monConfigFetch()
+   _monConfigsFetch::~_monConfigsFetch()
    {
    }
 
-   INT32 _monConfigFetch::init( pmdEDUCB *cb,
+   INT32 _monConfigsFetch::init( pmdEDUCB *cb,
                                 BOOLEAN isCurrent,
                                 BOOLEAN isDetail,
                                 UINT32 addInfoMask,
@@ -3676,20 +3676,20 @@ namespace engine
       return SDB_OK ;
    }
 
-   const CHAR* _monConfigFetch::getName() const
+   const CHAR* _monConfigsFetch::getName() const
    {
-      return CMD_NAME_SNAPSHOT_CONFIG ;
+      return CMD_NAME_SNAPSHOT_CONFIGS ;
    }
 
-   BOOLEAN _monConfigFetch::isHitEnd() const
+   BOOLEAN _monConfigsFetch::isHitEnd() const
    {
       return _hitEnd ;
    }
 
-   // PD_TRACE_DECLARE_FUNCTION ( SDB__MONCONFIGFETCH_FETCH, "_monConfigFetch::fetch" )
-   INT32 _monConfigFetch::fetch( BSONObj &obj )
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__MONCONFIGSFETCH_FETCH, "_monConfigsFetch::fetch" )
+   INT32 _monConfigsFetch::fetch( BSONObj &obj )
    {
-      PD_TRACE_ENTRY ( SDB__MONCONFIGFETCH_FETCH ) ;
+      PD_TRACE_ENTRY ( SDB__MONCONFIGSFETCH_FETCH ) ;
       INT32 rc             = SDB_OK ;
 
       if ( _hitEnd )
@@ -3710,7 +3710,7 @@ namespace engine
       _hitEnd = TRUE ;
 
    done:
-      PD_TRACE_EXITRC ( SDB__MONCONFIGFETCH_FETCH, rc ) ;
+      PD_TRACE_EXITRC ( SDB__MONCONFIGSFETCH_FETCH, rc ) ;
       return rc ;
    error:
       goto done ;

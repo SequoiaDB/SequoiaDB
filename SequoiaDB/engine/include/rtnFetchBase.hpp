@@ -80,7 +80,7 @@ namespace engine
       RTN_FETCH_BACKUP,                /// backup
       RTN_FETCH_ACCESSPLANS,           /// access plans
       RTN_FETCH_HEALTH,                /// node health check
-      RTN_FETCH_CONFIG,                /// config
+      RTN_FETCH_CONFIGS,               /// config
 
       RTN_FETCH_MAX
    } ;

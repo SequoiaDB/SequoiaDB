@@ -614,7 +614,7 @@ namespace engine
       _coordCMDSnapshotConfigs implement
    */
    COORD_IMPLEMENT_CMD_AUTO_REGISTER( _coordCMDSnapshotConfigs,
-                                      CMD_NAME_SNAPSHOT_CONFIG,
+                                      CMD_NAME_SNAPSHOT_CONFIGS,
                                       TRUE ) ;
    _coordCMDSnapshotConfigs::_coordCMDSnapshotConfigs()
    {
@@ -626,7 +626,7 @@ namespace engine
 
    const CHAR* _coordCMDSnapshotConfigs::getIntrCMDName()
    {
-      return CMD_ADMIN_PREFIX CMD_NAME_SNAPSHOT_CONFIG_INTR;
+      return CMD_ADMIN_PREFIX CMD_NAME_SNAPSHOT_CONFIGS_INTR;
    }
 
    const CHAR* _coordCMDSnapshotConfigs::getInnerAggrContent()
@@ -635,16 +635,16 @@ namespace engine
    }
 
    /*
-      _coordCMDSnapshotConfigIntr implement
+      _coordCMDSnapshotConfigsIntr implement
    */
-   COORD_IMPLEMENT_CMD_AUTO_REGISTER( _coordCMDSnapshotConfigIntr,
-                                      CMD_NAME_SNAPSHOT_CONFIG_INTR,
+   COORD_IMPLEMENT_CMD_AUTO_REGISTER( _coordCMDSnapshotConfigsIntr,
+                                      CMD_NAME_SNAPSHOT_CONFIGS_INTR,
                                       TRUE ) ;
-   _coordCMDSnapshotConfigIntr::_coordCMDSnapshotConfigIntr()
+   _coordCMDSnapshotConfigsIntr::_coordCMDSnapshotConfigsIntr()
    {
    }
 
-   _coordCMDSnapshotConfigIntr::~_coordCMDSnapshotConfigIntr()
+   _coordCMDSnapshotConfigsIntr::~_coordCMDSnapshotConfigsIntr()
    {
    }
 

@@ -469,14 +469,14 @@ namespace engine
    /*
       _coordCMDSnapshotConfigIntr define
    */
-   class _coordCMDSnapshotConfigIntr : public _coordCMDSnapshotIntrBase
+   class _coordCMDSnapshotConfigsIntr : public _coordCMDSnapshotIntrBase
    {
       COORD_DECLARE_CMD_AUTO_REGISTER() ;
       public:
-         _coordCMDSnapshotConfigIntr() ;
-         virtual ~_coordCMDSnapshotConfigIntr() ;
+         _coordCMDSnapshotConfigsIntr() ;
+         virtual ~_coordCMDSnapshotConfigsIntr() ;
    } ;
-   typedef _coordCMDSnapshotConfigIntr coordCMDSnapshotConfigIntr ;
+   typedef _coordCMDSnapshotConfigsIntr coordCMDSnapshotConfigsIntr ;
 
 }
 #endif // COORD_COMMAND_SNAPSHOT_HPP__

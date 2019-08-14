@@ -535,13 +535,13 @@ namespace engine
          virtual UINT32  _addInfoMask () const ;
    } ;
 
-   class _rtnSnapshotConfig : public _rtnSnapshot
+   class _rtnSnapshotConfigs : public _rtnSnapshot
    {
       DECLARE_CMD_AUTO_REGISTER()
 
       public :
-         _rtnSnapshotConfig () ;
-         virtual ~_rtnSnapshotConfig () ;
+         _rtnSnapshotConfigs () ;
+         virtual ~_rtnSnapshotConfigs () ;
 
          virtual const CHAR * name () ;
          virtual RTN_COMMAND_TYPE type () ;
@@ -555,13 +555,13 @@ namespace engine
          virtual const CHAR *getIntrCMDName() ;
    };
 
-   class _rtnSnapshotConfigInner : public _rtnSnapshotInner
+   class _rtnSnapshotConfigsInner : public _rtnSnapshotInner
    {
       DECLARE_CMD_AUTO_REGISTER()
 
       public:
-         _rtnSnapshotConfigInner() {}
-         virtual ~_rtnSnapshotConfigInner() {}
+         _rtnSnapshotConfigsInner() {}
+         virtual ~_rtnSnapshotConfigsInner() {}
 
          virtual const CHAR * name () ;
          virtual RTN_COMMAND_TYPE type () ;

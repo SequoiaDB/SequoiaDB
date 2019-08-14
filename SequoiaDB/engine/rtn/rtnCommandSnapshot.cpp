@@ -971,36 +971,36 @@ namespace engine
       return MON_MASK_NODE_NAME | MON_MASK_GROUP_NAME ;
    }
 
-   IMPLEMENT_CMD_AUTO_REGISTER(_rtnSnapshotConfig)
-   _rtnSnapshotConfig::_rtnSnapshotConfig ()
+   IMPLEMENT_CMD_AUTO_REGISTER(_rtnSnapshotConfigs)
+   _rtnSnapshotConfigs::_rtnSnapshotConfigs ()
    {
    }
 
-   _rtnSnapshotConfig::~_rtnSnapshotConfig ()
+   _rtnSnapshotConfigs::~_rtnSnapshotConfigs ()
    {
    }
 
-   const CHAR *_rtnSnapshotConfig::name ()
+   const CHAR *_rtnSnapshotConfigs::name ()
    {
-      return NAME_SNAPSHOT_CONFIG ;
+      return NAME_SNAPSHOT_CONFIGS ;
    }
 
-   RTN_COMMAND_TYPE _rtnSnapshotConfig::type ()
+   RTN_COMMAND_TYPE _rtnSnapshotConfigs::type ()
    {
-      return CMD_SNAPSHOT_CONFIG ;
+      return CMD_SNAPSHOT_CONFIGS ;
    }
 
-   INT32 _rtnSnapshotConfig::_getFetchType() const
+   INT32 _rtnSnapshotConfigs::_getFetchType() const
    {
-      return RTN_FETCH_CONFIG ;
+      return RTN_FETCH_CONFIGS ;
    }
 
-   BOOLEAN _rtnSnapshotConfig::_isCurrent() const
+   BOOLEAN _rtnSnapshotConfigs::_isCurrent() const
    {
       return FALSE ;
    }
 
-   UINT32 _rtnSnapshotConfig::_addInfoMask() const
+   UINT32 _rtnSnapshotConfigs::_addInfoMask() const
    {
       return MON_MASK_NODE_NAME |
              MON_MASK_IS_PRIMARY |
@@ -1009,33 +1009,33 @@ namespace engine
              MON_MASK_NODEID ;
    }
 
-   const CHAR* _rtnSnapshotConfig::getIntrCMDName()
+   const CHAR* _rtnSnapshotConfigs::getIntrCMDName()
    {
-      return CMD_NAME_SNAPSHOT_CONFIG_INTR ;
+      return CMD_NAME_SNAPSHOT_CONFIGS_INTR ;
    }
 
-   IMPLEMENT_CMD_AUTO_REGISTER(_rtnSnapshotConfigInner)
-   const CHAR *_rtnSnapshotConfigInner::name ()
+   IMPLEMENT_CMD_AUTO_REGISTER(_rtnSnapshotConfigsInner)
+   const CHAR *_rtnSnapshotConfigsInner::name ()
    {
-      return CMD_NAME_SNAPSHOT_CONFIG_INTR ;
+      return CMD_NAME_SNAPSHOT_CONFIGS_INTR ;
    }
 
-   RTN_COMMAND_TYPE _rtnSnapshotConfigInner::type ()
+   RTN_COMMAND_TYPE _rtnSnapshotConfigsInner::type ()
    {
-      return CMD_SNAPSHOT_CONFIG ;
+      return CMD_SNAPSHOT_CONFIGS ;
    }
 
-   INT32 _rtnSnapshotConfigInner::_getFetchType() const
+   INT32 _rtnSnapshotConfigsInner::_getFetchType() const
    {
-      return RTN_FETCH_CONFIG ;
+      return RTN_FETCH_CONFIGS ;
    }
 
-   BOOLEAN _rtnSnapshotConfigInner::_isCurrent() const
+   BOOLEAN _rtnSnapshotConfigsInner::_isCurrent() const
    {
       return FALSE ;
    }
 
-   UINT32 _rtnSnapshotConfigInner::_addInfoMask() const
+   UINT32 _rtnSnapshotConfigsInner::_addInfoMask() const
    {
       return MON_MASK_NODE_NAME |
              MON_MASK_IS_PRIMARY |
