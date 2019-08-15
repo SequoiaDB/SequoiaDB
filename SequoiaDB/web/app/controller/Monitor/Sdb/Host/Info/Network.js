@@ -62,6 +62,7 @@
                            if( isFirstBuild == true )
                            {
                               netList.push( {
+                                 'IP': networkInfo['IP'],
                                  'Name': networkInfo['Name'],
                                  'Wirespeed': '-',
                                  'RXBytes':   sizeConvert( rxBytes ),
