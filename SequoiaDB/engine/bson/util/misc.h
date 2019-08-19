@@ -31,7 +31,7 @@ namespace bson {
 #else
         ctime_r(&t, buf);
 #endif
-        buf[24] = 0; // don't want the \n
+        buf[ strlen( buf ) - 1 ] = 0; // don't want the \n
     }
 
     inline string time_t_to_String(time_t t = time(0) ) {
@@ -41,7 +41,7 @@ namespace bson {
 #else
         ctime_r(&t, buf);
 #endif
-        buf[24] = 0; // don't want the \n
+        buf[ strlen( buf ) - 1 ] = 0; // don't want the \n
         return buf;
     }
 
