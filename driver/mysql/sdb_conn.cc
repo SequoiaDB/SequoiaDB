@@ -157,21 +157,28 @@ int sdb_conn::get_cl( char *cs_name, char *cl_name,
 
    {
    //TODO: improve performence
+   std::pair <std::multimap<std::string, sdb_cl_auto_ptr>::iterator,
+              std::multimap<std::string, sdb_cl_auto_ptr>::iterator > ret ;
    sdb_rw_lock_r r_lock( &rw_mutex ) ;
-   iter = cl_list.find( str_tmp ) ;
-   if ( iter != cl_list.end() )
+   ret = cl_list.equal_range( str_tmp );
+   iter = ret.first ;
+   while( iter != ret.second )
    {
-      cl_ptr = iter->second ;
-      if ( create )
+      if ( iter->second.ref() == 1 )
       {
-         rc = cl_ptr->init( this, cs_name, cl_name,
-                            create, options ) ;
-         if ( rc != SDB_ERR_OK )
+         cl_ptr = iter->second ;
+         if ( create )
          {
-            goto error ;
+            rc = cl_ptr->init( this, cs_name, cl_name,
+                               create, options ) ;
+            if ( rc != SDB_ERR_OK )
+            {
+               goto error ;
+            }
          }
+         goto done ;
       }
-      goto done ;
+      ++iter ;
    }
    }
 
@@ -228,12 +235,19 @@ void sdb_conn::clear_cl( char *cs_name, char *cl_name )
 
    {
    sdb_rw_lock_w w_lock( &rw_mutex ) ;
-   iter = cl_list.find( str_tmp ) ;
-   if ( cl_list.end() == iter || iter->second.ref() > 1 )
+   std::pair <std::multimap<std::string, sdb_cl_auto_ptr>::iterator,
+              std::multimap<std::string, sdb_cl_auto_ptr>::iterator > ret ;
+   ret = cl_list.equal_range( str_tmp );
+   iter = ret.first ;
+   while( iter != ret.second )
    {
-      goto done ;
+      if ( iter->second.ref() <= 1 )
+      {
+         cl_list.erase( iter++ ) ;
+         continue ;
+      }
+      ++iter ;
    }
-   cl_list.erase( iter ) ;
    }
 done:
    return ;
@@ -252,12 +266,6 @@ void sdb_conn::clear_all_cl()
    }
 done:
    return ;
-}
-
-int sdb_conn::get_cl_num()
-{
-   sdb_rw_lock_r r_lock( &rw_mutex ) ;
-   return cl_list.size() ;
 }
 
 bool sdb_conn::is_idle()

@@ -60,16 +60,14 @@ public:
 
    void clear_all_cl() ;
 
-   int get_cl_num() ;
-
    bool is_idle() ;
 
 private:
-   sdbclient::sdb                            connection ;
-   bool                                      transactionon ;
-   my_thread_id                              tid ;
-   pthread_rwlock_t                          rw_mutex ;
-   std::map<std::string, sdb_cl_auto_ptr>    cl_list ;
+   sdbclient::sdb                                  connection ;
+   bool                                            transactionon ;
+   my_thread_id                                    tid ;
+   pthread_rwlock_t                                rw_mutex ;
+   std::multimap<std::string, sdb_cl_auto_ptr>     cl_list ;
 } ;
 
 #endif
