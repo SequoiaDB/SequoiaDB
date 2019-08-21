@@ -502,7 +502,7 @@
       <Valid></Valid>
       <Display>edit box</Display>
       <Edit>true</Edit>
-      <Desc>Specifies the amount of memory to be used by internal sort operations and hash tables beforewriting to temporary disk files. The value defaults to one megabyte (1MB).</Desc>
+      <Desc>Specifies the amount of memory to be used by internal sort operations and hash tables before writing to temporary disk files. The value defaults to one megabyte (1MB).</Desc>
       <Level>1</Level>
       <DynamicEdit>false</DynamicEdit>
       <BatchEdit>false</BatchEdit>
@@ -1496,7 +1496,7 @@
       <Valid></Valid>
       <Display>edit box</Display>
       <Edit>true</Edit>
-      <Desc>PostgreSQL supports several methods for logging server messages, including stderr, csvlog and syslog. On Windows, eventlog is also supported. Set this parameter to a list of desired log desti470 Chapter 18. Server Configuration nations separated by commas. The default is to log to stderr only.</Desc>
+      <Desc>PostgreSQL supports several methods for logging server messages, including stderr, csvlog and syslog. On Windows, eventlog is also supported. Set this parameter to a list of desired log destinations separated by commas. The default is to log to stderr only.</Desc>
       <Level>1</Level>
       <DynamicEdit>false</DynamicEdit>
       <BatchEdit>false</BatchEdit>
@@ -1815,7 +1815,7 @@
       <WebName>log error verbosity</WebName>
       <Type>string</Type>
       <Default></Default>
-      <Valid>,terse,default</Valid>
+      <Valid>,TERSE/DEFAULT/VERBOSE</Valid>
       <Display>select box</Display>
       <Edit>true</Edit>
       <Desc></Desc>
@@ -2508,7 +2508,7 @@
       <Valid></Valid>
       <Display>edit box</Display>
       <Edit>true</Edit>
-      <Desc>Sets the client-side encoding (character set). The default is to use the database encoding. T</Desc>
+      <Desc>Sets the client-side encoding (character set). The default is to use the database encoding.</Desc>
       <Level>1</Level>
       <DynamicEdit>false</DynamicEdit>
       <BatchEdit>false</BatchEdit>
