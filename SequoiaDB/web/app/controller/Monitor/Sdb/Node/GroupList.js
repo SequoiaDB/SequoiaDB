@@ -4,8 +4,6 @@
    //控制器
    sacApp.controllerProvider.register( 'Monitor.SdbOverview.Index.Ctrl', function( $scope, $compile, $rootScope, $location, SdbRest, SdbFunction ){
       
-      _IndexPublic.checkMonitorEdition( $location ) ; //检测是不是企业版
-
       var clusterName = SdbFunction.LocalData( 'SdbClusterName' ) ;
       var moduleType = SdbFunction.LocalData( 'SdbModuleType' ) ;
       var moduleMode = SdbFunction.LocalData( 'SdbModuleMode' ) ;
