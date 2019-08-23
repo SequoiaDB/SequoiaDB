@@ -105,6 +105,12 @@
            resolve: resolveFun( [ './app/controller/Strategy/Sdb/Index.js' ] )
         }
       },
+      { path: '/Strategy/SDB/Strategy',
+        options: {
+           templateUrl: './app/template/Strategy/Sdb/Strategy.html',
+           resolve: resolveFun( [ './app/controller/Strategy/Sdb/Strategy.js' ] )
+        }
+      },
       //¼à¿ØÖ÷Ò³
       { path: '/Monitor/SDB/Index',
         options: {

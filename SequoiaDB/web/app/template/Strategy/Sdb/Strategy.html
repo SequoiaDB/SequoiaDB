@@ -1,0 +1,75 @@
+﻿<div style="padding:10px 15px;" ng-controller="Strategy.SDB.Strategy.Ctrl" ng-container="{}">
+   <div class="underlineTab" style="" ng-container="{height:50,offsetX:-10}">
+      <ul class="left">
+         <li>
+            <a ng-click="GotoTask()">Task</a>
+         </li>
+         <li class="active">
+            <a ng-click="ChangeTableType('systemTable')">Strategy</a>
+         </li>
+      </ul>
+   </div>
+
+   <div ng-windows="form as CreateStrategyWindow.config" windows-callback="CreateStrategyWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+
+   <div ng-container="{height:30,marginBottom:10}">
+      <button class="topBtn" ng-click="QueryStrategyList()"><i class="fa fa-refresh"></i> {{autoLanguage("刷新")}}</button>
+      <button class="topBtn" ng-click="ShowCreateStrategy()"><i class="fa fa-plus"></i> {{autoLanguage("添加策略配置项")}}</button>
+      <button class="topBtn" ng-click="ShowFlushStrategy()">{{autoLanguage("立即生效策略")}}</button>
+   </div>
+
+   <div ng-show="StrategyTable['body'].length == 0">
+      <div class="data_empty">
+         <div class="title">{{autoLanguage("当前业务没有策略配置。")}}</div>
+         <div class="tips">
+            {{autoLanguage("使用")}}
+            <span class="linkButton" ng-click="ShowCreateStrategy()">{{autoLanguage("添加策略配置项")}}</span>
+            {{autoLanguage("操作。")}}
+         </div>
+      </div>
+   </div>
+
+   <div ng-windows="form as UpdateTaskWindow.config" windows-callback="UpdateTaskWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+
+   <div ng-windows="form as UpdateNiceWindow.config" windows-callback="UpdateNiceWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+   <div ng-windows="form as UpdateSortWindow.config" windows-callback="UpdateSortWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+   <div ng-windows="form as UpdateSatusWindow.config" windows-callback="UpdateSatusWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+
+
+   <div ng-windows="form as UpdateStrategyWindow.config" windows-callback="UpdateStrategyWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+
+   <div ng-dropdown="config in EditDropdown.config" dropdown-event="EditDropdown.event" dropdown-callback="EditDropdown.callback">
+      <span class="Ellipsis" style="padding:8px 10px;display:block;" ng-click="EditDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+   </div>
+
+   <div ng-show="StrategyTable['body'].length > 0" ng-container="{offsetY:-90,offsetX:-10}" ng-table="StrategyTable['options']" table-title="StrategyTable['title']" table-content="info in StrategyTable['body']" table-callback="StrategyTable['callback']">
+      <div class="Ellipsis" table-key="RuleID">{{info.RuleID}}</div>
+      <div class="Ellipsis" table-key="Operation">
+         <a class="linkButton" ng-click="ShowUpdateStrategy( info )">
+            <i class="fa fa-edit" ng-attr="{'data-desc':autoLanguage('修改策略')}"></i>
+         </a>
+         <a class="linkButton" ng-click="ShowDeleteStrategy( info.RuleID )">
+            <i class="fa fa-remove" ng-attr="{'data-desc':autoLanguage('删除策略')}"></i>
+         </a>
+      </div>
+      <div class="Ellipsis" table-key="TaskID">{{info.TaskID}}</div>
+      <div class="Ellipsis" table-key="TaskName">{{info.TaskName}}</div>
+      <div class="Ellipsis" table-key="SortID">{{info.SortID}}</div>
+      <div class="Ellipsis" table-key="Nice">{{info.Nice}}</div>
+      <div class="Ellipsis" table-key="Status">{{info.Status==1?'enable':'disable'}}</div>
+      <div class="Ellipsis" table-key="UserName">{{info.UserName}}</div>
+      <div class="Ellipsis" table-key="IPs">{{info.IPs}}</div>
+   </div>
+</div>

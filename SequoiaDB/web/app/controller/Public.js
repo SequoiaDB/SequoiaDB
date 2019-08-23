@@ -328,6 +328,12 @@
             'module': 'Deploy',
             'icon': 'fa-share-alt',
             'action': '/#/Deploy/Index'
+         },
+         {
+            'text': $scope.autoLanguage( '策略' ),
+            'module': 'Strategy',
+            'icon': 'fa-tasks',
+            'list': []
          }
       ] ;
 
@@ -440,6 +446,16 @@
          titleInfo['list'].push( businessInfo ) ;
       }
 
+      function addStrateg( businessInfo )
+      {
+         if( businessInfo['type'] == 'sequoiadb' )
+         {
+            var title = getNavTitle( businessInfo['type'] ) ;
+            var titleInfo = addBusinessTitle( $scope.Left.navMenu[3]['list'], title ) ;
+            titleInfo['list'].push( businessInfo ) ;
+         }
+      }
+
       function addBusiness( businessInfo )
       {
          var thisModule = {
@@ -456,6 +472,7 @@
 
          addDataOperation( thisModule ) ;
          addMonitor( thisModule ) ;
+         addStrateg( thisModule ) ;
       }
 
       function getBusiness()
@@ -466,6 +483,7 @@
 
                $scope.Left.navMenu[0]['list'] = [] ;
                $scope.Left.navMenu[1]['list'] = [] ;
+               $scope.Left.navMenu[3]['list'] = [] ;
 
                $.each( list, function( index, businessInfo ){
                   addBusiness( businessInfo ) ;
