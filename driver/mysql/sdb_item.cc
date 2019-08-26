@@ -317,6 +317,7 @@ int sdb_func_item::get_item_val( const char *field_name,
                                 bson::BSONArrayBuilder *arr_builder )
 {
    int rc = SDB_ERR_OK ;
+   char buff[MAX_FIELD_WIDTH];
    
    if ( NULL == item_val )
    {
@@ -374,7 +375,6 @@ int sdb_func_item::get_item_val( const char *field_name,
                      {
                         bson::BSONObjBuilder obj_builder ;
                         my_decimal dec_tmp ;
-                        char buff[MAX_FIELD_WIDTH];
                         String str( buff, sizeof(buff),
                                     item_val->charset_for_protocol() ) ;
                         item_val->val_decimal( &dec_tmp ) ;
@@ -416,20 +416,11 @@ int sdb_func_item::get_item_val( const char *field_name,
             else if( item_val->result_type() == DECIMAL_RESULT
                      || item_val->result_type() == STRING_RESULT )
             {
-               char buff[MAX_FIELD_WIDTH]={0};
-               const char *p_str_tmp = NULL ;
                String str( buff, sizeof(buff),
                            item_val->charset_for_protocol() ) ;
-               if ( item_val->result_type() == STRING_RESULT )
-               {
-                  p_str_tmp = item_val->item_name.ptr() ;
-               }
-               else
-               {
-                  item_val->val_str( &str ) ;
-                  p_str_tmp = str.c_ptr() ;
-               }
-               if ( NULL == p_str_tmp )
+               String *pStr ;
+               pStr = item_val->val_str( &str ) ;
+               if ( NULL == pStr )
                {
                   rc =  SDB_ERR_INVALID_ARG ;
                   goto error ;
@@ -438,7 +429,7 @@ int sdb_func_item::get_item_val( const char *field_name,
                {
                   bson::BSONObjBuilder obj_builder ;
                   if( !obj_builder.appendDecimal( field_name,
-                                                  p_str_tmp ))
+                                                  pStr->c_ptr() ))
                   {
                      rc =  SDB_ERR_INVALID_ARG ;
                      goto error ;
@@ -455,7 +446,7 @@ int sdb_func_item::get_item_val( const char *field_name,
                      goto error ;
                   }
     
-                  rc = decimal.fromString( p_str_tmp ) ;
+                  rc = decimal.fromString( pStr->c_ptr() ) ;
                   if ( 0 != rc )
                   {
                      rc =  SDB_ERR_INVALID_ARG ;
@@ -482,28 +473,25 @@ int sdb_func_item::get_item_val( const char *field_name,
          {
             if ( item_val->result_type() == STRING_RESULT )
             {
-               const char *str = NULL ;
-               size_t len = 0 ;
-               if ( *(item_val->item_name.ptr()) == '?' )
-               {
-                  str = item_val->str_value.ptr() ;
-                  len = item_val->str_value.length() ;
-               }
-               else
-               {
-                  str = item_val->item_name.ptr() ;
-                  len = item_val->item_name.length() ;
-               }
+               String str( buff, sizeof(buff),
+                           item_val->charset_for_protocol() ) ;
+               String *pStr = NULL ;
+               pStr = item_val->val_str( &str ) ;
                Field_str *f = (Field_str *)field ;
+               if ( NULL == pStr )
+               {
+                  rc = SDB_ERR_INVALID_ARG ;
+                  break ;
+               }
                if ( f->binary() )
                {
                   if ( NULL == arr_builder )
                   {
                      bson::BSONObjBuilder obj_builder ;
                      obj_builder.appendBinData(field_name,
-                                               len,
+                                               pStr->length(),
                                                bson::BinDataGeneral,
-                                               str ) ;
+                                               pStr->c_ptr() ) ;
                      obj = obj_builder.obj() ;
                   }
                   else
@@ -521,11 +509,11 @@ int sdb_func_item::get_item_val( const char *field_name,
                if ( NULL == arr_builder )
                {
                   obj = BSON( field_name
-                              << item_val->item_name.ptr() ) ;
+                              << pStr->c_ptr() ) ;
                }
                else
                {
-                  arr_builder->append( item_val->item_name.ptr() ) ;
+                  arr_builder->append( pStr->c_ptr() ) ;
                }
             }
             else
