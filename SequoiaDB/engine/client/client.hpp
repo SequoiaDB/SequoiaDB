@@ -4863,8 +4863,9 @@ namespace sdbclient
 
       /** \fn INT32 updateConfig(const bson::BSONObj &configs, 
                                  const bson::BSONObj &options)
-          \brief Force the node to reload config from file and take effect.
-          \param [in] configs the specific configuration parameters to update
+          \brief Update node config and take effect.
+          \param [in] configs the specific configuration parameters to update.
+                { diaglevel:3 } Modify diaglevel as 3.
           \param [in] options The control options:(Only take effect in coordinate nodes)
                 GroupID:INT32,
                 GroupName:String,
@@ -4885,8 +4886,9 @@ namespace sdbclient
 
       /** \fn INT32 deleteConfig(const bson::BSONObj &configs, 
                                  const bson::BSONObj &options)
-          \brief Force the node to reload config from file and take effect.
-          \param [in] configs the specific configuration parameters to delete
+          \brief Delete node config and take effect.
+          \param [in] configs the specific configuration parameters to delete.
+                { diaglevel:1 } Delete diaglevel config and restore to default value.
           \param [in] options The control options:(Only take effect in coordinate nodes)
                 GroupID:INT32,
                 GroupName:String,
