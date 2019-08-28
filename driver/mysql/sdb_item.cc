@@ -439,6 +439,13 @@ int sdb_func_item::get_item_val( const char *field_name,
                else
                {
                   bson::bsonDecimal decimal ;
+                  if ( item_val->result_type() == STRING_RESULT )
+                  {
+                     //TODO:SEQUOIADBMAINSTREAM-3365
+                     //     the string value is not support for "in"
+                     rc = SDB_ERR_TYPE_UNSUPPORTED ;
+                     goto error ;
+                  }
                   rc = decimal.init() ;
                   if ( 0 != rc )
                   {
