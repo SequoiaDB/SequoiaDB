@@ -492,7 +492,9 @@ int sdb_func_item::get_item_val( const char *field_name,
                }
                if ( f->binary() )
                {
-                  if ( NULL == arr_builder )
+                  rc = SDB_ERR_TYPE_UNSUPPORTED ;
+                  break ;
+                  /*if ( NULL == arr_builder )
                   {
                      bson::BSONObjBuilder obj_builder ;
                      obj_builder.appendBinData(field_name,
@@ -502,16 +504,16 @@ int sdb_func_item::get_item_val( const char *field_name,
                      obj = obj_builder.obj() ;
                   }
                   else
-                  {
+                  {*/
                      // binary is not supported for array in sequoiadb.
                      /*
                      bson::BSONObj obj_tmp
                         = BSON( "$binary" << item_val->item_name.ptr()
                                 << "$type" << bson::BinDataGeneral ) ;
                      arr_builder->append( obj_tmp ) ;*/
-                     rc = SDB_ERR_TYPE_UNSUPPORTED ;
+                     /*rc = SDB_ERR_TYPE_UNSUPPORTED ;
                   }
-                  break ;
+                  break ;*/
                }
                if ( NULL == arr_builder )
                {
