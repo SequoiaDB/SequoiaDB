@@ -163,6 +163,7 @@
    "当前业务没有策略配置。": "Current module has not Strategy.",
    "当前业务没有关联信息": "Current module has not Relationship.",
    "当前业务没有任务。": "Current module has not Task.",
+   "当前业务没有任务，请前往Task页面新增任务。": "Current module has not Task, Please go to the Task page to add a new task.",
    "登录": "Login",
    "等待锁": "WaitLock",
    "等待中": "Waiting",
