@@ -338,93 +338,109 @@
 
       //打开 添加Strategy 弹窗
       $scope.ShowCreateStrategy = function(){
-         $scope.CreateStrategyWindow['config']['inputList'] = [
-            {
-               "name": 'clusterName',
-               "webName": $scope.autoLanguage( '集群名' ),
-               "type": "string",
-               "required": true,
-               "value": clusterName,
-               "disabled": true,
-               "valid": {
-                  "min": 1
+         if( taskList.length > 0 )
+         {
+            $scope.CreateStrategyWindow['config']['inputList'] = [
+               {
+                  "name": 'clusterName',
+                  "webName": $scope.autoLanguage( '集群名' ),
+                  "type": "string",
+                  "required": true,
+                  "value": clusterName,
+                  "disabled": true,
+                  "valid": {
+                     "min": 1
+                  }
+               },
+               {
+                  "name": 'businessName',
+                  "webName": $scope.autoLanguage( '业务名' ),
+                  "type": "string",
+                  "required": true,
+                  "value": moduleName,
+                  "disabled": true,
+                  "valid": {
+                     "min": 1
+                  }
+               },
+               {
+                  "name": 'taskName',
+                  "webName": 'TaskName',
+                  "type": "select",
+                  "required": true,
+                  "desc": $scope.autoLanguage( '对应的任务名' ),
+                  "value": taskList[0]['value'],
+                  "valid": taskList
+               },
+               {
+                  "name": 'nice',
+                  "webName": 'Nice',
+                  "type": "int",
+                  "required": true,
+                  "desc": $scope.autoLanguage( '任务优先级，取值范围：-20~19，值越大优先级越低' ),
+                  "value": 0,
+                  "valid": {
+                     "min": -20,
+                     "max": 19
+                  }
+               },
+               {
+                  "name": 'sortID',
+                  "webName": 'SortID',
+                  "type": "string",
+                  "desc": $scope.autoLanguage( '控制策略配置的生效顺序' ),
+                  "value": ''
+               },
+               {
+                  "name": 'userName',
+                  "webName": 'UserName',
+                  "type": "string",
+                  "value": ''
+               },
+               {
+                  "name": 'IPs',
+                  "webName": 'IPs',
+                  "type": "string",
+                  "desc": $scope.autoLanguage( '直连数据库应用程序所在客户端的IP地址列表，多个地址使用","隔开' ),
+                  "value": ''
                }
-            },
-            {
-               "name": 'businessName',
-               "webName": $scope.autoLanguage( '业务名' ),
-               "type": "string",
-               "required": true,
-               "value": moduleName,
-               "disabled": true,
-               "valid": {
-                  "min": 1
-               }
-            },
-            {
-               "name": 'taskName',
-               "webName": 'TaskName',
-               "type": "select",
-               "required": true,
-               "desc": $scope.autoLanguage( '对应的任务名' ),
-               "value": taskList[0]['value'],
-               "valid": taskList
-            },
-            {
-               "name": 'nice',
-               "webName": 'Nice',
-               "type": "int",
-               "required": true,
-               "desc": $scope.autoLanguage( '任务优先级，取值范围：-20~19，值越大优先级越低' ),
-               "value": 0,
-               "valid": {
-                  "min": -20,
-                  "max": 19
-               }
-            },
-            {
-               "name": 'sortID',
-               "webName": 'SortID',
-               "type": "string",
-               "desc": $scope.autoLanguage( '控制策略配置的生效顺序' ),
-               "value": ''
-            },
-            {
-               "name": 'userName',
-               "webName": 'UserName',
-               "type": "string",
-               "value": ''
-            },
-            {
-               "name": 'IPs',
-               "webName": 'IPs',
-               "type": "string",
-               "desc": $scope.autoLanguage( '直连数据库应用程序所在客户端的IP地址列表，多个地址使用","隔开' ),
-               "value": ''
-            }
-         ] ;
-         $scope.CreateStrategyWindow['callback']['SetOkButton']( $scope.autoLanguage( '确定' ), function(){
-            var isClear = $scope.CreateStrategyWindow['config'].check() ;
-            if( isClear )
-            {
-               var formValue = $scope.CreateStrategyWindow['config'].getValue() ;
-               var data = { 'cmd': 'add svc task strategy' } ;
-               data['ClusterName'] = formValue['clusterName'] ;
-               data['BusinessName'] = formValue['businessName'] ;
-               data['TaskName'] = formValue['taskName'] ;
-               data['Nice'] = formValue['nice'] ;
-               data['SortID'] = formValue['sortID'] ;
-               data['UserName'] = formValue['userName'] ;
-               data['IPs'] = formValue['IPs'] ;
+            ] ;
+            $scope.CreateStrategyWindow['callback']['SetOkButton']( $scope.autoLanguage( '确定' ), function(){
+               var isClear = $scope.CreateStrategyWindow['config'].check() ;
+               if( isClear )
+               {
+                  var formValue = $scope.CreateStrategyWindow['config'].getValue() ;
+                  var data = { 'cmd': 'add svc task strategy' } ;
+                  data['ClusterName'] = formValue['clusterName'] ;
+                  data['BusinessName'] = formValue['businessName'] ;
+                  data['TaskName'] = formValue['taskName'] ;
+                  data['Nice'] = formValue['nice'] ;
+                  data['SortID'] = formValue['sortID'] ;
+                  data['UserName'] = formValue['userName'] ;
+                  data['IPs'] = formValue['IPs'] ;
 
-               addStrategy( data ) ;
-               $scope.CreateStrategyWindow['callback']['Close']() ;
+                  addStrategy( data ) ;
+                  $scope.CreateStrategyWindow['callback']['Close']() ;
 
+               }
+            } ) ;
+            $scope.CreateStrategyWindow['callback']['SetTitle']( $scope.autoLanguage( '添加策略' ) ) ;
+            $scope.CreateStrategyWindow['callback']['SetIcon']( '' ) ;
+            $scope.CreateStrategyWindow['callback']['Open']() ;
+         }
+         else
+         {
+            $scope.Components.Confirm.type = 1 ;
+            $scope.Components.Confirm.context = $scope.autoLanguage( '当前业务没有任务，请前往Task页面新增任务。' ) ;
+            $scope.Components.Confirm.isShow = true ;
+            $scope.Components.Confirm.okText = $scope.autoLanguage( '确定' ) ;
+            $scope.Components.Confirm.ok = function(){
+               $scope.Components.Confirm.isShow = false ;
+               $scope.GotoTask() ;
             }
-         } ) ;
-         $scope.CreateStrategyWindow['callback']['SetTitle']( $scope.autoLanguage( '添加策略' ) ) ;
-         $scope.CreateStrategyWindow['callback']['SetIcon']( '' ) ;
-         $scope.CreateStrategyWindow['callback']['Open']() ;
+         }
+         
+         
       }
 
       //立即生效策略
