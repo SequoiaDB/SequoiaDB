@@ -8,6 +8,7 @@ import com.sequoiadb.base.Sequoiadb;
 import com.sequoiadb.test.common.Constants;
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
+import org.bson.types.BSONDecimal;
 import org.bson.types.BSONTimestamp;
 import org.junit.*;
 
@@ -146,6 +147,16 @@ public class BSONTest {
         map.put(obj3, obj3);
         map.put(obj4, obj4);
         assertEquals(3, map.size());
+    }
+
+    @Test
+    public void BSONDecimalINFTest() {
+        BSONObject obj = new BasicBSONObject().
+                append("MAX", new BSONDecimal("INF")).
+                append("max", new BSONDecimal("inf")).
+                append("MIN", new BSONDecimal("-INF")).
+                append("min", new BSONDecimal("-inf"));
+        cl.insert(obj);
     }
 
 }

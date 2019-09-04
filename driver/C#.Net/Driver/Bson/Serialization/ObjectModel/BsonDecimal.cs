@@ -615,33 +615,52 @@ namespace SequoiaDB.Bson
             int cp_idx = 0;
             if (_value.Length >= 3)
             {
-			    // not a number
-			    if ((cp[0] == 'n' || cp[0] == 'N') && 
-                    (cp[1] == 'a' || cp[1] == 'A') && 
-                    (cp[2] == 'n' || cp[2] == 'N')) 
+                // not a number
+                if ((cp[0] == 'n' || cp[0] == 'N') && 
+                       (cp[1] == 'a' || cp[1] == 'A') && 
+                       (cp[2] == 'n' || cp[2] == 'N')) 
+                   {
+                   _SetNan();
+                       _Update();
+                   return;
+                }
+                // min
+                if ((cp[0] == 'm' || cp[0] == 'M') && 
+                       (cp[1] == 'i' || cp[1] == 'I') && 
+                       (cp[2] == 'n' || cp[2] == 'N')) 
+                   {
+                   _SetMin();
+                       _Update();
+                   return;
+                }
+                // max
+                if ((cp[0] == 'm' || cp[0] == 'M') && 
+                       (cp[1] == 'a' || cp[1] == 'A') && 
+                       (cp[2] == 'x' || cp[2] == 'X')) 
+                   {
+                   _SetMax();
+                       _Update();
+                   return;
+                }
+                // inf
+                if ((cp[0] == 'i' || cp[0] == 'I') &&
+                    (cp[1] == 'n' || cp[1] == 'N') &&
+                    (cp[2] == 'f' || cp[2] == 'F'))
                 {
-				    _SetNan();
+                    _SetMax();
                     _Update();
-				    return;
-			    }
-			    // min
-			    if ((cp[0] == 'm' || cp[0] == 'M') && 
-                    (cp[1] == 'i' || cp[1] == 'I') && 
-                    (cp[2] == 'n' || cp[2] == 'N')) 
+                    return;
+                }
+                // -inf
+                if ((cp[0] == '-') &&
+                    (cp[1] == 'i' || cp[1] == 'I') &&
+                    (cp[2] == 'n' || cp[2] == 'N') &&
+                    (cp[3] == 'f' || cp[3] == 'F'))
                 {
-				    _SetMin();
+                    _SetMin();
                     _Update();
-				    return;
-			    }
-			    // max
-			    if ((cp[0] == 'm' || cp[0] == 'M') && 
-                    (cp[1] == 'a' || cp[1] == 'A') && 
-                    (cp[2] == 'x' || cp[2] == 'X')) 
-                {
-				    _SetMax();
-                    _Update();
-				    return;
-			    }
+                    return;
+                }
             }
 
 		    /*
