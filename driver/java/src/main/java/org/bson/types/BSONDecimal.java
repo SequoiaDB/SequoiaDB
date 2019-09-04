@@ -502,6 +502,21 @@ public class BSONDecimal implements Comparable<BSONDecimal>, Serializable {
 				_update();
 				return;
 			}
+			if ((cp[0] == 'i' || cp[0] == 'I')
+					&& (cp[1] == 'n' || cp[1] == 'N')
+					&& (cp[2] == 'f' || cp[2] == 'F')) {
+				_setMax();
+				_update();
+				return;
+			}
+			if ((cp[0] == '-') &&
+					(cp[1] == 'i' || cp[1] == 'I')
+					&& (cp[2] == 'n' || cp[2] == 'N')
+					&& (cp[3] == 'f' || cp[3] == 'F')) {
+				_setMin();
+				_update();
+				return;
+			}
 		}
 
 		/*
