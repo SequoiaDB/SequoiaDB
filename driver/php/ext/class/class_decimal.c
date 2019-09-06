@@ -42,8 +42,17 @@ PHP_METHOD( SequoiaDecimal, __construct )
    }
    if( pPrecision && pScale )
    {
-      php_zval2Int( pPrecision, &precision TSRMLS_CC ) ;
-      php_zval2Int( pScale, &scale TSRMLS_CC ) ;
+      rc = php_zval2Int( pPrecision, &precision TSRMLS_CC ) ;
+      if( rc )
+      {
+         goto error ;
+      }
+
+      rc = php_zval2Int( pScale, &scale TSRMLS_CC ) ;
+      if( rc )
+      {
+         goto error ;
+      }
    }
    if( precision == -1 && scale == -1 )
    {
