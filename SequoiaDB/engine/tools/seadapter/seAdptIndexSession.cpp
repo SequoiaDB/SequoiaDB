@@ -109,7 +109,7 @@ namespace seadapter
    {
       if ( _esClt )
       {
-         sdbGetSeAdapterCB()->getSeCltMgr()->releaseClt( _esClt ) ;
+         SDB_OSS_DEL _esClt ;
       }
    }
 
@@ -136,28 +136,21 @@ namespace seadapter
 
       if ( SDB_DMS_EOC == reply->flags )
       {
-         _onSDBEOC() ;
-         goto done ;
+         rc = _onSDBEOC() ;
+         PD_RC_CHECK( rc, PDERROR, "Unexpected end of collection, rc[ %d ]",
+                      rc );
       }
       else if ( SDB_DMS_CS_NOTEXIST == reply->flags ||
                 SDB_DMS_NOTEXIST == reply->flags ||
                 SDB_DMS_CS_DELETING == reply->flags )
       {
-         rc = _onOrigIdxDropped() ;
+         rc = _dropIndex() ;
          PD_RC_CHECK( rc, PDERROR, "Clean operation on index dropped "
                       "failed[ %d ]", rc ) ;
-         goto done ;
+         goto error ;
       }
       else if ( SDB_OK != reply->flags )
       {
-         if ( SDB_CLS_NOT_PRIMARY == reply->flags )
-         {
-            PD_LOG( PDEVENT, "Node is not primary when pop. Switch of primary "
-                    "may have happened. Exiting current indexing work..." ) ;
-            _quit = TRUE ;
-            goto done ;
-         }
-
          rc = reply->flags ;
          PD_LOG( PDERROR, "Query failed[ %d ]. Current status[ %s ]",
                  rc, _seadptStatus2Desp( _status ) ) ;
@@ -178,7 +171,7 @@ namespace seadapter
             if ( 0 == docObjs.size() )
             {
                _lastPopLID = -1 ;
-               _expectLID = 0 ;
+               _expectLID = -1 ;
             }
             else
             {
@@ -220,9 +213,9 @@ namespace seadapter
             {
                SDB_ASSERT( 1 == docObjs.size(),
                            "Returned object number is wrong" ) ;
-               INT64 lastLID =
+               INT64 firstLID =
                   docObjs[0].getField(SEADPT_FIELD_NAME_ID).Number() ;
-               if ( _expectLID <= lastLID )
+               if ( _expectLID >= firstLID )
                {
                   _lastPopLID = _expectLID ;
                   _switchStatus( SEADPT_SESSION_STAT_QUERY_CAP_TBL ) ;
@@ -232,9 +225,9 @@ namespace seadapter
                else
                {
                   PD_LOG( PDERROR, "The expected logical id is [ %lld ], but "
-                          "the actual last logical id in capped collection "
+                          "the actual first logical id in capped collection "
                           "[ %s ] is [ %lld ]. Begin to start all over again",
-                          _expectLID, _cappedCLFullName.c_str(), lastLID ) ;
+                          _expectLID, _cappedCLFullName.c_str(), firstLID ) ;
                   rc = _startOver() ;
                   PD_RC_CHECK( rc, PDERROR, "Restart the index work "
                                "failed[ %d ]", rc ) ;
@@ -260,7 +253,7 @@ namespace seadapter
    done:
       return rc ;
    error:
-      _setQueryBusyFlag( FALSE ) ;
+      _quit = TRUE ;
       goto done ;
    }
 
@@ -288,7 +281,7 @@ namespace seadapter
             break ;
          default:
             SDB_ASSERT( FALSE, "Invalid status" ) ;
-            break ;
+            goto error ;
       }
 
    done:
@@ -296,7 +289,7 @@ namespace seadapter
    error:
       if ( SDB_DMS_NOTEXIST == rc || SDB_DMS_CS_NOTEXIST == rc )
       {
-         INT32 rcTmp = _onOrigIdxDropped() ;
+         INT32 rcTmp = _dropIndex() ;
          if ( rcTmp )
          {
             PD_LOG( PDERROR, "Clean operation on index dropped failed[ %d ]",
@@ -305,6 +298,7 @@ namespace seadapter
 
          rc = SDB_OK ;
       }
+      _quit = TRUE ;
       goto done ;
    }
 
@@ -343,6 +337,10 @@ namespace seadapter
 
       switch ( _status )
       {
+         case SEADPT_SESSION_STAT_CONSULT:
+            rc = _consult() ;
+            PD_RC_CHECK( rc, PDERROR, "Consult failed[ %d ]", rc ) ;
+            break ;
          case SEADPT_SESSION_STAT_BEGIN:
             {
                INT32 clVersion = -1 ;
@@ -355,16 +353,6 @@ namespace seadapter
                        _origCLVersion, clVersion ) ;
                _origCLVersion = clVersion ;
                _switchStatus( SEADPT_SESSION_STAT_QUERY_NORMAL_TBL ) ;
-            }
-            break ;
-         case SEADPT_SESSION_STAT_CONSULT:
-            rc = _consult() ;
-            if ( SDB_OK != rc )
-            {
-               PD_LOG( PDERROR, "Consult failed[ %d ]. Try to start from the "
-                       "beginning...", rc ) ;
-               _startOver() ;
-               goto error ;
             }
             break ;
          case SEADPT_SESSION_STAT_QUERY_NORMAL_TBL:
@@ -552,7 +540,7 @@ namespace seadapter
       goto done ;
    }
 
-   INT32 _seAdptIndexSession::_queryLastCappedRecLID()
+   INT32 _seAdptIndexSession::_queryLastCappedRecLID( BOOLEAN reverse )
    {
       INT32 rc = SDB_OK ;
       MsgHeader *msg = NULL ;
@@ -563,7 +551,14 @@ namespace seadapter
       try
       {
          selector = BSON( SEADPT_FIELD_NAME_ID << "" ) ;
-         orderBy = BSON( SEADPT_FIELD_NAME_ID << -1 ) ;
+         if ( reverse )
+         {
+            orderBy = BSON( SEADPT_FIELD_NAME_ID << 1 ) ;
+         }
+         else
+         {
+            orderBy = BSON( SEADPT_FIELD_NAME_ID << -1 ) ;
+         }
 
          rc = msgBuildQueryMsg( (CHAR **)&msg, &bufSize, _cappedCLFullName.c_str(),
                                 FLG_QUERY_WITH_RETURNDATA, 0, 0, 1, NULL,
@@ -751,11 +746,12 @@ namespace seadapter
          {
             BSONObj emptyObj = BSON( SEADPT_FIELD_NAME_LID << _expectLID ) ;
             rc = _markProgress( emptyObj ) ;
-            PD_RC_CHECK( rc, PDERROR, "Write end mark for normal collection[ %s ] "
-                  "on search engine failed[ %d ]",
-                         _origCLFullName.c_str(), rc ) ;
-            PD_LOG( PDDEBUG, "Write end mark for normal collection[ %s ] on "
-                  "search engine successfully", _origCLFullName.c_str() ) ;
+            PD_RC_CHECK( rc, PDERROR, "Write end mark[_lid: %lld] for normal "
+                         "collection[ %s ] on search engine failed[ %d ]",
+                         _expectLID, _origCLFullName.c_str(), rc ) ;
+            PD_LOG( PDEVENT, "Write end mark[_lid: %lld] for normal "
+                    "collection[ %s ] on search engine successfully",
+                    _expectLID, _origCLFullName.c_str() ) ;
             _switchStatus( SEADPT_SESSION_STAT_QUERY_CAP_TBL ) ;
             _setQueryBusyFlag( FALSE ) ;
             goto done ;
@@ -775,9 +771,6 @@ namespace seadapter
             goto error ;
          }
 
-         rc = _ensureESClt() ;
-         PD_RC_CHECK( rc, PDERROR, "The search engine client is not active[ %d ]",
-                      rc ) ;
          rc = _bulkPrepare() ;
          PD_RC_CHECK( rc, PDERROR, "Prepare of bulk operation failed[ %d ]",
                       rc ) ;
@@ -850,11 +843,7 @@ namespace seadapter
    done:
       return rc ;
    error:
-      _switchStatus( SEADPT_SESSION_STAT_BEGIN ) ;
-      _setQueryBusyFlag( FALSE ) ;
-      PD_LOG( PDEVENT, "Error happened when processiong data of collection"
-              "[ %s ]. Ready to restart the task from beginning",
-              _origCLFullName.c_str() ) ;
+      _quit = TRUE ;
       goto done ;
    }
 
@@ -896,10 +885,6 @@ namespace seadapter
          _setQueryBusyFlag( FALSE ) ;
          goto error ;
       }
-
-      rc = _ensureESClt() ;
-      PD_RC_CHECK( rc, PDERROR, "The search engine client is not active[ %d ]",
-                   rc ) ;
 
       try
       {
@@ -1017,7 +1002,7 @@ namespace seadapter
    done:
       return rc ;
    error:
-      _setQueryBusyFlag( FALSE ) ;
+      _quit = TRUE ;
       goto done ;
    }
 
@@ -1052,9 +1037,6 @@ namespace seadapter
    {
       INT32 rc = SDB_OK ;
 
-      rc = _ensureESClt() ;
-      PD_RC_CHECK( rc, PDERROR, "The search engine client is not active[ %d ]",
-                   rc ) ;
       try
       {
          rc = _esClt->indexDocument( _indexName.c_str(), _typeName.c_str(),
@@ -1087,7 +1069,7 @@ namespace seadapter
 
       if ( !_esClt )
       {
-         rc = sdbGetSeAdapterCB()->getSeCltMgr()->getClt( &_esClt ) ;
+         rc = sdbGetSeAdapterCB()->getSeCltFactory()->create( &_esClt ) ;
          if ( rc )
          {
             PD_LOG( PDERROR, "Failed to get search engine client, rc: %d",
@@ -1116,9 +1098,16 @@ namespace seadapter
       BSONElement lidEle ;
       BSONObj condition ;
 
-      rc = _ensureESClt() ;
-      PD_RC_CHECK( rc, PDERROR, "The search engine client is not active[ %d ]",
-                   rc ) ;
+      if ( !_esClt )
+      {
+         rc = sdbGetSeAdapterCB()->getSeCltFactory()->create( &_esClt ) ;
+         if ( rc )
+         {
+            PD_LOG( PDERROR, "Failed to get search engine client, rc: %d",
+                    rc ) ;
+            goto error ;
+         }
+      }
 
       rc = _esClt->indexExist( _indexName.c_str(), found ) ;
       PD_RC_CHECK( rc, PDERROR, "Check index[ %s ] existence on search engine "
@@ -1156,7 +1145,7 @@ namespace seadapter
                          rc ) ;
 
             rc = _queryLastCappedRecLID() ;
-            PD_RC_CHECK( rc, PDERROR, "Query last logical id failed[ %d ]", rc ) ;
+            PD_RC_CHECK( rc, PDERROR, "Query first logical id failed[ %d ]", rc ) ;
             _switchStatus( SEADPT_SESSION_STAT_QUERY_LAST_LID ) ;
             goto done ;
          }
@@ -1170,9 +1159,13 @@ namespace seadapter
          lidEle = resultObj.getField( SEADPT_FIELD_NAME_LID ) ;
          PD_LOG( PDDEBUG, "Commit object: %s", resultObj.toString().c_str() ) ;
          _expectLID = lidEle.numberLong() ;
+         if ( -1 == _expectLID )
+         {
+            _expectLID = 0 ;
+         }
 
-         rc = _queryLastCappedRecLID() ;
-         PD_RC_CHECK( rc, PDERROR, "Query last logical id failed[ %d ]", rc ) ;
+         rc = _queryLastCappedRecLID( TRUE ) ;
+         PD_RC_CHECK( rc, PDERROR, "Query first logical id failed[ %d ]", rc ) ;
          _switchStatus( SEADPT_SESSION_STAT_COMP_LAST_LID ) ;
          goto done ;
       }
@@ -1186,36 +1179,7 @@ namespace seadapter
    done:
       return rc ;
    error:
-      _switchStatus( SEADPT_SESSION_STAT_BEGIN ) ;
-      goto done ;
-   }
-
-   INT32 _seAdptIndexSession::_ensureESClt()
-   {
-      INT32 rc = SDB_OK ;
-      if ( !_esClt )
-      {
-         rc = sdbGetSeAdapterCB()->getSeCltMgr()->getClt( &_esClt ) ;
-         if ( rc )
-         {
-            PD_LOG( PDERROR, "Failed to get search engine client, rc: %d",
-                    rc ) ;
-            goto error ;
-         }
-      }
-      else
-      {
-         if ( !_esClt->isActive() )
-         {
-            rc = _esClt->active() ;
-            PD_RC_CHECK( rc, PDERROR, "Activate search engine client "
-                         "failed[ %d ]", rc ) ;
-         }
-      }
-
-   done:
-      return rc ;
-   error:
+      _quit =  TRUE ;
       goto done ;
    }
 
@@ -1237,7 +1201,8 @@ namespace seadapter
          PD_LOG( PDEVENT, "Collection[ %s ] can not be found on catalog. It "
                  "may have been dropped. Task ready to exit.",
                  _origCLFullName.c_str() ) ;
-         _quit = TRUE ;
+         rc = SDB_DMS_NOTEXIST ;
+         goto error ; ;
       }
 
       rc = msgBuildKillContextsMsg( (CHAR **)&msg, &bufSize, requestID,
@@ -1259,39 +1224,12 @@ namespace seadapter
    {
       INT32 rc = SDB_OK ;
 
-      rc = _createIndex( TRUE ) ;
-      PD_RC_CHECK( rc, PDERROR, "Create index by force failed[ %d ]", rc ) ;
+      rc = _dropIndex() ;
+      PD_RC_CHECK( rc, PDERROR, "Drop index[ %s ] on search engine "
+                   "failed[ %d ]", _indexName.c_str(), rc ) ;
 
       _switchStatus( SEADPT_SESSION_STAT_CONSULT ) ;
       _setQueryBusyFlag( FALSE ) ;
-
-   done:
-      return rc ;
-   error: goto done ;
-   }
-
-   INT32 _seAdptIndexSession::_onOrigIdxDropped()
-   {
-      INT32 rc = SDB_OK ;
-
-      PD_LOG( PDEVENT, "Original index[ %s ] does not exist any more. Task "
-              "ready to exit. Index on search engine[ %s ] will be dropped.",
-              _origIdxName.c_str(), _indexName.c_str() ) ;
-
-      _quit = TRUE ;
-
-      rc = _ensureESClt() ;
-      PD_RC_CHECK( rc, PDERROR, "The search engine client is not active[ %d ]",
-                   rc ) ;
-      rc = _esClt->dropIndex( _indexName.c_str() ) ;
-      if ( rc )
-      {
-         PD_LOG( PDERROR, "Drop index[ %s ] on search engine failed[ %d ]",
-                 _indexName.c_str(), rc ) ;
-         goto error ;
-      }
-      PD_LOG( PDEVENT, "Drop index[ %s ] on search engine successfully",
-              _indexName.c_str() ) ;
 
    done:
       return rc ;
@@ -1365,14 +1303,9 @@ namespace seadapter
       INT32 rc = SDB_OK ;
       BOOLEAN found = FALSE ;
 
-      rc = _ensureESClt() ;
-      PD_RC_CHECK( rc, PDERROR, "The search engine client is not active[ %d ]",
-                   rc ) ;
-
       rc = _esClt->indexExist( _indexName.c_str(), found ) ;
       PD_RC_CHECK( rc, PDERROR, "Check index[ %s ] existence on search engine "
                    "failed[ %d ]", _indexName.c_str(), rc ) ;
-
       if ( found )
       {
          if ( force )
@@ -1412,13 +1345,39 @@ namespace seadapter
          PD_RC_CHECK( rc, PDERROR, "Create index[ %s ] with mapping[ %s ] on "
                       "search engine failed[ %d ]", _indexName.c_str(),
                       mappingObj.toString( FALSE, TRUE).c_str(), rc ) ;
-
+         PD_LOG( PDEVENT, "Create index[ %s ] with mapping[ %s ] on "
+                 "search engine successfully", _indexName.c_str(),
+                 mappingObj.toString( FALSE, TRUE).c_str() ) ;
       }
       catch ( std::exception &e )
       {
          rc = SDB_SYS ;
          PD_LOG( PDERROR, "Unexpected exception occurred: %s", e.what() ) ;
          goto error ;
+      }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   INT32 _seAdptIndexSession::_dropIndex()
+   {
+      INT32 rc = SDB_OK ;
+      BOOLEAN found = FALSE ;
+
+      rc = _esClt->indexExist( _indexName.c_str(), found ) ;
+      PD_RC_CHECK( rc, PDERROR, "Check index[ %s ] existence on search engine "
+                   "failed[ %d ]", _indexName.c_str(), rc ) ;
+
+      if ( found )
+      {
+         rc = _esClt->dropIndex( _indexName.c_str() ) ;
+         PD_RC_CHECK( rc, PDERROR, "Drop index[ %s ] on search engine "
+                         "failed[ %d ]", _indexName.c_str(), rc ) ;
+         PD_LOG( PDEVENT, "Index[ %s ] dropped successfully",
+                 _indexName.c_str() ) ;
       }
 
    done:

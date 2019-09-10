@@ -85,7 +85,7 @@ namespace seadapter
                           const string &idxName, string &esIdxName ) ;
 
    private:
-      utilESCltMgr      *_seCltMgr ;
+      utilESCltFactory  *_seCltFactory ;
       utilESClt         *_esClt ;
       seAdptContextBase *_context ;
       BSONObj           _errorInfo ;
