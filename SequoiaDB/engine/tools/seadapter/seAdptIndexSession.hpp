@@ -53,9 +53,9 @@ namespace seadapter
 {
    enum SEADPT_SESSION_STATUS
    {
-      SEADPT_SESSION_STAT_BEGIN = 1,         // Start from the beginning.
+      SEADPT_SESSION_STAT_CONSULT = 1,       // To find where to start.
+      SEADPT_SESSION_STAT_BEGIN,             // Start from the beginning,
       SEADPT_SESSION_STAT_UPDATE_CL_VERSION, // Update collection version.
-      SEADPT_SESSION_STAT_CONSULT,           // To find where to start.
       SEADPT_SESSION_STAT_QUERY_LAST_LID,
       SEADPT_SESSION_STAT_COMP_LAST_LID,
       SEADPT_SESSION_STAT_QUERY_NORMAL_TBL,
@@ -92,7 +92,7 @@ namespace seadapter
       void  _switchStatus( SEADPT_SESSION_STATUS newStatus ) ;
       INT32 _sendGetmoreReq( INT64 contextID, UINT64 requestID ) ;
       INT32 _queryOrigCollection() ;
-      INT32 _queryLastCappedRecLID() ;
+      INT32 _queryLastCappedRecLID( BOOLEAN reverse = FALSE ) ;
       INT32 _queryCappedCollection( BSONObj &condition ) ;
       INT32 _cleanData( INT64 recLID ) ;
       INT32 _parseSrcData( const BSONObj &origObj, _rtnExtOprType &oprType,
@@ -107,16 +107,15 @@ namespace seadapter
 
       INT32 _chkDoneMark( BOOLEAN &found ) ;
       INT32 _consult() ;
-      INT32 _ensureESClt() ;
       INT32 _onSDBEOC() ;
       INT32 _startOver() ;
       void  _setQueryBusyFlag( BOOLEAN busy ) { _queryBusy = busy; }
       BOOLEAN _isQueryBusy() { return _queryBusy ; }
-      INT32 _onOrigIdxDropped() ;
       INT32 _bulkPrepare() ;
       INT32 _bulkProcess( const utilESBulkActionBase &actionItem ) ;
       INT32 _bulkFinish() ;
       INT32 _createIndex( BOOLEAN force = FALSE ) ;
+      INT32 _dropIndex() ;
 
       OSS_INLINE INT32 _findRecWithLID( INT64 logicalID, BOOLEAN &found ) ;
 
@@ -148,9 +147,6 @@ namespace seadapter
       std::ostringstream lidStr ;
       lidStr << logicalID ;
 
-      rc = _ensureESClt() ;
-      PD_RC_CHECK( rc, PDERROR, "The search engine client is not active[ %d ]",
-                   rc ) ;
       rc = _esClt->documentExist( _indexName.c_str(), _typeName.c_str(),
                                   SEADPT_FIELD_NAME_ID, lidStr.str().c_str(),
                                   found ) ;

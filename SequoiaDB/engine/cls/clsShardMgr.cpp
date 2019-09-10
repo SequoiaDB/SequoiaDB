@@ -2329,6 +2329,13 @@ namespace engine
       MSG_ROUTE_SERVICE_TYPE svcType = MSG_ROUTE_CAT_SERVICE ;
       CHAR groupName[ OSS_MAX_GROUPNAME_SIZE + 1 ] = { 0 } ;
 
+      pmdGetKRCB()->getGroupName( groupName, OSS_MAX_GROUPNAME_SIZE + 1 ) ;
+      if ( 0 == ossStrlen( groupName ) )
+      {
+         rc = SDB_REPL_GROUP_NOT_ACTIVE ;
+         goto error ;
+      }
+
       messenger = rtnCB->getRemoteMessenger() ;
       if ( !messenger )
       {
@@ -2399,7 +2406,6 @@ namespace engine
          }
 
          builder.appendBool( FIELD_NAME_IS_PRIMARY, pmdIsPrimary() ) ;
-         pmdGetKRCB()->getGroupName( groupName, OSS_MAX_GROUPNAME_SIZE + 1 ) ;
          builder.append( FIELD_NAME_GROUPNAME, groupName ) ;
 
          tmpPos = _cataGrpItem.getPrimaryPos() ;
@@ -2449,7 +2455,7 @@ namespace engine
          reply->flags = rc ;
          reply->startFrom = 0 ;
          reply->numReturned = rc ? -1 : 1 ;
-         if ( SDB_OK == rc )
+         if ( SDB_OK == rc && !myInfoObj.isEmpty() )
          {
             ossMemcpy( (CHAR *)reply + sizeof( MsgAuthReply ),
                        myInfoObj.objdata(), myInfoObj.objsize() ) ;
@@ -2531,7 +2537,7 @@ namespace engine
       }
 
       rc = _dumpTextIdxInfo( localVersion, textIdxInfo,
-                             (localVersion == peerVersion) ) ;
+                             ( localVersion == peerVersion ) ) ;
       PD_RC_CHECK( rc, PDERROR, "Dump text indices information failed[ %d ]",
                    rc ) ;
 
