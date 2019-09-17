@@ -5060,6 +5060,15 @@ namespace engine
          }
       }
 
+      if( businessType == OM_BUSINESS_SEQUOIASQL )
+      {
+         _errorDetail = "only supported in enterprise edition" ;
+         rc = SDB_OPTION_NOT_SUPPORT ;
+         _sendErrorRes2Web( rc, _errorDetail ) ;
+         goto error ;
+      }
+
+
       rc = configTool.readBuzTemplate( businessType, operationType,
                                        deployModList ) ;
       if( rc )

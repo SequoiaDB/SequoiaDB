@@ -544,7 +544,7 @@ sdbSEAdptFiles = [
       "tools/seadapter/utilESClt.cpp",
       "tools/seadapter/utilESBulkBuilder.cpp",
       "tools/seadapter/seAdptMsgHandler.cpp",
-      "tools/seadapter/utilESCltFactory.cpp",
+      "tools/seadapter/utilESCltMgr.cpp",
       "tools/seadapter/seAdptIdxMetaMgr.cpp",
       "tools/seadapter/utilCommObjBuff.cpp",
       "tools/seadapter/utilESUtil.cpp",

@@ -52,21 +52,20 @@ namespace seadapter
    _seAdptAgentSession::_seAdptAgentSession( UINT64 sessionID )
    : _pmdAsyncSession( sessionID )
    {
-      _seCltFactory = sdbGetSeCltFactory() ;
+      _seCltMgr = sdbGetSeCltMgr() ;
       _esClt = NULL ;
       _context = NULL ;
    }
 
    _seAdptAgentSession::~_seAdptAgentSession()
    {
+      if ( _esClt )
+      {
+         _seCltMgr->releaseClt( _esClt ) ;
+      }
       if ( _context )
       {
          SDB_OSS_DEL _context ;
-      }
-
-      if ( _esClt )
-      {
-         SDB_OSS_DEL _esClt ;
       }
    }
 
@@ -209,7 +208,7 @@ namespace seadapter
 
          if ( !_esClt )
          {
-            rc = _seCltFactory->create( &_esClt ) ;
+            rc = _seCltMgr->getClt( &_esClt ) ;
             if ( rc )
             {
                PD_LOG_MSG( PDERROR, "Connect to search engine failed[ %d ]", rc ) ;

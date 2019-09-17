@@ -15,7 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program. If not, see <http://www.gnu.org/license/>.
 
-   Source File Name = utilESCltFactory.cpp
+   Source File Name = utilESCltMgr.cpp
 
    Descriptive Name = Elasticsearch client manager.
 
@@ -38,20 +38,26 @@
 #include "core.hpp"
 #include "pd.hpp"
 #include "utilESClt.hpp"
-#include "utilESCltFactory.hpp"
+#include "utilESCltMgr.hpp"
 
 namespace seadapter
 {
-   _utilESCltFactory::_utilESCltFactory()
+   _utilESCltMgr::_utilESCltMgr( UINT32 cacheNum )
    {
       _timeout = 0 ;
+      _cacheNum = cacheNum ;
    }
 
-   _utilESCltFactory::~_utilESCltFactory()
+   _utilESCltMgr::~_utilESCltMgr()
    {
+      for ( vector<utilESClt *>::iterator itr = _vecSEClt.begin();
+            itr != _vecSEClt.end(); ++itr )
+      {
+         SDB_OSS_DEL *itr ;
+      }
    }
 
-   INT32 _utilESCltFactory::init( const std::string &url, INT32 timeout )
+   INT32 _utilESCltMgr::init( const std::string &url, INT32 timeout )
    {
       INT32 rc = SDB_OK ;
 
@@ -70,14 +76,25 @@ namespace seadapter
       goto done ;
    }
 
-   INT32 _utilESCltFactory::create( utilESClt **seClt )
+   INT32 _utilESCltMgr::getClt( utilESClt **seClt )
    {
       INT32 rc = SDB_OK ;
       utilESClt* client = NULL ;
 
       SDB_ASSERT( seClt, "Parameter should not be null" ) ;
 
-      client = SDB_OSS_NEW _utilESClt() ;
+      _latch.get() ;
+      if ( _vecSEClt.size() > 0 )
+      {
+         client = _vecSEClt.back() ;
+         _vecSEClt.pop_back() ;
+      }
+      else
+      {
+         client = SDB_OSS_NEW _utilESClt() ;
+      }
+      _latch.release() ;
+
       if ( !client )
       {
          rc = SDB_OOM ;
@@ -103,6 +120,26 @@ namespace seadapter
          SDB_OSS_DEL client ;
       }
       goto done ;
+   }
+
+   void _utilESCltMgr::releaseClt( utilESClt *&seClt )
+   {
+      if ( !seClt )
+      {
+         return ;
+      }
+
+      _latch.get() ;
+      if ( _vecSEClt.size() < _cacheNum )
+      {
+         _vecSEClt.push_back( seClt ) ;
+      }
+      else
+      {
+         SDB_OSS_DEL seClt ;
+      }
+      _latch.release() ;
+      seClt = NULL ;
    }
 }
 

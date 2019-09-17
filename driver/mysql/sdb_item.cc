@@ -639,10 +639,6 @@ sdb_func_unkown::sdb_func_unkown( Item_func *item )
 {
    func_item = item ;
    para_num_max = item->argument_count() ;
-   if ( 0 == para_num_max )
-   {
-      is_finished = TRUE ;
-   }
 }
 
 sdb_func_unkown::~sdb_func_unkown()

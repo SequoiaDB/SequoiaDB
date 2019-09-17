@@ -15,9 +15,9 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program. If not, see <http://www.gnu.org/license/>.
 
-   Source File Name = utilESCltFactory.hpp
+   Source File Name = utilESCltMgr.hpp
 
-   Descriptive Name = Elasticsearch client factory
+   Descriptive Name = Elasticsearch client manager.
 
    When/how to use: this program may be used on binary and text-formatted
    versions of data management component. This file contains structure for
@@ -35,29 +35,34 @@
    Last Changed =
 
 *******************************************************************************/
-#ifndef UTIL_SECLT_FACTORY_HPP_
-#define UTIL_SECLT_FACTORY_HPP_
+#ifndef UTIL_SECLT_MGR_HPP_
+#define UTIL_SECLT_MGR_HPP_
 
 #include "ossLatch.hpp"
 #include "utilESClt.hpp"
 
+#define UTIL_ESCLT_DFT_CACHE_NUM    100
 namespace seadapter
 {
-   class _utilESCltFactory : public SDBObject
+   class _utilESCltMgr : public SDBObject
    {
    public:
-      _utilESCltFactory() ;
-      ~_utilESCltFactory() ;
+      _utilESCltMgr( UINT32 cacheNum = UTIL_ESCLT_DFT_CACHE_NUM ) ;
+      ~_utilESCltMgr() ;
 
       INT32 init( const std::string &url, INT32 timeout ) ;
-      INT32 create( utilESClt **seClt ) ;
+      INT32 getClt( utilESClt **seClt ) ;
+      void releaseClt( utilESClt *&seClt ) ;
 
    private:
-      std::string    _url ;      // Search engine address
-      INT32          _timeout ;
+      std::string          _url ;      // Search engine address
+      INT32                _timeout ;
+      UINT32               _cacheNum ;
+      ossSpinXLatch        _latch ;
+      vector<utilESClt *>  _vecSEClt ;
    } ;
-   typedef _utilESCltFactory utilESCltFactory ;
+   typedef _utilESCltMgr utilESCltMgr ;
 }
 
-#endif /* UTIL_SECLT_FACTORY_HPP_ */
+#endif /* UTIL_SECLT_MGR_HPP_ */
 
