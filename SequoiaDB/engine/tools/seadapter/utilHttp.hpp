@@ -150,7 +150,7 @@ namespace seadapter
       private:
          INT32 _parseUri( const string &uri ) ;
          INT32 _connectBySocket() ;
-         INT32 _connect() ;
+         INT32 _connect( BOOLEAN newSock = FALSE ) ;
          void  _disconnect() ;
          BOOLEAN _validMethod( const CHAR *method ) ;
          void _buildReqStr( const CHAR *method, const CHAR *endUrl,
