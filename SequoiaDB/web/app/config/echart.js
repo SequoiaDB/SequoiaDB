@@ -494,7 +494,7 @@
          }
       ]
    } ;
-
+   
    window.SdbSacManagerConf.NetwordOutEchart = {
       title: {
          show: true,
@@ -608,7 +608,101 @@
          }
       ]
    } ;
-
+   
+   window.SdbSacManagerConf.MonitorDataEchart = {
+      title: {
+         show: true,
+         text: '',
+         textStyle: {
+            color: '#666',
+            fontFamily: 'Verdana,Georgia,宋体',
+            fontSize: 14
+         }
+      },
+      tooltip: {
+         enterable: true,
+         trigger: 'axis',
+         //显示百分比和占用大小
+         formatter: '{a0}: {c0}/s<br>{a1}: {c1}/s<br>{a2}: {c2}/s<br>{a3}: {c3}/s'
+      },
+      legend: {
+         data: ['Insert','Read','Delete','Update']
+      },
+      animation: false,
+      addDataAnimation: false,
+      color: ['rgba(39,169,227,1)'],
+      xAxis: [
+         {
+            type: 'category',
+            boundaryGap: false,
+            data: ['0', '5', '10', '15', '20', '25', '30'],
+            splitLine: {
+               lineStyle: {
+                  color: ['#fff']
+               }
+            }
+         }
+      ],
+      yAxis: [
+         {
+            type: 'value',
+            axisLabel: {
+               formatter: '{value}/s'
+            }
+         }
+      ],
+      grid: {
+         x: 55,
+         y: 40,
+         x2: 20,
+         y2: 40,
+         borderColor: '#000'
+      },
+      series: [
+         {
+            smooth: true,
+            name: 'Insert',
+            type: 'line',
+            data: [0, 0, 0, 0, 0, 0, 0]
+         },
+         {
+            smooth: true,
+            name: 'Read',
+            itemStyle: {
+               normal: {
+                  color: '#2EC7C9',
+                  lineStyle: { color: '#9ECCB7' }
+               }
+            },
+            type: 'line',
+            data: [0, 0, 0, 0, 0, 0, 0]
+         },
+         {
+            smooth: true,
+            name: 'Delete',
+            itemStyle: {
+               normal: {
+                  color: '#FFB86C',
+                  lineStyle: { color: '#9ECCB7' }
+               }
+            },
+            type: 'line',
+            data: [0, 0, 0, 0, 0, 0, 0]
+         },
+         {
+            smooth: true,
+            name: 'Update',
+            itemStyle: {
+               normal: {
+                  color: '#869B74',
+                  lineStyle: { color: '#9ECCB7' }
+               }
+            },
+            type: 'line',
+            data: [0, 0, 0, 0, 0, 0, 0]
+         }
+      ]
+   } ;
 
    window.SdbSacManagerConf.NetwordIOEchart = {
       title: {

@@ -1034,7 +1034,8 @@
             'mode': 'dynamic',
             'trim': true,
             'width': { '#': '100px' },
-            'max': 30
+            'max': 30,
+            'isRenderHide': false
          }
       } ;
 

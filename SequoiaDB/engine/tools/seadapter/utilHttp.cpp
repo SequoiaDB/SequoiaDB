@@ -224,16 +224,6 @@ namespace seadapter
 
       onlyHead = ( 0 == ossStrcmp( method, HTTP_REQ_HEAD_STR ) ) ;
 
-      if( !isConnected() )
-      {
-         rc = _connect() ;
-         if ( rc )
-         {
-            PD_LOG( PDERROR, "Reconnect to remote server failed[ %d ]", rc ) ;
-            goto error ;
-         }
-      }
-
       rc = _sendMessage( method, endUrl, data, contentType ) ;
       PD_RC_CHECK( rc, PDERROR, "Send message to remote server failed[ %d ]",
                    rc ) ;
@@ -315,7 +305,7 @@ namespace seadapter
          goto error ;
       }
 
-      rc = _connect( TRUE ) ;
+      rc = _connect() ;
       PD_RC_CHECK( rc, PDERROR, "Socket connect failed[ %d ]", rc ) ;
       PD_LOG( PDEVENT,
               "Connection with remote server establised successfully" ) ;
@@ -331,15 +321,11 @@ namespace seadapter
       goto done ;
    }
 
-   INT32 _utilHttp::_connect( BOOLEAN newSock )
+   INT32 _utilHttp::_connect()
    {
       INT32 rc = SDB_OK ;
 
       SDB_ASSERT( _socket, "socket should not be NULL" ) ;
-      if ( !newSock )
-      {
-         _socket->close() ;
-      }
 
       rc = _socket->initSocket() ;
       if ( rc )
@@ -495,7 +481,7 @@ namespace seadapter
       if ( !chunked )
       {
          rc = _send( requestStr.c_str(), requestStr.size() ) ;
-         PD_RC_CHECK( rc, PDERROR, "Send request string failed[ %d ]" ) ;
+         PD_RC_CHECK( rc, PDERROR, "Send request string failed[ %d ]", rc ) ;
       }
       else
       {
@@ -518,7 +504,7 @@ namespace seadapter
       if ( !isConnected() )
       {
          PD_LOG( PDWARNING, "Connection interrupted, try to connect again." ) ;
-         rc = _connect() ;
+         rc = _connectBySocket() ;
          if ( rc )
          {
             PD_LOG( PDERROR, "Failed to connect to remote, rc: %d", rc ) ;
@@ -698,7 +684,7 @@ namespace seadapter
       if ( rc )
       {
          PD_LOG( PDERROR, "The status code is %u. Error has happened[ %d ]",
-                 (HTTP_STATUS_CODE)parser->status_code ) ;
+                 (HTTP_STATUS_CODE)parser->status_code, rc ) ;
       }
 
       if ( onlyHead )

@@ -175,10 +175,10 @@ namespace seadapter
       goto done ;
    }
 
-   void _seIndexSessionMgr::stopAllIndexer()
+   void _seIndexSessionMgr::stopAllIndexer( const NET_HANDLE &handle )
    {
+      handleSessionClose( handle ) ;
       _pAdptCB->cleanInnerSession( SEADPT_SESSION_INDEX ) ;
-
       _taskSessionMap.clear() ;
    }
 
@@ -218,6 +218,7 @@ namespace seadapter
    void _seIndexSessionMgr::onSessionDestoryed( pmdAsyncSession *pSession )
    {
       _taskSessionMap.erase( pSession->sessionID() ) ;
+      _pAdptCB->resetIdxVersion() ;
    }
 
    pmdAsyncSession* _seIndexSessionMgr::_createSession( SDB_SESSION_TYPE sessionType,
@@ -289,8 +290,10 @@ namespace seadapter
       _idxUpdateTimerID = NET_INVALID_TIMER_ID ;
       _oneSecTimerID = NET_INVALID_TIMER_ID ;
       _clVersion = -1 ;
-      _localIdxVer = -1 ;
+      _localIdxVer = SEADPT_INIT_TEXT_INDEX_VERSION ;
       _regMsgBuff = NULL ;
+      _esClt = NULL ;
+      _indexerOn = FALSE ;
    }
 
    _seAdptCB::~_seAdptCB()
@@ -298,6 +301,10 @@ namespace seadapter
       if ( _regMsgBuff )
       {
          SDB_OSS_FREE( _regMsgBuff ) ;
+      }
+      if ( _esClt )
+      {
+         SDB_OSS_DEL _esClt ;
       }
    }
 
@@ -340,7 +347,7 @@ namespace seadapter
 
       seSvcPath = std::string( _options.getSeHost() ) + ":"
                   + std::string( _options.getSeService() ) ;
-      rc = _seCltMgr.init( seSvcPath, _options.getTimeout() ) ;
+      rc = _seCltFactory.init( seSvcPath, _options.getTimeout() ) ;
       if ( rc )
       {
          PD_LOG( PDERROR, "Init search engine client manager failed[ %d ]",
@@ -348,6 +355,10 @@ namespace seadapter
          goto error ;
       }
       PD_LOG( PDEVENT, "Search engine client manager init successfully" ) ;
+
+      rc = _seCltFactory.create( &_esClt ) ;
+      PD_RC_CHECK( rc, PDERROR, "Create search engine client failed[ %d ]",
+                   rc ) ;
 
       pmdGetKRCB()->setBusinessOK( FALSE ) ;
 
@@ -472,9 +483,9 @@ namespace seadapter
       return &_options ;
    }
 
-   utilESCltMgr* _seAdptCB::getSeCltMgr()
+   utilESCltFactory* _seAdptCB::getSeCltFactory()
    {
-      return &_seCltMgr ;
+      return &_seCltFactory ;
    }
 
    seSvcSessionMgr* _seAdptCB::getSeAgentMgr()
@@ -626,6 +637,11 @@ namespace seadapter
       goto done ;
    }
 
+   void _seAdptCB::resetIdxVersion()
+   {
+      _localIdxVer = SEADPT_INIT_TEXT_INDEX_VERSION ;
+   }
+
    INT32 _seAdptCB::_onCatalogResMsg( NET_HANDLE handle, MsgHeader *msg )
    {
       INT32 rc = SDB_OK ;
@@ -697,8 +713,8 @@ namespace seadapter
       goto done ;
    }
 
-   INT32 _seAdptCB::_updateIndexInfo( BSONObj &obj, BOOLEAN &updated,
-                                      BOOLEAN &upgrade )
+   INT32 _seAdptCB::_updateIndexInfo( const NET_HANDLE &handle, BSONObj &obj,
+                                      BOOLEAN &updated, BOOLEAN &upgrade )
    {
       INT32 rc = SDB_OK ;
       INT64 peerVersion = -1 ;
@@ -739,8 +755,8 @@ namespace seadapter
                           "adapter switch from READWRITE mode to READONLY "
                           "mode" ) ;
                   setDataNodePrimary( FALSE ) ;
-                  _idxSessionMgr.stopAllIndexer() ;
-                  _localIdxVer = SEADPT_INIT_TEXT_INDEX_VERSION ;
+                  _idxSessionMgr.stopAllIndexer( handle ) ;
+                  resetIdxVersion() ;
                }
             }
          }
@@ -1367,18 +1383,31 @@ namespace seadapter
          goto error ;
       }
 
-      rc = _updateIndexInfo( objVec[0], updated, upgrade ) ;
+      rc = _updateIndexInfo( handle, objVec[0], updated, upgrade ) ;
       PD_RC_CHECK( rc, PDERROR, "Update indices information failed[ %d ]",
                    rc ) ;
 
-      if ( ( updated && isDataNodePrimary() ) || upgrade )
+      if ( _isESOnline() )
       {
-         rc = _idxSessionMgr.refreshTasks( objVec[0] ) ;
-         PD_RC_CHECK( rc, PDERROR, "Update text index information failed[ %d ]",
-                      rc ) ;
-
-         rc = _startInnerSession( SEADPT_SESSION_INDEX, &_idxSessionMgr ) ;
-         PD_RC_CHECK( rc, PDERROR, "Start inner session failed[ %d ]", rc ) ;
+         if ( ( updated && isDataNodePrimary() ) || upgrade || !_indexerOn )
+         {
+            rc = _idxSessionMgr.refreshTasks( objVec[0] ) ;
+            PD_RC_CHECK( rc, PDERROR, "Update text index information failed[ %d ]",
+                         rc ) ;
+            rc = _startInnerSession( SEADPT_SESSION_INDEX, &_idxSessionMgr ) ;
+            PD_RC_CHECK( rc, PDERROR, "Start inner session failed[ %d ]", rc ) ;
+            _indexerOn = TRUE ;
+         }
+      }
+      else
+      {
+         if ( _indexerOn )
+         {
+            PD_LOG( PDERROR, "Can't connect to search engine, "
+                    "stop all index tasks... " ) ;
+            _idxSessionMgr.stopAllIndexer( handle ) ;
+            _indexerOn = FALSE ;
+         }
       }
 
    done:
@@ -1401,9 +1430,9 @@ namespace seadapter
       _idxMetaCache.clear() ;
       _idxMetaCache.unlock( EXCLUSIVE ) ;
 
-      PD_LOG( PDEVENT, "Network broken with remote. Stop all indexing jobs "
+      PD_LOG( PDEVENT, "Network broken with data node. Stop all indexing jobs "
               "and try to register on data node again..." ) ;
-      _idxSessionMgr.stopAllIndexer() ;
+      _idxSessionMgr.stopAllIndexer( handle ) ;
 
       rc = _resumeRegister() ;
       PD_RC_CHECK( rc, PDERROR, "Resume register failed[ %d ]", rc ) ;
@@ -1453,6 +1482,11 @@ namespace seadapter
       idxMeta.setESIdxName( esIdx.c_str() ) ;
    }
 
+   BOOLEAN _seAdptCB::_isESOnline()
+   {
+      return _esClt->isActive() ;
+   }
+
    seAdptCB* sdbGetSeAdapterCB()
    {
       static seAdptCB s_seAdptMgr ;
@@ -1469,9 +1503,9 @@ namespace seadapter
       return sdbGetSeAdapterCB()->getSeAgentMgr() ;
    }
 
-   utilESCltMgr* sdbGetSeCltMgr()
+   utilESCltFactory* sdbGetSeCltFactory()
    {
-      return sdbGetSeAdapterCB()->getSeCltMgr() ;
+      return sdbGetSeAdapterCB()->getSeCltFactory() ;
    }
 }
 

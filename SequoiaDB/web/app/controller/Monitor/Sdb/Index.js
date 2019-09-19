@@ -468,6 +468,11 @@
 
       //跳转至资源
       $scope.GotoResources = function(){
+         if( window.Config['Edition'] != 'Enterprise' )
+         {
+            _IndexPublic.createCommunityModel( $scope ) ;
+            return ;
+         }
          $location.path( '/Monitor/SDB-Resources/Session' ).search( { 'r': new Date().getTime() } ) ;
       } ;
 
@@ -478,6 +483,11 @@
 
       //跳转至主机列表
       $scope.GotoHostList = function(){
+         if( window.Config['Edition'] != 'Enterprise' )
+         {
+            _IndexPublic.createCommunityModel( $scope ) ;
+            return ;
+         }
          $location.path( '/Monitor/SDB-Host/List/Index' ).search( { 'r': new Date().getTime() } ) ;
       } ;
 
@@ -493,6 +503,11 @@
 
       //跳转至节点列表
       $scope.GotoNodeList = function(){
+         if( window.Config['Edition'] != 'Enterprise' )
+         {
+            _IndexPublic.createCommunityModel( $scope ) ;
+            return ;
+         }
          if( moduleMode == 'distribution' )
          {
             $location.path( '/Monitor/SDB-Nodes/Nodes' ).search( { 'r': new Date().getTime() } ) ;

@@ -5370,6 +5370,7 @@
                   'autoSort': '',   //自动排序，当第一次数据写入到表格、表格数据改变时，将会自动排序
                   'filter': {},     //是否开启过滤功能
                   'default': {},    //如果开启过滤，是否要设置默认值，如果不填，默认是''
+                  'isRenderHide': true,   //是否渲染隐藏(ng-if和ng-show)的元素
                   'text': {
                      'default': $scope.autoLanguage( '显示 ? 条记录，一共 ? 条' ),
                      'filterDefault': $scope.autoLanguage( '显示 ? 条记录，符合条件的一共 ? 条' )
@@ -5864,7 +5865,26 @@
                                  {
                                     var tableKey = $( col ).attr( 'table-key' ) ;
                                     if( typeof( tableKey ) == 'string' && tableKey !== '$auto' )
-                                       keyList.push( tableKey ) ;
+                                    {
+                                       var isPush = true ;
+                                       if( scope['table']['options']['isRenderHide'] == false )
+                                       {
+                                          var ngif = $( col ).attr( 'ng-if' ) ;
+                                          var ngshow = $( col ).attr( 'ng-show' ) ;
+                                          if( ngif )
+                                          {
+                                             isPush = scope.$eval( ngif ) ;
+                                          }
+                                          if( isPush && ngshow )
+                                          {
+                                             isPush = scope.$eval( ngshow ) ;
+                                          }
+                                       }
+                                       if( isPush )
+                                       {
+                                          keyList.push( tableKey ) ;
+                                       }
+                                    }
                                  }
                               } ) ;
                            }
@@ -5872,6 +5892,24 @@
                               if( col.nodeType == 1 )
                               {
                                  var tableKey = $( col ).attr( 'table-key' ) ;
+                                 {
+                                    var ngif = $( col ).attr( 'ng-if' ) ;
+                                    var ngshow = $( col ).attr( 'ng-show' ) ;
+                                    if( ngif )
+                                    {
+                                       if( scope.$eval( ngif ) == false )
+                                       {
+                                          return true ;
+                                       }
+                                    }
+                                    if( ngshow )
+                                    {
+                                       if( scope.$eval( ngshow ) == false )
+                                       {
+                                          return true ;
+                                       }
+                                    }
+                                 }
                                  if( typeof( tableKey ) != 'string' || scope.table['title'][tableKey] === false ||
                                      ( tableKey !== '$auto' && scope.table['title'][tableKey] === undefined ) || index2 >= titleLength )
                                  {
@@ -5887,6 +5925,7 @@
                                  {
                                     //如果table-key属性是$auto，那么说明开发者也不知道字段名字，那么将通过标题找到对应字段
                                     if( tableKey == '$auto' || hasAuto == true )
+                                    if( scope['table']['options']['isRenderHide'] == false )
                                     {
                                        var newAutoHtml = autoHtml ;
                                        hasAuto = true ;
