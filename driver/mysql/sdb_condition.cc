@@ -220,6 +220,15 @@ void sdb_cond_ctx::push( Item *cond_item )
       item_list.push_front( cur_item ) ; // netsted func
    }
    cur_item = item_tmp ;
+   if ( cur_item->finished() )
+   {
+      //func has no parameter
+      pop() ;
+      if ( !keep_on() )
+      {
+         goto error ;
+      }
+   }
 
 done:
    return ;

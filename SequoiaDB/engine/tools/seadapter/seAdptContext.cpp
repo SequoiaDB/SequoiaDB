@@ -216,12 +216,6 @@ namespace seadapter
       PD_RC_CHECK( rc, PDERROR, "Initialize query rebuilder failed[ %d ]",
                    rc ) ;
 
-      if ( !_esClt->isActive() )
-      {
-         rc = _esClt->active() ;
-         PD_RC_CHECK( rc, PDERROR, "Reactive ES client failed[ %d ]", rc ) ;
-      }
-
       rc = searchResult.init() ;
       PD_RC_CHECK( rc, PDERROR, "Result buffer init failed[ %d ]", rc ) ;
 
@@ -482,7 +476,7 @@ namespace seadapter
             }
          }
 
-         totalNum = result.getObjNum() ;
+         totalNum += result.getObjNum() ;
 
          if ( totalNum > limitNum )
          {
