@@ -58,6 +58,8 @@ namespace engine
 {
 
    class _clsMgr ;
+   class _schedTaskAdapterBase ;
+   class _schedTaskContanierMgr ;
 
    /*
       _innerSessionInfo define
@@ -82,6 +84,10 @@ namespace engine
       public:
          _clsShardSessionMgr( _clsMgr *pClsMgr ) ;
          virtual ~_clsShardSessionMgr() ;
+
+         schedTaskInfo*       getTaskInfo() ;
+
+         void                 onConfigChange() ;
 
          virtual INT32        handleSessionTimeout( UINT32 timerID,
                                                     UINT32 interval ) ;
@@ -132,6 +138,7 @@ namespace engine
          _clsMgr                 *_pClsMgr ;
          UINT32                  _unShardSessionTimer ;
          map< UINT64, _clsIdentifyInfo >    _mapIdentifys ;
+         schedTaskInfo           _taskInfo ;
 
    } ;
    typedef _clsShardSessionMgr clsShardSessionMgr ;
@@ -276,17 +283,6 @@ namespace engine
          INT32 _onStepUp( pmdEDUEvent *event ) ;
 
       private:
-         _shdMsgHandler                _shdMsgHandlerObj ;
-         _replMsgHandler               _replMsgHandlerObj ;
-         _clsShardTimerHandler         _shdTimerHandler ;
-         _clsReplTimerHandler          _replTimerHandler ;
-
-         _netRouteAgent                _replNetRtAgent ;
-         _netRouteAgent                _shardNetRtAgent ;
-
-         _clsShardMgr                  _shdObj ;
-         _clsReplicateSet              _replObj ;
-
          clsShardSessionMgr            _shardSessionMgr ;
          clsReplSessionMgr             _replSessionMgr ;
 
@@ -309,6 +305,19 @@ namespace engine
          UINT64                        _regTimerID ;
          UINT32                        _regFailedTimes ;
          UINT64                        _oneSecTimerID ;
+
+         _schedTaskContanierMgr        *_pContainerMgr ;
+         _schedTaskAdapterBase         *_pShardAdapter ;
+         _shdMsgHandler                *_shdMsgHandlerObj ;
+         _replMsgHandler               *_replMsgHandlerObj ;
+         _clsShardTimerHandler         *_shdTimerHandler ;
+         _clsReplTimerHandler          *_replTimerHandler ;
+
+         _netRouteAgent                *_replNetRtAgent ;
+         _netRouteAgent                *_shardNetRtAgent ;
+
+         _clsShardMgr                  *_shdObj ;
+         _clsReplicateSet              *_replObj ;
 
    };
 

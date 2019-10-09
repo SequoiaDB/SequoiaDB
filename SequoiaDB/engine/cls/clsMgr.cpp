@@ -46,6 +46,10 @@
 #include "dpsOp2Record.hpp"
 #include "pmdStartup.hpp"
 #include "clsRegAssit.hpp"
+#include "schedTaskContainer.hpp"
+#include "schedTaskAdapter.hpp"
+#include "schedPrepareJob.hpp"
+#include "schedDispatchJob.hpp"
 
 using namespace bson ;
 
@@ -69,6 +73,18 @@ namespace engine
    _clsShardSessionMgr::~_clsShardSessionMgr()
    {
       _pClsMgr    = NULL ;
+   }
+
+   schedTaskInfo* _clsShardSessionMgr::getTaskInfo()
+   {
+      return &_taskInfo ;
+   }
+
+   void _clsShardSessionMgr::onConfigChange()
+   {
+      pmdOptionsCB *optionsCB = pmdGetKRCB()->getOptionCB() ;
+
+      _taskInfo.setTaskLimit( optionsCB->getSvcMaxConcurrency() ) ;
    }
 
    BOOLEAN _clsShardSessionMgr::isUnShardTimerStarted() const
@@ -172,7 +188,7 @@ namespace engine
       }
       else if ( SDB_SESSION_SHARD == sessionType )
       {
-         pSession = SDB_OSS_NEW _clsShdSession ( sessionID ) ;
+         pSession = SDB_OSS_NEW _clsShdSession ( sessionID, &_taskInfo ) ;
       }
       else
       {
@@ -212,6 +228,7 @@ namespace engine
       }
       else if ( _sessionTimerID == timerID )
       {
+         ossScopedLock lock( &_metaLatch ) ;
          if ( _mapSession.size() <= MAX_SHD_SESSION_CATCH_DEQ_SIZE / 2 )
          {
             goto done ;
@@ -227,6 +244,9 @@ namespace engine
    void _clsShardSessionMgr::_checkUnShardSessions( UINT32 interval )
    {
       pmdAsyncSession *pSession = NULL ;
+
+      ossScopedLock lock( &_metaLatch ) ;
+
       MAPSESSION_IT it = _mapSession.begin() ;
       while ( it != _mapSession.end() )
       {
@@ -236,7 +256,10 @@ namespace engine
             ++it ;
             continue ;
          }
-         if ( !pSession->isProcess() && pSession->timeout( interval ) )
+         if ( !pSession->isProcess() &&
+              pSession->timeout( interval ) &&
+              !pSession->hasHold() &&
+              0 == pSession->getPendingMsgNum() )
          {
             PD_LOG ( PDEVENT, "Session[%s] timeout", pSession->sessionName() ) ;
             _releaseSession_i ( pSession, TRUE, TRUE ) ;
@@ -274,6 +297,7 @@ namespace engine
       {
          _clsShdSession *pShdSession = ( _clsShdSession* )pSession ;
          pShdSession->setLogout() ;
+
          _mapIdentifys.erase( pSession->sessionID() ) ;
       }
    }
@@ -460,15 +484,7 @@ namespace engine
    END_OBJ_MSG_MAP()
 
    _clsMgr::_clsMgr ()
-   :_shdMsgHandlerObj ( &_shardSessionMgr ),
-    _replMsgHandlerObj ( &_replSessionMgr ),
-    _shdTimerHandler ( &_shardSessionMgr ),
-    _replTimerHandler ( &_replSessionMgr ),
-    _replNetRtAgent ( &_replMsgHandlerObj ),
-    _shardNetRtAgent ( &_shdMsgHandlerObj ),
-    _shdObj ( &_shardNetRtAgent ),
-    _replObj ( &_replNetRtAgent ),
-    _shardSessionMgr( this ),
+   :_shardSessionMgr( this ),
     _replSessionMgr( this ),
     _shardServiceID ( MSG_ROUTE_SHARD_SERVCIE ),
     _replServiceID ( MSG_ROUTE_REPL_SERVICE ),
@@ -481,6 +497,17 @@ namespace engine
       _replServiceName[0] = 0 ;
       _shdServiceName[0]  = 0 ;
       _selfNodeID.value   = MSG_INVALID_ROUTEID ;
+
+      _pContainerMgr       = NULL ;
+      _pShardAdapter       = NULL ;
+      _shdMsgHandlerObj    = NULL ;
+      _replMsgHandlerObj   = NULL ;
+      _shdTimerHandler     = NULL ;
+      _replTimerHandler    = NULL ;
+      _replNetRtAgent      = NULL ;
+      _shardNetRtAgent     = NULL ;
+      _shdObj              = NULL ;
+      _replObj             = NULL ;
    }
 
    _clsMgr::~_clsMgr ()
@@ -504,17 +531,135 @@ namespace engine
       const CHAR* hostName = pmdGetKRCB()->getHostName() ;
       pmdOptionsCB *optCB = pmdGetOptionCB() ;
 
+      SCHED_TASK_QUE_TYPE queType = SCHED_TASK_FIFO_QUE ;
+      UINT32 svcSchedulerType = optCB->getSvcSchedulerType() ;
+
+      _pContainerMgr = SDB_OSS_NEW schedTaskContanierMgr() ;
+      if ( !_pContainerMgr )
+      {
+         PD_LOG( PDERROR, "Allocate container manager failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
+      if ( svcSchedulerType >= SCHED_TYPE_FIFO &&
+           svcSchedulerType <= SCHED_TYPE_CONTAINER )
+      {
+         if ( SCHED_TYPE_FIFO != svcSchedulerType )
+         {
+            queType = SCHED_TASK_PIRORITY_QUE ;
+         }
+
+         if ( SCHED_TYPE_CONTAINER == svcSchedulerType )
+         {
+            _pShardAdapter = SDB_OSS_NEW schedContainerAdapter( _pContainerMgr ) ;
+         }
+         else
+         {
+            _pShardAdapter = SDB_OSS_NEW schedFIFOAdapter() ;
+         }
+
+         if ( !_pShardAdapter )
+         {
+            PD_LOG( PDERROR, "Allocate task adapter failed" ) ;
+            rc = SDB_OOM ;
+            goto error ;
+         }
+
+         rc = _pShardAdapter->init( _shardSessionMgr.getTaskInfo(), queType ) ;
+         if ( rc )
+         {
+            PD_LOG( PDERROR, "Init task adapter failed, rc: %d" ) ;
+            goto error ;
+         }
+      }
+
+      rc = _pContainerMgr->init( queType ) ;
+      if ( rc )
+      {
+         PD_LOG( PDERROR, "Init task container failed, rc: %d", rc ) ;
+         goto error ;
+      }
+
+      _shdMsgHandlerObj = SDB_OSS_NEW _shdMsgHandler( &_shardSessionMgr,
+                                                      _pShardAdapter ) ;
+      if ( !_shdMsgHandlerObj )
+      {
+         PD_LOG( PDERROR, "Allocate shard message handler failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
+      _replMsgHandlerObj = SDB_OSS_NEW _replMsgHandler( &_replSessionMgr ) ;
+      if ( !_replMsgHandlerObj )
+      {
+         PD_LOG( PDERROR, "Allocate repl message handler failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
+      _shdTimerHandler = SDB_OSS_NEW _clsShardTimerHandler( &_shardSessionMgr ) ;
+      if ( !_shdTimerHandler )
+      {
+         PD_LOG( PDERROR, "Allocate shard timer handler failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
+      _replTimerHandler = SDB_OSS_NEW _clsReplTimerHandler( &_replSessionMgr ) ;
+      if ( !_replTimerHandler )
+      {
+         PD_LOG( PDERROR, "Allocate repl timer handler failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
+      _replNetRtAgent = SDB_OSS_NEW _netRouteAgent( _replMsgHandlerObj ) ;
+      if ( !_replNetRtAgent )
+      {
+         PD_LOG( PDERROR, "Allocate repl netagent failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
+      _shardNetRtAgent = SDB_OSS_NEW _netRouteAgent( _shdMsgHandlerObj ) ;
+      if ( !_shardNetRtAgent )
+      {
+         PD_LOG( PDERROR, "Allocate shard netagent failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
+      _shdObj = SDB_OSS_NEW _clsShardMgr( _shardNetRtAgent ) ;
+      if ( !_shdObj )
+      {
+         PD_LOG( PDERROR, "Allocate shard manager failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
+      _replObj = SDB_OSS_NEW _clsReplicateSet( _replNetRtAgent ) ;
+      if ( !_replObj )
+      {
+         PD_LOG( PDERROR, "Allocate repl manager failed" ) ;
+         rc = SDB_OOM ;
+         goto error ;
+      }
+
       ossStrncpy( _shdServiceName, optCB->shardService(),
                   OSS_MAX_SERVICENAME ) ;
       ossStrncpy( _replServiceName, optCB->replService(),
                   OSS_MAX_SERVICENAME ) ;
 
+      _shardSessionMgr.getTaskInfo()->setTaskLimit(
+         optCB->getSvcMaxConcurrency() ) ;
+
       INIT_OBJ_GOTO_ERROR ( getShardCB() ) ;
       INIT_OBJ_GOTO_ERROR ( getReplCB() ) ;
 
       nodeID.columns.serviceID = _replServiceID ;
-      _replNetRtAgent.updateRoute( nodeID, hostName, _replServiceName ) ;
-      rc = _replNetRtAgent.listen( nodeID ) ;
+      _replNetRtAgent->updateRoute( nodeID, hostName, _replServiceName ) ;
+      rc = _replNetRtAgent->listen( nodeID ) ;
       if ( SDB_OK != rc )
       {
          PD_LOG ( PDERROR, "Create listen[Hostname:%s, ServiceName:%s] failed",
@@ -525,8 +670,8 @@ namespace engine
                _replServiceName ) ;
 
       nodeID.columns.serviceID = _shardServiceID ;
-      _shardNetRtAgent.updateRoute( nodeID, hostName, _shdServiceName ) ;
-      rc = _shardNetRtAgent.listen( nodeID ) ;
+      _shardNetRtAgent->updateRoute( nodeID, hostName, _shdServiceName ) ;
+      rc = _shardNetRtAgent->listen( nodeID ) ;
       if ( SDB_OK != rc )
       {
          PD_LOG ( PDERROR, "Create listen[Hostname:%s, ServiceName:%s] failed",
@@ -536,12 +681,12 @@ namespace engine
       PD_LOG ( PDEVENT, "Create sharding listen[ServiceName:%s] succeed",
                _shdServiceName ) ;
 
-      rc = _shardSessionMgr.init( &_shardNetRtAgent, &_shdTimerHandler,
+      rc = _shardSessionMgr.init( _shardNetRtAgent, _shdTimerHandler,
                                   60 * OSS_ONE_SEC ) ;
       PD_RC_CHECK( rc, PDERROR, "Failed to init shard session manager, rc: %d",
                    rc ) ;
 
-      rc = _replSessionMgr.init( &_replNetRtAgent, &_replTimerHandler,
+      rc = _replSessionMgr.init( _replNetRtAgent, _replTimerHandler,
                                  OSS_ONE_SEC ) ;
       PD_RC_CHECK( rc, PDERROR, "Failed to init repl session manager, rc: %d",
                    rc ) ;
@@ -601,6 +746,25 @@ namespace engine
          goto error ;
       }
 
+      if ( _pShardAdapter )
+      {
+         rc = schedStartPrepareJob( _pShardAdapter, NULL ) ;
+         if ( rc )
+         {
+            PD_LOG( PDERROR, "Start task-prepare job failed, rc: %d", rc ) ;
+            goto error ;
+         }
+
+         rc = schedStartDispatchJob( _pShardAdapter,
+                                     &_shardSessionMgr,
+                                     NULL ) ;
+         if ( rc )
+         {
+            PD_LOG( PDERROR, "Start task-dispatch job failed, rc: %d", rc ) ;
+            goto error ;
+         }
+      }
+
       _oneSecTimerID = setTimer ( CLS_REPL, OSS_ONE_SEC ) ;
 
       if ( CLS_INVALID_TIMERID == _oneSecTimerID )
@@ -638,14 +802,32 @@ namespace engine
 
    INT32 _clsMgr::deactive ()
    {
-      _replNetRtAgent.closeListen() ;
-      _shardNetRtAgent.closeListen() ;
+      if ( _replNetRtAgent )
+      {
+         _replNetRtAgent->closeListen() ;
+      }
+      if ( _shardNetRtAgent )
+      {
+         _shardNetRtAgent->closeListen() ;
+      }
 
-      _replObj.deactive() ;
-      _shdObj.deactive() ;
+      if ( _replObj )
+      {
+         _replObj->deactive() ;
+      }
+      if ( _shdObj )
+      {
+         _shdObj->deactive() ;
+      }
 
-      _replNetRtAgent.stop() ;
-      _shardNetRtAgent.stop() ;
+      if ( _replNetRtAgent )
+      {
+         _replNetRtAgent->stop() ;
+      }
+      if ( _shardNetRtAgent )
+      {
+         _shardNetRtAgent->stop() ;
+      }
 
       _shardSessionMgr.setForced() ;
       _replSessionMgr.setForced() ;
@@ -661,8 +843,33 @@ namespace engine
       _shardSessionMgr.fini() ;
       _replSessionMgr.fini() ;
 
-      _shdObj.final () ;
-      _replObj.final () ;
+      if ( _shdObj )
+      {
+         _shdObj->final() ;
+      }
+      if ( _replObj )
+      {
+         _replObj->final() ;
+      }
+      if ( _pShardAdapter )
+      {
+         _pShardAdapter->fini() ;
+      }
+      if ( _pContainerMgr )
+      {
+         _pContainerMgr->fini() ;
+      }
+
+      SAFE_OSS_DELETE( _replObj ) ;
+      SAFE_OSS_DELETE( _shdObj ) ;
+      SAFE_OSS_DELETE( _shardNetRtAgent ) ;
+      SAFE_OSS_DELETE( _replNetRtAgent ) ;
+      SAFE_OSS_DELETE( _replTimerHandler ) ;
+      SAFE_OSS_DELETE( _shdTimerHandler ) ;
+      SAFE_OSS_DELETE( _replMsgHandlerObj ) ;
+      SAFE_OSS_DELETE( _shdMsgHandlerObj ) ;
+      SAFE_OSS_DELETE( _pShardAdapter ) ;
+      SAFE_OSS_DELETE( _pContainerMgr ) ;
 
       PD_TRACE_EXIT ( SDB__CLSMGR_FINAL );
       return SDB_OK ;
@@ -670,23 +877,25 @@ namespace engine
 
    void _clsMgr::onConfigChange ()
    {
-      _shdObj.onConfigChange() ;
-      _replObj.onConfigChange() ;
+      _shardSessionMgr.onConfigChange() ;
+
+      _shdObj->onConfigChange() ;
+      _replObj->onConfigChange() ;
    }
 
    void _clsMgr::attachCB ( pmdEDUCB *pMainCB )
    {
       if ( EDU_TYPE_CLUSTER == pMainCB->getType() )
       {
-         _shdMsgHandlerObj.attach ( pMainCB ) ;
-         _replMsgHandlerObj.attach ( pMainCB ) ;
+         _shdMsgHandlerObj->attach ( pMainCB ) ;
+         _replMsgHandlerObj->attach ( pMainCB ) ;
 
-         _shdTimerHandler.attach ( pMainCB ) ;
-         _replTimerHandler.attach ( pMainCB ) ;
+         _shdTimerHandler->attach ( pMainCB ) ;
+         _replTimerHandler->attach ( pMainCB ) ;
       }
       else if ( EDU_TYPE_CLUSTERSHARD == pMainCB->getType() )
       {
-         _shdMsgHandlerObj.attachShardCB( pMainCB ) ;
+         _shdMsgHandlerObj->attachShardCB( pMainCB ) ;
       }
 
       _attachEvent.signalAll() ;
@@ -696,15 +905,15 @@ namespace engine
    {
       if ( EDU_TYPE_CLUSTER == pMainCB->getType() )
       {
-         _shdMsgHandlerObj.detach() ;
-         _replMsgHandlerObj.detach () ;
+         _shdMsgHandlerObj->detach() ;
+         _replMsgHandlerObj->detach () ;
 
-         _shdTimerHandler.detach () ;
-         _replTimerHandler.detach () ;
+         _shdTimerHandler->detach () ;
+         _replTimerHandler->detach () ;
       }
       else if ( EDU_TYPE_CLUSTERSHARD == pMainCB->getType() )
       {
-         _shdMsgHandlerObj.detachShardCB() ;
+         _shdMsgHandlerObj->detachShardCB() ;
       }
    }
 
@@ -759,8 +968,8 @@ namespace engine
       }
 
       if ( !pmdGetStartup().isOK() ||
-           _shdObj.getDCMgr()->getDCBaseInfo()->isReadonly() ||
-           !_shdObj.getDCMgr()->getDCBaseInfo()->isActivated() )
+           _shdObj->getDCMgr()->getDCBaseInfo()->isReadonly() ||
+           !_shdObj->getDCMgr()->getDCBaseInfo()->isActivated() )
       {
          return ;
       }
@@ -821,31 +1030,31 @@ namespace engine
 
    _netRouteAgent *_clsMgr::getShardRouteAgent ()
    {
-      return &_shardNetRtAgent ;
+      return _shardNetRtAgent ;
    }
    _netRouteAgent *_clsMgr::getReplRouteAgent ()
    {
-      return &_replNetRtAgent ;
+      return _replNetRtAgent ;
    }
    shardCB *_clsMgr::getShardCB ()
    {
-      return &_shdObj ;
+      return _shdObj ;
    }
    replCB *_clsMgr::getReplCB ()
    {
-      return &_replObj ;
+      return _replObj ;
    }
    catAgent *_clsMgr::getCatAgent ()
    {
-      return _shdObj.getCataAgent() ;
+      return _shdObj->getCataAgent() ;
    }
    nodeMgrAgent* _clsMgr::getNodeMgrAgent ()
    {
-      return _shdObj.getNodeMgrAgent() ;
+      return _shdObj->getNodeMgrAgent() ;
    }
    shdMsgHandler* _clsMgr::getShardMsgHandle()
    {
-      return &_shdMsgHandlerObj ;
+      return _shdMsgHandlerObj ;
    }
    _clsTaskMgr* _clsMgr::getTaskMgr()
    {
@@ -853,11 +1062,11 @@ namespace engine
    }
    BOOLEAN _clsMgr::isPrimary ()
    {
-      return _replObj.primaryIsMe () ;
+      return _replObj->primaryIsMe () ;
    }
    INT32 _clsMgr::clearAllData ()
    {
-      return _shdObj.clearAllData () ;
+      return _shdObj->clearAllData () ;
    }
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__CLSMGR_INVALIDCACHE, "_clsMgr::invalidateCache" )
@@ -1056,11 +1265,11 @@ namespace engine
            MSG_CAT_PAIMARY_CHANGE_RES == opCode ||
            MSG_CLS_GINFO_UPDATED == opCode )
       {
-         rc = _replObj.dispatchMsg( handle, msg ) ;
+         rc = _replObj->dispatchMsg( handle, msg ) ;
       }
       else
       {
-         rc = _shdObj.dispatchMsg ( handle, msg ) ;
+         rc = _shdObj->dispatchMsg ( handle, msg ) ;
       }
       PD_TRACE_EXITRC ( SDB__CLSMGR__DFTMSGFUNC, rc );
       return rc ;
@@ -1097,10 +1306,10 @@ namespace engine
          UINT32 type = 0 ;
          UINT32 netTimerID = 0 ;
          ossUnpack32From64 ( timerID, type, netTimerID ) ;
-         _pmdObjBase *pSubObj = &_shdObj ;
+         _pmdObjBase *pSubObj = _shdObj ;
          if ( CLS_REPL == (INT32)type )
          {
-            pSubObj = &_replObj ;
+            pSubObj = _replObj ;
          }
 
          pSubObj->onTimer ( timerID, interval ) ;
@@ -1123,6 +1332,7 @@ namespace engine
          _innerSessionInfo &info = *it ;
          if ( info.type != type ||
               SDB_OK == pSessionMgr->getSession( info.sessionID,
+                                                 FALSE,
                                                  info.startType,
                                                  NET_INVALID_HANDLE,
                                                  FALSE, 0, NULL,
@@ -1131,7 +1341,8 @@ namespace engine
             ++it ;
             continue ;
          }
-         rc = pSessionMgr->getSession ( info.sessionID, info.startType,
+         rc = pSessionMgr->getSession ( info.sessionID, FALSE,
+                                        info.startType,
                                         NET_INVALID_HANDLE, TRUE, 0,
                                         info.data,
                                         &pSession ) ;
@@ -1268,13 +1479,13 @@ namespace engine
       UINT64 rc;
       PD_TRACE_ENTRY ( SDB__CLSMGR_SETTMR );
       UINT32 timeID = 0 ;
-      _netTimeoutHandler * pHandler = &_shdTimerHandler ;
-      _netRouteAgent * pRtAgent = &_shardNetRtAgent ;
+      _netTimeoutHandler * pHandler = _shdTimerHandler ;
+      _netRouteAgent * pRtAgent = _shardNetRtAgent ;
 
       if ( CLS_REPL == type )
       {
-         pHandler = &_replTimerHandler ;
-         pRtAgent = &_replNetRtAgent ;
+         pHandler = _replTimerHandler ;
+         pRtAgent = _replNetRtAgent ;
       }
 
       if ( pRtAgent->addTimer( milliSec, pHandler, timeID ) == SDB_OK )
@@ -1299,11 +1510,11 @@ namespace engine
 
       ossUnpack32From64 ( timerID, type, netTimerID ) ;
 
-      _netRouteAgent * pRtAgent = &_shardNetRtAgent ;
+      _netRouteAgent * pRtAgent = _shardNetRtAgent ;
 
       if ( CLS_REPL == (INT32)type )
       {
-         pRtAgent = &_replNetRtAgent ;
+         pRtAgent = _replNetRtAgent ;
       }
 
       pRtAgent->removeTimer( netTimerID ) ;
@@ -1312,7 +1523,7 @@ namespace engine
 
    INT32 _clsMgr::sendToCatlog ( MsgHeader * msg )
    {
-      return _shdObj.sendToCatlog ( msg ) ;
+      return _shdObj->sendToCatlog ( msg ) ;
    }
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__CLSMGR__SNDREGMSG, "_clsMgr::_sendRegisterMsg" )
@@ -1397,7 +1608,7 @@ namespace engine
 
    INT32 _clsMgr::updateCatGroup ( INT64 millisec )
    {
-      return _shdObj.updateCatGroup ( millisec ) ;
+      return _shdObj->updateCatGroup ( millisec ) ;
    }
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__CLSMGR__ONCATREGRES, "_clsMgr::_onCatRegisterRes" )
@@ -1440,7 +1651,7 @@ namespace engine
 
       _selfNodeID.columns.groupID = groupID ;
       _selfNodeID.columns.nodeID = nodeID ;
-      _shdObj.setNodeID( _selfNodeID ) ;
+      _shdObj->setNodeID( _selfNodeID ) ;
       PD_LOG ( PDEVENT, "Register succeed, groupID:%u, nodeID:%u",
                _selfNodeID.columns.groupID,
                _selfNodeID.columns.nodeID ) ;
@@ -1461,10 +1672,10 @@ namespace engine
             MsgOpReply *pReply = ( MsgOpReply* )msg ;
             if ( pReply->numReturned > 1 )
             {
-               clsDCBaseInfo *pInfo = _shdObj.getDCMgr()->getDCBaseInfo() ;
+               clsDCBaseInfo *pInfo = _shdObj->getDCMgr()->getDCBaseInfo() ;
                BSONObj objDCInfo( ( const CHAR* )msg + sizeof( MsgOpReply ) +
                                   ossAlign4( (UINT32)msgObject.objsize() ) ) ;
-               _shdObj.getDCMgr()->updateDCBaseInfo( objDCInfo ) ;
+               _shdObj->getDCMgr()->updateDCBaseInfo( objDCInfo ) ;
 
                pmdGetKRCB()->setDBReadonly( pInfo->isReadonly() ) ;
                pmdGetKRCB()->setDBDeactivated( !pInfo->isActivated() ) ;
@@ -1474,28 +1685,28 @@ namespace engine
 
       routeID.value = _selfNodeID.value ;
       routeID.columns.serviceID = _replServiceID ;
-      _replNetRtAgent.setLocalID ( routeID ) ;
+      _replNetRtAgent->setLocalID ( routeID ) ;
       routeID.columns.serviceID = _shardServiceID ;
-      _shardNetRtAgent.setLocalID ( routeID ) ;
+      _shardNetRtAgent->setLocalID ( routeID ) ;
 
       pmdSetNodeID( _selfNodeID ) ;
 
       pmdGetKRCB()->callRegisterEventHandler( _selfNodeID ) ;
       pmdGetKRCB()->setBusinessOK( TRUE ) ;
 
-      if ( SDB_OK != _shdObj.updatePrimary( msg->routeID, TRUE ) )
+      if ( SDB_OK != _shdObj->updatePrimary( msg->routeID, TRUE ) )
       {
-         _shdObj.updateCatGroup () ;
+         _shdObj->updateCatGroup () ;
       }
 
-      rc = _shdObj.active () ;
+      rc = _shdObj->active () ;
       if ( rc != SDB_OK )
       {
          PD_LOG ( PDERROR, "active shardCB failed[rc:%d]", rc ) ;
          goto error ;
       }
 
-      rc = _replObj.active () ;
+      rc = _replObj->active () ;
       if ( rc != SDB_OK )
       {
          PD_LOG ( PDERROR, "active replCB failed[rc:%d]", rc ) ;
@@ -1537,7 +1748,7 @@ namespace engine
 
       if ( SDB_CLS_NOT_PRIMARY == res->flags )
       {
-         if ( SDB_OK != _shdObj.updatePrimaryByReply( msg ) )
+         if ( SDB_OK != _shdObj->updatePrimaryByReply( msg ) )
          {
             updateCatGroup() ;
          }

@@ -258,7 +258,7 @@ namespace engine
 
    void _schedTaskInfo::doneATask()
    {
-      UINT32 preRunTask = _runTaskNum.dec() ;
+      _runTaskNum.dec() ;
 
       if ( _limitTaskNum > 0 )
       {

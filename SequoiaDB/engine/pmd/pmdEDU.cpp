@@ -90,6 +90,7 @@ namespace engine
       _tid              = 0 ;
       _status           = PMD_EDU_UNKNOW ;
       _eduType          = type ;
+      _isLocked         = FALSE ;
       _ctrlFlag         = 0 ;
       _isInterruptSelf  = FALSE ;
       _writingDB        = FALSE ;
@@ -168,6 +169,7 @@ namespace engine
       ossMemset( _name, 0, sizeof( _name ) ) ;
       _userName = "" ;
       _passWord = "" ;
+      _isLocked = FALSE ;
 
       _ctrlFlag = 0 ;
       _isInterruptSelf = FALSE ;

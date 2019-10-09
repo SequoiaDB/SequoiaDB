@@ -78,7 +78,7 @@ namespace engine
 
    BOOLEAN _schedTaskContanier::hasHold()
    {
-      return _holdNum.compare( 0 ) ;
+      return _holdNum.compare( 0 ) ? FALSE : TRUE ;
    }
 
    schedTaskQueBase* _schedTaskContanier::getTaskQue()
@@ -268,6 +268,14 @@ namespace engine
       return rc ;
    error:
       goto done ;
+   }
+
+   void _schedTaskContanierMgr::fini()
+   {
+      _mapContanier.clear() ;
+      _defaultPtr = schedTaskContanierPtr() ;
+      _lastPtr = _defaultPtr ;
+      _curPtr = _defaultPtr ;
    }
 
    void _schedTaskContanierMgr::_flushWeight()

@@ -120,6 +120,9 @@ namespace engine
          INT32             activateEDU( EDUID eduID ) ;
          INT32             activateEDU( pmdEDUCB *cb ) ;
 
+         void              lockEDU( pmdEDUCB *cb ) ;
+         void              unlockEDU( pmdEDUCB *cb ) ;
+
          INT32             createIdleEDU( EDUID *pEDUID ) ;
 
          INT32             forceUserEDU( EDUID eduID ) ;

@@ -67,6 +67,9 @@ namespace engine
       RTN_JOB_UPDATESTRATEGY     = 20,
       RTN_JOB_STRATEGYOBSERVER   = 21,
 
+      RTN_JOB_SCHED_PREPARE      = 22,
+      RTN_JOB_SCHED_DISPATCH     = 23,
+
       RTN_JOB_MAX
    } ;
 
@@ -135,6 +138,7 @@ namespace engine
          virtual INT32 doit () = 0 ;
 
          virtual BOOLEAN reuseEDU() const { return FALSE ; }
+         virtual BOOLEAN isSystem() const { return FALSE ; }
 
       protected:
          virtual void _onAttach() ;

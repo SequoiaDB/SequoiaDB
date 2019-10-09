@@ -857,10 +857,10 @@ done:
       rc = toBSON( oldCfg, 0 ) ;
       PD_RC_CHECK( rc, PDERROR, "Save old config failed, rc: %d", rc ) ;
 
-      rc = doDataExchange( &ex1 ) ;
-
       _mutex.get() ;
       locked = TRUE ;
+
+      rc = doDataExchange( &ex1 ) ;
 
       if ( !useDefault )
       {
@@ -1859,7 +1859,10 @@ done:
       _enableMixCmp = PMD_DFT_ENABLE_MIX_CMP ;
       _planCacheLevel = OPT_PLAN_PARAMETERIZED ;
       _instanceID = PMD_DFT_INSTANCE_ID ;
-      _maxconn = PMD_DFT_MAX_CONN;
+      _maxconn = PMD_DFT_MAX_CONN ;
+
+      _svcSchedulerType = 0 ;
+      _svcMaxConcurrency= 0 ;
 
       ossMemset( _krcbConfPath, 0, sizeof( _krcbConfPath ) ) ;
       ossMemset( _krcbConfFile, 0, sizeof( _krcbConfFile ) ) ;
@@ -2102,6 +2105,13 @@ done:
       rdxUInt( pEX, PMD_OPTION_MAX_CONN,_maxconn, FALSE,
                PMD_CFG_CHANGE_RUN, PMD_DFT_MAX_CONN, FALSE ) ;
       rdvMinMax( pEX, _maxconn, 0, 30000, TRUE ) ;
+
+      rdxUInt( pEX, PMD_OPTION_SVCSCHEDULER, _svcSchedulerType, FALSE,
+               PMD_CFG_CHANGE_REBOOT, 0, FALSE ) ;
+
+      rdxUInt( pEX, PMD_OPTION_SVC_MAX_CONCURRENCY, _svcMaxConcurrency, FALSE,
+               PMD_CFG_CHANGE_RUN, 0, FALSE ) ;
+
 
       return getResult () ;
    }

@@ -54,7 +54,8 @@ namespace engine
       typedef MAP_NET_2_EVENTS::iterator           MAP_NET_2_EVENTS_IT ;
 
       public:
-         _shdMsgHandler( _pmdAsycSessionMgr *pSessionMgr ) ;
+         _shdMsgHandler( _pmdAsycSessionMgr *pSessionMgr,
+                         _schedTaskAdapterBase *pTaskAdapter = NULL ) ;
          virtual ~_shdMsgHandler();
 
          OSS_INLINE void attachShardCB( pmdEDUCB *cb ) { _pShardCB = cb ; }

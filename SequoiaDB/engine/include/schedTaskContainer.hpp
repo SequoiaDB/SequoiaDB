@@ -103,6 +103,7 @@ namespace engine
          ~_schedTaskContanierMgr() ;
 
          INT32    init( SCHED_TASK_QUE_TYPE queType ) ;
+         void     fini() ;
 
          INT32    addContanier( const string &name,
                                 INT32 nice,
