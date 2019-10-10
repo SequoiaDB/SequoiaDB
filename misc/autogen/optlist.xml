@@ -1668,5 +1668,56 @@
       <typeofweb>num</typeofweb>
    </opt>
 
+   <opt>
+      <name>PMD_OPTION_SVCSCHEDULER</name>
+      <long>svcscheduler</long>
+      <description>
+         <en>Specify the task scheduler type, 0 for None, 1 for FIFO, 2 for Priority, 3 for Container. Default is 0</en>
+         <cn>指定任务调度器类型，0表示不开启，1表示先入先出，2表示基于优先级调度，3表示基于容器调度。默认是0。</cn>
+      </description>
+      <detail>
+         <en>1. Specify the task scheduler type. Value is 0/1/2/3. Default is 0.<fig></fig>
+             2. 0: None.<fig></fig>
+             3. 1: First in first out.<fig></fig>
+             4. 2: Based Priority.<fig></fig>
+             5. 3: Based Container.
+         </en>
+         <cn>1、指定任务调度器类型，默认是0。<fig></fig>
+             2、0: 不开启。<fig></fig>
+             3、1: 先入先出。<fig></fig>
+             4、2: 基于优先级调度。<fig></fig>
+             5、3: 基于容器调度。
+         </cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <hidden>false</hidden>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SVC_MAX_CONCURRENCY</name>
+      <long>svcmaxconcurrency</long>
+      <description>
+         <en>Specify the maximun concurrency number in scheduler. 0 for unlimited. default is 0. </en>
+         <cn>指定任务执行的最大并发数，0表示不限制。默认值为0。</cn>
+      </description>
+      <reloadable>
+         <en>Yes</en>
+         <cn>是</cn>
+      </reloadable>
+      <detail>
+         <en>1.Specify the maximun concurrency number in scheduler. 0 for unlimited. default is 0.<fig></fig>
+             2.It does not take effect when 'svcscheduler' is 0.
+         </en>
+         <cn>1、指定任务执行的最大并发数，0表示不限制。默认值为0。<fig></fig>
+             2、当'svcscheduler'取值为0时，该参数不生效。
+         </cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
 </optlist>
 

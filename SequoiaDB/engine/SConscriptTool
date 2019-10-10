@@ -163,6 +163,14 @@ pmdMTFiles = [
       "pmd/pmdAsyncNetEntryPoint.cpp",
       "pmd/pmdBackgroundJob.cpp",
       "pmd/pmdWindowsListener.cpp",
+
+      "sched/schedDef.cpp",
+      "sched/schedTaskQue.cpp",
+      "sched/schedTaskContainer.cpp",
+      "sched/schedTaskAdapter.cpp",
+      "sched/schedTaskAdapterBase.cpp",
+      "sched/schedPrepareJob.cpp",
+      "sched/schedDispatchJob.cpp"
       ]
 	  
 utilFiles = [

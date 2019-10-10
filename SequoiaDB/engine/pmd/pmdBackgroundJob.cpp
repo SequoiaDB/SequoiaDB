@@ -49,6 +49,7 @@ namespace engine
       rtnBaseJob *job = (rtnBaseJob*)pData ;
       INT32 rc = SDB_OK ;
       BOOLEAN reuseEDU = job->reuseEDU() ;
+      BOOLEAN isSystem = job->isSystem() ;
       string expStr ;
 
       PD_LOG( PDINFO, "Start a background job[%s]", job->name() ) ;
@@ -59,6 +60,11 @@ namespace engine
       try
       {
          pEDUMgr->activateEDU( cb ) ;
+         if ( isSystem )
+         {
+            pEDUMgr->lockEDU( cb ) ;
+         }
+
          rc = job->doit () ;
          if ( SDB_OK != rc )
          {
@@ -78,6 +84,18 @@ namespace engine
       }
 
       job->attachOut () ;
+
+      if ( isSystem )
+      {
+         if ( PMD_IS_DB_UP() )
+         {
+            PD_LOG( PDSEVERE, "System job[EDUID:%lld, Type:%s, Name:%s] "
+                    "exit with %d. Restart DB", cb->getID(),
+                    getEDUName( cb->getType() ), job->name(), rc ) ;
+            PMD_RESTART_DB( rc ) ;
+         }
+         pEDUMgr->unlockEDU( cb ) ;
+      }
 
       jobMgr->_removeJob ( cb->getID(), rc ) ;
       if ( !reuseEDU )

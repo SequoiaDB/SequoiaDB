@@ -200,6 +200,7 @@ namespace engine
 
       EDU_STATUS  getStatus () const { return _status ; }
       INT32       getType () const { return _eduType ; }
+      BOOLEAN     isLocked() const { return _isLocked ; }
 
       _pmdEDUMgr* getEDUMgr() { return _eduMgr ; }
 
@@ -382,6 +383,7 @@ namespace engine
    protected:
       void     setStatus ( EDU_STATUS status ) { _status = status ; }
       void     setID ( EDUID id ) { _eduID = id ; }
+      void     setLock( BOOLEAN lock ) { _isLocked = lock ; }
 
       CHAR*    _getBuffInfo ( EDU_INFO_TYPE type, UINT32 &size ) ;
       BOOLEAN  _allocFromCatch( UINT32 len, CHAR **ppBuff, UINT32 *buffLen ) ;
@@ -409,6 +411,7 @@ namespace engine
 
       EDU_STATUS     _status ;
       INT32          _eduType ;
+      BOOLEAN        _isLocked ;
 
       string         _userName ;
       string         _passWord ;

@@ -92,6 +92,8 @@ namespace engine
       _requestID = 0 ;
       _lastOprLSN = DPS_INVALID_LSN_OFFSET ;
       _needMoreDoc = TRUE ;
+
+      _info.setNice( SCHED_NICE_MIN ) ;
    }
 
    _clsDataDstBaseSession::~_clsDataDstBaseSession ()

@@ -296,6 +296,7 @@
 #define FIELD_NAME_ELAPSED_TIME              "ElapsedTime"
 #define FIELD_NAME_RETURN_NUM                "ReturnNum"
 #define FIELD_NAME_RUN                       "Run"
+#define FIELD_NAME_WAIT                      "Wait"
 #define FIELD_NAME_CLUSTERNAME               "ClusterName"
 #define FIELD_NAME_BUSINESSNAME              "BusinessName"
 #define FIELD_NAME_DATACENTER                "DataCenter"
@@ -426,6 +427,9 @@
 #define FIELD_NAME_CONTAINER_NAME            "ContainerName"
 #define FIELD_NAME_IP                        "IP"
 #define FIELD_NAME_TASK_ID                   "TaskID"
+#define FIELD_NAME_SCHDLR_TYPE               "SchdlrType"
+#define FIELD_NAME_SCHDLR_TYPE_DESP          "SchdlrTypeDesp"
+#define FIELD_NAME_SCHDLR_TIMES              "SchdlrTimes"
 
 #define FIELD_NAME_ANALYZE_MODE              "Mode"
 #define FIELD_NAME_ANALYZE_NUM               "SampleNum"

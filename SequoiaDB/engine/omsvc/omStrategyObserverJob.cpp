@@ -69,7 +69,7 @@ namespace engine
       set<omStrategyChangeKey> setBiz ;
       set<omStrategyChangeKey>::iterator it ;
 
-      while( !eduCB()->isInterrupted() )
+      while( !eduCB()->isForced() )
       {
          ossSleep( OSS_ONE_SEC ) ;
 
@@ -86,6 +86,8 @@ namespace engine
                                                 eduCB() ) ;
             }
             setBiz.clear() ;
+
+            eduCB()->incEventCount( 1 ) ;
          }
       }
 

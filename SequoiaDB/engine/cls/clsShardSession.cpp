@@ -89,7 +89,7 @@ namespace engine
    END_OBJ_MSG_MAP()
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__CLSSDSESS__CLSSHDSESS, "_clsShdSession::_clsShdSession" )
-   _clsShdSession::_clsShdSession ( UINT64 sessionID )
+   _clsShdSession::_clsShdSession ( UINT64 sessionID, _schedTaskInfo *pTaskInfo )
       :_pmdAsyncSession ( sessionID )
    {
       PD_TRACE_ENTRY ( SDB__CLSSDSESS__CLSSHDSESS ) ;
@@ -104,10 +104,14 @@ namespace engine
       _pDmsCB    = pKRCB->getDMSCB () ;
       _pDpsCB    = pKRCB->getDPSCB () ;
       _pRtnCB    = pKRCB->getRTNCB () ;
+      _pTaskInfo = pTaskInfo ;
       _primaryID.value = MSG_INVALID_ROUTEID ;
       ossMemset( _detailName, 0, sizeof( _detailName ) ) ;
       _logout    = TRUE ;
       _delayLogin= FALSE ;
+
+      _info.setNice( SCHED_NICE_MIN ) ;
+
       PD_TRACE_EXIT ( SDB__CLSSDSESS__CLSSHDSESS ) ;
    }
 
@@ -323,6 +327,8 @@ namespace engine
       {
          _login() ;
       }
+
+      _pTaskInfo->beginATask() ;
 
       while ( loop )
       {
@@ -577,6 +583,7 @@ namespace engine
          pmdIncErrNum( _replyHeader.flags ) ;
       }
    done:
+      _pTaskInfo->doneATask() ;
       eduCB()->writingDB( FALSE ) ;
       MON_END_OP( _pEDUCB->getMonAppCB() ) ;
       PD_TRACE_EXITRC ( SDB__CLSSHDSESS__ONOPMSG, rc ) ;

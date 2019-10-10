@@ -44,6 +44,7 @@
 #include "ossEvent.hpp"
 #include "sdbInterface.hpp"
 #include "pmdInnerClient.hpp"
+#include "schedDef.hpp"
 
 #include <map>
 #include <deque>
@@ -106,7 +107,7 @@ namespace engine
          ossSpinXLatch* getLatch() { return &_Latch ; }
          UINT32         getBasedHandleNum()
          {
-            return _basedHandleNum.peek() ;
+            return _basedHandleNum.fetch() ;
          }
          NET_HANDLE     getHandle() const { return _netHandle ; }
 
@@ -157,7 +158,6 @@ namespace engine
          virtual void clear() ;
          virtual BOOLEAN canAttachMeta() const { return TRUE ; }
 
-         void* copyMsg ( const CHAR *msg, UINT32 length ) ;
          INT32 waitAttach ( INT64 millisec = -1 ) ;
          INT32 waitDetach ( INT64 millisec = -1 ) ;
          INT32 attachIn ( pmdEDUCB *cb ) ;
@@ -165,6 +165,8 @@ namespace engine
 
          BOOLEAN isAttached () const ;
          BOOLEAN isDetached () const ;
+
+         BOOLEAN isClosed() const ;
 
       public:
          UINT64      sessionID () const ;
@@ -174,11 +176,19 @@ namespace engine
          BOOLEAN     isStartActive() ;
          pmdSessionMeta* getMeta() { return _pMeta ; }
 
+         UINT32         getPendingMsgNum() ;
+         UINT32         incPendingMsgNum() ;
+         UINT32         decPendingmsgNum() ;
+
+         BOOLEAN        hasHold() ;
+
+         const schedInfo*  getSchedInfo() const ;
+
          BOOLEAN        isBufferFull() const ;
          BOOLEAN        isBufferEmpty() const ;
 
-         void        setIdentifyInfo( UINT32 ip, UINT16 port,
-                                      UINT32 tid, UINT64 eduID ) ;
+         void           setIdentifyInfo( UINT32 ip, UINT16 port,
+                                         UINT32 tid, UINT64 eduID ) ;
 
       private:
          void        startType ( INT32 startType ) ;
@@ -191,9 +201,13 @@ namespace engine
          pmdBuffInfo*   frontBuffer () ;
          void           popBuffer () ;
          INT32          pushBuffer ( CHAR *pBuffer, UINT32 size ) ;
+         void*          copyMsg ( const CHAR *msg, UINT32 length ) ;
 
          UINT32         _incBuffPos ( UINT32 pos ) ;
          UINT32         _decBuffPos ( UINT32 pos ) ;
+
+         void           _holdIn() ;
+         void           _holdOut() ;
 
       protected:
          void  _makeName () ;
@@ -220,6 +234,8 @@ namespace engine
          _pmdAsycSessionMgr   *_pSessionMgr ;
          pmdInnerClient       _client ;
 
+         schedInfo            _info ;
+
       private:
          ossEvent             _evtIn ;
          ossEvent             _evtOut ;
@@ -234,6 +250,10 @@ namespace engine
          UINT64               _identifyID ;
          UINT32               _identifyTID ;
          UINT64               _identifyEDUID ;
+
+         ossAtomic32          _pendingMsgNum ;
+         ossAtomic32          _holdCount ;
+         BOOLEAN              _isClosed ;
 
    };
    typedef _pmdAsyncSession pmdAsyncSession ;
@@ -268,18 +288,29 @@ namespace engine
 
          virtual void         onTimer( UINT32 interval ) ;
 
+         INT32                dispatchMsg( const NET_HANDLE &handle,
+                                           const MsgHeader *pMsg,
+                                           pmdEDUMemTypes memType,
+                                           BOOLEAN decPending ) ;
 
-         /*
-            The following function:
-            Note: The caller thread must be the net thread
-         */
-         INT32          pushMessage ( pmdAsyncSession *pSession,
-                                      const MsgHeader *header,
-                                      const NET_HANDLE &handle ) ;
+         INT32                getSessionObj( UINT64 sessionID,
+                                             BOOLEAN withHold,
+                                             BOOLEAN bCreate,
+                                             INT32 startType,
+                                             const NET_HANDLE &handle,
+                                             INT32 opCode,
+                                             void *data,
+                                             pmdAsyncSession **ppSession,
+                                             BOOLEAN *pIsPending = NULL ) ;
 
-         INT32          getSession( UINT64 sessionID, INT32 startType,
-                                    const NET_HANDLE handle,
-                                    BOOLEAN bCreate, INT32 opCode,
+         void                 holdOut( pmdAsyncSession *pSession ) ;
+
+         INT32          getSession( UINT64 sessionID,
+                                    BOOLEAN withHold,
+                                    INT32 startType,
+                                    const NET_HANDLE &handle,
+                                    BOOLEAN bCreate,
+                                    INT32 opCode,
                                     void *data,
                                     pmdAsyncSession **ppSession ) ;
 
@@ -299,6 +330,7 @@ namespace engine
 
          /*
             Session distory callback functions
+            Has hold the metaLatch
          */
          virtual void   onSessionDisconnect( pmdAsyncSession *pSession ) {}
          virtual void   onNoneSessionDisconnect( UINT64 sessionID ) {}
@@ -333,11 +365,17 @@ namespace engine
          virtual void         _onSessionNew( pmdAsyncSession *pSession ) {}
 
       protected:
+         /*
+            Caller must hold the metaLatch
+         */
          INT32          _attachSessionMeta( pmdAsyncSession *pSession,
                                             const NET_HANDLE handle ) ;
 
          INT32          _startSessionEDU( pmdAsyncSession * pSession ) ;
 
+         /*
+            Caller must hold the metaLatch
+         */
          INT32          _releaseSession_i ( pmdAsyncSession *pSession,
                                             BOOLEAN postQuit,
                                             BOOLEAN delay ) ;
@@ -346,6 +384,11 @@ namespace engine
          INT32          _reply( const NET_HANDLE &handle, INT32 rc,
                                 const MsgHeader *pReqMsg ) ;
 
+         INT32          _pushMessage ( pmdAsyncSession *pSession,
+                                       const MsgHeader *header,
+                                       pmdEDUMemTypes memType,
+                                       const NET_HANDLE &handle ) ;
+
       protected:
          void           _checkSession( UINT32 interval ) ;
          void           _checkSessionMeta( UINT32 interval ) ;
@@ -353,9 +396,12 @@ namespace engine
 
       protected:
          MAPSESSION                 _mapSession ;
+         MAPSESSION                 _mapPendingSession ;
          MAPMETA                    _mapMeta ;
          DEQSESSION                 _deqCacheSessions ;
          UINT32                     _cacheSessionNum ;
+
+         ossSpinXLatch              _metaLatch ;
 
          DEQSESSION                 _deqDeletingSessions ;
          ossSpinXLatch              _deqDeletingMutex ;

@@ -73,7 +73,7 @@ namespace engine
       DECLARE_OBJ_MSG_MAP()
 
       public:
-         _clsShdSession ( UINT64 sessionID ) ;
+         _clsShdSession ( UINT64 sessionID, _schedTaskInfo *pTaskInfo ) ;
          virtual ~_clsShdSession ( ) ;
 
          virtual const CHAR*      sessionName() const ;
@@ -281,6 +281,7 @@ namespace engine
          _SDB_DMSCB             *_pDmsCB ;
          _SDB_RTNCB             *_pRtnCB ;
          _dpsLogWrapper         *_pDpsCB ;
+         _schedTaskInfo         *_pTaskInfo ;
 
          MsgOpReply             _replyHeader ;
          MsgRouteID             _primaryID ;

@@ -82,14 +82,17 @@ namespace engine
 
       pmdAsyncSessionScope assitScope( pSession, cb ) ;
 
-      while ( !cb->isDisconnected() )
+      while ( TRUE )
       {
-         cb->resetInterrupt() ;
+         if ( !cb->isDisconnected() )
+         {
+            cb->resetInterrupt() ;
+         }
          cb->resetInfo( EDU_INFO_ERROR ) ;
          cb->resetLsn() ;
 
          if ( cb->waitEvent( event, OSS_ONE_SEC, TRUE ) )
-         { 
+         {
             cb->resetInterrupt() ;
             if ( PMD_EDU_EVENT_TERM == event._eventType )
             {
@@ -148,9 +151,13 @@ namespace engine
             pmdEduEventRelase( event, cb ) ;
             event.reset () ;
          }
-         else
+         else if ( !cb->isDisconnected() )
          {
             pSession->onTimer( 0, OSS_ONE_SEC ) ;
+         }
+         else
+         {
+            break ;
          }
       }
 

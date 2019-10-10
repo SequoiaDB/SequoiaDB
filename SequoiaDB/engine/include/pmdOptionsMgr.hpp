@@ -598,6 +598,8 @@ namespace engine
          OSS_INLINE const CHAR * getPrefInstModeStr () const { return _prefInstModeStr ; }
          OSS_INLINE UINT32 getInstanceID () const { return _instanceID ; }
          OSS_INLINE UINT32 getMaxConn () const { return _maxconn ; }
+         OSS_INLINE UINT32 getSvcSchedulerType() const { return _svcSchedulerType ; }
+         OSS_INLINE UINT32 getSvcMaxConcurrency() const { return _svcMaxConcurrency ; }
 
          std::string getOmAddr() const ;
 
@@ -682,6 +684,8 @@ namespace engine
          UINT32      _planCacheLevel ;
          UINT32      _instanceID ;
          UINT32      _maxconn;
+         UINT32      _svcSchedulerType ;
+         UINT32      _svcMaxConcurrency ;
 
       private: // other configs
          CHAR        _krcbConfPath[ OSS_MAX_PATHSIZE + 1 ] ;

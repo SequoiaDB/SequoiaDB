@@ -15,7 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program. If not, see <http://www.gnu.org/license/>.
 
-   Source File Name = coordOmStrategyJob.hpp
+   Source File Name = schedDispatch.hpp
 
    Dependencies: N/A
 
@@ -24,28 +24,32 @@
    Change Activity:
    defect Date        Who Description
    ====== =========== === ==============================================
-          03/14/2018  XJH Initial Draft
+          03/28/2018  XJH Initial Draft
 
    Last Changed =
 
 *******************************************************************************/
 
-#ifndef COORD_OM_STRATEGY_JOB_HPP__
-#define COORD_OM_STRATEGY_JOB_HPP__
+#ifndef SCHED_DISPATCH_JOB_HPP__
+#define SCHED_DISPATCH_JOB_HPP__
 
 #include "rtnBackgroundJobBase.hpp"
 
 namespace engine
 {
 
+   class _schedTaskAdapterBase ;
+   class _pmdAsycSessionMgr ;
+
    /*
-      _coordOmStrategyJob define
+      _schedDispatchJob define
    */
-   class _coordOmStrategyJob : public _rtnBaseJob
+   class _schedDispatchJob : public _rtnBaseJob
    {
       public:
-         _coordOmStrategyJob() ;
-         virtual ~_coordOmStrategyJob() ;
+         _schedDispatchJob( _schedTaskAdapterBase *pTaskAdapter,
+                            _pmdAsycSessionMgr *pSessionMgr ) ;
+         virtual ~_schedDispatchJob() ;
 
       public:
          virtual RTN_JOB_TYPE type () const ;
@@ -53,22 +57,22 @@ namespace engine
          virtual BOOLEAN muteXOn ( const _rtnBaseJob *pOther ) ;
          virtual INT32 doit () ;
 
-         virtual BOOLEAN isSystem() const ;
-
-      protected:
-         virtual void _onAttach() ;
-         virtual void _onDetach() ;
+         virtual BOOLEAN isSystem() const { return TRUE ; }
 
       private:
+         _schedTaskAdapterBase   *_pTaskAdapter ;
+         _pmdAsycSessionMgr      *_pSessionMgr ;
 
    } ;
-   typedef _coordOmStrategyJob coordOmStrategyJob ;
+   typedef _schedDispatchJob schedDispatchJob ;
 
    /*
       Gloable Functions Define
    */
-   INT32 coordStartOmStrategyJob( EDUID *pEduID ) ;
+   INT32 schedStartDispatchJob( _schedTaskAdapterBase *pTaskAdapter,
+                                _pmdAsycSessionMgr *pSessionMgr,
+                                EDUID *pEduID ) ;
 
 }
 
-#endif // COORD_OM_STRATEGY_JOB_HPP__
+#endif // SCHED_DISPATCH_JOB_HPP__

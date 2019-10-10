@@ -34,6 +34,8 @@
 
 #include <string>
 #include "oss.hpp"
+#include "ossAtomic.hpp"
+#include "ossEvent.hpp"
 #include "../bson/bson.h"
 
 using namespace std ;
@@ -54,6 +56,28 @@ namespace engine
 
    #define SCHED_TASK_ID_DFT                          ( 0 )
 
+   #define SCHED_TASK_NAME_LEN                        ( 127 )
+   #define SCHED_CONTIANER_NAME_LEN                   ( 127 )
+   #define SCHED_USER_NAME_LEN                        ( 63 )
+   #define SCHED_IP_STR_LEN                           ( 31 )
+
+   /*
+      SCHED_TYPE define
+   */
+   enum SCHED_TYPE
+   {
+      SCHED_TYPE_NONE      = 0,
+      SCHED_TYPE_FIFO,              // FIFO scheduler
+      SCHED_TYPE_PRIORITY,          // priority scheduler
+      SCHED_TYPE_CONTAINER,         // container scheduler
+
+      SCHED_TYPE_MAX
+   } ;
+   #define SCHED_TYPE_DEFAULT          SCHED_TYPE_NONE
+
+   const CHAR* schedType2String( SCHED_TYPE type ) ;
+   SCHED_TYPE  schedString2Type( const CHAR *pStr ) ;
+
    /*
       _schedInfo define
    */
@@ -71,26 +95,57 @@ namespace engine
          INT32    getNice() const { return _nice ; }
          INT64    getTaskID() const { return _taskID ; }
 
-         const string&  getTaskName() const { return _taskName ; }
-         const string&  getContianerName() const { return _containerName ; }
-         const string&  getIP() const { return _ip ; }
+         const CHAR*    getTaskName() const { return _taskName ; }
+         const CHAR*    getContianerName() const { return _containerName ; }
+         const CHAR*    getIP() const { return _ip ; }
+         const CHAR*    getUserName() const { return _userName ; }
 
          void     setNice( INT32 nice ) ;
          void     setTaskID( INT64 taskID ) ;
-         void     setTaskName( const string &taskName ) ;
-         void     setContainerName( const string &containerName ) ;
-         void     setIP( const string &ip ) ;
+         void     setTaskName( const CHAR* taskName ) ;
+         void     setContainerName( const CHAR* containerName ) ;
+         void     setIP( const CHAR* ip ) ;
+         void     setUserName( const CHAR* userName ) ;
 
       private:
          INT32                _nice ;
          INT64                _taskID ;
 
-         string               _taskName ;
-         string               _containerName ;
-         string               _userName ;
-         string               _ip ;
+         CHAR                 _taskName[ SCHED_TASK_NAME_LEN + 1 ] ;
+         CHAR                 _containerName[ SCHED_CONTIANER_NAME_LEN + 1 ] ;
+         CHAR                 _userName[ SCHED_USER_NAME_LEN + 1 ] ;
+         CHAR                 _ip[ SCHED_IP_STR_LEN + 1 ] ;
+
    } ;
    typedef _schedInfo schedInfo ;
+
+   /*
+      _schedTaskInfo define
+   */
+   class _schedTaskInfo : public SDBObject
+   {
+      public:
+         _schedTaskInfo() ;
+         ~_schedTaskInfo() ;
+
+         void     setTaskLimit( UINT32 limit ) ;
+
+         void     beginATask() ;
+         void     doneATask() ;
+
+         UINT32   getRemaingTask() ;
+         INT32    waitRemaingTask( INT64 millisec ) ;
+
+         INT32    getAndWaitRemaingTask( INT64 millisec, UINT32 &num ) ;
+
+         UINT32   getRunTaskNum() ;
+
+      private:
+         ossAtomic32                _runTaskNum ;
+         UINT32                     _limitTaskNum ;
+         ossEvent                   _event ;
+   } ;
+   typedef _schedTaskInfo schedTaskInfo ;
 
 }
 

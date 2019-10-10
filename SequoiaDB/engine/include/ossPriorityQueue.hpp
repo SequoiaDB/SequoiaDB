@@ -89,7 +89,7 @@ public :
       boost::mutex::scoped_lock lock ( _mutex ) ;
       while ( _queue.empty () )
          _cond.wait ( lock ) ;
-      value = _queue.front () ;
+      value = _queue.top () ;
       _queue.pop () ;
    }
 
@@ -105,7 +105,7 @@ public :
       while ( _queue.empty () )
          if ( boost::cv_status::timeout == _cond.wait_for( lock, timeout ) )
             return FALSE ;
-      value = _queue.front () ;
+      value = _queue.top () ;
       _queue.pop () ;
       return TRUE ;
    }

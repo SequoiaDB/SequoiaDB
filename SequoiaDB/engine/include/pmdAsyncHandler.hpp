@@ -38,6 +38,7 @@
 #include "netTimer.hpp"
 #include "netMsgHandler.hpp"
 #include "pmdEDU.hpp"
+#include "schedTaskAdapterBase.hpp"
 
 namespace engine
 {
@@ -75,7 +76,8 @@ namespace engine
    class _pmdAsyncMsgHandler : public _netMsgHandler
    {
       public:
-         _pmdAsyncMsgHandler( _pmdAsycSessionMgr *pSessionMgr ) ;
+         _pmdAsyncMsgHandler( _pmdAsycSessionMgr *pSessionMgr,
+                              _schedTaskAdapterBase *pTaskAdapter = NULL ) ;
          virtual ~_pmdAsyncMsgHandler () ;
 
          OSS_INLINE void attach( pmdEDUCB *cb ) { _pMgrEDUCB = cb; }
@@ -95,6 +97,10 @@ namespace engine
                                   const _MsgHeader *header,
                                   const CHAR *msg );
 
+         INT32 _handleAdapterMsg( const NET_HANDLE &handle,
+                                  const _MsgHeader *header,
+                                  const CHAR *msg ) ;
+
          INT32 _handleMainMsg( const NET_HANDLE &handle,
                                const _MsgHeader *header,
                                const CHAR *msg ) ;
@@ -108,8 +114,9 @@ namespace engine
                                     MsgHeader *pNewMsg ) ;
 
       protected:
-         _pmdAsycSessionMgr   *_pSessionMgr ;
-         pmdEDUCB             *_pMgrEDUCB ;
+         _pmdAsycSessionMgr      *_pSessionMgr ;
+         _schedTaskAdapterBase   *_pTaskAdapter ;
+         pmdEDUCB                *_pMgrEDUCB ;
 
    } ;
    typedef _pmdAsyncMsgHandler pmdAsyncMsgHandler ;

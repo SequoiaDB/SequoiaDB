@@ -105,7 +105,15 @@ pmdFiles = [
       "pmd/pmdModuleLoader.cpp",
       "pmd/pmdRestSession.cpp",
       "pmd/pmdEntryPoint.cpp",
-      "pmd/pmdRemoteMsgEventHandler.cpp"
+      "pmd/pmdRemoteMsgEventHandler.cpp",
+
+      "sched/schedDef.cpp",
+      "sched/schedTaskQue.cpp",
+      "sched/schedTaskContainer.cpp",
+      "sched/schedTaskAdapter.cpp",
+      "sched/schedTaskAdapterBase.cpp",
+      "sched/schedPrepareJob.cpp",
+      "sched/schedDispatchJob.cpp"
       ]
 migFiles = [
       "mig/migLoad.cpp"

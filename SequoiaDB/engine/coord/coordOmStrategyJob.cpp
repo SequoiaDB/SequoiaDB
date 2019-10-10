@@ -78,6 +78,17 @@ namespace engine
       pCoord->getRSManager()->unregEUD( eduCB() ) ;
    }
 
+   BOOLEAN _coordOmStrategyJob::isSystem() const
+   {
+      pmdKRCB *krcb = pmdGetKRCB() ;
+      CoordCB *pCoord = krcb->getCoordCB() ;
+      coordResource *pResource = pCoord->getResource() ;
+      coordOmStrategyAgent *pOmAgent = pResource->getOmStrategyAgent() ;
+      CoordGroupInfoPtr omGroupPtr = pResource->getOmGroupInfo() ;
+
+      return 0 == omGroupPtr->nodeCount() ? FALSE : TRUE ;
+   }
+
    INT32 _coordOmStrategyJob::doit ()
    {
       INT32 rc = SDB_OK ;
@@ -98,7 +109,7 @@ namespace engine
          goto done ;
       }
 
-      while( !eduCB()->isInterrupted() )
+      while( !eduCB()->isForced() )
       {
          if ( timeCount >= timeWait )
          {
@@ -112,6 +123,7 @@ namespace engine
             {
                timeWait = COORD_OM_UPDATE_OPR_RETRY ;
             }
+            eduCB()->incEventCount( 1 ) ;
          }
          else if ( SDB_OK == pOmAgent->waitChange( OSS_ONE_SEC ) )
          {

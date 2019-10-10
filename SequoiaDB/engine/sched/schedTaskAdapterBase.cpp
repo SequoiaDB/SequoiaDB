@@ -144,7 +144,6 @@ namespace engine
 
    UINT32 _schedTaskAdapterBase::prepare( INT64 millisec )
    {
-      INT32 rc = SDB_OK ;
       UINT32 preparedNum = 0 ;
       UINT32 expectNum = 0 ;
 
