@@ -51,20 +51,13 @@ namespace engine
 {
    struct _rtnExtProcessorMeta
    {
-      string _csName ;
-      string _clName ;
-      string _idxName ;
+      string  _csName ;
+      string  _clName ;
+      string  _idxName ;
+      BSONObj _idxKeyDef ;
 
-      _rtnExtProcessorMeta()
-      {
-      }
-
-      void init( const CHAR *csName, const CHAR *clName, const CHAR *idxName )
-      {
-         _csName = string( csName ) ;
-         _clName = string( clName ) ;
-         _idxName = string( idxName ) ;
-      }
+      INT32 init( const CHAR *csName, const CHAR *clName, const CHAR *idxName,
+                  const BSONObj &idxKeyDef );
    } ;
    typedef _rtnExtProcessorMeta rtnExtProcessorMeta ;
 
@@ -82,19 +75,16 @@ namespace engine
       ~_rtnExtDataProcessor() ;
 
       INT32 init( const CHAR *csName, const CHAR *clName,
-                  const CHAR *idxName ) ;
+                  const CHAR *idxName, const BSONObj &idxKeyDef ) ;
 
       /*
        * Why prepare and done? The commit LSN should be the same on primary and
        * slaves. If we write before the log DPS, the commit LSN will be newer
        * than that on the slave.
        */
-      INT32 prepareInsert( const ixmIndexCB &indexCB, const BSONObj &inputObj,
-                           BSONObj &recordObj ) ;
-      INT32 prepareDelete( const ixmIndexCB &indexCB, const BSONObj &inputObj,
-                           BSONObj &recordObj ) ;
-      INT32 prepareUpdate( const ixmIndexCB &indexCB,
-                           const BSONObj &originalObj,
+      INT32 prepareInsert( const BSONObj &inputObj, BSONObj &recordObj ) ;
+      INT32 prepareDelete( const BSONObj &inputObj, BSONObj &recordObj ) ;
+      INT32 prepareUpdate( const BSONObj &originalObj,
                            const BSONObj &newObj, BSONObj &recordObj ) ;
 
       INT32 doWrite( pmdEDUCB *cb, BSONObj &record, SDB_DPSCB *dpsCB = NULL ) ;
@@ -146,7 +136,7 @@ namespace engine
       ~_rtnExtDataProcessorMgr () ;
 
       INT32 addProcessor( const CHAR *csName, const CHAR *clName,
-                          const CHAR *idxName,
+                          const CHAR *idxName, const BSONObj &idxKeyDef,
                           rtnExtDataProcessor** processor ) ;
 
       void getProcessors( const CHAR *csName,

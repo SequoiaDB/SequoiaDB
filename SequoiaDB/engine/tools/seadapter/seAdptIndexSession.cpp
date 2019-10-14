@@ -177,8 +177,19 @@ namespace seadapter
             {
                SDB_ASSERT( 1 == docObjs.size(),
                            "Returned object number is wrong" ) ;
-               _lastPopLID =
-                  docObjs[0].getField(SEADPT_FIELD_NAME_ID).Number() ;
+               try
+               {
+                  _lastPopLID =
+                     docObjs[0].getField(SEADPT_FIELD_NAME_ID).Number() ;
+               }
+               catch ( std::exception &e )
+               {
+                  PD_LOG( PDERROR, "Unexpected exception occurred: %s",
+                          e.what() ) ;
+                  rc = SDB_SYS ;
+                  goto error ;
+               }
+
                _expectLID = _lastPopLID ;
                PD_LOG( PDDEBUG, "Last logical id in capped collection[ %s ] is "
                        "[ %lld ]", _cappedCLFullName.c_str(), _lastPopLID ) ;
