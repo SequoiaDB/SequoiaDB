@@ -42,38 +42,71 @@
 
 namespace engine
 {
-   _rtnExtContextBase::_rtnExtContextBase()
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTCONTEXTBASE__RTNEXTCONTEXTBASE, "_rtnExtContextBase::_rtnExtContextBase" )
+   _rtnExtContextBase::_rtnExtContextBase( DMS_EXTOPR_TYPE type )
    {
+      PD_TRACE_ENTRY( SDB__RTNEXTCONTEXTBASE__RTNEXTCONTEXTBASE ) ;
       _id = 0 ;
+      _type = type ;
+      PD_TRACE_EXIT( SDB__RTNEXTCONTEXTBASE__RTNEXTCONTEXTBASE ) ;
    }
+
    _rtnExtContextBase::~_rtnExtContextBase()
    {
    }
 
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR, "_rtnExtContextBase::appendProcessor" )
    void _rtnExtContextBase::appendProcessor( rtnExtDataProcessor *processor )
    {
+      PD_TRACE_ENTRY( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR ) ;
       _processors.push_back( processor ) ;
+      PD_TRACE_EXIT( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR ) ;
    }
 
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR2, "_rtnExtContextBase::appendProcessor" )
    void _rtnExtContextBase::appendProcessor( rtnExtDataProcessor *processor,
                                              const BSONObj &processData )
    {
+      PD_TRACE_ENTRY( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR2 ) ;
       _processors.push_back( processor ) ;
       _objects.push_back( processData ) ;
+      PD_TRACE_EXIT( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR2 ) ;
    }
 
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSORS, "_rtnExtContextBase::appendProcessors" )
    void _rtnExtContextBase::appendProcessors( const vector< rtnExtDataProcessor * >& processorVec )
    {
+      PD_TRACE_ENTRY( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSORS ) ;
       _processors.insert( _processors.end(), processorVec.begin(),
                           processorVec.end() ) ;
+      PD_TRACE_EXIT( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSORS ) ;
    }
 
-   _rtnExtDataOprCtx::_rtnExtDataOprCtx()
+   _rtnExtDataOprCtx::_rtnExtDataOprCtx( DMS_EXTOPR_TYPE type )
+   : _rtnExtContextBase( type ),
+     _srcData1( NULL ),
+     _srcData2( NULL )
    {
    }
 
    _rtnExtDataOprCtx::~_rtnExtDataOprCtx()
    {
+   }
+
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAOPRCTX_SETSRCDATA, "_rtnExtDataOprCtx::setSrcData" )
+   void _rtnExtDataOprCtx::setSrcData( const BSONObj *srcData1,
+                                       const BSONObj *srcData2 )
+   {
+      PD_TRACE_ENTRY( SDB__RTNEXTDATAOPRCTX_SETSRCDATA ) ;
+      if ( srcData1 )
+      {
+         _srcData1 = srcData1 ;
+      }
+      if ( srcData2 )
+      {
+         _srcData2 = srcData2 ;
+      }
+      PD_TRACE_EXIT( SDB__RTNEXTDATAOPRCTX_SETSRCDATA ) ;
    }
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAOPRCTX_DONE, "_rtnExtDataOprCtx::done" )
@@ -110,8 +143,99 @@ namespace engine
       return SDB_OK ;
    }
 
-   _rtnExtDropOprCtx::_rtnExtDropOprCtx()
-   : _removeFiles( FALSE )
+   _rtnExtInsertCtx::_rtnExtInsertCtx()
+   : _rtnExtDataOprCtx( DMS_EXTOPR_TYPE_INSERT )
+   {
+   }
+
+   _rtnExtInsertCtx::~_rtnExtInsertCtx()
+   {
+   }
+
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTINSERTCTX_PROCESS, "_rtnExtInsertCtx::process" )
+   INT32 _rtnExtInsertCtx::process( pmdEDUCB *cb, SDB_DPSCB *dpscb )
+   {
+      INT32 rc = SDB_OK ;
+      PD_TRACE_ENTRY( SDB__RTNEXTINSERTCTX_PROCESS ) ;
+      BSONObj record ;
+
+      rtnExtDataProcessor *processor = _processors.back() ;
+
+      rc = processor->prepareInsert( *_srcData1, record ) ;
+      PD_RC_CHECK( rc, PDERROR, "Prepare for insert failed[ %d ]",
+                   rc ) ;
+      _objects.push_back( record ) ;
+
+   done:
+      PD_TRACE_EXITRC( SDB__RTNEXTINSERTCTX_PROCESS, rc ) ;
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   _rtnExtDeleteCtx::_rtnExtDeleteCtx()
+   : _rtnExtDataOprCtx( DMS_EXTOPR_TYPE_DELETE )
+   {
+   }
+
+   _rtnExtDeleteCtx::~_rtnExtDeleteCtx()
+   {
+   }
+
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDELETECTX_PROCESS, "_rtnExtDeleteCtx::process" )
+   INT32 _rtnExtDeleteCtx::process( pmdEDUCB *cb, SDB_DPSCB *dpscb )
+   {
+      INT32 rc = SDB_OK ;
+      PD_TRACE_ENTRY( SDB__RTNEXTDELETECTX_PROCESS ) ;
+      BSONObj record ;
+
+      rtnExtDataProcessor *processor = _processors.back() ;
+
+      rc = processor->prepareDelete( *_srcData1, record ) ;
+      PD_RC_CHECK( rc, PDERROR, "Prepare for delete failed[ %d ]",
+                   rc ) ;
+      _objects.push_back( record ) ;
+
+   done:
+      PD_TRACE_EXITRC( SDB__RTNEXTDELETECTX_PROCESS, rc ) ;
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   _rtnExtUpdateCtx::_rtnExtUpdateCtx()
+   : _rtnExtDataOprCtx( DMS_EXTOPR_TYPE_UPDATE )
+   {
+   }
+
+   _rtnExtUpdateCtx::~_rtnExtUpdateCtx()
+   {
+   }
+
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTUPDATECTX_PROCESS, "_rtnExtUpdateCtx::process" )
+   INT32 _rtnExtUpdateCtx::process( pmdEDUCB *cb, SDB_DPSCB *dpscb )
+   {
+      INT32 rc = SDB_OK ;
+      PD_TRACE_ENTRY( SDB__RTNEXTUPDATECTX_PROCESS ) ;
+      BSONObj record ;
+
+      rtnExtDataProcessor *processor = _processors.back() ;
+
+      rc = processor->prepareUpdate( *_srcData1, *_srcData2, record ) ;
+      PD_RC_CHECK( rc, PDERROR, "Prepare for delete failed[ %d ]",
+                   rc ) ;
+      _objects.push_back( record ) ;
+
+   done:
+      PD_TRACE_EXITRC( SDB__RTNEXTUPDATECTX_PROCESS, rc ) ;
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   _rtnExtDropOprCtx::_rtnExtDropOprCtx( DMS_EXTOPR_TYPE type )
+   : _rtnExtContextBase( type ),
+     _removeFiles( FALSE )
    {
    }
 
@@ -119,21 +243,73 @@ namespace engine
    {
    }
 
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDROPOPRCTX_PROCESS, "_rtnExtDropOprCtx::process" )
+   INT32 _rtnExtDropOprCtx::process( pmdEDUCB *cb, SDB_DPSCB *dpscb )
+   {
+      INT32 rc = SDB_OK ;
+      PD_TRACE_ENTRY( SDB__RTNEXTDROPOPRCTX_PROCESS ) ;
+      vector <rtnExtDataProcessor *> processorVecP1 ;
+
+      for ( vector<rtnExtDataProcessor *>::iterator itr = _processors.begin();
+            itr != _processors.end(); ++itr )
+      {
+         if ( _removeFiles )
+         {
+            rc = (*itr)->doDropP1( cb, NULL ) ;
+         }
+         else
+         {
+            rc = (*itr)->doUnload( cb, NULL ) ;
+         }
+         PD_RC_CHECK( rc, PDERROR, "Processor drop operation failed[ %d ]",
+                      rc ) ;
+         processorVecP1.push_back( *itr ) ;
+      }
+
+   done:
+      PD_TRACE_EXITRC( SDB__RTNEXTDROPOPRCTX_PROCESS, rc ) ;
+      return rc ;
+   error:
+      if ( _removeFiles )
+      {
+         for ( vector<rtnExtDataProcessor *>::iterator itr = processorVecP1.begin();
+               itr != processorVecP1.end(); ++itr )
+         {
+            (*itr)->doDropP1Cancel( cb, NULL ) ;
+         }
+      }
+      goto done ;
+   }
+
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDROPOPRCTX_DONE, "_rtnExtDropOprCtx::done" )
    INT32 _rtnExtDropOprCtx::done( rtnExtDataProcessorMgr *edpMgr, pmdEDUCB *cb,
                                   SDB_DPSCB *dpscb )
    {
       INT32 rc = SDB_OK ;
+      INT32 ret = SDB_OK ;
       PD_TRACE_ENTRY( SDB__RTNEXTDROPOPRCTX_DONE ) ;
-      if ( _removeFiles )
+
+      for ( EDP_VEC_ITR itr = _processors.begin(); itr != _processors.end();)
       {
-         for ( EDP_VEC_ITR itr = _processors.begin(); itr != _processors.end();)
+         if ( _removeFiles )
          {
-            rc = (*itr)->doDropP2( cb, dpscb ) ;
-            PD_RC_CHECK( rc, PDERROR, "Do drop phase 2 failed[ %d ]", rc ) ;
-            edpMgr->delProcessor( &(*itr ) ) ;
-            _processors.erase( itr ) ;
+            ret = (*itr)->doDropP2( cb, dpscb ) ;
+            if ( ret )
+            {
+               PD_LOG( PDERROR, "Do drop phase 2 failed[ %d ]", rc ) ;
+               if ( SDB_OK == rc )
+               {
+                  rc = ret ;
+               }
+            }
          }
+         edpMgr->delProcessor( &(*itr ) ) ;
+         _processors.erase( itr ) ;
+      }
+
+      if ( rc )
+      {
+         goto error ;
       }
 
    done:
@@ -158,13 +334,44 @@ namespace engine
    }
 
    _rtnExtTruncateCtx::_rtnExtTruncateCtx()
-   : _oldCLLID( 0 ),
-     _newCLLID( 0 )
+   : _rtnExtContextBase( DMS_EXTOPR_TYPE_TRUNCATE )
    {
    }
 
    _rtnExtTruncateCtx::~_rtnExtTruncateCtx()
    {
+   }
+
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTTRUNCATECTX_PROCESS, "_rtnExtTruncateCtx::process" )
+   INT32 _rtnExtTruncateCtx::process( pmdEDUCB *cb, SDB_DPSCB *dpscb )
+   {
+      INT32 rc = SDB_OK ;
+      PD_TRACE_ENTRY( SDB__RTNEXTTRUNCATECTX_PROCESS ) ;
+      vector<rtnExtDataProcessor *> processorP1 ;
+
+      for ( vector<rtnExtDataProcessor *>::iterator itr = _processors.begin();
+            itr != _processors.end(); ++itr )
+      {
+         rc = (*itr)->doDropP1( cb, NULL ) ;
+         PD_RC_CHECK( rc, PDERROR, "Drop phase 1 failed[ %d ]", rc ) ;
+         processorP1.push_back( *itr ) ;
+      }
+
+   done:
+      PD_TRACE_EXITRC( SDB__RTNEXTTRUNCATECTX_PROCESS, rc ) ;
+      return rc ;
+   error:
+      INT32 rcTmp = SDB_OK ;
+      for ( vector<rtnExtDataProcessor *>::iterator itr = processorP1.begin();
+            itr != processorP1.end(); ++itr )
+      {
+         rcTmp = (*itr)->doDropP1Cancel( cb, NULL ) ;
+         if ( rcTmp )
+         {
+            PD_LOG( PDERROR, "Drop phase 1 cancel failed[ %d ]", rc ) ;
+         }
+      }
+      goto done ;
    }
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTTRUNCATECTX_DONE, "_rtnExtTruncateCtx::done" )
@@ -211,12 +418,6 @@ namespace engine
       return SDB_OK ;
    }
 
-   void _rtnExtTruncateCtx::setCLLIDs( UINT32 oldLID, UINT32 newLID )
-   {
-      _oldCLLID = oldLID ;
-      _newCLLID = newLID ;
-   }
-
    _rtnExtContextMgr::_rtnExtContextMgr()
    {
    }
@@ -241,7 +442,7 @@ namespace engine
    }
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTCONTEXTMGR_CREATECONTEXT, "_rtnExtContextMgr::createContext" )
-   INT32 _rtnExtContextMgr::createContext( RTN_EXTCTX_TYPE type,
+   INT32 _rtnExtContextMgr::createContext( DMS_EXTOPR_TYPE type,
                                            pmdEDUCB *cb,
                                            rtnExtContextBase** context )
    {
@@ -252,23 +453,31 @@ namespace engine
 
       switch ( type )
       {
-      case RTN_EXTCTX_TYPE_INSERT:
-      case RTN_EXTCTX_TYPE_DELETE:
-      case RTN_EXTCTX_TYPE_UPDATE:
-
-         newCtx = SDB_OSS_NEW rtnExtDataOprCtx ;
+      case DMS_EXTOPR_TYPE_INSERT:
+         newCtx = SDB_OSS_NEW rtnExtInsertCtx ;
          break ;
-      case RTN_EXTCTX_TYPE_DROPCS:
-      case RTN_EXTCTX_TYPE_DROPCL:
-      case RTN_EXTCTX_TYPE_DROPIDX:
-         newCtx = SDB_OSS_NEW rtnExtDropOprCtx ;
+      case DMS_EXTOPR_TYPE_DELETE:
+         newCtx = SDB_OSS_NEW rtnExtDeleteCtx ;
          break ;
-      case RTN_EXTCTX_TYPE_TRUNCATE:
+      case DMS_EXTOPR_TYPE_UPDATE:
+         newCtx = SDB_OSS_NEW rtnExtUpdateCtx ;
+         break ;
+      case DMS_EXTOPR_TYPE_DROPCS:
+         newCtx = SDB_OSS_NEW rtnExtDropCSCtx ;
+         break ;
+      case DMS_EXTOPR_TYPE_DROPCL:
+         newCtx = SDB_OSS_NEW rtnExtDropCLCtx ;
+         break ;
+      case DMS_EXTOPR_TYPE_DROPIDX:
+         newCtx = SDB_OSS_NEW rtnExtDropIdxCtx ;
+         break ;
+      case DMS_EXTOPR_TYPE_TRUNCATE:
          newCtx = SDB_OSS_NEW rtnExtTruncateCtx ;
          break ;
       default:
          SDB_ASSERT( FALSE, "Invalid context type" ) ;
-         break ;
+         rc = SDB_SYS ;
+         goto error ;
       }
 
       if ( !newCtx )
@@ -338,13 +547,14 @@ namespace engine
    {
    }
 
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAHANDLER_GETEXTDATANAME, "_rtnExtDataHandler::getExtDataName" )
    INT32 _rtnExtDataHandler::getExtDataName( const CHAR *csName,
                                              const CHAR *clName,
                                              const CHAR *idxName,
                                              CHAR *buff, UINT32 buffSize )
    {
       INT32 rc = SDB_OK ;
-
+      PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_GETEXTDATANAME ) ;
       SDB_ASSERT( csName && clName && idxName, "Names should not be NULL" ) ;
       if ( !buff )
       {
@@ -361,6 +571,7 @@ namespace engine
       rtnExtDataProcessor::getExtDataNames( csName, clName, idxName, NULL, 0,
                                             buff, buffSize ) ;
    done:
+      PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_GETEXTDATANAME, rc ) ;
       return rc ;
    error:
       goto done ;
@@ -369,13 +580,15 @@ namespace engine
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAHANDLER_ONOPENTEXTIDX, "_rtnExtDataHandler::onOpenTextIdx" )
    INT32 _rtnExtDataHandler::onOpenTextIdx( const CHAR *csName,
                                             const CHAR *clName,
-                                            const CHAR *idxName )
+                                            const CHAR *idxName,
+                                            const BSONObj &idxKeyDef )
    {
       INT32 rc = SDB_OK ;
       PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_ONOPENTEXTIDX ) ;
       rtnExtDataProcessor *processor = NULL ;
 
-      rc = _edpMgr->addProcessor( csName, clName, idxName, &processor ) ;
+      rc = _edpMgr->addProcessor( csName, clName, idxName,
+                                  idxKeyDef, &processor ) ;
       PD_RC_CHECK( rc, PDERROR, "Add external processor failed[ %d ]", rc ) ;
       SDB_ASSERT( processor, "processor is NULL" ) ;
 
@@ -394,53 +607,29 @@ namespace engine
       PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_ONDELCS ) ;
       rtnExtDropOprCtx *context = NULL ;
       vector <rtnExtDataProcessor *> processorVec ;
-      vector <rtnExtDataProcessor *> processorVecP1 ;
 
       context = (rtnExtDropOprCtx *)_contextMgr.findContext( cb->getTID() ) ;
       if ( !context )
       {
-         rc = _contextMgr.createContext( RTN_EXTCTX_TYPE_DROPCS,
+         rc = _contextMgr.createContext( DMS_EXTOPR_TYPE_DROPCS,
                                          cb, (rtnExtContextBase**)&context ) ;
          PD_RC_CHECK( rc, PDERROR, "Create new context failed[ %d ]", rc ) ;
       }
-      context->setRemoveFiles( removeFiles ) ;
 
       _edpMgr->getProcessors( csName, processorVec ) ;
       if ( 0 == processorVec.size() )
       {
          goto done ;
       }
-
-      for ( vector<rtnExtDataProcessor *>::iterator itr = processorVec.begin();
-            itr != processorVec.end(); ++itr )
-      {
-         if ( removeFiles )
-         {
-            rc = (*itr)->doDropP1( cb, NULL ) ;
-         }
-         else
-         {
-            rc = (*itr)->doUnload( cb, NULL ) ;
-         }
-         PD_RC_CHECK( rc, PDERROR, "Processor drop operation failed[ %d ]",
-                      rc ) ;
-         processorVecP1.push_back( *itr ) ;
-      }
+      context->setRemoveFiles( removeFiles ) ;
       context->appendProcessors( processorVec );
+      rc = context->process( cb ) ;
+      PD_RC_CHECK( rc, PDERROR, "Context process failed[ %d ]", rc ) ;
 
    done:
       PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_ONDELCS, rc ) ;
       return rc ;
    error:
-      if ( removeFiles )
-      {
-         for ( vector<rtnExtDataProcessor *>::iterator itr = processorVecP1.begin();
-               itr != processorVecP1.end(); ++itr )
-         {
-            (*itr)->doDropP1Cancel( cb, NULL ) ;
-         }
-      }
-
       if ( context )
       {
          _contextMgr.delContext( context->getID(), cb ) ;
@@ -448,43 +637,41 @@ namespace engine
       goto done ;
    }
 
-   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAHANDLER_ONDROPALLINDEXES, "_rtnExtDataHandler::onDropAllIndexes" )
-   INT32 _rtnExtDataHandler::onDropAllIndexes( const CHAR *csName,
-                                               const CHAR *clName,
-                                               pmdEDUCB *cb, SDB_DPSCB *dpscb )
+   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAHANDLER_ONDELCL, "_rtnExtDataHandler::onDelCL" )
+   INT32 _rtnExtDataHandler::onDelCL( const CHAR *csName, const CHAR *clName,
+                                      pmdEDUCB *cb, SDB_DPSCB *dpscb )
    {
       INT32 rc = SDB_OK ;
-      PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_ONDROPALLINDEXES ) ;
-      vector<rtnExtDataProcessor *> processorVec ;
-      vector<rtnExtDataProcessor *> processorP1 ;
+      PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_ONDELCL ) ;
+
+      rtnExtDropOprCtx *context = NULL ;
+      vector< rtnExtDataProcessor *> processorVec ;
+
+      context = (rtnExtDropOprCtx *)_contextMgr.findContext( cb->getTID() ) ;
+      if ( !context )
+      {
+         rc = _contextMgr.createContext( DMS_EXTOPR_TYPE_DROPCL,
+                                         cb, (rtnExtContextBase**)&context ) ;
+         PD_RC_CHECK( rc, PDERROR, "Create new context failed[ %d ]", rc ) ;
+      }
 
       _edpMgr->getProcessors( csName, clName, processorVec ) ;
-
-      for ( vector<rtnExtDataProcessor *>::iterator itr = processorVec.begin();
-            itr != processorVec.end(); ++itr )
+      if ( 0 == processorVec.size() )
       {
-         rc = (*itr)->doDropP1( cb, NULL ) ;
-         PD_RC_CHECK( rc, PDERROR, "Drop phase 1 failed[ %d ]", rc ) ;
-         processorP1.push_back( *itr ) ;
+         goto done ;
       }
-
-      for ( vector<rtnExtDataProcessor *>::iterator itr = processorP1.begin();
-            itr != processorP1.end(); )
-      {
-         rc = (*itr)->doDropP2( cb, NULL ) ;
-         PD_RC_CHECK( rc, PDERROR, "Drop phase 2 failed[ %d ]", rc ) ;
-         _edpMgr->delProcessor( &(*itr ) ) ;
-         processorP1.erase( itr ) ;
-      }
+      context->setRemoveFiles( TRUE ) ;
+      context->appendProcessors( processorVec ) ;
+      rc = context->process( cb ) ;
+      PD_RC_CHECK( rc, PDERROR, "Context process failed[ %d ]", rc ) ;
 
    done:
-      PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_ONDROPALLINDEXES, rc ) ;
+      PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_ONDELCL, rc ) ;
       return rc ;
    error:
-      for ( vector<rtnExtDataProcessor *>::iterator itr = processorP1.begin();
-            itr != processorP1.end(); ++itr )
+      if ( context )
       {
-         (*itr)->doDropP1Cancel( cb, NULL ) ;
+         _contextMgr.delContext( context->getID(), cb ) ;
       }
       goto done ;
    }
@@ -500,28 +687,44 @@ namespace engine
       PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_ONDROPTEXTIDX ) ;
       SDB_DB_STATUS dbStatus = pmdGetKRCB()->getDBStatus() ;
       rtnExtDataProcessor *processor = NULL ;
+      rtnExtDropOprCtx *context = NULL ;
 
       if ( SDB_DB_FULLSYNC == dbStatus )
       {
          goto done ;
       }
 
-      rc = _edpMgr->getProcessor( csName, clName, idxName, &processor ) ;
-      PD_RC_CHECK( rc, PDERROR, "Get external processor failed[ %d ]", rc ) ;
-      if ( !processor )
+      context = (rtnExtDropOprCtx *)_contextMgr.findContext( cb->getTID() ) ;
+      if ( !context )
       {
-         goto done ;
+         rc = _contextMgr.createContext( DMS_EXTOPR_TYPE_DROPIDX,
+                                         cb, (rtnExtContextBase**)&context ) ;
+         PD_RC_CHECK( rc, PDERROR, "Create new context failed[ %d ]", rc ) ;
       }
-      rc = processor->doDropP1( cb, NULL ) ;
-      PD_RC_CHECK( rc, PDERROR, "Processor drop operation failed[ %d ]", rc ) ;
-      rc = processor->doDropP2( cb, NULL ) ;
-      PD_RC_CHECK( rc, PDERROR, "Processor drop operation failed[ %d ]", rc ) ;
-      _edpMgr->delProcessor( &processor ) ;
+
+      if ( DMS_EXTOPR_TYPE_DROPIDX == context->getType() )
+      {
+         rc = _edpMgr->getProcessor( csName, clName, idxName, &processor ) ;
+         PD_RC_CHECK( rc, PDERROR, "Get external processor failed[ %d ]", rc ) ;
+         if ( !processor )
+         {
+            goto done ;
+         }
+
+         context->setRemoveFiles( TRUE ) ;
+         context->appendProcessor( processor ) ;
+         rc = context->process( cb ) ;
+         PD_RC_CHECK( rc, PDERROR, "Context process failed[ %d ]", rc ) ;
+      }
 
    done:
       PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_ONDROPTEXTIDX, rc ) ;
       return rc ;
    error:
+      if ( context )
+      {
+         _contextMgr.delContext( context->getID(), cb ) ;
+      }
       goto done ;
    }
 
@@ -529,6 +732,7 @@ namespace engine
    INT32 _rtnExtDataHandler::onRebuildTextIdx( const CHAR *csName,
                                                const CHAR *clName,
                                                const CHAR *idxName,
+                                               const BSONObj &idxKeyDef,
                                                pmdEDUCB *cb, SDB_DPSCB *dpscb )
    {
       INT32 rc = SDB_OK ;
@@ -548,7 +752,8 @@ namespace engine
       {
          if ( create )
          {
-            rc = _edpMgr->addProcessor( csName, clName, idxName, &processor ) ;
+            rc = _edpMgr->addProcessor( csName, clName, idxName,
+                                        idxKeyDef, &processor ) ;
             PD_RC_CHECK( rc, PDERROR, "Add processor for collection[ %s.%s ] "
                          "and index[ %s ] failed[ %d ]", csName, clName,
                          idxName, rc ) ;
@@ -580,22 +785,20 @@ namespace engine
    {
       INT32 rc = SDB_OK ;
       PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_ONINSERT ) ;
-      pmdKRCB *krcb = pmdGetKRCB() ;
-      SDB_DB_STATUS dbStatus = krcb->getDBStatus() ;
+      SDB_DB_STATUS dbStatus = pmdGetKRCB()->getDBStatus() ;
       rtnExtDataProcessor *processor = NULL ;
-      rtnExtDataOprCtx *context = NULL ;
+      rtnExtInsertCtx *context = NULL ;
       BOOLEAN newContext = FALSE ;
-      BSONObj processData ;
 
       if ( SDB_DB_REBUILDING == dbStatus || SDB_DB_FULLSYNC == dbStatus )
       {
          goto done ;
       }
 
-      context = (rtnExtDataOprCtx *)_contextMgr.findContext( cb->getTID() ) ;
+      context = (rtnExtInsertCtx *)_contextMgr.findContext( cb->getTID() ) ;
       if ( !context )
       {
-         rc = _contextMgr.createContext( RTN_EXTCTX_TYPE_INSERT,
+         rc = _contextMgr.createContext( DMS_EXTOPR_TYPE_INSERT,
                                          cb, (rtnExtContextBase**)&context ) ;
          PD_RC_CHECK( rc, PDERROR, "Create new context failed[ %d ]", rc ) ;
          newContext = TRUE ;
@@ -611,11 +814,10 @@ namespace engine
          goto error ;
       }
 
-      rc = processor->prepareInsert( indexCB, object, processData ) ;
-      PD_RC_CHECK( rc, PDERROR, "External processor handle insert failed[ %d ]",
-                   rc ) ;
-
-      context->appendProcessor( processor, processData ) ;
+      context->appendProcessor( processor ) ;
+      context->setSrcData( &object ) ;
+      rc = context->process( cb ) ;
+      PD_RC_CHECK( rc, PDERROR, "Context processing failed[ %d ]", rc ) ;
 
    done:
       PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_ONINSERT, rc ) ;
@@ -644,7 +846,7 @@ namespace engine
       pmdKRCB *krcb = pmdGetKRCB() ;
       SDB_DB_STATUS dbStatus = krcb->getDBStatus() ;
       rtnExtDataProcessor *processor = NULL ;
-      rtnExtDataOprCtx *context = NULL ;
+      rtnExtDeleteCtx *context = NULL ;
       BOOLEAN newContext = FALSE ;
       BSONObj processData ;
 
@@ -653,10 +855,10 @@ namespace engine
          goto done ;
       }
 
-      context = (rtnExtDataOprCtx *)_contextMgr.findContext( cb->getTID() ) ;
+      context = (rtnExtDeleteCtx *)_contextMgr.findContext( cb->getTID() ) ;
       if ( !context )
       {
-         rc = _contextMgr.createContext( RTN_EXTCTX_TYPE_DELETE,
+         rc = _contextMgr.createContext( DMS_EXTOPR_TYPE_DELETE,
                                          cb, (rtnExtContextBase**)&context ) ;
          PD_RC_CHECK( rc, PDERROR, "Create new context failed[ %d ]", rc ) ;
          newContext = TRUE ;
@@ -673,10 +875,10 @@ namespace engine
          goto error ;
       }
 
-      rc = processor->prepareDelete( indexCB, object, processData ) ;
-      PD_RC_CHECK( rc, PDERROR, "External processor handle delete failed[ %d ]",
-                   rc ) ;
-      context->appendProcessor( processor, processData ) ;
+      context->appendProcessor( processor ) ;
+      context->setSrcData( &object ) ;
+      rc = context->process( cb ) ;
+      PD_RC_CHECK( rc, PDERROR, "Context processing failed[ %d ]", rc ) ;
 
    done:
       PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_ONDELETE, rc ) ;
@@ -707,7 +909,7 @@ namespace engine
       pmdKRCB *krcb = pmdGetKRCB() ;
       SDB_DB_STATUS dbStatus = krcb->getDBStatus() ;
       rtnExtDataProcessor *processor = NULL ;
-      rtnExtDataOprCtx *context = NULL ;
+      rtnExtUpdateCtx *context = NULL ;
       BOOLEAN newContext = FALSE ;
       BSONObj processData ;
 
@@ -716,10 +918,10 @@ namespace engine
          goto done ;
       }
 
-      context = (rtnExtDataOprCtx *)_contextMgr.findContext( cb->getTID() ) ;
+      context = (rtnExtUpdateCtx *)_contextMgr.findContext( cb->getTID() ) ;
       if ( !context )
       {
-         rc = _contextMgr.createContext( RTN_EXTCTX_TYPE_UPDATE,
+         rc = _contextMgr.createContext( DMS_EXTOPR_TYPE_UPDATE,
                                          cb, (rtnExtContextBase**)&context ) ;
          PD_RC_CHECK( rc, PDERROR, "Create new context failed[ %d ]", rc ) ;
          newContext = TRUE ;
@@ -735,11 +937,11 @@ namespace engine
          goto error ;
       }
 
-      rc = processor->prepareUpdate( indexCB, orignalObj, newObj, processData ) ;
-      PD_RC_CHECK( rc, PDERROR, "External processor handle update failed[ %d ]",
-                   rc ) ;
-
       context->appendProcessor( processor, processData ) ;
+      context->setSrcData( &orignalObj, &newObj ) ;
+
+      rc = context->process( cb ) ;
+      PD_RC_CHECK( rc, PDERROR, "Context processing failed[ %d ]", rc ) ;
 
    done:
       PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_ONUPDATE, rc ) ;
@@ -766,43 +968,33 @@ namespace engine
       PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_ONTRUNCATECL ) ;
       rtnExtTruncateCtx *context = NULL ;
       vector<rtnExtDataProcessor *> processors ;
-      vector<rtnExtDataProcessor *> processorP1 ;
+      BOOLEAN newContext = FALSE ;
 
       context = (rtnExtTruncateCtx *)_contextMgr.findContext( cb->getTID() ) ;
       if ( !context )
       {
-         rc = _contextMgr.createContext( RTN_EXTCTX_TYPE_TRUNCATE,
+         rc = _contextMgr.createContext( DMS_EXTOPR_TYPE_TRUNCATE,
                                          cb, (rtnExtContextBase**)&context ) ;
          PD_RC_CHECK( rc, PDERROR, "Create new context failed[ %d ]", rc ) ;
+         newContext = TRUE ;
       }
 
       _edpMgr->getProcessors( csName, clName, processors ) ;
       PD_RC_CHECK( rc, PDERROR, "Get processors failed[ %d ]", rc ) ;
-
-      for ( vector<rtnExtDataProcessor *>::iterator itr = processors.begin();
-            itr != processors.end(); ++itr )
+      if ( 0 == processors.size() )
       {
-         rc = (*itr)->doDropP1( cb, NULL ) ;
-         PD_RC_CHECK( rc, PDERROR, "Drop phase 1 failed[ %d ]", rc ) ;
-         processorP1.push_back( *itr ) ;
+         goto done ;
       }
+
       context->appendProcessors( processors ) ;
+      rc = context->process( cb ) ;
+      PD_RC_CHECK( rc, PDERROR, "Context processing failed[ %d ]", rc ) ;
 
    done:
       PD_TRACE_EXITRC( SDB__RTNEXTDATAHANDLER_ONTRUNCATECL, rc ) ;
       return rc ;
    error:
-      INT32 rcTmp = SDB_OK ;
-      for ( vector<rtnExtDataProcessor *>::iterator itr = processorP1.begin();
-            itr != processorP1.end(); ++itr )
-      {
-         rcTmp = (*itr)->doDropP1Cancel( cb, dpsCB ) ;
-         if ( rcTmp )
-         {
-            PD_LOG( PDERROR, "Drop phase 1 cancel failed[ %d ]", rc ) ;
-         }
-      }
-      if ( context )
+      if ( context && newContext )
       {
          _contextMgr.delContext( context->getID(), cb ) ;
       }
@@ -810,22 +1002,30 @@ namespace engine
    }
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAHANDLER_DONE, "_rtnExtDataHandler::done" )
-   INT32 _rtnExtDataHandler::done( pmdEDUCB *cb, SDB_DPSCB *dpscb )
+   INT32 _rtnExtDataHandler::done( DMS_EXTOPR_TYPE type, pmdEDUCB *cb,
+                                   SDB_DPSCB *dpscb )
    {
       INT32 rc = SDB_OK ;
       PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_DONE ) ;
       rtnExtContextBase *context = _contextMgr.findContext( cb->getTID() ) ;
+      BOOLEAN ownContext = FALSE ;
       if ( !context )
+      {
+         goto done ;
+      }
+
+      ownContext = ( context->getType() == type ) ;
+      if ( !ownContext )
       {
          goto done ;
       }
 
       rc = context->done( _edpMgr, cb, NULL ) ;
       PD_RC_CHECK( rc, PDERROR, "Final step of current operation failed[ %d ]",
-                   rc) ;
+                      rc) ;
 
    done:
-      if ( context )
+      if ( context && ownContext )
       {
          _contextMgr.delContext( context->getID(), cb ) ;
       }
@@ -836,12 +1036,20 @@ namespace engine
    }
 
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTDATAHANDLER_ABORTOPERATION, "_rtnExtDataHandler::abortOperation" )
-   INT32 _rtnExtDataHandler::abortOperation( pmdEDUCB *cb )
+   INT32 _rtnExtDataHandler::abortOperation( DMS_EXTOPR_TYPE type,
+                                             pmdEDUCB *cb )
    {
       INT32 rc = SDB_OK ;
       PD_TRACE_ENTRY( SDB__RTNEXTDATAHANDLER_ABORTOPERATION ) ;
       rtnExtContextBase *context = _contextMgr.findContext( cb->getTID() ) ;
+      BOOLEAN ownContext = FALSE ;
       if ( !context )
+      {
+         goto done ;
+      }
+
+      ownContext = ( context->getType() == type ) ;
+      if ( !ownContext )
       {
          goto done ;
       }
@@ -851,7 +1059,7 @@ namespace engine
                    rc) ;
 
    done:
-      if ( context )
+      if ( context && ownContext )
       {
          _contextMgr.delContext( context->getID(), cb ) ;
       }

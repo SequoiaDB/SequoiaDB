@@ -2415,7 +2415,7 @@ namespace engine
 
       if ( handler )
       {
-         rc = handler->done( cb, dpscb ) ;
+         rc = handler->done( DMS_EXTOPR_TYPE_TRUNCATE, cb, dpscb ) ;
          PD_RC_CHECK( rc, PDERROR, "External done operation failed, rc: %d",
                       rc ) ;
       }
@@ -2831,7 +2831,7 @@ namespace engine
          IDmsExtDataHandler* handler = getExtDataHandler() ;
          if ( handler )
          {
-            handler->done( cb ) ;
+            handler->done( DMS_EXTOPR_TYPE_INSERT, cb ) ;
          }
       }
 
@@ -3077,7 +3077,7 @@ namespace engine
          IDmsExtDataHandler* handler = getExtDataHandler() ;
          if ( handler )
          {
-            handler->done( cb ) ;
+            handler->done( DMS_EXTOPR_TYPE_DELETE, cb ) ;
          }
       }
 
@@ -3300,7 +3300,7 @@ namespace engine
          IDmsExtDataHandler* handler = getExtDataHandler() ;
          if ( handler )
          {
-            handler->done( cb ) ;
+            handler->done( DMS_EXTOPR_TYPE_UPDATE, cb ) ;
          }
       }
 

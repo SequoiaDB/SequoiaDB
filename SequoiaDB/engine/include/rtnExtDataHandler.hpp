@@ -45,22 +45,10 @@
 
 namespace engine
 {
-   enum _RTN_EXTCTX_TYPE
-   {
-      RTN_EXTCTX_TYPE_INSERT = 0,
-      RTN_EXTCTX_TYPE_DELETE,
-      RTN_EXTCTX_TYPE_UPDATE,
-      RTN_EXTCTX_TYPE_TRUNCATE,
-      RTN_EXTCTX_TYPE_DROPCS,
-      RTN_EXTCTX_TYPE_DROPCL,
-      RTN_EXTCTX_TYPE_DROPIDX
-   } ;
-   typedef enum _RTN_EXTCTX_TYPE RTN_EXTCTX_TYPE ;
-
    class _rtnExtContextBase : public SDBObject
    {
    public:
-      _rtnExtContextBase() ;
+      _rtnExtContextBase( DMS_EXTOPR_TYPE type ) ;
       virtual ~_rtnExtContextBase() ;
       void setID( UINT32 id )
       {
@@ -77,8 +65,9 @@ namespace engine
                             const BSONObj &processData ) ;
       void appendProcessors( const vector< rtnExtDataProcessor * >& processorVec ) ;
 
-      RTN_EXTCTX_TYPE getType() const { return _type ; }
+      DMS_EXTOPR_TYPE getType() const { return _type ; }
 
+      virtual INT32 process( _pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) = 0 ;
       virtual INT32 done( rtnExtDataProcessorMgr *edpMgr, _pmdEDUCB *cb,
                           SDB_DPSCB *dpscb = NULL ) = 0 ;
       virtual INT32 abort( rtnExtDataProcessorMgr *edpMgr, _pmdEDUCB *cb,
@@ -90,7 +79,7 @@ namespace engine
       typedef vector< BSONObj > OBJ_VEC ;
       typedef OBJ_VEC::iterator OBJ_VEC_ITR ;
 
-      RTN_EXTCTX_TYPE   _type ;
+      DMS_EXTOPR_TYPE   _type ;
       UINT32            _id ;
       EDP_VEC           _processors ;
       OBJ_VEC           _objects ;
@@ -100,22 +89,58 @@ namespace engine
    class _rtnExtDataOprCtx : public _rtnExtContextBase
    {
    public:
-      _rtnExtDataOprCtx() ;
-      ~_rtnExtDataOprCtx() ;
+      _rtnExtDataOprCtx( DMS_EXTOPR_TYPE type ) ;
+      virtual ~_rtnExtDataOprCtx() ;
 
+      void setSrcData( const BSONObj *srcData1,
+                       const BSONObj *srcData2 = NULL ) ;
       virtual INT32 done( rtnExtDataProcessorMgr *edpMgr, _pmdEDUCB *cb,
                           SDB_DPSCB *dpscb = NULL ) ;
       virtual INT32 abort( rtnExtDataProcessorMgr *edpMgr, _pmdEDUCB *cb,
                            SDB_DPSCB *dpscb = NULL ) ;
+   protected:
+      const BSONObj    *_srcData1 ;
+      const BSONObj    *_srcData2 ;
    } ;
    typedef _rtnExtDataOprCtx rtnExtDataOprCtx ;
+
+   class _rtnExtInsertCtx : public _rtnExtDataOprCtx
+   {
+   public:
+      _rtnExtInsertCtx() ;
+      ~_rtnExtInsertCtx() ;
+
+      virtual INT32 process( _pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) ;
+   } ;
+   typedef _rtnExtInsertCtx rtnExtInsertCtx ;
+
+   class _rtnExtDeleteCtx : public _rtnExtDataOprCtx
+   {
+   public:
+      _rtnExtDeleteCtx() ;
+      ~_rtnExtDeleteCtx() ;
+
+      virtual INT32 process( _pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) ;
+   } ;
+   typedef _rtnExtDeleteCtx rtnExtDeleteCtx ;
+
+   class _rtnExtUpdateCtx : public _rtnExtDataOprCtx
+   {
+   public:
+      _rtnExtUpdateCtx() ;
+      ~_rtnExtUpdateCtx() ;
+
+      virtual INT32 process( _pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) ;
+   } ;
+   typedef _rtnExtUpdateCtx rtnExtUpdateCtx ;
 
    class _rtnExtDropOprCtx : public _rtnExtContextBase
    {
    public:
-      _rtnExtDropOprCtx() ;
-      ~_rtnExtDropOprCtx() ;
+      _rtnExtDropOprCtx( DMS_EXTOPR_TYPE type ) ;
+      virtual ~_rtnExtDropOprCtx() ;
 
+      virtual INT32 process( _pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) ;
       virtual INT32 done( rtnExtDataProcessorMgr *edpMgr, _pmdEDUCB *cb,
                           SDB_DPSCB *dpscb = NULL ) ;
       virtual INT32 abort( rtnExtDataProcessorMgr *edpMgr, _pmdEDUCB *cb,
@@ -126,21 +151,51 @@ namespace engine
    } ;
    typedef _rtnExtDropOprCtx rtnExtDropOprCtx ;
 
+   class _rtnExtDropCSCtx : public _rtnExtDropOprCtx
+   {
+   public:
+      _rtnExtDropCSCtx()
+      : _rtnExtDropOprCtx( DMS_EXTOPR_TYPE_DROPCS )
+      {
+      }
+
+      ~_rtnExtDropCSCtx() {}
+   } ;
+   typedef _rtnExtDropCSCtx rtnExtDropCSCtx ;
+
+   class _rtnExtDropCLCtx : public _rtnExtDropOprCtx
+   {
+   public:
+      _rtnExtDropCLCtx()
+      : _rtnExtDropOprCtx( DMS_EXTOPR_TYPE_DROPCL )
+      {
+      }
+      ~_rtnExtDropCLCtx() {}
+   } ;
+   typedef _rtnExtDropCLCtx rtnExtDropCLCtx ;
+
+   class _rtnExtDropIdxCtx : public _rtnExtDropOprCtx
+   {
+   public:
+      _rtnExtDropIdxCtx()
+      : _rtnExtDropOprCtx( DMS_EXTOPR_TYPE_DROPIDX )
+      {
+      }
+      ~_rtnExtDropIdxCtx() {}
+   } ;
+   typedef _rtnExtDropIdxCtx rtnExtDropIdxCtx ;
+
    class _rtnExtTruncateCtx : public _rtnExtContextBase
    {
    public:
       _rtnExtTruncateCtx() ;
       ~_rtnExtTruncateCtx() ;
 
+      virtual INT32 process( _pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) ;
       virtual INT32 done( rtnExtDataProcessorMgr *edpMgr, _pmdEDUCB *cb,
                           SDB_DPSCB *dpscb = NULL ) ;
       virtual INT32 abort( rtnExtDataProcessorMgr *edpMgr, _pmdEDUCB *cb,
                            SDB_DPSCB *dpscb = NULL ) ;
-
-      void setCLLIDs( UINT32 oldLID, UINT32 newLID ) ;
-   private:
-      UINT32 _oldCLLID ;
-      UINT32 _newCLLID ;
    } ;
    typedef _rtnExtTruncateCtx rtnExtTruncateCtx ;
 
@@ -152,7 +207,7 @@ namespace engine
       ~_rtnExtContextMgr() ;
 
       rtnExtContextBase* findContext( UINT32 contextID ) ;
-      INT32 createContext( RTN_EXTCTX_TYPE type, _pmdEDUCB *cb,
+      INT32 createContext( DMS_EXTOPR_TYPE type, _pmdEDUCB *cb,
                            rtnExtContextBase** context ) ;
       INT32 delContext( UINT32 contextID, _pmdEDUCB *cb ) ;
 
@@ -174,20 +229,22 @@ namespace engine
                                     UINT32 buffSize ) ;
 
       virtual INT32 onOpenTextIdx( const CHAR *csName, const CHAR *clName,
-                                   const CHAR *idxName ) ;
+                                   const CHAR *idxName,
+                                   const BSONObj &idxKeyDef ) ;
 
       virtual INT32 onDelCS( const CHAR *csName, pmdEDUCB *cb,
                              BOOLEAN removeFiles, SDB_DPSCB *dpscb = NULL ) ;
 
-      virtual INT32 onDropAllIndexes( const CHAR *csName, const CHAR *clName,
-                                      _pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) ;
+      virtual INT32 onDelCL( const CHAR *csName, const CHAR *clName,
+                             pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) ;
 
       virtual INT32 onDropTextIdx( const CHAR *csName, const CHAR *clName,
                                    const CHAR *idxName, _pmdEDUCB *cb,
                                    SDB_DPSCB *dpscb = NULL ) ;
 
       virtual INT32 onRebuildTextIdx( const CHAR *csName, const CHAR *clName,
-                                      const CHAR *idxName, _pmdEDUCB *cb,
+                                      const CHAR *idxName,
+                                      const BSONObj &idxKeyDef, _pmdEDUCB *cb,
                                       SDB_DPSCB *dpscb = NULL ) ;
 
       virtual INT32 onInsert( const CHAR *csName, const CHAR *clName,
@@ -209,9 +266,10 @@ namespace engine
       INT32 onTruncateCL( const CHAR *csName, const CHAR *clName,
                            _pmdEDUCB *cb, SDB_DPSCB *dpsCB = NULL ) ;
 
-      virtual INT32 done( _pmdEDUCB *cb, SDB_DPSCB *dpscb = NULL ) ;
+      virtual INT32 done( DMS_EXTOPR_TYPE type, _pmdEDUCB *cb,
+                          SDB_DPSCB *dpscb = NULL ) ;
 
-      virtual INT32 abortOperation( _pmdEDUCB *cb ) ;
+      virtual INT32 abortOperation( DMS_EXTOPR_TYPE type, _pmdEDUCB *cb ) ;
 
    private:
       INT32 _prepareCSAndCL( const CHAR *csName, const CHAR *clName,
