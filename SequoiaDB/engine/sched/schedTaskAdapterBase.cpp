@@ -104,6 +104,9 @@ namespace engine
       INT64 priority = 0 ;
       pmdEDUEvent event ;
 
+      UINT64 lastCacheNum = 0 ;
+      UINT64 lastEventNum = 0 ;
+
       pBuff = (CHAR*)SDB_OSS_MALLOC( header->messageLength ) ;
       if ( !pBuff )
       {
@@ -129,8 +132,15 @@ namespace engine
       }
       pBuff = NULL ;
 
-      _cacheNum.inc() ;
-      _eventNum.inc() ;
+      lastCacheNum = _cacheNum.inc() ;
+      lastEventNum = _eventNum.inc() ;
+
+      if ( lastEventNum < lastCacheNum + SCHED_PREPARE_THRESHOLD &&
+           _doNotify.compare( 0 ) )
+      {
+         _doNotify.swap( 1 ) ;
+         _notifyEvent.signal() ;
+      }
 
    done:
       return rc ;

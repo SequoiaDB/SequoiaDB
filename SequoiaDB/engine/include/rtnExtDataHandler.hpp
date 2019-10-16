@@ -61,8 +61,6 @@ namespace engine
       }
 
       void appendProcessor( rtnExtDataProcessor *processor ) ;
-      void appendProcessor( rtnExtDataProcessor *processor,
-                            const BSONObj &processData ) ;
       void appendProcessors( const vector< rtnExtDataProcessor * >& processorVec ) ;
 
       DMS_EXTOPR_TYPE getType() const { return _type ; }
