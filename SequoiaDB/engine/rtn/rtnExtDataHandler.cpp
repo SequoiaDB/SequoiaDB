@@ -63,16 +63,6 @@ namespace engine
       PD_TRACE_EXIT( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR ) ;
    }
 
-   // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR2, "_rtnExtContextBase::appendProcessor" )
-   void _rtnExtContextBase::appendProcessor( rtnExtDataProcessor *processor,
-                                             const BSONObj &processData )
-   {
-      PD_TRACE_ENTRY( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR2 ) ;
-      _processors.push_back( processor ) ;
-      _objects.push_back( processData ) ;
-      PD_TRACE_EXIT( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSOR2 ) ;
-   }
-
    // PD_TRACE_DECLARE_FUNCTION ( SDB__RTNEXTCONTEXTBASE_APPENDPROCESSORS, "_rtnExtContextBase::appendProcessors" )
    void _rtnExtContextBase::appendProcessors( const vector< rtnExtDataProcessor * >& processorVec )
    {
@@ -911,7 +901,6 @@ namespace engine
       rtnExtDataProcessor *processor = NULL ;
       rtnExtUpdateCtx *context = NULL ;
       BOOLEAN newContext = FALSE ;
-      BSONObj processData ;
 
       if ( SDB_DB_REBUILDING == dbStatus || SDB_DB_FULLSYNC == dbStatus )
       {
@@ -937,7 +926,7 @@ namespace engine
          goto error ;
       }
 
-      context->appendProcessor( processor, processData ) ;
+      context->appendProcessor( processor ) ;
       context->setSrcData( &orignalObj, &newObj ) ;
 
       rc = context->process( cb ) ;
