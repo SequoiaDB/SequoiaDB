@@ -1307,6 +1307,8 @@ bool ha_sdb::inplace_alter_table( TABLE *altered_table,
 {
    THD *thd = current_thd ;
    bool rs = false ;
+   int rc = 0 ;
+
    Alter_inplace_info::HA_ALTER_FLAGS inplace_online_addidx
       = Alter_inplace_info::ADD_INDEX
       | Alter_inplace_info::ADD_UNIQUE_INDEX
@@ -1319,16 +1321,20 @@ bool ha_sdb::inplace_alter_table( TABLE *altered_table,
 
    if ( ha_alter_info->handler_flags & inplace_online_addidx )
    {
-      if ( 0 != create_index( ha_alter_info ) )
+      rc = create_index( ha_alter_info ) ;
+      if ( 0 != rc )
       {
+         my_error( ER_GET_ERRNO, MYF(0), rc );
          rs = true ;
          goto error ;
       }
    }
    if ( ha_alter_info->handler_flags & inplace_online_dropidx )
    {
-      if ( 0 != drop_index( ha_alter_info ) )
+      rc = drop_index( ha_alter_info ) ;
+      if ( 0 != rc )
       {
+         my_error( ER_GET_ERRNO, MYF(0), rc );
          rs = true ;
          goto error ;
       }

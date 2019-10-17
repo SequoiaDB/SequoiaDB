@@ -317,7 +317,7 @@ int sdb_func_item::get_item_val( const char *field_name,
                                 bson::BSONArrayBuilder *arr_builder )
 {
    int rc = SDB_ERR_OK ;
-   char buff[MAX_FIELD_WIDTH];
+   char buff[MAX_FIELD_WIDTH] = {0};
    
    if ( NULL == item_val )
    {
