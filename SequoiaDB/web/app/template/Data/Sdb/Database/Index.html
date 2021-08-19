@@ -1,0 +1,226 @@
+<div ng-controller="Data.Database.Index.Ctrl" style="padding:10px 0;" ng-container="{}">
+   <div class="underlineTab" style="padding:0 15px;height:50px;">
+      <ul class="left" ng-init="browseMode=fullName.length>0?'cllist':'cslist'">
+         <li ng-class="{'cslist':'active'}[browseMode]">
+            <a ng-click="browseMode='cslist';">{{autoLanguage("集合空间")}}</a>
+         </li>
+         <li ng-class="{'cllist':'active'}[browseMode]">
+            <a ng-click="browseMode='cllist';">{{autoLanguage("集合")}}</a>
+         </li>
+         <li ng-class="{'magnet':'active'}[browseMode]">
+            <a ng-click="browseMode='magnet'">{{autoLanguage("磁贴模式")}}</a>
+         </li>
+      </ul>
+   </div>
+   <div class="underlineTab" style="padding:0 15px;height:50px;" ng-if="( browseMode == 'cllist' && moduleMode == 'distribution' ) || browseMode == 'magnet' ">
+      <ul class="left" style="height:45px;border:0;">
+         <li style="height:32px;border:0;" ng-if="browseMode == 'magnet'">
+            {{autoLanguage("搜索")}}: <input class="form-control" ng-attr="{'data-desc':autoLanguage('用于快速搜索集合空间和集合，例：foo.bar。')}" style="width:250px;" ng-init="searchName=''" ng-model="searchName" ng-change="search(searchName)" />
+         </li>
+         <li class="text" style="padding-left:20px;max-width:230px;height:32px;border:0;" ng-if="moduleMode == 'distribution'">
+            <input type="checkbox" ng-click="switchShowSubCl($event)" ng-checked="isHideSubCl" /> {{autoLanguage("屏蔽垂直分区信息")}}
+         </li>
+      </ul>
+   </div>
+   <div class="relativeBox" style="padding:0 15px 10px 15px;" ng-container="{offsetY:( browseMode == 'cllist' && moduleMode == 'distribution') || browseMode == 'magnet' ?-95:-45}">
+
+      <div class="previewLeft" style="overflow:hidden;" ng-container="{offsetX:-280}" ng-if="browseMode=='cslist' && csList.length > 0" ng-table="CsTable['options']" table-title="CsTable['title']" table-content="csInfo in CsTable['body']">
+         <div class="Ellipsis" table-key="Name">
+            <a class="linkButton" ng-style="{true:{'font-weight':'bold','color':'#FF7547'}}[showType == 'cs'&&csID == csInfo.i]" ng-click="showCSInfo(csInfo.i)">{{csInfo.Name}}</a>
+         </div>
+         <div class="Ellipsis" table-key="TotalRecords">{{csInfo.TotalRecords}}</div>
+         <div class="Ellipsis" table-key="TotalSize">{{csInfo.TotalSize}}</div>
+         <div class="Ellipsis" table-key="clNum">{{csInfo.clNum}}</div>
+         <div class="Ellipsis" table-key="GroupName.length">{{csInfo.GroupName.length}}</div>
+      </div>
+
+      <div class="previewLeft" style="overflow:hidden;" ng-container="{offsetX:-280}" ng-if="browseMode=='cllist' && csList.length > 0" ng-table="ClTable['options']" table-title="ClTable['title']" table-content="clInfo in ClTable['body']">
+         <div class="Ellipsis" table-key="fullName">
+            <a class="linkButton" ng-click="showCLInfo(clInfo.csId,clInfo.i)" ng-style="{true:{'font-weight':'bold','color':'#FF7547'}}[showType == 'cl'&&clID == clInfo.i]">{{clInfo.fullName}}</a>
+         </div>
+         <div class="Ellipsis" table-key="typeDesc">{{clInfo.typeDesc}}</div>
+         <div class="Ellipsis" table-key="MainCLName">{{clInfo.MainCLName}}</div>
+         <div class="Ellipsis" table-key="TotalLobs">
+            <a class="linkButton" ng-click="gotoLob(clInfo.csId,clInfo.i)">{{clInfo.TotalLobs}}</a>
+         </div>
+         <div class="Ellipsis" table-key="Record">
+            <a class="linkButton" ng-click="gotoRecord(clInfo.csId,clInfo.i)">{{clInfo.Record}}</a>
+         </div>
+         <div class="Ellipsis" table-key="Index">
+            <a ng-if="clInfo.Index > 0" class="linkButton" ng-click="showIndex(clInfo.csId,clInfo.i)">{{clInfo.Index}}</a>
+            <span ng-if="clInfo.Index == 0">{{clInfo.Index}}</span>
+         </div>
+      </div>
+
+      <div class="previewLeft" ng-container="{offsetX:-280}" ng-if="browseMode=='magnet' && csList.length > 0 && (find.length == 0 || findNum > 0)" ng-repeats="csInfo in csList" loadfirst="30" loadnext="30">
+         <div class="colorfulListBox" style="margin-bottom:20px;overflow:hidden;" ng-class="csInfo.color" ng-if="csInfo.hide == false">
+            <div style="max-width:600px;" class="Ellipsis">
+               {{autoLanguage("集合空间")}}: <a class="linkButton" ng-style="{true:{'font-weight':'bold','color':'#FF7547'} }[showType == 'cs'&&csID == $index]" ng-click="showCSInfo($index)">{{csInfo.Name}}</a>
+            </div>
+            <div style="padding:10px 0 0 15px;">
+               <span ng-if="csInfo.GroupName.length > 0 && moduleMode == 'distribution'">{{sprintf(autoLanguage("一共 ? 个分区组"),csInfo.GroupName.length)}},</span>
+               {{sprintf(autoLanguage("一共 ? 个集合"),csInfo.clNum)}}<span ng-if="csInfo.clNum > 0">:</span>
+            </div>
+            <div style="padding:10px 15px;font-size:90%;" ng-if="csInfo.clNum > 0">
+               <table class="table loosen border">
+                  <tbody>
+                     <tr>
+                        <th style="background-color:#F1F4F5;font-weight:bold;">{{autoLanguage("集合名")}}</th>
+                        <th style="background-color:#F1F4F5;font-weight:bold;" ng-if="moduleMode == 'distribution'">{{autoLanguage("分区类型")}}</th>
+                        <th style="background-color:#F1F4F5;font-weight:bold;" ng-if="moduleMode == 'distribution' && isHideSubCl != true">{{autoLanguage("归属集合")}}</th>
+                        <th style="background-color:#F1F4F5;font-weight:bold;">{{autoLanguage("Lob数")}}</th>
+                        <th style="background-color:#F1F4F5;font-weight:bold;">{{autoLanguage("记录数")}}</th>
+                        <th style="background-color:#F1F4F5;font-weight:bold;">{{autoLanguage("索引数")}}</th>
+                     </tr>
+                     <tr ng-repeat="clInfo in clList track by $index" ng-if="clInfo.csName == csInfo.Name && clInfo.hide == false">
+                        <td>
+                           <a class="linkButton" ng-click="showCLInfo($parent.$parent.$index,$index)" ng-style="{ true: {'font-weight':'bold','color':'#FF7547'} }[showType == 'cl'&&clID == $index]">{{clInfo.Name}}</a>
+                        </td>
+                        <td ng-if="moduleMode == 'distribution'"><span class="badge badge-info" ng-attr="{'data-desc':clInfo.typeDesc}">{{clInfo.type}}</span></td>
+                        <td ng-if="moduleMode == 'distribution' && isHideSubCl != true"><span>{{clInfo.MainCLName}}</span></td>
+                        <td><a class="linkButton" ng-click="gotoLob($parent.$parent.$index,$index)">{{clInfo.TotalLobs}}</a></td>
+                        <td><a class="linkButton" ng-click="gotoRecord($parent.$parent.$index,$index)">{{clInfo.Record}}</a></td>
+                        <td>
+                           <a class="linkButton" ng-if="clInfo.Index>0" ng-click='showIndex($parent.$parent.$index,$index)'>{{clInfo.Index}}</a>
+                           <span ng-if="clInfo.Index==0">{{clInfo.Index}}</span>
+                        </td>
+                     </tr>
+                     <tr ng-if="csInfo.clNum > maxShowCLNum && csInfo.show == false && find.length == 0 && moduleMode == 'standalone'">
+                        <td colspan="4"><a class="linkButton" ng-click="clTableShow(csInfo.Name)">{{autoLanguage("展示所有...")}}</a></td>
+                     </tr>
+                     <tr ng-if="csInfo.clNum > maxShowCLNum && csInfo.show == true && find.length == 0 && moduleMode == 'standalone'">
+                        <td colspan="4"><a class="linkButton" ng-click="clTableHide(csInfo.Name)">{{autoLanguage("收起...")}}</a></td>
+                     </tr>
+                     <tr ng-if="csInfo.clNum > maxShowCLNum && csInfo.show == false && find.length == 0 && isHideSubCl == true && moduleMode == 'distribution'">
+                        <td colspan="5"><a class="linkButton" ng-click="clTableShow(csInfo.Name)">{{autoLanguage("展示所有...")}}</a></td>
+                     </tr>
+                     <tr ng-if="csInfo.clNum > maxShowCLNum && csInfo.show == false && find.length == 0 && isHideSubCl == false && moduleMode == 'distribution'">
+                        <td colspan="6"><a class="linkButton" ng-click="clTableShow(csInfo.Name)">{{autoLanguage("展示所有...")}}</a></td>
+                     </tr>
+                     <tr ng-if="csInfo.clNum > maxShowCLNum && csInfo.show == true && find.length == 0 && isHideSubCl == true && moduleMode == 'distribution'">
+                        <td colspan="5"><a class="linkButton" ng-click="clTableHide(csInfo.Name)">{{autoLanguage("收起...")}}</a></td>
+                     </tr>
+                     <tr ng-if="csInfo.clNum > maxShowCLNum && csInfo.show == true && find.length == 0 && isHideSubCl == false && moduleMode == 'distribution'">
+                        <td colspan="6"><a class="linkButton" ng-click="clTableHide(csInfo.Name)">{{autoLanguage("收起...")}}</a></td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+      <div class="previewLeft" ng-container="{offsetX:-280}" ng-if="csList.length > 0 && find.length > 0 && findNum == 0">
+         <div class="data_empty">
+            <div class="title">{{autoLanguage("没有搜索到相关信息")}}</div>
+            <div class="tips">{{autoLanguage("请重新输入要搜索的内容。")}}</div>
+         </div>
+      </div>
+      <div class="previewLeft" ng-container="{offsetX:-280}" ng-if="csList.length == 0">
+         <div class="data_empty">
+            <div class="title">{{autoLanguage("没有集合空间")}}</div>
+            <div class="tips">
+               <span>{{autoLanguage("使用")}}</span>
+               <span class="linkButton" ng-click="showCreateCS()">{{autoLanguage("创建集合空间")}}</span>
+               <span>{{autoLanguage("创建集合空间。")}}</span>
+            </div>
+         </div>
+      </div>
+      <!--<div class="previewLeft" ng-container="{offsetX:-280}">
+
+      </div>-->
+      <div class="previewMove" ng-container="{width:10}"></div>
+      <div class="previewRight" style="font-size:90%;" ng-container="{width:270}">
+         <div style="overflow-y:auto;padding:10px;border:1px solid #DDD;" ng-container="boxHeight">
+            <div style="padding-bottom:5px;">
+               <b ng-if="showType == 'cs'">{{autoLanguage("集合空间属性")}}:</b>
+               <b ng-if="showType == 'cl'">{{autoLanguage("集合属性")}}:</b>
+            </div>
+            <div ng-if="showType == 'cl'">{{autoLanguage("集合空间")}} - <a class="linkButton" ng-click="showCSInfo(csID)">{{attr['csName']}}</a></div>
+            <div style="margin:10px 0 5px 0;" ng-if="showType == 'cl'">
+               <a class="linkButton" ng-click="gotoRecord(csID,clID)">{{autoLanguage("浏览数据")}}</a>
+            </div>
+            <div style="padding:5px 0 0 0;">
+               <table class="table loosen border">
+                  <tbody>
+                     <tr>
+                        <td style="background-color:#F1F4F5;">Key</td>
+                        <td style="background-color:#F1F4F5;">Value</td>
+                     </tr>
+                     <tr>
+                        <td>Name</td>
+                        <td>{{attr['Info']['Name']}}</td>
+                     </tr>
+                     <tr ng-if="attr.GroupName.length > 0 && moduleMode == 'distribution'">
+                        <td>Group</td>
+                        <td>
+                           <select ng-if="selectGroup == null" class="form-control" ng-model="selectGroup" ng-change="showGroupInfo(selectGroup)" ng-options="selectList.value as selectList.key for selectList in attr.GroupName">
+                              <option value="">All</option>
+                           </select>
+                           <select ng-if="selectGroup != null" class="form-control" ng-model="selectGroup" ng-change="showGroupInfo(selectGroup)" ng-options="selectList.value as selectList.key for selectList in attr.GroupName">
+                              <option value="">All</option>
+                           </select>
+                        </td>
+                     </tr>
+                     <tr ng-repeat="(key, value) in attr['Info'] track by $index" ng-if="key != 'Name' && key != 'GroupName' && key != 'CataInfo' && key != 'LowBound' && key != 'UpBound' && value != undefined">
+                        <td>{{key}}</td>
+                        <td>{{value}}</td>
+                     </tr>
+                     <tr ng-if="showType == 'cl' && (attr['Info']['ShardingType'] == 'range' || attr['Info']['ShardingType'] == 'hash')">
+                        <td>Partitions</td>
+                        <td><a class="linkButton" ng-click="showPartitions()">{{autoLanguage("显示")}}</a></td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+
+         <div ng-windows="form as DetachCL.config" windows-callback="DetachCL.callback">
+            <div form-create para="form"></div>
+         </div>
+
+         <div style="width:100%;margin-top:10px;">
+            <table class="table loosen border">
+               <tbody>
+                  <tr>
+                     <td style="background-color:#F1F4F5;"><b>{{autoLanguage("操作")}}</b></td>
+                  </tr>
+                  <tr>
+                     <td><a class="linkButton" ng-click="showCreateCS()">{{autoLanguage("创建集合空间")}}</a></td>
+                  </tr>
+                  <tr>
+                     <td ng-if="csList.length > 0"><a class="linkButton" ng-click="showRemoveCS()">{{autoLanguage("删除集合空间")}}</a></td>
+                     <td ng-if="!( csList.length > 0 )"><span style="color:#AAA;">{{autoLanguage("删除集合空间")}}</span></td>
+                  </tr>
+                  <tr>
+                     <td ng-if="csList.length > 0"><a class="linkButton" ng-click="showCreateCL()">{{autoLanguage("创建集合")}}</a></td>
+                     <td ng-if="!( csList.length > 0 )"><span style="color:#AAA;">{{autoLanguage("创建集合")}}</span></td>
+                  </tr>
+                  <tr>
+                     <td ng-if="csList.length > 0 && clList.length > 0"><a class="linkButton" ng-click="showRemoveCL()">{{autoLanguage("删除集合")}}</a></td>
+                     <td ng-if="!( csList.length > 0 && clList.length > 0 )"><span style="color:#AAA;">{{autoLanguage("删除集合")}}</span></td>
+                  </tr>
+                  <tr ng-if="moduleMode == 'distribution'">
+                     <td ng-if="csList.length > 0 && clList.length > 0 && clList.length > mainCLNum + subCLNum && mainCLNum > 0"><a class="linkButton" ng-click="showAttachCL()">{{autoLanguage("挂载集合")}}</a></td>
+                     <td ng-if="!( csList.length > 0 && clList.length > 0 && clList.length > mainCLNum + subCLNum && mainCLNum > 0 )"><span style="color:#AAA;">{{autoLanguage("挂载集合")}}</span></td>
+                  </tr>
+                  <tr ng-if="moduleMode == 'distribution'">
+                     <td ng-if="csList.length > 0 && clList.length > 0 && subCLNum > 0"><a class="linkButton" ng-click="showDetachCL()">{{autoLanguage("分离集合")}}</a></td>
+                     <td ng-if="!( csList.length > 0 && clList.length > 0 && subCLNum > 0 )"><span style="color:#AAA;">{{autoLanguage("分离集合")}}</span></td>
+                  </tr>
+                  <tr ng-if="moduleMode == 'distribution'">
+                     <td ng-if="csList.length > 0 && clList.length > 0 && partitionCLNum > 0"><a class="linkButton" ng-click="showSplit()">{{autoLanguage("切分数据")}}</a></td>
+                     <td ng-if="!( csList.length > 0 && clList.length > 0 && partitionCLNum > 0 )"><span style="color:#AAA;">{{autoLanguage("切分数据")}}</span></td>
+                  </tr>
+                  <tr>
+                     <td ng-if="csList.length > 0 && clList.length > 0"><a class="linkButton" ng-click="showCreateIndex()">{{autoLanguage("创建索引")}}</a></td>
+                     <td ng-if="!( csList.length > 0 && clList.length > 0 )"><span style="color:#AAA;">{{autoLanguage("创建索引")}}</span></td>
+                  </tr>
+                  <tr>
+                     <td ng-if="csList.length > 0 && clList.length > 0"><a class="linkButton" ng-click="showRemoveIndex()">{{autoLanguage("删除索引")}}</a></td>
+                     <td ng-if="!( csList.length > 0 && clList.length > 0 )"><span style="color:#AAA;">{{autoLanguage("删除索引")}}</span></td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>

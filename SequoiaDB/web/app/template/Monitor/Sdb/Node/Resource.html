@@ -1,0 +1,119 @@
+﻿<div style="padding:10px 15px;" ng-controller="Monitor.SdbNode.Resource.Ctrl" ng-container="{}">
+   <div style="border-bottom:3px solid #ddd;padding-top:10px;" ng-container="{height:70}">
+      <div style="float:left;color:#808080;">
+         <div style="height:50px;width:45px;float:left;">
+            <i style="color:#ccc;padding-top:8px;font-size:218%;" class="fa fa-cubes"></i>
+         </div>
+         <div style="height:50px;float:left;">
+            <div style="font-size:90%;" ng-click="moduleInfo()">集群</div>
+            <div style="font-size:140%;width:160px;">
+               <span class="Ellipsis linkButton" ng-click="GotoDeploy()">{{clusterName}}</span>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="float:left;color:#808080;">
+         <div style="height:50px;width:45px;float:left;">
+            <i style="color:#ccc;padding-top:8px;font-size:218%;" class="fa fa-tasks"></i>
+         </div>
+         <div style="height:50px;float:left;max-width:200px;">
+            <div style="font-size:90%;">{{moduleType}}</div>
+            <div style="font-size:140%;width:160px;">
+               <span class="Ellipsis linkButton" ng-click="GotoModule()">{{moduleName}}</span>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="float:left;color:#808080;">
+         <div style="height:50px;width:45px;float:left;">
+            <i style="color:#ccc;padding-top:8px;font-size:218%;" class="fa fa-sitemap"></i>
+         </div>
+         <div style="height:50px;float:left;">
+            <div style="font-size:90%;">分区组数</div>
+            <div class="Ellipsis" style="font-size:140%;width:160px;">
+               <span class="Ellipsis linkButton" ng-click="GotoGroups()">20</span>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div class="clear-float"></div>
+   </div>
+   <div class="underlineTab" ng-container="{height:40,marginTop:10}">
+      <ul class="left">
+         <li>
+            <a href="#/Monitor/SDB-Node/Index">{{autoLanguage("节点信息")}}</a>
+         </li>
+         <li>
+            <a href="#/Monitor/SDB-Node/Session">{{autoLanguage("会话")}}</a>
+         </li>
+         <li class="active">
+            <a href="#/Monitor/SDB-Node/Resource">{{autoLanguage("资源")}}</a>
+         </li>
+      </ul>
+   </div>
+   <div style="color:#606060;font-size:90%;height:30px;margin:10px 0;">
+      <button class="btn btn-default" ng-click="CreatePlayIntervalModel()">实时刷新设置</button>&nbsp;
+      <button class="btn btn-default" dropdown-menu="SelectMenu" ng-click="OpenSelecMenu()">
+         选择显示列&nbsp;
+         <i class="fa fa-caret-down"></i>
+      </button>&nbsp;
+      <button class="btn btn-default" dropdown-menu="ScreenMenu" ng-click="OpenSelecMenu()">
+         <span ng-if="ContextType == 'all'">所有上下文</span>
+         <span ng-if="ContextType == 'current'">当前上下文</span>
+         <i class="fa fa-caret-down"></i>
+      </button>
+   </div>
+   <div create-timer="Timer"></div>
+   <div class="Grid2" ng-grid2="ResourceGridOptions" ng-container="{offsetY:-212}">
+      <div class="Grid2Header">
+         <table>
+            <colgroup>
+               <col />
+               <col ng-repeat="nodeName in ShowKeyList track by $index" />
+            </colgroup>
+            <tbody>
+               <tr>
+                  <td>
+                     <div class="Ellipsis">{{autoLanguage("状态")}}</div>
+                  </td>
+                  <td style="cursor:pointer;" ng-repeat="fieldName in ShowKeyList track by $index" ng-click="SetOrderField(fieldName)">
+                     <div class="Ellipsis">
+                        <i class="fa fa-caret-up" ng-if="OrderByField.indexOf(fieldName) >= 0"></i><i class="fa fa-caret-down" ng-if="OrderByField.indexOf('-'+fieldName) >= 0"></i>&nbsp;{{fieldName}}
+                     </div>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+      <div class="Grid2Body">
+         <table>
+            <colgroup>
+               <col />
+               <col ng-repeat="nodeName in ShowKeyList track by $index" />
+            </colgroup>
+            <tbody>
+               <tr ng-repeat="resourceInfo in ResourceList | orderBy:OrderByField">
+                  <td>
+                     <div class="Ellipsis">
+                        <i class="fa fa-circle" style="color:#00CC66;" ng-if="resourceInfo['Status'] == 'Running'" data-desc="正常运行中"></i>
+                        <i class="fa fa-circle" style="color:#F9A937;" ng-if="resourceInfo['Status'] == 'Waiting'" data-desc="该节点处于waiting状态"></i>
+                        <i class="fa fa-circle" style="color:#D9534F;" ng-if="resourceInfo['Status'] == 'Destroying'" data-desc="该节点处于Destroying状态"></i>
+                     </div>
+                  </td>
+                  <td ng-repeat="fieldName in ShowKeyList track by $index">
+                     <div class="Ellipsis" ng-switch on="fieldName">
+                        <span ng-switch-default>{{resourceInfo[fieldName]}}</span>
+                        <span class="linkButton" ng-click="showContext()" ng-switch-when="SessionID">{{resourceInfo[fieldName]}}</span>
+                     </div>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+   </div>
+   <div class="GridTool">
+      <div class="ToolLeft">
+         <span>一共有 {{ResourceList.length}} 个上下文</span>
+      </div>
+   </div>
+</div>

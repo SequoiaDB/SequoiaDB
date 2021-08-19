@@ -1,0 +1,245 @@
+# -*- mode: python; -*-
+
+import os
+
+Import("fmpEnv")
+
+bsonFiles = [
+      "bson/bsonobj.cpp",
+      "bson/oid.cpp",
+      "bson/base64.cpp",
+      "bson/nonce.cpp",
+      "bson/md5.c",
+      "bson/bsonDecimal.cpp",
+      "util/utilBsongen.cpp"
+      ]
+
+sptFiles = [
+      "spt/sptCommon.cpp",
+      "spt/sptSPObject.cpp",
+      "spt/sptContainer.cpp",
+      "spt/sptInvoker.cpp",
+      "spt/sptObjDesc.cpp",
+      "spt/sptReturnVal.cpp",
+      "spt/sptScope.cpp",
+      "spt/sptSPArguments.cpp",
+      "spt/sptSPVal.cpp",
+      "spt/sptSPScope.cpp",
+      "spt/sptConvertor.cpp",
+      "spt/sptBsonobj.cpp",
+      "spt/sptBsonobjArray.cpp",
+      "spt/sptLibssh2Session.cpp",
+      "spt/sptSshSession.cpp",
+      "spt/sptRemote.cpp",
+      "spt/sptClassMetaInfo.cpp",
+      "spt/sptHelp.cpp",
+      "spt/sptWords.cpp",
+      "spt/sptFuncDef.cpp",
+      "spt/usrdef/sptUsrSsh.cpp",
+      "spt/sptProperty.cpp",
+      "spt/sptPrivateData.cpp",
+      "spt/sptGlobalFunc.cpp",
+      "spt/usrdef/sptUsrCmd.cpp",
+      "spt/usrdef/sptUsrFile.cpp",
+      "spt/usrdef/sptUsrSystem.cpp",
+      "spt/usrdef/sptUsrOma.cpp",
+      "spt/usrdef/sptUsrOmaAssit.cpp",
+      "spt/usrdef/sptUsrHash.cpp",
+      "spt/usrdef/sptUsrSdbTool.cpp",
+      "spt/usrdef/sptUsrRemote.cpp",
+      "spt/usrdef/sptUsrRemoteAssit.cpp",
+      "spt/usrdef/sptUsrFilter.cpp",
+      "spt/usrdef/sptUsrFileContent.cpp",
+      "spt/usrdef/sptUsrFileCommon.cpp",
+      "spt/usrdef/sptUsrSystemCommon.cpp",
+      "spt/usrdef/sptUsrCmdCommon.cpp",
+      "spt/usrdef/sptUsrOmaCommon.cpp",
+      "spt/usrdef/sptUsrIniFile.cpp",
+      "spt/db/sptDBSdb.cpp",
+      "spt/db/sptDBSecureSdb.cpp",
+      "spt/db/sptDBRG.cpp",
+      "spt/db/sptDBNode.cpp",
+      "spt/db/sptDBCS.cpp",
+      "spt/db/sptDBCL.cpp",
+      "spt/db/sptDBCursor.cpp",
+      "spt/db/sptDBDomain.cpp",
+      "spt/db/sptDBDC.cpp",
+      "spt/db/sptDBTimestamp.cpp",
+      "spt/db/sptDBBinData.cpp",
+      "spt/db/sptDBDate.cpp",
+      "spt/db/sptDBRegex.cpp",
+      "spt/db/sptDBMaxKey.cpp",
+      "spt/db/sptDBMinKey.cpp",
+      "spt/db/sptDBOID.cpp",
+      "spt/db/sptDBNumberLong.cpp",
+      "spt/db/sptDBNumberDecimal.cpp",
+      "spt/db/sptDBQuery.cpp",
+      "spt/db/sptDBCount.cpp",
+      "spt/db/sptDBOptionBase.cpp",
+      "spt/db/sptDBSnapshotOption.cpp",
+      "spt/db/sptDBQueryOption.cpp",
+      "spt/db/sptDBTraceOption.cpp",
+      "spt/db/sptDBUser.cpp",
+      "spt/db/sptDBCipherUser.cpp"
+      ]
+
+ssh2Files = [
+      "ssh2/agent.c",
+      "ssh2/channel.c",
+      "ssh2/comp.c",
+      "ssh2/crypt.c",
+      "ssh2/global.c",
+      "ssh2/hostkey.c",
+      "ssh2/keepalive.c",
+      "ssh2/kex.c",
+      "ssh2/knownhost.c",
+      "ssh2/libgcrypt.c",
+      "ssh2/mac.c",
+      "ssh2/misc.c",
+      "ssh2/openssl.c",
+      "ssh2/packet.c",
+      "ssh2/pem.c",
+      "ssh2/publickey.c",
+      "ssh2/scp.c",
+      "ssh2/session.c",
+      "ssh2/sftp.c",
+      "ssh2/transport.c",
+      "ssh2/userauth.c",
+      "ssh2/version.c",
+      "ssh2/bcrypt_pbkdf.c",
+      "ssh2/blowfish.c",
+      "ssh2/mbedtls.c",
+      "ssh2/wincng.c"
+      ]
+
+ossFiles = [
+      "oss/ossSSLCertificate.c",
+      "oss/ossSSLWrapper.c",
+      "oss/ossSSLContext.c",
+      "oss/oss.cpp",
+      "oss/ossErr.cpp",
+      "oss/ossUtil.cpp",
+      "oss/ossFile.cpp",
+      "oss/ossPrimitiveFileOp.cpp",
+      "oss/ossStackDump.cpp",
+      "oss/ossEDU.cpp",
+      "oss/ossSocket.cpp",
+      "oss/ossProc.cpp",
+      "oss/ossNPipe.cpp",
+      "oss/ossPath.cpp",
+      "oss/ossVer.cpp",
+      "oss/ossMem.cpp",
+      "oss/ossCmdRunner.cpp",
+      "oss/ossLatch.cpp",
+      "oss/ossRWMutex.cpp",
+      "oss/ossEvent.cpp",
+      "oss/ossIO.cpp"
+      ]
+
+
+fmpFiles = [
+      "pmd/fmpVM.cpp",
+      "pmd/fmpJSVM.cpp",
+      "pmd/fmpController.cpp"
+      ]
+
+fmpMain = [
+      "pmd/fmpMain.cpp"
+      ]
+
+pdFiles = [
+      "pd/pdErr.cpp",
+      "pd/pd.cpp",
+      "pd/pdTrace.cpp",
+      "pd/pdComponents.cpp",
+      "pd/pdFunctionList.cpp",
+      "pd/pdTraceAnalysis.cpp"
+      ]
+
+pmdFiles = [
+      "cls/clsUtil.cpp",
+      "pmd/pmdOptionsMgr.cpp",
+      "pmd/pmdEnv.cpp",
+      "pmd/pmdSignalHandler.cpp",
+      ]
+
+utilFiles = [
+      "util/fromjson.cpp",
+      "util/json2rawbson.c",
+      "util/linenoise.cpp",
+      "util/utilLinenoiseWrapper.cpp",
+      "util/utilStr.cpp",
+      "util/utilParam.cpp",
+      "util/utilCommon.cpp",
+      "util/utilMemBlockPool.cpp",
+      "util/utilMemListPool.cpp",
+      "util/utilPooledAutoPtr.cpp",
+      "util/utilLightJobBase.cpp",
+      "util/utilNodeOpr.cpp",
+      "client/bson/numbers.c",
+      "client/bson/bson.c",
+      "client/bson/encoding.c",
+      "client/bson/common_decimal.c",
+      "client/base64c.c",
+      "client/cJSON.c",
+      "client/cJSON_ext.c",
+      "client/cJSON_iterator.c",
+      "client/jstobs.c",
+      "client/timestampParse.c",
+      "client/timestampTm.c",
+      "client/timestampValid.c",
+      "bson/md5.c",
+      "bson/bsonDecimal.cpp",
+      "util/utilCipher.c",
+      "util/utilTypeCast.c",
+      "util/utilIniParser.c",
+      "util/utilIniParserEx.cpp",
+      "util/utilAuthSCRAMSHA.cpp",
+      "util/utilPasswdTool.cpp",
+      "util/utilCipherMgr.cpp",
+      "util/utilCipherFile.cpp" 
+      ]
+
+clientCFiles = [
+      "client/client.c",
+      "client/common.c",
+      "client/network.c"
+      ]
+clientcppFiles = [
+      "client/clientcpp.cpp",
+      "client/sdbDataSource.cpp",
+      "client/sdbDataSourceComm.cpp",
+      "client/sdbDataSourceStrategy.cpp",
+      "client/sdbDataSourceWorker.cpp"
+      ]
+
+monFiles = [
+      "mon/monLatch.cpp"
+      ]
+      
+#Client Driver
+fmpEnv.StaticLibrary('clientc', clientCFiles)
+fmpEnv.StaticLibrary('clientcpp', clientcppFiles)
+#BSON
+fmpEnv.StaticLibrary('bson', bsonFiles)
+#Operating System Services
+fmpEnv.StaticLibrary('oss', ossFiles)
+#Problem Determination
+fmpEnv.StaticLibrary('pd', pdFiles)
+#Utilities
+fmpEnv.StaticLibrary('util', utilFiles)
+#Process Model
+fmpEnv.StaticLibrary('pmd', pmdFiles)
+#fmp
+fmpEnv.StaticLibrary('fmp', fmpFiles)
+#Scripting
+fmpEnv.StaticLibrary('spt', sptFiles)
+fmpEnv.StaticLibrary('ssh2', ssh2Files)
+#monLatch
+fmpEnv.StaticLibrary('mon', monFiles)
+
+#
+sdbfmp = fmpEnv.Program("sdbfmp", fmpMain,
+      LIBDEPS=["oss","pd","util","clientc","clientcpp","fmp","bson","pmd", "spt", "ssh2", "mon"],
+      _LIBDEPS='$_LIBDEPS_OBJS' )
+fmpEnv.Install( '#/bin', sdbfmp )

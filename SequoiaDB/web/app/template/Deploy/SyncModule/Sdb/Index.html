@@ -1,0 +1,148 @@
+﻿<div ng-controller="Deploy.Sdb.Sync.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList" ng-show="SyncConf != null"></div>
+   <div style="padding:10px 15px;" ng-container="{'true':ContainerBox[0],'false':ContainerBox[1]}[SyncConf != null]">
+      <div ng-container="{offsetY:-5}">
+         <div ng-controller="Deploy.Sdb.Sync.Preview.Ctrl" class="pull-left" ng-container="{width:400}">
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("同步信息")}}</div>
+            <div class="borderBox" style="padding:10px;font-size:90%;overflow-y:auto;" ng-container="{offsetY:-30}">
+               <div style="font-weight:bold;margin-bottom:10px;">{{autoLanguage("信息")}}</div>
+               <table class="table loosen border" style="margin-bottom:15px;">
+                  <tr>
+                     <td style="width:120px;">{{autoLanguage("同步集群")}}</td>
+                     <td>{{ClusterName}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("同步存储集群名")}}</td>
+                     <td>{{ModuleName}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("同步状态")}}</td>
+                     <td ng-if="SyncStatus == 0">{{autoLanguage("同步中...")}}</td>
+                     <td ng-if="SyncStatus == 1">{{autoLanguage("同步完成")}}</td>
+                     <td ng-if="SyncStatus == 2"><b style="color:#D9534F;">{{autoLanguage("同步失败")}}</b></td>
+                  </tr>
+               </table>
+               <div style="font-weight:bold;margin-bottom:10px;">{{autoLanguage("配置")}}</div>
+               <table class="table loosen border">
+                  <tr>
+                     <td style="width:100px;background-color:#F1F4F5;"></td>
+                     <td style="background-color:#F1F4F5;">{{autoLanguage("同步前")}}</td>
+                     <td style="background-color:#F1F4F5;">{{autoLanguage("同步后")}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("部署模式")}}</td>
+                     <td ng-style="{true:{'background':'#FFFF96'}}[BeforeSync['moduleMode']!=AfterSync['moduleMode']&&AfterSync['moduleMode']!='-']">{{BeforeSync['moduleMode']}}</td>
+                     <td ng-style="{true:{'background':'#FFFF96'}}[BeforeSync['moduleMode']!=AfterSync['moduleMode']&&AfterSync['moduleMode']!='-']">{{AfterSync['moduleMode']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("主机数")}}</td>
+                     <td>{{BeforeSync['hostNum']}}</td>
+                     <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterSync['hostNum'] == BeforeSync['hostNum'] || AfterSync['hostNum'] == '-' ) ? '0' : ( AfterSync['hostNum'] > BeforeSync['hostNum'] || ( BeforeSync['hostNum'] == '-' && AfterSync['hostNum'] > 0 ) ? '1' : '-1' )]">{{AfterSync['hostNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("总节点数")}}</td>
+                     <td>{{BeforeSync['nodeNum']}}</td>
+                     <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterSync['nodeNum'] == BeforeSync['nodeNum'] || AfterSync['hostNum'] == '-' ) ? '0' : ( AfterSync['nodeNum'] > BeforeSync['nodeNum'] || ( BeforeSync['nodeNum'] == '-' && AfterSync['nodeNum'] > 0 ) ? '1' : '-1' )]">{{AfterSync['nodeNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("数据组数")}}</td>
+                     <td>{{BeforeSync['dataGroupNum']}}</td>
+                     <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterSync['dataGroupNum'] == BeforeSync['dataGroupNum'] || AfterSync['dataGroupNum'] == '-' ) ? '0' : ( AfterSync['dataGroupNum'] > BeforeSync['dataGroupNum'] || ( BeforeSync['dataGroupNum'] == '-' && AfterSync['dataGroupNum'] > 0 ) ? '1' : '-1' )]">{{AfterSync['dataGroupNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("最大副本数")}}</td>
+                     <td>{{BeforeSync['maxReplicaNum']}}</td>
+                     <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterSync['maxReplicaNum'] == BeforeSync['maxReplicaNum'] || AfterSync['maxReplicaNum'] == '-' ) ? '0' : ( AfterSync['maxReplicaNum'] > BeforeSync['maxReplicaNum'] || ( BeforeSync['maxReplicaNum'] == '-' && AfterSync['maxReplicaNum'] > 0 ) ? '1' : '-1' )]">{{AfterSync['maxReplicaNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("最小副本数")}}</td>
+                     <td>{{BeforeSync['minReplicaNum']}}</td>
+                     <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterSync['minReplicaNum'] == BeforeSync['minReplicaNum'] || AfterSync['minReplicaNum'] == '-' ) ? '0' : ( AfterSync['minReplicaNum'] > BeforeSync['minReplicaNum'] || ( BeforeSync['minReplicaNum'] == '-' && AfterSync['minReplicaNum'] > 0 ) ? '1' : '-1' )]">{{AfterSync['minReplicaNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("数据节点数")}}</td>
+                     <td>{{BeforeSync['dataNum']}}</td>
+                     <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterSync['dataNum'] == BeforeSync['dataNum'] || AfterSync['dataNum'] == '-' ) ? '0' : ( AfterSync['dataNum'] > BeforeSync['dataNum'] || ( BeforeSync['dataNum'] == '-' && AfterSync['dataNum'] > 0 ) ? '1' : '-1' )]">{{AfterSync['dataNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("协调节点数")}}</td>
+                     <td>{{BeforeSync['coordNum']}}</td>
+                     <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterSync['coordNum'] == BeforeSync['coordNum'] || AfterSync['coordNum'] == '-' ) ? '0' : ( AfterSync['coordNum'] > BeforeSync['coordNum'] || ( BeforeSync['coordNum'] == '-' && AfterSync['coordNum'] > 0 ) ? '1' : '-1' )]">{{AfterSync['coordNum']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("编目节点数")}}</td>
+                     <td>{{BeforeSync['cataNum']}}</td>
+                     <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterSync['cataNum'] == BeforeSync['cataNum'] || AfterSync['cataNum'] == '-' ) ? '0' : ( AfterSync['cataNum'] > BeforeSync['cataNum'] || ( BeforeSync['cataNum'] == '-' && AfterSync['cataNum'] > 0 ) ? '1' : '-1' )]">{{AfterSync['cataNum']}}</td>
+                  </tr>
+               </table>
+            </div>
+         </div>
+         <div ng-controller="Deploy.Sdb.Sync.Table.Ctrl" class="pull-left" ng-container="{offsetX:-410,marginLeft:10}">
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("节点列表")}}</div>
+            <div ng-container="{offsetY:-30}" ng-table="NodeTable['options']" table-title="NodeTable['title']" table-content="nodeAttr in NodeTable['body']" table-callback="NodeTable['callback']">
+               <div class="Ellipsis" table-key="type">
+                  <span ng-if="nodeAttr['type'] == 1" style="color:#00CC66;">{{autoLanguage("删除")}}</span>
+                  <span ng-if="nodeAttr['type'] == 2" style="color:#D9534F;">{{autoLanguage("新增")}}</span>
+                  <span ng-if="nodeAttr['type'] == 3" style="color:#CC9900;">{{autoLanguage("变化")}}</span>
+               </div>
+               <div class="Ellipsis" table-key="nodeInfo.1.hostName">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeAttr['nodeInfo'], nodeAttr['type'] )">{{nodeAttr['nodeInfo'][1]['hostName']}}</a>
+               </div>
+               <div class="Ellipsis" table-key="nodeInfo.1.svcname">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeAttr['nodeInfo'], nodeAttr['type'] )">{{nodeAttr['nodeInfo'][1]['svcname']}}</a>
+               </div>
+               <div class="Ellipsis" table-key="nodeInfo.1.dbpath">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeAttr['nodeInfo'], nodeAttr['type'] )">{{nodeAttr['nodeInfo'][1]['dbpath']}}</a>
+               </div>
+               <div class="Ellipsis" table-key="nodeInfo.1.role">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeAttr['nodeInfo'], nodeAttr['type'] )">{{nodeAttr['nodeInfo'][1]['role']}}</a>
+               </div>
+               <div class="Ellipsis" table-key="nodeInfo.1.datagroupname">
+                  <a class="linkButton" ng-click="ShowNodeConf( nodeAttr['nodeInfo'], nodeAttr['type'] )">{{nodeAttr['nodeInfo'][1]['datagroupname']}}</a>
+               </div>
+            </div>
+
+            <div ng-windows="config as NodeConfWindow.config" windows-callback="NodeConfWindow.callback">
+               <div class="alert alert-warning" style="margin-bottom:10px;min-height:0px;">
+                  <div style="margin-bottom:10px;">
+                     <span ng-if="config.type == 0">{{autoLanguage("节点状态：")}}Unchange</span>
+                     <span ng-if="config.type == 1">{{autoLanguage("节点状态：")}}Delete</span>
+                     <span ng-if="config.type == 2">{{autoLanguage("节点状态：")}}New addition</span>
+                     <span ng-if="config.type == 3">{{autoLanguage("节点状态：")}}Change</span><br />
+                  </div>
+                  {{autoLanguage("提示：黄色背景表示配置项有变化，红色字体表示新增配置项，绿色字体表示删除配置项。")}}
+               </div>
+               <table class="table border loosen">
+                  <thead>
+                     <tr style="background:#F1F4F5;">
+                        <th width="160">{{autoLanguage("配置项")}}</th>
+                        <th ng-if="config.type != 2">{{autoLanguage("同步前")}}</th>
+                        <th ng-if="config.type != 1">{{autoLanguage("同步后")}}</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat="item in config.nodeInfo track by $index">
+                        <td>
+                           <span ng-style="{1:{'color':'#00CC66'},2:{'color':'red'}}[item.type]">{{item.key}}</span>
+                        </td>
+                        <td ng-style="{true:{'background':'#FFFF96'}}[item.type == 3]" ng-if="config.type == 0 || config.type == 3">
+                           <span ng-style="{true:{'color':'#00CC66'}}[item.type == 1]">{{item.value.0}}</span>
+                        </td>
+                        <td ng-style="{true:{'background':'#FFFF96'}}[item.type == 3]">
+                           <span ng-style="{true:{'color':'red'}}[item.type == 2]">{{item.value.1}}</span>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-primary" ng-click="GotoDeploy()">{{autoLanguage("返回")}}</button>
+      </div>
+
+   </div>
+
+</div>

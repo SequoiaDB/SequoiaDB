@@ -1,0 +1,36 @@
+<div style="padding:10px 15px;" ng-controller="Data.SQL.Data.Ctrl" ng-container="{}">
+   <div class="underlineTab" ng-container="{height:50}">
+      <ul class="right">
+         <li class="text Ellipsis" style="width:350px;">
+            <b><a class="linkButton" href="#/Data/SQL-Metadata/Index">{{autoLanguage("数据库")}}</a> <span style="font-size:80%; color:#666;">></span> {{fullName}}</b>
+         </li>
+         <li>
+            <a href="#/Data/SQL-Operate/Structure">{{autoLanguage("表结构")}}</a>
+         </li>
+         <li class="active">
+            <a href="#/Data/SQL-Operate/Data">{{autoLanguage(" 数 据 ")}}</a>
+         </li>
+      </ul>
+   </div>
+   <div ng-container="{height:25}">
+      <button class="topBtn" ng-click="Query()"><i class="fa fa-search"></i> {{autoLanguage("查询")}}</button>
+      <button class="topBtn" ng-click="Insert()"><i class="fa fa-plus"></i> {{autoLanguage("插入")}}</button>
+      <div class="Ellipsis" style="float:right;max-width:240px;font-size:90%;color:#333;">
+         <b>{{dbHost}} : {{dbPort}}</b>
+      </div>
+      <div class="clear-float"></div>
+   </div>
+   <div class="result Ellipsis" ng-class="{true:'success',false:'failed'}[execRc]" ng-container="{marginTop:12,height:40}">
+      {{execResult}}
+   </div>
+   <div style="margin-top:10px;height:95px;">
+      <textarea class="form-control" style="height:95px;line-height:initial;font-family:inherit;" rows="5" spellcheck="false" ng-model="sqlcmd"></textarea>
+   </div>
+   <div ng-container="{marginTop:5,height:25}">
+      <button ng-click="explain()" class="btn btn-default">{{autoLanguage("访问计划")}}</button>
+      <button ng-click="execSQL()" class="btn btn-primary">{{autoLanguage("执行")}}</button>
+   </div>
+   <div id="codeDiv" style="position:relative;border:1px solid #C8D2DC;padding:5px 10px;overflow:auto;word-break:break-all;word-wrap:break-word;" scroll-bottom ng-container="{marginTop:10,offsetY:-285}">
+      <pre style="margin:0;" ng-repeat="line in result track by $index"><span style="color:green;">{{pad($index,4,0)}}</span>&nbsp;{{line}}</pre>
+   </div>
+</div>

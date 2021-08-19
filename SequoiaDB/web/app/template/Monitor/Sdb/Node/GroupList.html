@@ -1,0 +1,205 @@
+<div ng-controller="Monitor.SdbOverview.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div class="active" ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div>{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Nodes">{{autoLanguage("节点列表")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Nodes/Groups">{{autoLanguage("分区组列表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/GroupsSnapshot">{{autoLanguage("分区组快照")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/NodesSnapshot">{{autoLanguage("节点快照")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/NodesSync">{{autoLanguage("节点数据同步")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div ng-container="{height:30,marginTop:10}">
+         <button class="topBtn" ng-class="{true:'disabled'}[StartGroup['config']['select'].length == 0]" ng-click="OpenStartGroup()" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1080]">{{autoLanguage("启动分区组")}}</button>
+         <button class="topBtn" ng-class="{true:'disabled'}[StopGroup['config']['select'].length == 0]" ng-click="OpenStopGroup()" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1080]">{{autoLanguage("停止分区组")}}</button>
+         <button class="topBtn" ng-click="GotoExtend()" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1080]">{{autoLanguage("添加分区组")}}</button>
+         <button class="topBtn disabled" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1080]">{{autoLanguage("删除分区组")}}</button>
+         <!--<button class="topBtn" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1080]" ng-click="ShowExtendWindow()">{{autoLanguage("服务扩容")}}</button>-->
+      </div>
+      <div ng-windows="form as CreateGroupWindow.config" windows-callback="CreateGroupWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="info as StartGroup.config" windows-callback="StartGroup.callback">
+         <select class="form-control" ng-model="info.value" ng-options="item.value as item.key for item in info.select"></select>
+      </div>
+      <div ng-windows="info as StopGroup.config" windows-callback="StopGroup.callback">
+         <select class="form-control" ng-model="info.value" ng-options="item.value as item.key for item in info.select"></select>
+      </div>
+
+      <div ng-container="{offsetY:-110,marginTop:10}">
+         <div style="float:left;" ng-container="{width:270}">
+            <div ng-container="{height:'50%',offsetY:-5}">
+               <div class="Ellipsis" style="height:25px;font-weight:bold;font-size:100%;">{{autoLanguage("协调组")}}</div>
+               <div style="border:1px solid #ddd;padding:10px;overflow-y:auto;font-size:90%;" ng-container="{offsetY:-25}">
+                  <div>
+                     <table class="table">
+                        <tr>
+                           <td style="width:75px;font-weight:bold;">{{autoLanguage("状态")}}</td>
+                           <td class="Ellipsis" ng-repeat="groupInfo in GroupList track by $index" ng-if="groupInfo['Role'] == 1">
+                              <div ng-if="groupInfo['ErrNodes'].length == 0">
+                                 <i class="fa fa-circle" style="color:#00CC66;" ng-attr="{'data-desc':autoLanguage('正常运行')}"></i>&nbsp;{{autoLanguage("正常运行")}}
+                              </div>
+                              <div ng-if="groupInfo['ErrNodes'].length > 0">
+                                 <i class="fa fa-circle" style="color:#F9A937;" ng-attr="{'data-desc':autoLanguage('节点异常')}"></i>&nbsp;{{autoLanguage("节点异常")}}
+                              </div>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+                  <div style="margin-top:10px;">
+                     <table class="table">
+                        <tr>
+                           <td style="width:75px;font-weight:bold;">{{autoLanguage("分区组")}}</td>
+                           <td class="Ellipsis" ng-repeat="groupInfo in GroupList track by $index" ng-if="groupInfo['Role'] == 1">
+                              <span class="linkButton" ng-click="GotoGroup( groupInfo['GroupName'] )">
+                                 {{groupInfo['GroupName']}}
+                              </span>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+                  <div style="margin-top:10px;">
+                     <table class="table">
+                        <tr>
+                           <td style="width:75px;font-weight:bold;">{{autoLanguage("节点数")}}</td>
+                           <td class="Ellipsis" ng-repeat="groupInfo in GroupList track by $index" ng-if="groupInfo['Role'] == 1">
+                              {{groupInfo['Group'].length}}
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+                  <div style="margin-top:10px;">
+                     <table class="table">
+                        <tr>
+                           <td style="width:75px;font-weight:bold;">{{autoLanguage("连接数")}}</td>
+                           <td class="Ellipsis">{{NumConnects}}</td>
+                        </tr>
+                     </table>
+                  </div>
+
+               </div>
+            </div>
+            <div ng-container="{height:'50%',offsetY:-5,marginTop:10}">
+               <div class="Ellipsis" style="height:25px;font-weight:bold;font-size:100%;">{{autoLanguage("编目组")}}</div>
+               <div style="border:1px solid #ddd;padding:10px;overflow-y:auto;font-size:90%;" ng-container="{offsetY:-25}">
+                  <div>
+                     <table class="table">
+                        <tr>
+                           <td style="width:75px;font-weight:bold;">{{autoLanguage("状态")}}</td>
+                           <td class="Ellipsis" ng-repeat="groupInfo in GroupList track by $index" ng-if="groupInfo['Role'] == 2">
+                              <div ng-if="groupInfo['ErrNodes'].length == 0">
+                                 <i class="fa fa-circle" style="color:#00CC66;" ng-attr="{'data-desc':autoLanguage('正常运行')}"></i>&nbsp;{{autoLanguage("正常运行")}}
+                              </div>
+                              <div ng-if="groupInfo['ErrNodes'].length < groupInfo['Group'].length && groupInfo['ErrNodes'].length > 0">
+                                 <i class="fa fa-circle" style="color:#F9A937;" ng-attr="{'data-desc':autoLanguage('节点异常')}"></i>&nbsp;{{autoLanguage("节点异常")}}
+                              </div>
+                              <div ng-if="groupInfo['ErrNodes'].length == groupInfo['Group'].length">
+                                 <i class="fa fa-circle" style="color:#D9534F;" ng-attr="{'data-desc':autoLanguage('分区组异常')}"></i>&nbsp;{{autoLanguage("分区组异常")}}
+                              </div>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+                  <div style="margin-top:10px;">
+                     <table class="table">
+                        <tr>
+                           <td style="width:75px;font-weight:bold;">{{autoLanguage("分区组")}}</td>
+                           <td class="Ellipsis" ng-repeat="groupInfo in GroupList track by $index" ng-if="groupInfo['Role'] == 2">
+                              <span class="linkButton" ng-click="GotoGroup( groupInfo['GroupName'] )">
+                                 {{groupInfo['GroupName']}}
+                              </span>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+                  <div style="margin-top:10px;">
+                     <table class="table">
+                        <tr>
+                           <td style="width:75px;font-weight:bold;">{{autoLanguage("节点数")}}</td>
+                           <td class="Ellipsis" ng-repeat="groupInfo in GroupList track by $index" ng-if="groupInfo['Role'] == 2">
+                              {{groupInfo['Group'].length}}
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+                  <div style="margin-top:10px;">
+                     <table class="table">
+                        <tr>
+                           <td style="width:75px;font-weight:bold;">{{autoLanguage("主节点")}}</td>
+                           <td class="Ellipsis" ng-repeat="groupInfo in GroupList track by $index" ng-if="groupInfo['Role'] == 2">
+                              <span class="linkButton" ng-click="GotoNode(groupInfo['PrimaryNodeName'] )">
+                                 {{groupInfo['PrimaryNodeName']}}
+                              </span>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div style="float:left;" ng-container="{offsetX:-280,marginLeft:10}">
+            <div class="Ellipsis" style="height:25px;font-weight:bold;font-size:100%;">{{autoLanguage("数据组")}}</div>
+            <div ng-container="{offsetY:-26}" ng-table="GroupTable['options']" table-title="GroupTable['title']" table-content="GroupInfo in GroupTable['body']" table-callback="GroupTable['callback']">
+               <div table-key="ErrNodes">
+                  <div class="Ellipsis" ng-if="GroupInfo['ErrNodes'].length == 0 && GroupInfo['Status'] != '0'">
+                     <i class="fa fa-circle" style="color:#00CC66;" ng-attr="{'data-desc':autoLanguage('正常运行')}"></i>
+                     <span>{{autoLanguage("正常运行")}}</span>
+                  </div>
+                  <div class="Ellipsis" ng-if="GroupInfo['Status'] == '0'">
+                     <i class="fa fa-circle" style="color:#F9A937;" ng-attr="{'data-desc':autoLanguage('分区组未激活')}"></i>
+                     <span>{{autoLanguage("未激活")}}</span>
+                  </div>
+                  <div class="Ellipsis" ng-if="GroupInfo['ErrNodes'].length < GroupInfo['Group'].length && GroupInfo['ErrNodes'].length > 0 && GroupInfo['Status'] != '0'">
+                     <i class="fa fa-circle" style="color:#F9A937;" ng-attr="{'data-desc':autoLanguage('节点异常')}"></i>
+                     <span>{{autoLanguage("节点异常")}}</span>
+                  </div>
+                  <div class="Ellipsis" ng-if="GroupInfo['ErrNodes'].length == GroupInfo['Group'].length && GroupInfo['Status'] != '0'">
+                     <i class="fa fa-circle" style="color:#D9534F;" ng-attr="{'data-desc':autoLanguage('分区组异常')}"></i>
+                     <span>{{autoLanguage("分区组异常")}}</span>
+                  </div>
+               </div>
+               <div class="Ellipsis" table-key="GroupName">
+                  <a class="linkButton" ng-click="GotoGroup( GroupInfo['GroupName'] )" ng-if="GroupInfo['Status'] != 0">{{GroupInfo['GroupName']}}</a>
+                  <span ng-if="GroupInfo['Status'] == 0">{{GroupInfo['GroupName']}}</span>
+               </div>
+               <div class="Ellipsis" table-key="Group">
+                  <span>{{GroupInfo['Group'].length}}</span>
+               </div>
+               <div class="Ellipsis" table-key="PrimaryNodeName">
+                  <a class="linkButton" ng-click="GotoNode( GroupInfo['PrimaryNodeName'] )" ng-if="GroupInfo['PrimaryNodeName'] != '-'">
+                     {{GroupInfo['PrimaryNodeName']}}
+                  </a>
+                  <span ng-if="GroupInfo['Group'].length == 0 || GroupInfo['ErrNodes'].length == GroupInfo['Group'].length">-</span>
+               </div>
+               <div class="Ellipsis" table-key="$auto">{{$autoValue}}</div>
+            </div>
+         </div>
+
+         <div class="clear-float"></div>
+      </div>
+   </div>
+
+
+</div>

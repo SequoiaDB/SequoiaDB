@@ -1,0 +1,78 @@
+<div ng-controller="Monitor.SdbOverview.GroupsNature.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div class="active" ng-click="GotoNodeList()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHostList()">{{autoLanguage("主机")}}</div>
+         <!--<div>{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Nodes">{{autoLanguage("节点列表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Groups">{{autoLanguage("分区组列表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Nodes/GroupsSnapshot">{{autoLanguage("分区组快照")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/NodesSnapshot">{{autoLanguage("节点快照")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/NodesSync">{{autoLanguage("节点数据同步")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div style="color:#606060;font-size:90%;height:30px;margin:10px 0;">
+         <button class="btn btn-default" ng-click="OpenBrushWindows()">
+            <span>{{sprintf(autoLanguage("刷新间隔： ? 秒"), IntervalTimeConfig.interval)}}</span>
+         </button>&nbsp;
+         <button class="btn btn-default" ng-click="RefreshCtrl()">{{RefreshType}}</button>&nbsp;
+         <button class="btn btn-default" ng-click="OpenModeDropdown($event)">
+            <span ng-if="ShowType == 'full'">{{autoLanguage("全量模式")}}</span><span ng-if="ShowType == 'inc'">{{autoLanguage("增量模式")}}</span><span ng-if="ShowType == 'avg'">{{autoLanguage("均量模式")}}</span>&nbsp;<i class="fa fa-caret-down"></i>
+         </button>
+         <div ng-dropdown="config in FieldDropdown.config" dropdown-callback="FieldDropdown.callback">
+            <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="SaveField()"><input type="checkbox" ng-model="config.show" />&nbsp;{{config.field}}</label>
+         </div>
+         <div ng-dropdown="config in modeDropdown.config" dropdown-event="modeDropdown.event" dropdown-callback="modeDropdown.callback">
+            <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="modeDropdown.OnClick($index)"><input type="radio" ng-checked="config.checked" />&nbsp;{{config.key}}</label>
+         </div>
+      </div>
+
+      <div ng-windows="config as CreateBrush.config" windows-callback="CreateBrush.callback">
+         <div form-create para="config"></div>
+      </div>
+
+      <div create-timer="Timer.config" timer-callback="Timer.callback"></div>
+      <div ng-container="{offsetY:-112}" ng-table="GroupTable['options']" table-title="GroupTable['title']" table-content="groupInfo in GroupTable['body']" table-callback="GroupTable['callback']">
+         <div class="Ellipsis" table-key="Condition">
+            <i class="fa fa-circle" ng-style="{'Inactivity':{'color':'#F9A937'},'Normal':{'color':'#00CC66'},'Warning':{'color':'#F9A937'},'Error':{'color':'#D9534F'}}[groupInfo['Condition']]"></i>
+            <span ng-if="groupInfo['Condition'] == 'Inactivity'">{{autoLanguage('分区组未激活')}}</span>
+            <span ng-if="groupInfo['Condition'] == 'Normal'">{{autoLanguage('正常运行')}}</span>
+            <span ng-if="groupInfo['Condition'] == 'Warning'">{{autoLanguage('节点异常')}}</span>
+            <span ng-if="groupInfo['Condition'] == 'Error'">{{autoLanguage('分区组异常')}}</span>
+         </div>
+         <div class="Ellipsis" table-key="GroupName">
+            <a class="linkButton" ng-click="GotoGroup(groupInfo['GroupName'])" ng-if="groupInfo['Condition'] != 'Inactivity'">{{groupInfo['GroupName']}}</a>
+            <span ng-if="groupInfo['Condition'] == 'Inactivity'">{{groupInfo['GroupName']}}</span>
+         </div>
+         <div class="Ellipsis" table-key="Group.length">{{groupInfo['Group'].length}}</div>
+         <div class="Ellipsis" table-key="$auto">
+            <span ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[$autoValue == LastValue[groupInfo['i']].$auto ? '0' : ( $autoValue > LastValue[groupInfo['i']].$auto ? '1' : '-1' )]">
+               <span table-if="ShowType == 'full'|| $autoValue == '-' || LastValue[groupInfo['i']].$auto == '-'">{{$autoValue}}</span>
+               <span table-if="ShowType == 'inc' && $autoValue != '-' && LastValue[groupInfo['i']].$auto != '-'">{{$autoValue - LastValue[groupInfo['i']].$auto}}</span>
+               <span table-if="ShowType == 'avg' && $autoValue != '-' && LastValue[groupInfo['i']].$auto != '-'">{{fixedNumber( ($autoValue - LastValue[groupInfo['i']].$auto) / IntervalTimeConfig.interval, 2 )}}</span>
+            </span>
+         </div>
+      </div>
+
+   </div>
+</div>

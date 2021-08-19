@@ -1,0 +1,25 @@
+﻿<div ng-controller="Monitor.Security.User.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">节点</div>
+         <div ng-click="GotoResources()">资源</div>
+         <div ng-click="GotoHosts()">主机</div>
+         <div class="active" ng-click="GotoUser()">安全</div>
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#Monitor/SDB-Resources/Domain">{{autoLanguage("域")}}</a>
+            </li>
+            <li>
+               <a href="#Monitor/SDB-Resources/Procedure">{{autoLanguage("存储过程")}}</a>
+            </li>
+            <li>
+               <a href="#Monitor/SDB-Resources/Transaction">{{autoLanguage("事务")}}</a>
+            </li>
+         </ul>
+      </div>
+   </div>
+</div>

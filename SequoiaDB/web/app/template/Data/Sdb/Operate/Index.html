@@ -1,0 +1,19 @@
+<div id="OperateIndex" style="padding:10px 15px;" ng-controller="Data.Operate.Index.Ctrl">
+   <div class="underlineTab" data-height="30">
+      <ul class="right">
+         <li class="text Ellipsis" style="max-width:240px;">
+            <b>{{moduleName}}</b>
+         </li>
+         <li class="text" ng-if="moduleMode == 'distribution'">
+            {{autoLanguage("（不包含子集合）")}}
+         </li>
+      </ul>
+   </div>
+   <div style="position:relative;" data-mtop="13" data-offsetY="-45" ng-show="clGridData['body'].length > 0" create-grid="clGridData"></div>
+   <div ng-show="clGridData['body'].length == 0" data-mtop="13" data-offsetY="-45">
+      <div class="data_empty">
+         <div class="title">{{autoLanguage("业务没有集合")}}</div>
+         <div class="tips">{{autoLanguage("在数据库操作可以创建集合空间和集合。")}}</div>
+      </div>
+   </div>
+</div>

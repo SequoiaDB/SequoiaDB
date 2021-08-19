@@ -1,0 +1,34 @@
+<div class="GridTool" ng-if="data.tool.position == 'top'">
+   <div class="ToolLeft">
+      <span ng-repeat="left in data.tool.left track by $index">{{left.text}}</span>
+   </div>
+   <div class="ToolRight">
+      <span ng-repeat="right in data.tool.right track by $index">{{right.text}}</span>
+   </div>
+</div>
+<div class="Grid" ng-style="{'height': Setting.grid.height,'max-height': Setting.grid.maxHeight,'border-bottom': Setting.grid.borderBottom}">
+   <div class="GridHeader">
+      <div class="GridTr">
+         <div class="GridTd Ellipsis" ng-repeat="title in data['title'] track by $index" ng-style="{'width':Setting.titleWidth[$index]}">{{title.text}}</div>
+         <div class="clear-float"></div>
+      </div>
+      <div class="GridTr" ng-if="data['subtitle']">
+         <div class="GridTd Ellipsis" style="height:auto;" ng-repeat="title in data['subtitle'] track by $index" ng-style="{'width':Setting.titleWidth[$index]}"></div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+   <div class="GridBody">
+      <div class="GridTr" ng-repeat="tr in data.body track by $index">
+         <div class="GridTd" ng-repeat="td in tr track by $index" ng-class="{'undefined':'Ellipsis','true':'Ellipsis'}[td.ellipsis]" ng-style="{'width':Setting.bodyWidth[$index],'height':Setting.grid.tdHeight[$parent.$index],'word-break':(data.options.grid.tdModel == 'auto' || !data.options.grid.tdModel ? 'break-all' : '' ) }"></div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+</div>
+<div class="GridTool" ng-if="data.tool.position == 'bottom'">
+   <div class="ToolLeft">
+      <span ng-repeat="left in data.tool.left track by $index">{{left.text}}</span>
+   </div>
+   <div class="ToolRight">
+      <span ng-repeat="right in data.tool.right track by $index">{{right.text}}</span>
+   </div>
+</div>

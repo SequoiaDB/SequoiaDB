@@ -1,0 +1,182 @@
+import os
+
+Import("clientCppEnv")
+Import("linux")
+Import("aix")
+Import("windows")
+Import("ssllib_file")
+Import("ssllib_file1")
+Import("mergeStaticLibrary")
+Import("release")
+Import("debugBuild")
+
+
+
+# release or debug build
+release_build = release
+debug_build = debugBuild
+
+
+# set the compile options
+dllLibEnv = clientCppEnv.Clone()
+staticLibEnv = clientCppEnv.Clone()
+
+
+# set compile options for building in windows 
+if windows:
+    if release_build:
+        dllLibEnv.Append( CPPFLAGS= " /MD " )
+        staticLibEnv.Append( CPPFLAGS= " /MT " )
+    elif debug_build:
+        dllLibEnv.Append( CPPFLAGS= " /MDd " )
+        staticLibEnv.Append( CPPFLAGS= " /MTd " )
+
+
+# files
+clientCPPFiles = [
+      "client/clientcpp.cpp",
+      "client/sdbDataSource.cpp",
+      "client/sdbDataSourceComm.cpp",
+      "client/sdbDataSourceStrategy.cpp",
+      "client/sdbDataSourceWorker.cpp"
+      ]
+#for threadsafe build, we should add this into clientLibFiles
+clientCPPThreadSafe = [
+      "oss/ossLatch.cpp"
+      ]
+clientCPPLibFiles = [
+      clientCPPFiles,
+      "oss/ossSSLCertificate.c",
+      "oss/ossSSLWrapper.c",
+      "oss/ossSSLContext.c",
+      "oss/oss.cpp",
+      "oss/ossUtil.cpp",
+      "oss/ossMem.cpp",
+      "oss/ossSocket.cpp",
+      "oss/ossPrimitiveFileOp.cpp",
+      "oss/ossVer.cpp",
+      "pd/pdErr.cpp",
+      "pd/pd.cpp",
+      "client/bson/numbers.c",
+      "client/bson/bson.c",
+      "client/bson/encoding.c",
+      "client/bson/common_decimal.c",
+      "client/base64c.c",
+      "client/cJSON.c",
+      "client/cJSON_ext.c",
+      "client/cJSON_iterator.c",
+      "client/jstobs.c",
+      "client/timestampParse.c",
+      "client/timestampTm.c",
+      "client/timestampValid.c",
+      "client/common.c",
+      "util/fromjson.cpp",
+      "util/json2rawbson.c",
+      "util/utilStr.cpp",
+      "util/utilTypeCast.c",
+      "util/utilCipher.c",
+      "bson/bsonobj.cpp",
+      "bson/oid.cpp",
+      "bson/base64.cpp",
+      "bson/md5.c",
+      "bson/nonce.cpp",
+      "bson/bsonDecimal.cpp",
+      "util/utilAuthSCRAMSHA.cpp"
+      ]
+
+
+#Static Library
+dir = ''
+def merge(target, source = None, env = staticLibEnv):
+    pureLib = dir + '/libstaticpuresdbcpp.a'
+    mergeStaticLib = dir + '/libstaticsdbcpp.a'
+    mergeStaticLibrary( mergeStaticLib, aix, ssllib_file, ssllib_file1, pureLib )
+    staticLibEnv.Install( '#/client/lib/', mergeStaticLib )
+
+if linux or aix:
+    staticPureSdbCPPLib = staticLibEnv.StaticLibrary('staticpuresdbcpp', clientCPPLibFiles)
+    dir = os.path.dirname(staticPureSdbCPPLib[0].get_abspath())
+    staticLib = dir + '/libstaticsdbcpp.a'
+    staticLibEnv.AddPostAction(staticPureSdbCPPLib, Action(merge))
+elif windows:
+    ""
+    ## static library of cpp is unavailable. app may crash by using static library
+    #if release_build:
+    #    staticLib = staticLibEnv.StaticLibrary('staticsdbcpp', [clientCPPLibFiles, ssllib_file, ssllib_file1] )
+    #    staticLibEnv.Install( '#/client/lib/cpp/release/static', staticLib )
+    #elif debug_build:
+    #    staticLib = staticLibEnv.StaticLibrary('staticsdbcppd', [clientCPPLibFiles, ssllib_file, ssllib_file1] )
+    #    staticLibEnv.Install( '#/client/lib/cpp/debug/static', staticLib )
+
+
+#Shared Library
+if aix:
+    dllLib = dllLibEnv.SharedLibrary('sdbcpp', [clientCPPLibFiles, ssllib_file1, ssllib_file])
+    dllLibEnv.Install( '#/client/lib/', dllLib )
+elif linux:
+    dllLib = dllLibEnv.SharedLibrary('sdbcpp', clientCPPLibFiles)
+    dllLibEnv.Install( '#/client/lib/', dllLib )
+elif windows:
+    if release_build:
+        #print "dllLibEnv is:"
+        #print dllLibEnv.Dump()
+        dllLib = dllLibEnv.SharedLibrary( 'sdbcpp', clientCPPLibFiles, OBJSUFFIX='_dll' )
+        dllLibEnv.Install( '#/client/lib/cpp/release/dll', dllLib )
+    elif debug_build:
+        #print "dllLibEnv is:"
+        #print dllLibEnv.Dump()
+        dllLib = dllLibEnv.SharedLibrary( 'sdbcppd', clientCPPLibFiles, OBJSUFFIX='_dll' )
+        dllLibEnv.Install( '#/client/lib/cpp/debug/dll', dllLib )
+
+
+#Header files
+clientCppEnv.Install( '#/client/include/', "client/client.hpp" )
+# sdbDataSource files
+clientCppEnv.Install( '#/client/include/', "client/sdbDataSource.hpp")
+clientCppEnv.Install( '#/client/include/', "client/sdbDataSourceComm.hpp")
+clientCppEnv.Install( '#/client/include/', "include/ossLatch.hpp")
+clientCppEnv.Install( '#/client/include/', "include/oss.h")
+clientCppEnv.Install( '#/client/include/', "include/oss.hpp")
+clientCppEnv.Install( '#/client/include/', "include/ossMem.h")
+clientCppEnv.Install( '#/client/include/', "include/ossMem.hpp")
+clientCppEnv.Install( '#/client/include/', "include/pd.hpp")
+clientCppEnv.Install( '#/client/include/', "include/pdErr.hpp")
+clientCppEnv.Install( '#/client/include/', "include/ossAtomic.hpp")
+clientCppEnv.Install( '#/client/include/', "include/ossAtomicBase.hpp")
+clientCppEnv.Install( '#/client/include/', "include/ossVer.h")
+clientCppEnv.Install( '#/client/include/', "include/ossVer.hpp")
+clientCppEnv.Install( '#/client/include/', "include/ossVer_Autogen.h")
+clientCppEnv.Install( '#/client/include/', "include/core.hpp" )
+clientCppEnv.Install( '#/client/include/', "include/ossFeat.hpp" )
+clientCppEnv.Install( '#/client/include/', "include/ossTypes.hpp" )
+clientCppEnv.Install( '#/client/include/', "include/utilAuthSCRAMSHA.hpp" )
+clientCppEnv.Install( '#/client/include/', "util/fromjson.hpp" )
+clientCppEnv.Install( '#/client/include/', "util/json2rawbson.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonassert.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bson_db.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonelement.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bson.hpp" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonDecimal.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bson-inl.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonmisc.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonnoncopyable.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonobjbuilder.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonintrusiveptr.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonobj.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsonobjiterator.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/bsontypes.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/inline_decls.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/oid.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/ordering.h" )
+clientCppEnv.Install( '#/client/include/bson', "bson/stringdata.h" )
+clientCppEnv.Install( '#/client/include/bson/lib', "bson/lib/atomic_int.h" )
+clientCppEnv.Install( '#/client/include/bson/lib', "bson/lib/base64.h" )
+clientCppEnv.Install( '#/client/include/bson/lib', "bson/lib/hex.h" )
+clientCppEnv.Install( '#/client/include/bson/lib', "bson/lib/md5.h" )
+clientCppEnv.Install( '#/client/include/bson/lib', "bson/lib/nonce.h" )
+clientCppEnv.Install( '#/client/include/bson/lib', "bson/lib/md5.hpp" )
+clientCppEnv.Install( '#/client/include/bson/util', "bson/util/builder.h" )
+clientCppEnv.Install( '#/client/include/bson/util', "bson/util/embedded_builder.h" )
+clientCppEnv.Install( '#/client/include/bson/util', "bson/util/hex.h" )
+clientCppEnv.Install( '#/client/include/bson/util', "bson/util/misc.h" )
+clientCppEnv.Install( '#/client/include/bson/util', "bson/util/optime.h" )

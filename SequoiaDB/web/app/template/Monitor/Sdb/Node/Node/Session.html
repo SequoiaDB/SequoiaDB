@@ -1,0 +1,79 @@
+﻿<div ng-controller="Monitor.SdbNode.Session.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div class="active" ng-click="GotoNodeList()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div>{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Index">{{autoLanguage("节点信息")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Nodes/Node/Session">{{autoLanguage("会话")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Context">{{autoLanguage("上下文")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div style="color:#606060;font-size:90%;height:30px;margin:10px 0;">
+         <button class="btn btn-default" ng-click="OpenBrushWindows()">
+            <span>{{sprintf(autoLanguage("刷新间隔： ? 秒"), IntervalTimeConfig.interval)}}</span>
+         </button>&nbsp;
+         <button class="btn btn-default" ng-click="RefreshCtrl()">{{RefreshType}}</button>&nbsp;         <button class="topBtn" ng-click="OpenShowFieldDropdown($event)">{{autoLanguage("选择显示列")}}&nbsp;<i class="fa fa-caret-down"></i></button>&nbsp;
+         <button class="btn btn-default" ng-click="OpenShowSessionTypeDropdown($event)">
+            <span ng-if="SessionType == 'all'">{{autoLanguage("所有会话")}}</span><span ng-if="SessionType == 'current'">{{autoLanguage("当前会话")}}</span>&nbsp;<i class="fa fa-caret-down"></i>
+         </button>
+         <div ng-dropdown="config in FieldDropdown.config" dropdown-callback="FieldDropdown.callback">
+            <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="SaveField()"><input type="checkbox" ng-model="config.show" />&nbsp;{{config.field}}</label>
+         </div>
+         <div ng-dropdown="config in SessionTypeDropdown.config" dropdown-callback="SessionTypeDropdown.callback">
+            <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="SaveSessionType()"><input type="radio" name="sessiontypedropdown" ng-value="config.key" ng-model="SessionTypeDropdown.SessionType" />&nbsp;{{config.field}}</label>
+         </div>
+      </div>
+
+      <div ng-windows="config as CreateBrush.config" windows-callback="CreateBrush.callback">
+         <div form-create para="config"></div>
+      </div>
+
+      <div ng-windows="info as SessionInfo.config" windows-callback="SessionInfo.callback">
+         <table class="table loosen border">
+            <tr>
+               <td style="width:40%;background-color:#F1F4F5;"><b>Key</b></td>
+               <td style="width:60%;background-color:#F1F4F5;"><b>Value</b></td>
+            </tr>
+            <tr ng-repeat="(key, value) in info track by $index">
+               <td>{{key}}</td>
+               <td>{{value}}</td>
+            </tr>
+         </table>
+      </div>
+
+      <div create-timer="Timer.config" timer-callback="Timer.callback"></div>
+      <div ng-container="{offsetY:-110}" ng-table="SessionTable['options']" table-title="SessionTable['title']" table-content="SessionInfo in SessionTable['body']" table-callback="SessionTable['callback']">
+         <div class="Ellipsis" table-key="Status">
+            <i class="fa fa-circle" style="color:#00CC66;" ng-if="SessionInfo['Status'] == 'Running'" data-desc="Running"></i>
+            <i class="fa fa-circle" style="color:#F9A937;" ng-if="SessionInfo['Status'] == 'Waiting'" data-desc="Waiting"></i>
+            <i class="fa fa-circle" style="color:#F9A937;" ng-if="SessionInfo['Status'] == 'Idle'" data-desc="Idle"></i>
+            {{SessionInfo.Status}}
+         </div>
+         <div class="Ellipsis" table-key="NodeName">
+            <a class="linkButton" ng-click="GotoNode(SessionInfo['NodeName'])">{{SessionInfo.NodeName}}</a>
+         </div>
+         <div class="Ellipsis" table-key="SessionID">
+            <a class="linkButton" ng-click="ShowSession(SessionInfo['SessionID'],SessionInfo['NodeName'])">{{SessionInfo.SessionID}}</a>
+         </div>
+         <div class="Ellipsis" table-key="$auto">{{$autoValue}}</div>
+      </div>
+
+   </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="jsonEdit">
+   <div class="jsonModel" ng-hide="Setting.Type == 1">
+      <div class="tool">
+         <button class="toolBtn" ng-attr="{'data-desc':autoLanguage('视图模式')}" ng-click="switchView()"><i class="fa fa-list"></i></button>
+         <button class="toolBtn" ng-attr="{'data-desc':autoLanguage('展开')}" ng-click="expand()"><i class="fa fa-indent"></i></button>
+         <button class="toolBtn" ng-attr="{'data-desc':autoLanguage('收起')}" ng-click="collapse()"><i class="fa fa-dedent"></i></button>
+         <button class="toolBtn" ng-if="!Setting.IsFullScreen" ng-attr="{'data-desc':autoLanguage('全屏')}" ng-click="fullScreen()"><i class="fa fa-arrows-alt"></i></button>
+         <button class="toolBtn" ng-if="Setting.IsFullScreen" ng-attr="{'data-desc':autoLanguage('取消全屏')}" ng-click="cancelFullScreen()"><i class="fa fa-minus"></i></button>
+      </div>
+      <div class="editBox" style="white-space:pre;" ng-style="{ 'height': Setting.Height + 'px' }" spellcheck="false" contenteditable="true" ng-model="Setting.Json"></div>
+   </div>
+   <div class="viewModel" ng-hide="Setting.Type == 2">
+      <div class="tool">
+         <input class="form-control toolSearch" ng-attr="{'data-desc':autoLanguage('搜索')}" ng-model="Setting.Search" />
+         <button class="toolBtn" ng-attr="{'data-desc':autoLanguage('字符串模式')}" ng-click="switchView()"><i class="fa fa-font"></i></button>
+         <button class="toolBtn" ng-attr="{'data-desc':autoLanguage('展开')}" ng-click="expand()"><i class="fa fa-indent"></i></button>
+         <button class="toolBtn" ng-attr="{'data-desc':autoLanguage('收起')}" ng-click="collapse()"><i class="fa fa-dedent"></i></button>
+         <button class="toolBtn" ng-if="!Setting.IsFullScreen" ng-attr="{'data-desc':autoLanguage('全屏')}" ng-click="fullScreen()"><i class="fa fa-arrows-alt"></i></button>
+         <button class="toolBtn" ng-if="Setting.IsFullScreen" ng-attr="{'data-desc':autoLanguage('取消全屏')}" ng-click="cancelFullScreen()"><i class="fa fa-minus"></i></button>
+         <div class="clear-float"></div>
+      </div>
+      <div class="editBox" ng-style="{ 'height': Setting.Height + 'px' }" ng-include="'./app/template/Component/JsonEdit_child.html'" ng-eval="fields=Setting.View"></div>
+   </div>
+</div>

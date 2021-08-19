@@ -1,0 +1,176 @@
+﻿<div ng-windows="form as InstallModule.config" windows-callback="InstallModule.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="form as AppendModule.config" windows-callback="AppendModule.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="form as AppendSdb.config" windows-callback="AppendSdb.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="form as AppendSSQL.config" windows-callback="AppendSSQL.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="form as UninstallModuleWindow.config" windows-callback="UninstallModuleWindow.callback">
+   <div form-create para="form"></div>
+   <div class="error">{{UninstallTips}}</div>
+</div>
+<div ng-windows="form as ExtendWindow.config" windows-callback="ExtendWindow.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="form as SyncWindow.config" windows-callback="SyncWindow.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="form as RestartWindow.config" windows-callback="RestartWindow.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="form as ShrinkWindow.config" windows-callback="ShrinkWindow.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="form as UnbindModuleWindow.config" windows-callback="UnbindModuleWindow.callback">
+   <div form-create para="form"></div>
+</div>
+<div ng-windows="list as RelationshipWindow.config" windows-callback="RelationshipWindow.callback">
+   <table class="table loosen border">
+      <tr>
+         <td style="width:40%;background-color:#F1F4F5;">{{autoLanguage("关联名")}}</td>
+         <td style="width:20%;background-color:#F1F4F5;">{{autoLanguage("实例")}}</td>
+         <td style="width:20%;background-color:#F1F4F5;">{{autoLanguage("分布式存储")}}</td>
+         <td style="width:20%;background-color:#F1F4F5;">{{autoLanguage("数据库名")}}</td>
+      </tr>
+      <tr ng-repeat="info in list track by $index">
+         <td>{{info['Name']}}</td>
+         <td ng-style="{'true':{'font-weight':'bold'}}[info['where']=='From']">{{info['From']}}</td>
+         <td ng-style="{'true':{'font-weight':'bold'}}[info['where']=='To']">{{info['To']}}</td>
+         <td>{{info['Options']['DbName']}}</td>
+      </tr>
+   </table>
+</div>
+<div ng-dropdown="config in AddModuleDropdown.config" dropdown-event="AddModuleDropdown.event" dropdown-callback="AddModuleDropdown.callback">
+   <span class="Ellipsis" style="padding:8px 10px;display:block;" ng-click="AddModuleDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+</div>
+<div ng-dropdown="config in DeleteModuleDropdown.config" dropdown-event="DeleteModuleDropdown.event" dropdown-callback="DeleteModuleDropdown.callback">
+   <span class="Ellipsis" style="padding:8px 10px;display:block;" ng-click="DeleteModuleDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+</div>
+<div ng-dropdown="config in EditModuleDropdown.config" dropdown-event="EditModuleDropdown.event" dropdown-callback="EditModuleDropdown.callback">
+   <span class="Ellipsis" style="padding:8px 10px;display:block;" ng-click="EditModuleDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+</div>
+<div ng-container="{height:40}">
+   <button class="topBtn" ng-class="{true:'disabled'}[ClusterList.length == 0]" ng-disabled="ClusterList.length==0" ng-click="OpenAddModuleDropdown($event)">{{autoLanguage("添加存储集群")}} <i class="fa fa-caret-down"></i></button>
+   <button class="topBtn" ng-class="{true:'disabled'}[ClusterList.length==0||StorageNum==0]" ng-disabled="ClusterList.length==0||StorageNum==0" ng-click="OpenDeleteModuleDropdown($event)">{{autoLanguage("删除存储集群")}} <i class="fa fa-caret-down"></i></button>
+   <button class="topBtn" ng-class="{true:'disabled'}[ClusterList.length==0||StorageNum==0]" ng-disabled="ClusterList.length==0||StorageNum==0" ng-click="OpenEditModuleDropdown($event)">{{autoLanguage("存储集群操作")}} <i class="fa fa-caret-down"></i></button>
+</div>
+
+<div style="padding-right:15px;overflow-y:auto;border:1px solid #ccc;padding:10px;position:relative;" ng-container="{offsetY:-40}">
+
+   <div class="DataListBox" style="padding:15px 20px;margin-bottom:15px;position:relative;" ng-repeat="moduleInfo in StorageList track by $index" ng-if="ClusterList[CurrentCluster]['ClusterName'] == moduleInfo['ClusterName']" ng-class="{'0':'green','1':'yellow','2':'blue','3':'violet'}[moduleInfo['Color']%4]" ng-show="ClusterList.length > 0">
+      <div ng-windows="authorityForm as SetAuthority.config" windows-callback="SetAuthority.callback">
+         <div form-create para="authorityForm"></div>
+      </div>
+      <div ng-dropdown="config in AuthorityDropdown.config" dropdown-callback="AuthorityDropdown.callback">
+         <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-show="config.value == 'edit'" ng-click="ShowSetAuthority()">{{config.field}}</label>
+         <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-show="config.value == 'delete'" ng-click="DropAuthorityModel()">{{config.field}}</label>
+      </div>
+      <div ng-windows="form as SetDefaultDbWindow.config" windows-callback="SetDefaultDbWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div style="height:50px;">
+         <div class="pull-left" style="width:40px;height:40px;">
+            <i class="fa fa-database" style="color:#02CCAA;font-size:230%;"></i>
+         </div>
+         <div class="pull-left" ng-container="{offsetX:-100,height:40}">
+            <div class="Ellipsis2" style="font-weight:bold;height:21px;">
+               <span ng-if="(moduleInfo['BusinessType']=='sequoiadb'&&moduleInfo['DeployMod']=='distribution')||moduleInfo['BusinessType']=='sequoiasql-postgresql'||moduleInfo['BusinessType']=='sequoiasql-mysql'">
+                  <a class="linkButton" style="font-size:90%;" ng-if="Typeof(moduleInfo['authority'][0]['User'])!='undefined'" ng-attr="{'data-desc':autoLanguage('鉴权已开启。')}" ng-click="OpenShowAuthorityDropdown($event,moduleInfo['BusinessName'],$index)">
+                     <i class="fa fa-lock"></i>
+                     <span>{{autoLanguage("鉴权")}} </span>
+                  </a>
+                  <a class="linkButton" style="font-size:90%;" ng-if="Typeof(moduleInfo['authority'][0]['User'])=='undefined'" ng-click="ShowSetAuthority(moduleInfo['BusinessName'],$index)" ng-attr="{'data-desc':autoLanguage('未开启鉴权，点击设置。')}">
+                     <i class="fa fa-unlock"></i>
+                     <span>{{autoLanguage("鉴权")}} </span>
+                  </a>
+                  <span style="color:#ccc;font-size:100%;font-weight:normal;">|</span>
+                  <a class="linkButton" style="font-size:90%;" ng-if="moduleInfo['BusinessType']=='sequoiasql-postgresql'" ng-click="ShowSetDefaultDb(moduleInfo['BusinessName'],$index)">
+                     <span>{{autoLanguage("默认数据库")}} </span>
+                     <span style="color:#ccc;font-size:100%;font-weight:normal;">|</span>
+                  </a>
+               </span>
+               <span ng-if="moduleInfo['Relationship'].length>0">
+                  <a class="linkButton" style="font-size:90%;" ng-click="ShowRelationship(moduleInfo['BusinessName'])">
+                     <span>{{autoLanguage("关联信息")}}</span>
+                  </a>
+                  <span style="color:#ccc;font-size:100%;font-weight:normal;">|</span>
+               </span>
+
+               <a class="linkButton" ng-if="moduleInfo['BusinessType']=='sequoiadb' || moduleInfo['BusinessType']=='sequoiasql-postgresql' || moduleInfo['BusinessType']=='sequoiasql-mysql'" ng-click="GotoDataModule(moduleInfo['ClusterName'],moduleInfo['BusinessType'],moduleInfo['DeployMod'],moduleInfo['BusinessName'])">{{moduleInfo['BusinessName']}}</a>
+               <span style="color:#666;" ng-if="moduleInfo['BusinessType']!='sequoiadb' && moduleInfo['BusinessType']!='sequoiasql-postgresql' && moduleInfo['BusinessType']!='sequoiasql-mysql'">{{moduleInfo['BusinessName']}}</span>
+            </div>
+            <div class="Ellipsis" style="font-size:90%;color:#666;">{{moduleInfo['BusinessDesc']}} {{moduleInfo['DeployMod']}}&nbsp;|&nbsp;<span ng-if="moduleInfo['AddtionType'] == 1">{{autoLanguage("添加时间")}}</span><span ng-if="moduleInfo['AddtionType'] == 0">{{autoLanguage("创建时间")}}</span>: {{moduleInfo['Time']['$timestamp'].substr(0,19)}}</div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+
+      <div class="well Ellipsis" style="margin-top:10px;">
+         <i class="fa fa-circle" style="color:#00CC66;" ng-if="moduleInfo['Error']['Flag']==0"></i><i class="fa fa-circle error" ng-if="moduleInfo['Error']['Flag']!=0"></i>&nbsp;<span style="font-weight:bold;color:#006699;" ng-if="moduleInfo['Error']['Flag']==0">{{autoLanguage("正常运行...")}}</span><span style="font-weight:bold;color:#006699;" ng-if="moduleInfo['Error']['Flag']!=0">{{moduleInfo['Error']['Message']}}</span>
+      </div>
+
+      <div ng-container="{offsetY:-100,marginTop:10,height:'auto'}" ng-if="moduleInfo['BusinessType']=='sequoiadb' || moduleInfo['BusinessType']=='sequoiasql-postgresql' || moduleInfo['BusinessType']=='sequoiasql-mysql'">
+
+         <div class="pull-left" style="max-width:650px;" ng-container="{width:'50%',height:140,offsetX:-30,marginRight:30}">
+            <div class="Ellipsis" style="height:35px;">
+               <!--<a class="linkButton" ng-click="GotoMonitorHost(moduleInfo['ClusterName'],moduleInfo['BusinessType'],moduleInfo['DeployMod'],moduleInfo['BusinessName'])">{{sprintf(autoLanguage("一共 ? 台主机"),moduleInfo['Location'].length)}}</a>-->
+               {{sprintf(autoLanguage("一共 ? 台主机"),moduleInfo['Location'].length)}}
+            </div>
+
+            <div style="height:35px;">
+               <div class="pull-left" style="width:80px;height:35px;">CPU</div>
+               <div class="pull-left" style="max-width:480px;" progress-bar="moduleInfo.Chart.Host.CPU" ng-container="{height:35,offsetX:-80}"></div>
+               <div class="clear-float"></div>
+            </div>
+
+            <div style="height:35px;">
+               <div class="pull-left" style="width:80px;height:35px;">{{autoLanguage("内存")}}</div>
+               <div class="pull-left" style="max-width:480px;" progress-bar="moduleInfo.Chart.Host.Memory" ng-container="{height:35,offsetX:-80}"></div>
+               <div class="clear-float"></div>
+            </div>
+
+            <div style="height:35px;">
+               <div class="pull-left" style="width:80px;height:35px;">{{autoLanguage("磁盘")}}</div>
+               <div class="pull-left" style="max-width:480px;" progress-bar="moduleInfo.Chart.Host.Disk" ng-container="{height:35,offsetX:-80}"></div>
+               <div class="clear-float"></div>
+            </div>
+
+         </div>
+
+         <div class="pull-left" style="max-width:650px;min-height:130px;" ng-container="{width:'50%',height:'30w'}" ng-if="moduleInfo['BusinessType']=='sequoiadb'">
+            <div style="height:20px;">
+               {{sprintf(autoLanguage("一共 ? 个节点"),moduleInfo['BusinessInfo']['NodeList'].length)}}
+            </div>
+            <div ng-container="{offsetY:-20}" create-chart="moduleInfo['Chart']['Module']"></div>
+         </div>
+         <div class="clear-float"></div>
+
+      </div>
+
+   </div>
+   <div class="data_empty" ng-show="ClusterList.length == 0">
+      <div class="title">{{autoLanguage("还没有创建集群")}}</div>
+      <div class="tips">
+         <span>{{autoLanguage("使用")}}</span>
+         <span class="linkButton" ng-click="ShowCreateCluster()">{{autoLanguage("创建集群")}}</span>
+         <span>{{autoLanguage("或者")}}</span>
+         <span class="linkButton" ng-click="ShowDeployModule()">{{autoLanguage("一键部署")}}</span>
+         <span>{{autoLanguage("操作。")}}</span>
+      </div>
+   </div>
+   <div class="data_empty" ng-show="ClusterList.length > 0 && StorageNum == 0">
+      <div class="title">{{autoLanguage("当前没有存储集群")}}</div>
+      <div class="tips">
+         <span>{{autoLanguage("使用")}}</span>
+         <span class="linkButton" ng-click="ShowInstallModule()">{{autoLanguage("创建存储集群")}}</span>
+         <span>{{autoLanguage("或者")}}</span>
+         <span class="linkButton" ng-click="ShowAppendModule()">{{autoLanguage("添加已有的存储集群")}}</span>
+         <span>{{autoLanguage("操作。")}}</span>
+      </div>
+   </div>
+
+</div>

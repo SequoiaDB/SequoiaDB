@@ -1,0 +1,23 @@
+﻿<svg version="1.1" style="overflow:hidden;position:relative;" height="0" width="0">
+  
+   <g ng-repeat="item in Setting.data track by $index">
+
+      <rect ng-attr="item.zg" x="0" y="0" width="0" height="0" rx="0" ry="0" fill="{{item.color}}" stroke="{{Setting.borderColor}}" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" opacity="1"></rect>
+
+      <ellipse ng-attr="item.db" cx="0" cy="0" rx="0" ry="0" fill="{{item.color}}" stroke="{{Setting.borderColor}}" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" opacity="1"></ellipse>
+
+      <rect ng-attr="item.zg2" x="0" y="0" width="0" height="0" rx="0" ry="0" fill="{{item.color}}" stroke="#000" stroke-width="0" opacity="1"></rect>
+
+      <ellipse ng-attr="item.tb" cx="0" cy="0" rx="0" ry="0" fill="{{item.color}}" stroke="{{Setting.borderColor}}" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" opacity="1"></ellipse>
+
+      <path ng-attr="item.jt" d="M0,0L0,0" fill="none" stroke="{{item.color}}" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter"></path>
+
+      <text ng-attr="item.zt" x="0" y="0" text-anchor="start" font-family="Arial" font-size="10px" stroke="none" fill="#27a9e3" style="font-weight:bold;" font-weight="bold">
+         <tspan dy="4">
+            {{item.name}} {{item.percentStr}}
+         </tspan>
+      </text>
+
+   </g>
+   
+</svg>

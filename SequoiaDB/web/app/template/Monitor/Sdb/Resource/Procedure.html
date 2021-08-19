@@ -1,0 +1,69 @@
+﻿<div ng-controller="Monitor.SdbResource.Procedure.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div class="active" ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#Monitor/SDB-Resources/Session">{{autoLanguage("会话")}}</a>
+            </li>
+            <li>
+               <a href="#Monitor/SDB-Resources/Context">{{autoLanguage("上下文")}}</a>
+            </li>
+            <li>
+               <a href="#Monitor/SDB-Resources/Domain">{{autoLanguage("域")}}</a>
+            </li>
+            <li class="active">
+               <a href="#Monitor/SDB-Resources/Procedure">{{autoLanguage("存储过程")}}</a>
+            </li>
+            <li>
+               <a href="#Monitor/SDB-Resources/Transaction">{{autoLanguage("事务")}}</a>
+            </li>
+            <!--<li>
+               <a>{{autoLanguage("锁")}}</a>
+            </li>
+            <li>
+               <a>{{autoLanguage("慢查询")}}</a>
+            </li>-->
+            <li>
+               <a href="#/Monitor/SDB-Resources/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div ng-windows="procedure as CreateProcedure.config" windows-callback="CreateProcedure.callback">
+         <div style="height:30px;">{{autoLanguage('代码')}}:</div>
+         <textarea spellcheck="false" style="font-family:Consolas;font-size:15px;" class="form-control" ng-container="{offsetY:-30}" ng-model="procedure.code"></textarea>
+      </div>
+
+      <div ng-windows="procedure as RemoveProcedure.config" windows-callback="RemoveProcedure.callback">
+         <table class="table loosen border">
+            <tr>
+               <td><b>key</b></td>
+               <td><b>value</b></td>
+            </tr>
+            <tr ng-repeat="(key, value) in procedure track by $index" ng-if="key != '_id' && key != 'i'">
+               <td>{{key}}</td>
+               <td>{{value}}</td>
+            </tr>
+         </table>
+      </div>
+
+      <div ng-container="{height:30,marginTop:10}">
+         <button class="btn btn-default" ng-click="OpenCreateProcedureWindow()">{{autoLanguage("创建存储过程")}}</button>
+      </div>
+
+      <div ng-container="{offsetY:-110,marginTop:10}" ng-table="procedureTable['options']" table-title="procedureTable['title']" table-content="procedure in procedureTable['body']">
+         <div class="Ellipsis linkButton" table-key="name" ng-click="OpenProcedureInfoWindow(procedure.i)">{{procedure.name}}</div>
+         <div table-key="func"><pre style="white-space:pre-wrap;word-break:break-all;margin:0;"><code>{{procedure.func}}</code></pre></div>
+         <div class="Ellipsis" table-key="funcType">{{procedure.funcType}}</div>
+      </div>
+
+   </div>
+</div>

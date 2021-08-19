@@ -1,0 +1,198 @@
+﻿<div ng-controller="Deploy.Sdb.Extend.Ctrl" ng-container="{}">
+
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+
+   <div style="padding:10px 15px;" ng-container="{offsetY:-70}">
+
+      <div ng-container="{offsetY:-45}">
+         <!--左侧栏-->
+         <div class="pull-left" ng-controller="Deploy.Sdb.Extend.Group.Ctrl" ng-container="{width:400}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("服务")}}: {{ModuleName}}</div>
+
+            <div class="borderBox" style="padding:10px;font-size:90%;" ng-container="{offsetY:-30}">
+
+               <div class="alert alert-info" style="height:32px;" ng-style="{'zh-CN':{'line-height':'32px'}}[Language]">
+                  {{autoLanguage("提示：批量配置节点信息说明。详情请点击")}}<a class="linkButton" ng-click="ShowHelper()">{{autoLanguage("帮助")}}</a>
+               </div>
+
+               <div style="margin:10px 0;">
+                  <select class="form-control" style="width:120px;" ng-model="FilterGroup.value" ng-change="FilterGroup['onChange']()" ng-options="item.value as item.key for item in FilterGroup['select']"></select>
+                  <button class="btn btn-default" style="height:31px;" ng-click="ShowCreateGroup()"><i class="fa fa-plus"></i>&nbsp;{{autoLanguage("创建分区组")}}</button>
+               </div>
+
+               <div class="borderBox" style="overflow-y:auto;" ng-container="{maxHeight:'100%',offsetY:-105}">
+                  <div style="height:55px;border-top:1px solid;" ng-repeat="groupInfo in GroupList track by $index" ng-style="{'true':{'border-color':'#fff'},'false':{'border-color':'#E3E7E8'}}[$index==FilterGroup['firstIndex']]" ng-if="groupInfo['isShow']">
+                     <!--组-->
+                     <div style="height:47px;margin:1px;border:3px solid #fff;" ng-style="{'true':{'border-color':'#80c0ff'},'false':{'border-color':'#fff'}}[groupInfo['checked']==true]">
+                        <table class="table" style="margin-top:5px;">
+                           <tr>
+                              <td style="padding-left:10px;cursor:pointer;" ng-click="SwitchGroup($index)">
+                                 <div class="Ellipsis" style="font-weight:bold;">{{groupInfo['groupName']}}</div>
+                                 <div class="Ellipsis" style="font-size:90%;color:#888;padding-top:3px;">
+                                    {{autoLanguage("节点数")}}: {{groupInfo['nodeNum']+groupInfo['extendNodeNum']}}
+                                 </div>
+                              </td>
+                              <td style="padding-left:10px;width:50px;">
+                                 <button class="btn btn-default btn-lg" ng-click="OpenGroupDropdown($event,groupInfo['groupName'])">
+                                    <i class="fa fa-caret-down"></i>
+                                 </button>
+                              </td>
+                           </tr>
+                        </table>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div ng-windows="form as AddNodeWindow.config" windows-callback="AddNodeWindow.callback">
+               <div form-create para="form"></div>
+            </div>
+            <div ng-windows="form as RemoveNodeWindow.config" windows-callback="RemoveNodeWindow.callback">
+               <div form-create para="form"></div>
+            </div>
+            <div ng-windows="form as CreateGroupWindow.config" windows-callback="CreateGroupWindow.callback">
+               <div form-create para="form"></div>
+            </div>
+            <div ng-windows="form as RenameGroupWindow.config" windows-callback="RenameGroupWindow.callback">
+               <div form-create para="form"></div>
+            </div>
+            <div ng-dropdown="config in GroupDropdown.config" dropdown-callback="GroupDropdown.callback">
+               <div style="padding:5px 10px;" ng-show="config.show" ng-click="ClickGroupDropdown(config.action)">{{config.key}}</div>
+            </div>
+         </div>
+         <!--右侧栏-->
+         <div class="pull-left" ng-controller="Deploy.Sdb.Extend.Table.Ctrl" ng-container="{offsetX:-410,marginLeft:10}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("节点列表")}}</div>
+            <div class="borderBox" style="padding:10px;" ng-container="{offsetY:-30}">
+               <div>
+                  <button class="btn btn-default" ng-click="SelectAll()">{{autoLanguage("全选")}}</button>
+                  <button class="btn btn-default" ng-click="Unselect()">{{autoLanguage("反选")}}</button>
+                  <button class="btn btn-default" ng-click="OpenEditNode(4,-1,-1,true)">{{autoLanguage("批量修改节点")}}</button>
+               </div>
+               <!--节点-->
+               <div ng-container="{offsetY:-40,marginTop:10}" ng-table="NodeTable['options']" table-title="NodeTable['title']" table-content="nodeInfo in NodeTable['body']" table-callback="NodeTable['callback']">
+                  <div table-key="_other.checked">
+                     <input type="checkbox" ng-if="nodeInfo._other.canChecked == true" ng-model="nodeInfo._other.checked" />
+                  </div>
+                  <div class="Ellipsis" table-key="HostName">
+                     <a class="linkButton" ng-click="OpenEditNode(3,-1,nodeInfo['_other']['i'],nodeInfo['_other']['canChecked'])">{{nodeInfo.HostName}}</a>
+                  </div>
+                  <div class="Ellipsis" table-key="svcname">
+                     <a class="linkButton" ng-click="OpenEditNode(3,-1,nodeInfo['_other']['i'],nodeInfo['_other']['canChecked'])">{{nodeInfo.svcname}}</a>
+                  </div>
+                  <div class="Ellipsis" table-key="dbpath">
+                     <a class="linkButton" ng-click="OpenEditNode(3,-1,nodeInfo['_other']['i'],nodeInfo['_other']['canChecked'])">{{nodeInfo.dbpath}}</a>
+                  </div>
+                  <div class="Ellipsis" table-key="role">
+                     <a class="linkButton" ng-click="OpenEditNode(3,-1,nodeInfo['_other']['i'],nodeInfo['_other']['canChecked'])">{{nodeInfo.role}}</a>
+                  </div>
+                  <div class="Ellipsis" table-key="datagroupname">
+                     <a class="linkButton" ng-click="OpenEditNode(3,-1,nodeInfo['_other']['i'],nodeInfo['_other']['canChecked'])">{{nodeInfo.datagroupname}}</a>
+                  </div>
+                  <div class="Ellipsis" table-key="_other.type">
+                     <span style="color:#D9534F;" ng-if="nodeInfo._other.type==2">{{autoLanguage("新增")}}</span>
+                  </div>
+               </div>
+            </div>
+            <!--编辑节点配置窗口-->
+            <div ng-windows="form as SetNodeConfWindow.config" windows-callback="SetNodeConfWindow.callback">
+               <div class="underlineTab" style="height:50px;">
+                  <ul class="left">
+                     <li ng-class="{true:'active'}[SetNodeConfWindow.ShowType == 1]">
+                        <a class="linkButton" ng-click="SwitchNodeConfClass(1)">{{autoLanguage("普通")}}</a>
+                     </li>
+                     <li ng-class="{true:'active'}[SetNodeConfWindow.ShowType == 2]">
+                        <a class="linkButton" ng-click="SwitchNodeConfClass(2)">{{autoLanguage("高级")}}</a>
+                     </li>
+                     <li ng-class="{true:'active'}[SetNodeConfWindow.ShowType == 3]">
+                        <a class="linkButton" ng-click="SwitchNodeConfClass(3)">{{autoLanguage("自定义")}}</a>
+                     </li>
+                  </ul>
+               </div>
+               <div style="margin: 0 0 15px 0;" ng-show="SetNodeConfWindow.ShowType == 1 && SetNodeConfWindow.WindowsType != 4">
+                  <table class="table loosen">
+                     <tbody>
+                        <tr>
+                           <td style="width:160px;">{{autoLanguage("主机名")}}</td>
+                           <td>{{form['HostName']}}</td>
+                        </tr>
+                        <tr>
+                           <td style="width:160px;">{{autoLanguage("角色")}}</td>
+                           <td>{{form['role']}}</td>
+                        </tr>
+                        <tr ng-if="form['role'] == 'data'">
+                           <td style="width:160px;">{{autoLanguage("分区组")}}</td>
+                           <td>{{form['datagroupname']}}</td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+               <div form-create para="form['form1']" ng-show="SetNodeConfWindow.ShowType == 1"></div>
+               <div form-create para="form['form2']" ng-show="SetNodeConfWindow.ShowType == 2"></div>
+               <div form-create para="form['form3']" ng-show="SetNodeConfWindow.ShowType == 3"></div>
+            </div>
+            <!--查看节点配置窗口-->
+            <div ng-windows="config as CheckNodeConfWindow.config" windows-callback="CheckNodeConfWindow.callback">
+               <table class="table border loosen">
+                  <tbody>
+                     <tr ng-repeat="item in config track by $index">
+                        <td style="width:160px;">{{item.key}}</td>
+                        <td style="padding-left:10px;">{{item.value}}</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-click="GotoPrev()"><i class="fa fa-chevron-left"></i> {{autoLanguage("上一步")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn btn-primary" ng-click="GotoExtend()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+
+      <div ng-windows="info as HelperWindow.config" windows-callback="HelperWindow.callback">
+         <table class="table loosen border" style="margin-top:20px;line-height:120%;">
+            <tr>
+               <td colspan="2" style="width:220px;"><b>{{autoLanguage("服务名规则")}}</b></td>
+               <td>{{autoLanguage("规则：服务名[+步进] 或 服务名[-步进]。")}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("规则")}}</td>
+               <td>{{autoLanguage("例子")}}</td>
+               <td>{{autoLanguage("描述")}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("普通方式")}}</td>
+               <td>11810</td>
+               <td>{{autoLanguage("设置服务名为：11810，但要注意同一主机下的节点是不能有相同服务名。假设有3个节点：PcHost-1:11810，PcHost-2:11810，PcHost-3:11810")}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("递增方式")}}</td>
+               <td>11810[+10]</td>
+               <td>{{autoLanguage("设置已选定节点的服务名从11810起始(含11810)，每一个节点递增10。假设有3个节点：PcHost-1:11810，PcHost-2:11820，PcHost-3:11830")}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("递减方式")}}</td>
+               <td>11810[-10]</td>
+               <td>{{autoLanguage("设置已选定节点的服务名从11810起始(含11810)，每一个节点递减10。假设有3个节点：PcHost-1:11810，PcHost-2:11800，PcHost-3:11790")}}</td>
+            </tr>
+         </table>
+         <table class="table loosen border" style="margin-top:20px;line-height:120%;">
+            <tr>
+               <td><b>{{autoLanguage("数据路径规则")}}</b></td>
+               <td>{{autoLanguage("规则：可以在路径中任意添加这几个特殊命令，[role] -- 角色，[svcname] -- 服务名，[groupname] -- 分区组名，[hostname] -- 主机名。")}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("例子")}}</td>
+               <td>{{autoLanguage("描述")}}</td>
+            </tr>
+            <tr>
+               <td>/opt/sequoiadb/database/[role]/[svcname]</td>
+               <td>{{autoLanguage("假设已选定节点配置为：角色：data，服务名：11810，数据路径将会是：/opt/sequoiadb/database/data/11810，注意：协调节点和编目节点是没有分区组名的，因此当节点是协调节点或编目节点时，[groupname]是空字符。")}}</td>
+            </tr>
+         </table>
+      </div>
+   </div>
+</div>

@@ -1,0 +1,29 @@
+﻿<div ng-controller="Deploy.Ssql.Mod.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+   <div style="padding:10px 15px;" ng-container="{offsetY:-70}">
+
+      <div ng-container="{offsetY:-45}">
+
+         <div class="pull-left" ng-container="{offsetX:-10,marginLeft:10}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("服务")}}: {{Configure['BusinessName']}}</div>
+
+            <div class="borderBox" style="padding:10px;overflow-y:auto;position:relative;" ng-container="{offsetY:-30}">
+
+               <div form-create para="Template"></div>
+
+            </div>
+
+         </div>
+         <div class="clear-float"></div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-click="GotoConf()"><i class="fa fa-chevron-left"></i> {{autoLanguage("上一步")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn" ng-class="{'true':'btn-primary','false':'btn-danger'}[IsAllClear]" ng-click="GotoInstall()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+
+   </div>
+
+</div>

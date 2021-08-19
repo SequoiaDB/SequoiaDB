@@ -1,0 +1,53 @@
+﻿<div style="padding:10px 15px;" ng-controller="Strategy.SDB.Task.Ctrl" ng-container="{}">
+   <div class="underlineTab" style="" ng-container="{height:50,offsetX:-10}">
+      <ul class="left">
+         <li class="active">
+            <a>{{autoLanguage("任务")}}</a>
+         </li>
+         <li>
+            <a ng-click="GotoStrategy()">{{autoLanguage("策略")}}</a>
+         </li>
+      </ul>
+   </div>
+
+   <div ng-windows="form as CreateTaskWindow.config" windows-callback="CreateTaskWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+
+   <div ng-container="{height:30,marginBottom:10}">
+      <button class="topBtn" ng-click="QueryTasksList()"><i class="fa fa-refresh"></i> {{autoLanguage("刷新")}}</button>
+      <button class="topBtn" ng-click="ShowCreateTask()"><i class="fa fa-plus"></i> {{autoLanguage("添加任务")}}</button>
+   </div>
+
+   <div ng-show="TaskTable['body'].length == 0">
+      <div class="data_empty">
+         <div class="title">{{autoLanguage("当前没有任务。")}}</div>
+         <div class="tips">
+            {{autoLanguage("使用")}}
+            <span class="linkButton" ng-click="ShowCreateTask()">{{autoLanguage("添加任务")}}</span>
+            {{autoLanguage("操作。")}}
+         </div>
+      </div>
+   </div>
+
+   <div ng-windows="form as UpdateTaskWindow.config" windows-callback="UpdateTaskWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+
+   <div ng-show="TaskTable['body'].length > 0" ng-container="{offsetY:-90,offsetX:-10}" ng-table="TaskTable['options']" table-title="TaskTable['title']" table-content="info in TaskTable['body']" table-callback="TaskTable['callback']">
+      <div class="Ellipsis" table-key="TaskID">{{info.TaskID}}</div>
+      <div class="Ellipsis" table-key="Operation">
+         <a class="linkButton" ng-click="ShowUpdateTask( info.TaskName, info.Status )">
+            <i class="fa fa-edit" ng-attr="{'data-desc':autoLanguage('修改任务')}"></i>
+         </a>
+         <a class="linkButton" ng-click="ShowDeleteTask( info.TaskName )">
+            <i class="fa fa-remove" ng-attr="{'data-desc':autoLanguage('删除任务')}"></i>
+         </a>
+      </div>
+      <div class="Ellipsis" table-key="TaskName">{{info.TaskName}}</div>
+      <div class="Ellipsis" table-key="Status">{{info.Status==1?'enable':'disable'}}</div>
+      <div class="Ellipsis" table-key="CreateUser">{{info.CreateUser}}</div>
+      <div class="Ellipsis" table-key="CreateTime">{{info.CreateTime}}</div>
+
+   </div>
+</div>

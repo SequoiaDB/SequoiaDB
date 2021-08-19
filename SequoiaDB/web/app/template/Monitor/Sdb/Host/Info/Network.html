@@ -1,0 +1,100 @@
+﻿<div ng-controller="Performance.Network.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div class="active" ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div style="margin-top:5px;" class="well Ellipsis">
+         <i class="fa fa-circle" ng-style="{true:{'color':'#00CC66'},false:{'color':'#D9534F'},'null':{'color':'#000'}}[HostStatus]"></i>&nbsp;
+         <span style="font-weight:bold;color:#006699;">&nbsp;{{hostName}}</span>
+      </div>
+
+      <div class="underlineTab" ng-container="{height:34,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Index">{{autoLanguage("主机信息")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/CPU">CPU</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Memory">{{autoLanguage("内存")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Disk">{{autoLanguage("磁盘")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Host/Info/Network">{{autoLanguage("网卡")}}</a>
+            </li>
+            <!--<li>
+               <a href="#/Monitor/Host-Info/Config">{{autoLanguage("系统配置")}}</a>
+            </li>-->
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div class="content" style="overflow-y:auto;border: 1px solid #E3E7E8;padding:10px;position:relative;" ng-container="{offsetY:-115,marginTop:10}">
+         <div style="overflow-y:auto;position:relative;" class="colorfulListBox green" ng-container="{height:270,marginBottom:15,offsetX:-20}" ng-repeat="networkInfo in NetList" ng-class="{'0':'green','1':'yellow','2':'blue','3':'violet'}[$index%4]">
+            <div ng-container="{height:20,offsetX:-30}" style="color:#666;font-size:100%;font-weight:bold;">{{autoLanguage("网卡")}} {{$index + 1}} - {{networkInfo['Name']}}</div>
+            <div ng-container="{marginTop:15,offsetX:-30,offsetY:-35}">
+               <div style="float:left;font-size:90%;color:#666;font-weight:bold;" ng-container="{width:350}">
+                  <table class="table loosen" style="word-wrap:normal;">
+                     <colgroup>
+                        <col style="width:100px;" />
+                        <col style="width:225px;" />
+                     </colgroup>
+                     <tr>
+                        <td>{{autoLanguage("IP")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{networkInfo['IP']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>{{autoLanguage("传输速率")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{networkInfo['Wirespeed']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>{{autoLanguage("已发送流量")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{networkInfo['TXBytes']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>{{autoLanguage("已发送数据包")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{networkInfo['TXPackets']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>{{autoLanguage("已接收流量")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{networkInfo['RXBytes']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>{{autoLanguage("已接收数据包")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{networkInfo['RXPackets']}}</div>
+                        </td>
+                     </tr>
+                  </table>
+
+               </div>
+               <div style="float:left;" ng-container="{offsetX:-370}">
+                  <div style="height:220px;float:left;min-width:320px;" ng-container="{width:'50%'}" create-chart="networkInfo.TXChart"></div>
+                  <div style="height:220px;float:left;min-width:320px;" ng-container="{width:'50%'}" create-chart="networkInfo.RXChart"></div>
+                  <div class="clear-float"></div>
+               </div>
+               <div class="clear-float"></div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

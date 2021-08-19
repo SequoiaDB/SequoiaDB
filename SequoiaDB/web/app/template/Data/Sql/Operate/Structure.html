@@ -1,0 +1,24 @@
+<div style="padding:10px 15px;" ng-controller="Data.SQL.Index.Ctrl" ng-container="{}">
+   <div class="underlineTab" ng-container="{height:50}">
+      <ul class="right">
+         <li class="text Ellipsis" style="width:350px;">
+            <b><a class="linkButton" href="#/Data/SQL-Metadata/Index">{{autoLanguage("数据库")}}</a> <span style="font-size:80%; color:#666;">></span> {{fullName}}</b>
+         </li>
+         <li class="active">
+            <a href="#/Data/SQL-Operate/Structure">{{autoLanguage("表结构")}}</a>
+         </li>
+         <li>
+            <a href="#/Data/SQL-Operate/Data">{{autoLanguage(" 数 据 ")}}</a>
+         </li>
+      </ul>
+   </div>
+   <div ng-container="{height:30}">
+      <button class="topBtn" ng-click="queryTableStruct()"><i class="fa fa-refresh"></i> {{autoLanguage("刷新")}}</button>
+      <button class="topBtn" ng-click="AddColumn()"><i class="fa fa-plus"></i> {{autoLanguage("添加字段")}}</button>
+      <div class="Ellipsis" style="float:right;max-width:240px;font-size:90%;color:#333;">
+         <b>{{dbHost}} : {{dbPort}}</b>
+      </div>
+      <div class="clear-float"></div>
+   </div>
+   <div style="position:relative;" create-grid="fieldGridData" ng-container="{marginTop:10,offsetY:-105}"></div>
+</div>

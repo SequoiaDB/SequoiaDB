@@ -1,0 +1,51 @@
+﻿<div ng-controller="Performance.Charts.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div class="active" ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div style="margin-top:5px;" class="well Ellipsis">
+         <i class="fa fa-circle" ng-style="{true:{'color':'#00CC66'},false:{'color':'#D9534F'},'null':{'color':'#000'}}[HostStatus]"></i>&nbsp;
+         <span style="font-weight:bold;color:#006699;">&nbsp;{{HostName}}</span>
+      </div>
+
+      <div class="underlineTab" ng-container="{height:34,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Index">{{autoLanguage("主机信息")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/CPU">CPU</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Memory">{{autoLanguage("内存")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Disk">{{autoLanguage("磁盘")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Network">{{autoLanguage("网卡")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Host/Info/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div ng-container="{offsetY:-135,marginTop:10}">
+         <div ng-container="{offsetX:-10,height:'50%'}">
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%'}" create-chart="charts.Storage"></div>
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%',marginLeft:16}" create-chart="charts.Cpu"></div>
+            <div class="clear-float"></div>
+         </div>
+         <div ng-container="{offsetX:-10,marginTop:20,height:'50%'}">
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%'}" create-chart="charts.network"></div>
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%',marginLeft:16}" create-chart="charts.memory"></div>
+            <div class="clear-float"></div>
+         </div>
+      </div>
+   </div>
+</div>

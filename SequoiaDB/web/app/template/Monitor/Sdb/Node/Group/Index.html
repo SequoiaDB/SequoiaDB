@@ -1,0 +1,125 @@
+﻿<div ng-controller="Monitor.SdbGroup.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div class="active" ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li class="active">
+               <a href="#/Monitor/SDB-Nodes/Group/Index">{{autoLanguage("分区组信息")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Group/Charts" ng-if="GroupName != 'SYSCoord'">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div ng-container="{height:30,marginTop:10}">
+         <button class="topBtn" ng-class="{true:'disabled'}[StartNode['config']['select'].length == 0]" ng-click="OpenStartNodeWindow()">{{autoLanguage("启动节点")}}</button>
+         <button class="topBtn" ng-class="{true:'disabled'}[StopNode['config']['select'].length == 0]" ng-click="OpenStopNodeWindow()">{{autoLanguage("停止节点")}}</button>
+         <button class="topBtn disabled">{{autoLanguage("创建节点")}}</button>
+         <button class="topBtn disabled">{{autoLanguage("删除节点")}}</button>
+      </div>
+
+      <div ng-windows="info as StartNode.config" windows-callback="StartNode.callback">
+         <select class="form-control" ng-model="info.value" ng-options="item.value as item.key for item in info.select"></select>
+      </div>
+
+      <div ng-windows="info as StopNode.config" windows-callback="StopNode.callback">
+         <select class="form-control" ng-model="info.value" ng-options="item.value as item.key for item in info.select"></select>
+      </div>
+
+      <div class="well Ellipsis" style="margin-top:10px;">
+         <i class="fa fa-circle" ng-style="{'Normal':{'color':'#00CC66'},'Warning':{'color':'#F9A937'},'Error':{'color':'#D9534F'}}[GroupStatus]"></i>&nbsp;<span style="font-weight:bold;color:#006699;" ng-if="GroupStatus == 'Normal'">{{groupInfo['GroupName']}}</span>&nbsp;
+         <span>{{ErrMsg}}</span>
+      </div>
+
+      <div ng-container="{offsetY:-170,marginTop:10}">
+         <div style="float:left;border:1px solid #ddd;padding:10px;overflow-y:auto;font-size:90%;color:#666;" ng-container="{width:300}">
+            <table class="table loosen">
+               <tr>
+                  <td style="width:75px;font-weight:bold;">{{autoLanguage("角色")}}</td>
+                  <td class="Ellipsis" style="width:186px;" ng-if="groupInfo['Role'] == 0">Data</td>
+                  <td class="Ellipsis" style="width:186px;" ng-if="groupInfo['Role'] == 1">Coord</td>
+                  <td class="Ellipsis" style="width:186px;" ng-if="groupInfo['Role'] == 2">Catalog</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">{{autoLanguage("节点数")}}</td>
+                  <td class="Ellipsis">{{groupInfo['Group'].length}}</td>
+               </tr>
+               <tr ng-if="GroupName != 'SYSCoord'">
+                  <td style="font-weight:bold;">{{autoLanguage("主节点")}}</td>
+                  <td class="Ellipsis">
+                     <span class="linkButton" ng-click="GotoNode(PrimaryNode['hostName'],PrimaryNode['serviceName'])">{{groupInfo.PrimaryNodeName}}</span>
+                  </td>
+               </tr>
+               <tr valign="top" ng-if="GroupName != 'SYSCoord' && GroupName != 'SYSCatalogGroup'">
+                  <td style="font-weight:bold;">{{autoLanguage("所属域")}}</td>
+                  <td class="Ellipsis">{{DomainList}}</td>
+               </tr>
+            </table>
+         </div>
+         <div style="float:left;overflow-y:auto;border: 1px solid #E3E7E8;padding:10px;" ng-container="{offsetX:-310,marginLeft:10}">
+            <div class="colorfulListBox" style="overflow-y:auto;" ng-repeat="node in groupInfo['Group'] track by $index" ng-class="{'0':'green','1':'yellow','2':'blue','3':'violet'}[$index%4]" ng-style="{false:{'border-bottom':0}}[$last]">
+               <div style="color:#666;font-weight:bold;height:20px;" ng-if="node['ErrInfo'] == false">
+                  <i class="fa fa-circle" style="padding-top:2px;color:#00CC66;"></i>&nbsp;{{autoLanguage("运行中")}}
+               </div>
+               <div style="color:#666;font-weight:bold;height:20px;" ng-if="node['ErrInfo'] != false">
+                  <i class="fa fa-circle" style="padding-top:2px;color:#D9534F;"></i>&nbsp;{{sprintf(autoLanguage("节点错误: ?，错误码 ?。"), node['NodeName'], node['ErrInfo'])}}
+               </div>
+               <div style="color:#666;height:164px;margin-top:5px;">
+                  <div style="float:left;" create-response="{max:900,min:300,len:2,column:2}">
+                     <div class="Ellipsis" style="font-weight:bold;height:20px;margin-top:5px;">
+                        <span class="linkButton" ng-click="GotoNode(node['HostName'],node['Service'][0]['Name'])">{{node['NodeName']}}</span>
+                     </div>
+                     <table class="table normal" style="margin-top:20px;">
+                        <tr>
+                           <td style="width:87px;">{{autoLanguage("节点ID")}}</td>
+                           <td class="Ellipsis">{{node['NodeID']}}</td>
+                        </tr>
+                        <tr>
+                           <td>LSN</td>
+                           <td class="Ellipsis">{{node['LSN']}}</td>
+                        </tr>
+                        <tr>
+                           <td>{{autoLanguage("记录数")}}</td>
+                           <td class="Ellipsis">{{node['TotalRecords']}}</td>
+                        </tr>
+                        <tr>
+                           <td>{{autoLanguage("主机名")}}</td>
+                           <td class="Ellipsis">
+                              <span class="linkButton" ng-click="GotoHost(node['HostName'])">{{node['HostName']}}</span>
+                           </td>
+                        </tr>
+                        <tr valign="top">
+                           <td>{{autoLanguage("路径")}}</td>
+                           <td class="Ellipsis">{{node['dbpath']}}</td>
+                        </tr>
+                     </table>
+                  </div>
+
+                  <div style="float:left;padding-top:15px;" create-response="{max:900,min:300,len:2,column:2}">
+                     <table class="table border loosen">
+                        <tr ng-repeat="service in node['Service']">
+                           <td ng-if="service['Type'] == 0">{{autoLanguage("直连服务")}}</td>
+                           <td ng-if="service['Type'] == 1">{{autoLanguage("复制服务")}}</td>
+                           <td ng-if="service['Type'] == 2">{{autoLanguage("分区服务")}}</td>
+                           <td ng-if="service['Type'] == 3">{{autoLanguage("编目服务")}}</td>
+                           <td>{{service['Name']}}</td>
+                        </tr>
+                     </table>
+                  </div>
+                  <div class="clear-float"></div>
+               </div>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+
+   </div>
+</div>

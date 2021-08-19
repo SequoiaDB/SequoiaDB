@@ -1,0 +1,104 @@
+<div ng-controller="Monitor.HostList.HostsNature.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div class="active" ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Host/List/Index">{{autoLanguage("主机列表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/List/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Host/List/HostsSnapshot">{{autoLanguage("主机快照")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div style="color:#606060;font-size:90%;height:30px;margin:10px 0;">
+         <button class="btn btn-default" ng-click="OpenBrushWindows()">
+            <span>{{sprintf(autoLanguage("刷新间隔： ? 秒"), IntervalTimeConfig.interval)}}</span>
+         </button>&nbsp;
+         <button class="btn btn-default" ng-click="RefreshCtrl()">{{RefreshType}}</button>&nbsp;
+         <button class="topBtn" ng-click="OpenShowFieldDropdown($event)">{{autoLanguage("选择显示列")}}&nbsp;<i class="fa fa-caret-down"></i></button>
+         <button class="btn btn-default" ng-click="OpenModeDropdown($event)">
+            <span ng-if="ShowType == 'full'">{{autoLanguage("全量模式")}}</span><span ng-if="ShowType == 'inc'">{{autoLanguage("增量模式")}}</span><span ng-if="ShowType == 'avg'">{{autoLanguage("均量模式")}}</span>&nbsp;<i class="fa fa-caret-down"></i>
+         </button>
+         <div ng-dropdown="config in FieldDropdown.config" dropdown-callback="FieldDropdown.callback">
+            <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="SaveField()"><input type="checkbox" ng-model="config.show" />&nbsp;{{config.field}}</label>
+         </div>
+         <div ng-dropdown="config in modeDropdown.config" dropdown-event="modeDropdown.event" dropdown-callback="modeDropdown.callback">
+            <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="modeDropdown.OnClick($index)"><input type="radio" ng-checked="config.checked" />&nbsp;{{config.key}}</label>
+         </div>
+      </div>
+
+      <div ng-windows="config as CreateBrush.config" windows-callback="CreateBrush.callback">
+         <div form-create para="config"></div>
+      </div>
+
+      <div create-timer="Timer.config" timer-callback="Timer.callback"></div>
+      <div ng-container="{offsetY:-112}" ng-table="HostTable['options']" table-title="HostTable['title']" table-content="hostInfo in HostTable['body']" table-callback="HostTable['callback']">
+         <div class="Ellipsis" table-key="Status">
+            <i class="fa fa-circle" ng-style="{true:{'color':'#00CC66'},false:{'color':'#D9534F'}}[hostInfo['Status']]"></i>&nbsp;
+            <span ng-if="hostInfo['Status'] == true">{{autoLanguage('正常')}}</span>
+            <span ng-if="hostInfo['Status'] == false">{{sprintf(autoLanguage('异常, 错误码: ?。'),hostInfo['Flag'])}}</span>
+         </div>
+         <div class="Ellipsis" table-key="HostName">
+            <a class="linkButton" ng-click="GotoHost(hostInfo['HostName'])">{{hostInfo['HostName']}}</a>
+         </div>
+         <div class="Ellipsis" table-key="IP">
+            <span>{{hostInfo['IP']}}</span>
+         </div>
+         <div class="Ellipsis" table-key="$auto">
+            <span ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[$autoValue == LastValue[hostInfo['i']].$auto ? '0' : ( $autoValue > LastValue[hostInfo['i']].$auto ? '1' : '-1' )]">
+               <!--全量模式-->
+               <span table-if="ShowType == 'full' || $autoValue == '-' || LastValue[groupInfo['i']].$auto == '-'">
+                  <span table-if="'$auto' == 'CPUUsed' || '$auto' == 'DiskPer' || '$auto' == 'MemoryPer'">
+                     {{$autoValue}}<span table-if="$autoValue != '-'">%</span>
+                  </span>
+                  <span table-if="'$auto' == 'NetInValue'">
+                     {{hostInfo['NetInValue']}}<span table-if="hostInfo['NetInValue'] != '-'">MB</span>
+                  </span>
+                  <span table-if="'$auto' == 'NetOutValue'">
+                     {{hostInfo['NetOutValue']}}<span table-if="hostInfo['NetOutValue'] != '-'">MB</span>
+                  </span>
+                  <span table-if="'$auto' != 'CPUUsed' && '$auto' != 'DiskPer' && '$auto' != 'MemoryPer' && '$auto' != 'NetInValue' && '$auto' != 'NetOutValue'">{{$autoValue}}</span>
+               </span>
+               <!--增量模式-->
+               <span table-if="ShowType == 'inc' && $autoValue != '-' && LastValue[groupInfo['i']].$auto != '-'">
+                  <span table-if="'$auto' == 'CPUUsed' || '$auto' == 'DiskPer' || '$auto' == 'MemoryPer'">
+                     {{fixedNumber( $autoValue - LastValue[hostInfo['i']].$auto, 2 )}}<span table-if="$autoValue != '-'">%</span>
+                  </span>
+                  <span table-if="'$auto' == 'NetInValue' || '$auto' == 'NetOutValue'">
+                     {{fixedNumber( $autoValue - LastValue[hostInfo['i']].$auto, 2 )}}<span table-if="$autoValue != '-'">MB</span>
+                  </span>
+                  <span table-if="'$auto' == 'NetInPackets' || '$auto' == 'NetOutPackets'">
+                     {{$autoValue - LastValue[hostInfo['i']].$auto}}
+                  </span>
+                  <span table-if="'$auto' == 'Memory' || '$auto' == 'Disk'">{{$autoValue}}</span>
+               </span>
+               <!--均量模式-->
+               <span table-if="ShowType == 'avg' && $autoValue != '-' && LastValue[groupInfo['i']].$auto != '-'">
+                  <span table-if="'$auto' == 'CPUUsed' || '$auto' == 'DiskPer' || '$auto' == 'MemoryPer'">
+                     {{fixedNumber( ($autoValue - LastValue[hostInfo['i']].$auto) / IntervalTimeConfig.interval, 2 )}}<span table-if="$autoValue != '-'">%</span>
+                  </span>
+                  <span table-if="'$auto' == 'NetInValue' || '$auto' == 'NetOutValue'">
+                     {{fixedNumber( ($autoValue - LastValue[hostInfo['i']].$auto) / IntervalTimeConfig.interval, 2 )}}<span table-if="$autoValue != '-'">MB</span>
+                  </span>
+                  <span table-if="'$auto' == 'NetInPackets' || '$auto' == 'NetOutPackets'">
+                     {{fixedNumber( ($autoValue - LastValue[hostInfo['i']].$auto) / IntervalTimeConfig.interval, 2 )}}
+                  </span>
+                  <span table-if="'$auto' == 'Memory' || '$auto' == 'Disk'">{{$autoValue}}</span>
+               </span>
+            </span>
+         </div>
+      </div>
+
+   </div>
+</div>

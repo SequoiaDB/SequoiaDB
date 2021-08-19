@@ -1,0 +1,35 @@
+﻿<div ng-controller="Deploy.MySQL.Discover.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList" ng-show="DiscoverConf != null"></div>
+   <div style="padding:10px 15px;" ng-container="{'true':ContainerBox[0],'false':ContainerBox[1]}[DiscoverConf != null]">
+      <div ng-container="{offsetY:-5}">
+
+         <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("实例信息")}}</div>
+
+         <table class="table loosen border">
+            <tr>
+               <td style="width:120px;">{{autoLanguage("集群")}}</td>
+               <td>{{ClusterName}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("实例名")}}</td>
+               <td>{{ModuleName}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("实例类型")}}</td>
+               <td>MySQL</td>
+            </tr>
+         </table>
+
+         <div ng-container="{marginTop:10,offsetY:-125}" ng-table="ConfigTable['options']" table-title="ConfigTable['title']" table-content="info in ConfigTable['body']" table-callback="ConfigTable['callback']">
+            <div class="Ellipsis" table-key="key">{{info.key}}</div>
+            <div class="Ellipsis" table-key="value">{{info.value}}</div>
+         </div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-primary" ng-click="GotoDeploy()">{{autoLanguage("返回")}}</button>
+      </div>
+
+   </div>
+
+</div>

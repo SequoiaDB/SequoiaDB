@@ -1,0 +1,132 @@
+﻿<div ng-controller="Monitor.SdbNode.Index.Ctrl" ng-container="{}">
+   <!--<div style="border-bottom:3px solid #ddd;padding-top:10px;" ng-container="{height:70}">
+
+      <div style="float:left;color:#808080;">
+         <div style="height:50px;width:45px;float:left;">
+            <i style="color:#ccc;padding-top:8px;font-size:218%;" class="fa fa-cubes"></i>
+         </div>
+         <div style="height:50px;float:left;max-width:200px;">
+            <div style="font-size:90%;">集群</div>
+            <div class="Ellipsis" style="font-size:140%;color:#666;width:160px;"><a href="#/Deploy/Index" class="linkButton">{{ClusterName}}</a></div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="float:left;color:#808080;">
+         <div style="height:50px;width:45px;float:left;">
+            <i style="color:#ccc;padding-top:8px;font-size:218%;" class="fa fa-tasks"></i>
+         </div>
+         <div style="height:50px;float:left;max-width:200px;">
+            <div style="font-size:90%;">{{ModuleType}}</div>
+            <div class="Ellipsis" style="font-size:140%;width:160px;">
+               <a href="#/Monitor/Index" class="linkButton">{{ModuleName}}</a>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="float:left;color:#808080;">
+         <div style="height:50px;width:45px;float:left;">
+            <i style="color:#ccc;padding-top:8px;font-size:218%;" class="fa fa-sitemap"></i>
+         </div>
+         <div style="height:50px;float:left;">
+            <div style="font-size:90%;">分区组数</div>
+            <div class="Ellipsis" style="font-size:140%;width:160px;"><a href="#/Monitor/SDB-Nodes/Groups" class="linkButton">20</a></div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div class="clear-float"></div>
+   </div>-->
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div class="active" ng-click="GotoNodes()">节点</div>
+         <div ng-click="GotoResource()">资源</div>
+         <div ng-click="GotoHosts()">主机</div>
+         <div ng-click="GotoUser()">安全</div>
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li class="active">
+               <a href="#/Monitor/SDB-Node/Index">{{autoLanguage("节点信息")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Node/Session">{{autoLanguage("会话")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Node/Context">{{autoLanguage("上下文")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Node/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div ng-container="{height:40,marginTop:10}" class="well Ellipsis">
+         <i class="fa fa-circle" style="color:#00CC66;"></i> <span style="font-weight:bold;color:#006699;">{{nodeInfo['NodeName']}}</span>
+      </div>
+
+      <div ng-container="{offsetY:-125,marginTop:10}">
+         <div style="float:left;border:1px solid #ddd;padding:10px;overflow-y:auto;font-size:90%;color:#666;" ng-container="{width:300}">
+            <table class="table loosen" style="width:100%;">
+               <tr>
+                  <td style="width:40%;font-weight:bold;">分区组</td>
+                  <td style="width:60%;" class="Ellipsis"><a class="linkButton" ng-click="GotoGroup( nodeInfo['GroupName'] )">{{nodeInfo['GroupName']}}</a></td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">角色</td>
+                  <td class="Ellipsis">{{nodeInfo['Role']}}</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">节点ID</td>
+                  <td class="Ellipsis">{{nodeInfo['NodeID'][1]}}</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">类型</td>
+                  <td ng-if="nodeInfo['IsPrimary'] == true" class="Ellipsis">主节点</td>
+                  <td ng-if="nodeInfo['IsPrimary'] == false" class="Ellipsis">备节点</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">集合数</td>
+                  <td class="Ellipsis">{{nodeInfo['TotalCl']}}</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">记录数</td>
+                  <td class="Ellipsis">{{nodeInfo['TotalRecords']}}</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">Lob数</td>
+                  <td class="Ellipsis">{{nodeInfo['TotalLobs']}}</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">LSN</td>
+                  <td class="Ellipsis">1{{nodeInfo['BeginLSN']['Version']}}</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">完成LSN</td>
+                  <td class="Ellipsis">1</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">LSN队列数</td>
+                  <td class="Ellipsis">0</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">主机</td>
+                  <td class="Ellipsis"><a class="linkButton" ng-click="GotoHost(nodeInfo['HostName'])">{{nodeInfo['HostName']}}</a></td>
+               </tr>
+               <tr valign="top">
+                  <td style="font-weight:bold;">路径</td>
+                  <td style="word-break:break-all;">{{nodeInfo['Disk']['DatabasePath']}}</td>
+               </tr>
+            </table>
+         </div>
+         <div style="float:left;overflow-y:auto;border:1px solid #ddd;padding-top:10px;" ng-container="{offsetX:-320,offsetY:0,marginLeft:10}">
+            <div style="min-width:350px;float:left;padding:10px 0 0 10px;" ng-container="{height:230,width:'50%',offsetX:-20}" create-chart="charts.Insert"></div>
+            <div style="min-width:350px;float:left;padding:10px 0 0 10px;" ng-container="{height:230,width:'50%',offsetX:-20}" create-chart="charts.Update"></div>
+            <div style="min-width:350px;float:left;padding:10px 0 0 10px;" ng-container="{height:230,width:'50%',offsetX:-20}" create-chart="charts.Delete"></div>
+            <div style="min-width:350px;float:left;padding:10px 0 0 10px;" ng-container="{height:230,width:'50%',offsetX:-20}" create-chart="charts.Query"></div>
+            <div class="clear-float"></div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+</div>

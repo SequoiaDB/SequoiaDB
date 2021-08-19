@@ -1,0 +1,99 @@
+﻿<div ng-switch on="inputInfo.type" style="position:relative;*zoom:1;">
+   <input ng-switch-when="string" type="text" class="form-control" spellcheck="false" ng-keypress="inputInfo.onKeypress($event)" ng-change="onChange(inputInfo);" ng-attr="{'data-desc':inputInfo.error}" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]" ng-placeholder="inputInfo.placeholder" ng-model="inputInfo.value" ng-click="showMenu(inputInfo);" ng-show="!(browserInfo[0]=='ie'&&(browserInfo[1] == 7||browserInfo[1] == 8||browserInfo[1] == 9)&&inputInfo.isClick!=true&&inputInfo.placeholder.length>0&&inputInfo.value.length == 0)" get-focus="inputInfo.isClick" ng-disabled="inputInfo.disabled" />
+   <input ng-switch-when="string" type="text" class="form-control" spellcheck="false" ng-attr="{'data-desc':inputInfo.error}" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]" ng-bind="inputInfo.placeholder" ng-click="placeholderClick(inputInfo);" ng-show="browserInfo[0]=='ie'&&(browserInfo[1] == 7||browserInfo[1] == 8||browserInfo[1] == 9)&&!inputInfo.isClick&&inputInfo.placeholder.length>0&&inputInfo.value.length == 0" ng-disabled="inputInfo.disabled" />
+   <!--
+   <div ng-switch-when="string" ng-if="inputInfo.selectList.length > 0" class="FormSelectList" ng-show="inputInfo.showMenu == true">
+      <ul>
+         <li ng-repeat="selectLi in inputInfo.selectList | filter: inputInfo.value | limitTo: 3 track by $index" ng-click="inputInfo.value=selectLi;inputInfo.showMenu=false;">{{selectLi}}</li>
+      </ul>
+   </div>
+   -->
+   <input ng-switch-when="checkbox" type="checkbox" spellcheck="false" ng-model="inputInfo.value" ng-keypress="inputInfo.onKeypress($event)" ng-change="onChange(inputInfo)" ng-disabled="inputInfo.disabled"/> <span ng-switch-when="checkbox">{{inputInfo.webName}}</span>
+   <input ng-switch-when="password" type="password" class="form-control" spellcheck="false" ng-keypress="inputInfo.onKeypress($event)" ng-change="onChange(inputInfo)" ng-attr="{'data-desc':inputInfo.error}" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]" ng-model="inputInfo.value" ng-disabled="inputInfo.disabled">
+   <input ng-switch-when="int" type="text" class="form-control" spellcheck="false" ng-keypress="inputInfo.onKeypress($event)" ng-change="onChange(inputInfo)" ng-attr="{'data-desc':inputInfo.error}" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]" ng-placeholder="inputInfo.placeholder" ng-model="inputInfo.value" ng-disabled="inputInfo.disabled">
+   <input ng-switch-when="double" type="text" class="form-control" spellcheck="false" ng-keypress="inputInfo.onKeypress($event)" ng-change="onChange(inputInfo)" ng-attr="{'data-desc':inputInfo.error}" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]" ng-placeholder="inputInfo.placeholder" ng-model="inputInfo.value" ng-disabled="inputInfo.disabled">
+   <input ng-switch-when="port" type="text" class="form-control" spellcheck="false" ng-keypress="inputInfo.onKeypress($event)" ng-change="onChange(inputInfo)" ng-attr="{'data-desc':inputInfo.error}" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]" ng-placeholder="inputInfo.placeholder" ng-model="inputInfo.value" ng-disabled="inputInfo.disabled">
+   <textarea ng-switch-when="text" class="form-control" spellcheck="false" ng-attr="{'data-desc':inputInfo.error}" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]" ng-placeholder="inputInfo.placeholder" rows="4" ng-model="inputInfo.value" ng-change="onChange(inputInfo)" ng-disabled="inputInfo.disabled"></textarea>
+   <select class="form-control" ng-switch-when="select" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]" ng-change="onChange(inputInfo)" ng-model="inputInfo.value" ng-options="selectList.value as selectList.key for selectList in inputInfo.valid" ng-disabled="inputInfo.disabled"></select>
+   <div style="padding:0 0 0 10px;" ng-switch-when="group">
+      <table class="table" style="margin:10px 0 0 0;" ng-repeat="childInfo in inputInfo.child track by $index">
+         <tbody>
+            <tr>
+               <td ng-style="{true:{'vertical-align':'middle'},false:{'vertical-align':'top','padding-top':'8px'}}[childInfo.type!='list'];{width:Setting.KeyWidth}">
+                  <label><span class="error" ng-if="childInfo.required == true">*</span> {{childInfo.webName}}</label> <i ng-if="childInfo.desc" class="fa fa-info-circle" ng-attr="{'data-desc':inputInfo.desc}"></i>
+               </td>
+               <td ng-eval="inputInfo=childInfo;" ng-include="'./app/template/Component/Form_child.html'"></td>
+            </tr>
+            <tr>
+               <td colspan="2" class="error">{{childInfo.error}}</td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
+   <div ng-switch-when="inline">
+      <table class="table loosen">
+         <tbody>
+            <tr>
+               <td ng-repeat="childInfo in inputInfo.child track by $index" ng-style="{true:{'padding-left':'0'}}[$first]">
+                  <div ng-eval="inputInfo=childInfo;" ng-include="'./app/template/Component/Form_child.html'"></div>
+               </td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
+   <div ng-switch-when="list">
+      <table class="table loosen">
+         <tbody>
+            <tr ng-repeat="childList in inputInfo.child track by $index">
+               <td ng-repeat="childInfo in childList track by $index" ng-eval="remove=childInfo.remove;" ng-style="{true:{'padding-left':'0'}}[$first]">
+                  <div ng-eval="inputInfo=childInfo;" ng-include="'./app/template/Component/Form_child.html'"></div>
+               </td>
+               <td style="width:23px;">
+                  <button class="FormBtn" ng-click="listAppend(inputInfo,childList)"><i class="fa fa-plus"></i></button>
+               </td>
+               <td style="width:23px;">
+                  <button class="FormBtn" ng-if="canRemove(inputInfo.listType,childList)" ng-click="listRemove(inputInfo.child,childList)"><i class="fa fa-minus"></i></button>
+               </td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
+   <div ng-switch-when="multiple">
+      <table class="table noSelect" ng-attr="{'data-desc':inputInfo.error}">
+         <tr>
+            <td style="width:35%;padding-right:10px;">
+               <div>{{Setting.Text.multiple.candidate}}</div>
+               <div class="borderBox" style="height:160px;overflow-y:auto;font-size:90%;padding:4px;margin-top:5px;" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]">
+                  <div class="Ellipsis noSelect linkButton" style="cursor:pointer;padding:6px 10px;" ng-if="childInfo['checked']!=true" ng-click="multipleCheck(inputInfo,childInfo)" ng-repeat="childInfo in inputInfo.valid.list track by $index">
+                     <span>{{childInfo['key']}}</span>
+                  </div>
+               </div>
+            </td>
+            <td style="width:90px;padding:0 5px;">
+               <div>
+                  <button class="btn btn-default" style="font-weight:bold;" ng-click="multipleCheckAll(inputInfo,true);">&nbsp;&gt;&gt;&nbsp;</button>
+               </div>
+               <div style="margin-top:15px;">
+                  <button class="btn btn-default" style="font-weight:bold;" ng-click="multipleCheckAll(inputInfo,false);">&nbsp;&lt;&lt;&nbsp;</button>
+               </div>
+            </td>
+            <td style="padding-left:10px;">
+               <div>{{Setting.Text.multiple.select}}</div>
+               <div class="borderBox" style="height:160px;overflow-y:scroll;font-size:90%;padding:4px;margin-top:5px;" ng-class="{true:'alert-danger'}[inputInfo.error.length > 0]">
+                  <span class="alert alert-info Ellipsis" style="float:left;border-radius:4px;padding:5px;margin:0 5px 5px 0;" ng-if="childInfo['checked']==true" ng-repeat="childInfo in inputInfo.valid.list track by $index">{{childInfo['key']}}&nbsp;<i class="fa fa-times" style="cursor:pointer;" ng-click="multipleCheck(inputInfo,childInfo)"></i></span>
+                  <div class="clear-float"></div>
+               </div>
+            </td>
+         </tr>
+      </table>
+   </div>
+   <div ng-switch-when="switch">
+      <span ng-if="inputInfo.value == true && inputInfo.disabled != true" ng-click="onChange(inputInfo)"><img style="height:30px;" src="../../../images/switch_on_1.png" /></span>
+      <span ng-if="inputInfo.value == false && inputInfo.disabled != true" ng-click="onChange(inputInfo)"><img style="height:30px;" src="../../../images/switch_off_1.png" /></span>
+      <span ng-if="inputInfo.value == true && inputInfo.disabled == true" ng-click="onChange(inputInfo)"><img style="height:30px;" src="../../../images/switch_on_2.png" /></span>
+      <span ng-if="inputInfo.value == false && inputInfo.disabled == true" ng-click="onChange(inputInfo)"><img style="height:30px;" src="../../../images/switch_off_2.png" /></span>
+   </div>
+   <div ng-switch-when="normal">
+      <span style="font-size:15px;">{{inputInfo.value}}</span>
+   </div>
+</div>

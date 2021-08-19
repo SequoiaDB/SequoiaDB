@@ -1,0 +1,51 @@
+import os
+
+Import("guess_arch")
+Import("fapEnv")
+Import("intel_decimal_lib_dir")
+
+fapMongo2Files = [
+      "fap/mongodb/commands.cpp",
+      "fap/mongodb/mongoAccess.cpp",
+      "fap/mongodb/mongoConverter.cpp",
+      "fap/mongodb/mongoSession.cpp",
+      "fap/mongodb/msgBuffer.cpp",
+      "fap/mongodb/mongoReplyHelper.cpp",
+      "fap/mongodb/baseCommand.cpp",
+      "fap/mongodb/parser.cpp"
+      ]
+
+fapMongo3Files = [
+      "fap/mongodb3/mongoAccess.cpp",
+      "fap/mongodb3/mongoSession.cpp",
+      "fap/mongodb3/msgBuffer.cpp",
+      "fap/mongodb3/fapMongoMessage.cpp",
+      "fap/mongodb3/fapMongoCommand.cpp",
+      "fap/mongodb3/fapMongoCursor.cpp",
+      "fap/mongodb3/fapMongoDecimal.cpp"
+      ]      
+     
+#fapMongo4Files = [
+#      "fap/mongodb4/commands.cpp",
+#      "fap/mongodb4/mongoAccess.cpp",
+#      "fap/mongodb4/mongoConverter.cpp",
+#      "fap/mongodb4/mongoSession.cpp",
+#      "fap/mongodb4/msgBuffer.cpp",
+#      "fap/mongodb4/mongoReplyHelper.cpp",
+#      "fap/mongodb4/baseCommand.cpp",
+#      "fap/mongodb4/parser.cpp"
+#      ]      
+
+if 'ia32' == guess_arch or 'ia64' == guess_arch:
+   intelDecimalLib = os.path.join( intel_decimal_lib_dir, 'libbid.a' )
+   fapmongo3 = fapEnv.SharedLibrary( 'fapmongo3', [ fapMongo3Files, intelDecimalLib ] )
+   #fapmongo4 = fapEnv.SharedLibrary( 'fapmongo4', [ fapMongo4Files, intelDecimalLib ] )
+else:
+   fapmongo3 = fapEnv.SharedLibrary( 'fapmongo3', [ fapMongo3Files ] )
+   #fapmongo4 = fapEnv.SharedLibrary( 'fapmongo4', [ fapMongo4Files ] )
+
+fapmongo2 = fapEnv.SharedLibrary( 'fapmongo2', [ fapMongo2Files ] )
+   
+fapEnv.Install( '#/bin/fap', fapmongo2 )
+fapEnv.Install( '#/bin/fap', fapmongo3 )
+#fapEnv.Install( '#/bin/fap', fapmongo4 )

@@ -1,0 +1,37 @@
+<div ng-controller="Monitor.HostPerformance.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div class="active" ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Host/List/Index" class="ng-binding">{{autoLanguage("主机列表")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Host/List/Charts" class="ng-binding">{{autoLanguage("图表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/List/HostsSnapshot">{{autoLanguage("主机快照")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div ng-container="{offsetY:-95,marginTop:10}">
+         <div ng-container="{offsetX:-10,height:'50%'}">
+            <div style="border:1px solid #ddd;float:left;padding:10px;" ng-container="{offsetX:-10,width:'50%'}" create-chart="Charts.Cpu"></div>
+            <div style="border:1px solid #ddd;float:left;padding:10px;" ng-container="{offsetX:-10,width:'50%',marginLeft:16}" create-chart="Charts.Memory"></div>
+            <div class="clear-float"></div>
+         </div>
+         <div ng-container="{offsetX:-10,marginTop:20,height:'50%'}">
+            <div style="border:1px solid #ddd;float:left;padding:10px;" ng-container="{offsetX:-10,width:'50%'}" create-chart="Charts.Network"></div>
+            <div style="border:1px solid #ddd;float:left;padding:10px;" ng-container="{offsetX:-10,width:'50%',marginLeft:16}" create-chart="Charts.Disk"></div>
+            <div class="clear-float"></div>
+         </div>
+      </div>
+   </div>
+</div>

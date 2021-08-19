@@ -1,0 +1,31 @@
+﻿<div ng-controller="Deploy.PG.Mod.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+   <div style="padding:10px 15px;" ng-container="{offsetY:-70}">
+      <div ng-container="{offsetY:-45}">
+         <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("实例")}}: {{ModuleName}}</div>
+         <div class="underlineTab" ng-container="{height:WindowWidth>1291?70:105}">
+            <ul class="left">
+               <li ng-class="{true:'active'}[ShowType == 'normal']">
+                  <a class="linkButton" ng-click="SwitchParam('normal')">normal</a>
+                  <span class="badge badge-danger" ng-if="InputErrNum['normal'] > 0">{{InputErrNum['normal']}}</span>
+               </li>
+               <li ng-repeat="(key,confType) in AllForm track by $index" ng-class="{true:'active'}[ShowType == key]" ng-if="key!='normal'">
+                  <a class="linkButton" ng-click="SwitchParam(key)">{{key}}</a>
+                  <span class="badge badge-danger" ng-if="InputErrNum[key] > 0">{{InputErrNum[key]}}</span>
+               </li>
+            </ul>
+         </div>
+         <div class="borderBox" style="padding:10px;overflow-y:auto;position:relative;" ng-container="{offsetY:WindowWidth>1291?-110:-145,marginTop:10}" ng-repeat="(key,confType) in AllForm track by $index" ng-show="ShowType==key">
+            <div form-create para="AllForm[key]"></div>
+         </div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-click="GotoDeploy()"><i class="fa fa-chevron-left"></i> {{autoLanguage("返回")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn btn-primary" ng-click="GotoInstall()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+
+   </div>
+
+</div>

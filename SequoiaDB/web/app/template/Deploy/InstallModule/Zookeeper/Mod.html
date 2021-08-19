@@ -1,0 +1,64 @@
+﻿<div ng-controller="Deploy.Zkp.Mod.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+   <div style="padding:10px 15px;" ng-container="{offsetY:-70}">
+
+      <div ng-container="{offsetY:-45}">
+         <div class="pull-left" ng-container="{width:400}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("服务")}}: {{ModuleName}}</div>
+
+            <div class="borderBox" style="padding:10px;font-size:90%;" ng-container="{offsetY:-30}">
+
+               <div style="margin:10px 0;">
+                  <button class="btn btn-default" ng-click="CreateAddNodeModel()"><i class="fa fa-plus"></i>&nbsp;{{autoLanguage("添加节点")}}</button>
+               </div>
+
+               <div class="borderBox" style="overflow-y:auto;" ng-container="{maxHeight:'100%',offsetY:-90}">
+
+                  <div style="height:55px;border-top:1px solid;" ng-repeat="nodeInfo in NodeList track by $index" ng-style="{'true':{'border-color':'#fff'},'false':{'border-color':'#E3E7E8'}}[$index==0]">
+
+                     <div style="height:47px;margin:1px;border:3px solid #fff;" ng-style="{'true':{'border-color':'#80c0ff'},'false':{'border-color':'#fff'}}[CurrentNode == $index]">
+
+                        <table class="table" style="height:47px;">
+                           <tr>
+                              <td style="padding-left:10px;cursor:pointer;font-weight:bold;" ng-click="SwitchNode($index)">
+                                 {{autoLanguage("节点Id")}}: {{nodeInfo['zooid']}}
+                              </td>
+                              <td style="padding-left:10px;width:50px;">
+                                 <button class="btn btn-default btn-lg" ng-click="RemoveNode($index)"><i class="fa fa-times"></i></button>
+                              </td>
+                           </tr>
+                        </table>
+
+                     </div>
+
+                  </div>
+
+               </div>
+
+            </div>
+
+         </div>
+         <div class="pull-left" ng-container="{offsetX:-410,marginLeft:10}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("节点配置")}}</div>
+
+            <div class="borderBox" style="padding:10px;" ng-container="{offsetY:-30}">
+
+               <div form-create para="Template"></div>
+
+            </div>
+
+         </div>
+         <div class="clear-float"></div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-click="GotoDeploy()"><i class="fa fa-chevron-left"></i> {{autoLanguage("返回")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn btn-primary" ng-click="GotoInstall()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+
+   </div>
+
+</div>

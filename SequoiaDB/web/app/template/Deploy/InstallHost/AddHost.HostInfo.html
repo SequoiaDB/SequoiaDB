@@ -1,0 +1,144 @@
+﻿<div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("主机配置")}}</div>
+<div class="borderBox" style="position:relative;padding:10px;overflow-y:auto;overflow-x:hidden;" ng-container="{offsetY:-30}">
+   <div style="height:25px;">{{autoLanguage("系统信息")}}</div>
+   <div>
+      <table class="table loosen simple" style="color:#666;font-size:90%;">
+         <tr>
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("主机名")}}</td>
+            <td>{{HostInfo['HostName']}}</td>
+         </tr>
+         <tr>
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("IP地址")}}</td>
+            <td>{{HostInfo['IP']}}</td>
+         </tr>
+         <tr>
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("操作系统")}}</td>
+            <td>
+               {{HostInfo['OS']['Description']}} <span ng-if="HostInfo['OS']['Bit']">x{{HostInfo['OS']['Bit']}}</span>
+            </td>
+         </tr>
+         <tr ng-if="HostInfo['Safety']['Name'].length > 0">
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("防火墙")}}</td>
+            <td>
+               {{HostInfo['Safety']['Name']}} {{HostInfo['Safety']['IsRunning']}}
+            </td>
+         </tr>
+      </table>
+   </div>
+   <div style="height:25px;margin-top:20px;">{{autoLanguage("SAC代理")}}</div>
+   <div>
+      <table class="table loosen simple" style="color:#666;font-size:90%;">
+         <tr ng-if="HostInfo['OMA']['Version'].length > 0">
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("版本")}}</td>
+            <td>{{HostInfo['OMA']['Version']}}</td>
+         </tr>
+         <tr ng-if="HostInfo['OMA']['Release'].length > 0">
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("编译版本")}}</td>
+            <td>{{HostInfo['OMA']['Release']}}</td>
+         </tr>
+         <tr ng-if="HostInfo['OMA']['SdbUser'].length > 0">
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("用户")}}</td>
+            <td>{{HostInfo['OMA']['SdbUser']}}</td>
+         </tr>
+         <tr ng-if="HostInfo['OMA']['Service'].length > 0">
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("服务名")}}</td>
+            <td>{{HostInfo['OMA']['Service']}}</td>
+         </tr>
+         <tr>
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("安装路径")}}</td>
+            <td>
+               <span ng-if="HostInfo['OMA']['Path'].length > 0">
+                  {{HostInfo['InstallPath']}}
+               </span>
+               <div ng-if="HostInfo['OMA']['Path'].length == 0">
+                  <input class="form-control" ng-model="HostInfo['InstallPath']" />
+               </div>
+            </td>
+         </tr>
+      </table>
+   </div>
+
+   <div style="height:25px;margin-top:20px;" ng-if="MySQLTable['body'].length > 0">{{autoLanguage("MySQL")}}</div>
+   <div style="position:relative;" ng-container="{width:'auto',height:MySQLTableHeight,marginTop:5}" ng-if="MySQLTable['body'].length > 0" ng-table="MySQLTable['options']" table-title="MySQLTable['title']" table-content="info in MySQLTable['body']">
+      <div table-key="IsUse" style="padding-left:13px;">
+         <span style="cursor:pointer;font-size:115%;" ng-click="onMySQLChange($index)">
+            <i class="fa" ng-class="{true:'fa-check-square-o',false:'fa-square-o','undefined':'fa-square-o'}[info['IsUse']]"></i>
+         </span>
+      </div>
+      <div class="Ellipsis" table-key="Version">{{info['Version']}}</div>
+      <div class="Ellipsis" table-key="SdbUser">{{info['SdbUser']}}</div>
+      <div class="Ellipsis" table-key="Path">{{info['Path']}}</div>
+   </div>
+
+   <div style="height:25px;margin-top:20px;" ng-if="PGTable['body'].length > 0">{{autoLanguage("PostgreSQL")}}</div>
+   <div style="position:relative;" ng-container="{width:'auto',height:PGTableHeight,marginTop:5}" ng-if="PGTable['body'].length > 0" ng-table="PGTable['options']" table-title="PGTable['title']" table-content="info in PGTable['body']">
+      <div table-key="IsUse" style="padding-left:13px;">
+         <span style="cursor:pointer;font-size:115%;" ng-click="onPGChange($index)">
+            <i class="fa" ng-class="{true:'fa-check-square-o',false:'fa-square-o','undefined':'fa-square-o'}[info['IsUse']]"></i>
+         </span>
+      </div>
+      <div class="Ellipsis" table-key="Version">{{info['Version']}}</div>
+      <div class="Ellipsis" table-key="SdbUser">{{info['SdbUser']}}</div>
+      <div class="Ellipsis" table-key="Path">{{info['Path']}}</div>
+   </div>
+
+   <div style="height:25px;margin-top:20px;">{{autoLanguage("硬件配置")}}</div>
+   <div>
+      <table class="table loosen simple" style="color:#666;font-size:90%;">
+         <tr>
+            <td style="width:120px;font-weight:bold;">CPU</td>
+            <td>{{HostInfo['CPU'][0]['Model']}}</td>
+         </tr>
+         <tr>
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("内存")}}</td>
+            <td><div progress-bar="MemoryChart"></div></td>
+         </tr>
+         <tr>
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("存储容量")}}</td>
+            <td><div progress-bar="DiskChart"></div></td>
+         </tr>
+         <tr ng-repeat="net in HostInfo['Net'] track by $index">
+            <td style="width:120px;font-weight:bold;">{{autoLanguage("网络适配器")}}</td>
+            <td>{{net['Name']}}&nbsp;&nbsp;{{net['IP']}}</td>
+         </tr>
+      </table>
+   </div>
+   <div ng-windows="form as AddCustomPathWindow.config" windows-callback="AddCustomPathWindow.callback">
+      <div form-create para="form"></div>
+   </div>
+   <div style="height:25px;margin-top:20px;" ng-if="DiskTable['body'].length > 0">
+      {{autoLanguage("磁盘列表")}}
+      &nbsp;<button class="btn btn-primary" ng-if="HostInfo['errno'] == 0" ng-click="ShowAddCustomPath()">{{autoLanguage("添加自定义路径")}}</button>
+   </div>
+   <div style="position:relative;" ng-container="{width:'auto',height:DiskTableHeight,marginTop:5}" ng-if="DiskTable['body'].length > 0" ng-table="DiskTable['options']" table-title="DiskTable['title']" table-content="diskInfo in DiskTable['body']">
+      <div table-key="IsUse">
+         <input type="checkbox" ng-model="diskInfo['IsUse']" ng-disabled="diskInfo['CanUse']==false" ng-click="CountCheckedDisk()" />
+      </div>
+      <div class="Ellipsis" table-key="Name">{{diskInfo['Name']}}</div>
+      <div class="Ellipsis" table-key="Mount">{{diskInfo['Mount']}}</div>
+      <div class="Ellipsis" table-key="IsLocal">{{diskInfo['IsLocal']}}</div>
+      <div class="Ellipsis" table-key="Chart">
+         <div progress-bar="diskInfo['Chart']" class="ng-scope ng-isolate-scope"></div>
+      </div>
+   </div>
+   <!--[if IE]>
+      <style>
+         .ng-table-box{position:relative;}
+      </style>
+   <![endif]-->
+   <div style="height:25px;margin-top:20px;" ng-if="PortTable['body'].length > 0">
+      {{autoLanguage("端口")}}
+   </div>
+   <div ng-container="{width:'auto',height:PortTableHeight,marginTop:5}" ng-if="PortTable['body'].length > 0" ng-table="PortTable['options']" table-title="PortTable['title']" table-content="portInfo in PortTable['body']">
+      <div class="Ellipsis" table-key="Port">{{portInfo['Port']}}</div>
+      <div class="Ellipsis" table-key="CanUse">{{portInfo['CanUse']}}</div>
+   </div>
+   <div style="height:25px;margin-top:20px;" ng-if="ServiceTable['body'].length > 0">
+      {{autoLanguage("服务")}}
+   </div>
+   <div ng-container="{width:'auto',height:ServiceTableHeight,marginTop:5}" ng-if="ServiceTable['body'].length > 0" ng-table="ServiceTable['options']" table-title="ServiceTable['title']" table-content="serviceInfo in ServiceTable['body']">
+      <div class="Ellipsis" table-key="Name">{{serviceInfo['Name']}}</div>
+      <div class="Ellipsis" table-key="IsRunning">{{serviceInfo['IsRunning']}}</div>
+      <div class="Ellipsis" table-key="Version">{{serviceInfo['Version']}}</div>
+   </div>
+</div>

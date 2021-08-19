@@ -1,0 +1,52 @@
+﻿<div ng-repeat="field in fields track by $index">
+   <table class="table">
+      <tr>
+         <td class="lineBox treeBox">
+            <div class="treeEdit" style="text-align:left;" ng-style="{'padding-left':field.level * 14 + 'px'}">
+               <table class="table loosen" style="width:auto;">
+                  <tr>
+                     <td style="width:20px;">
+                        <button class="caretBtn" ng-click="toggle(field)" ng-if="field.type == 'Object' || field.type == 'Array'">
+                           <i class="caret caret-5x" ng-class="{ false: 'caret-right', true: 'caret-bottom' }[field.isOpen]"></i>
+                        </button>
+                     </td>
+                     <td ng-style="{ 'true': { background: '#FFFFAB' } }[Setting.Search.length > 0&&field.key.toLowerCase().indexOf(Setting.Search.toLowerCase()) >= 0]">
+                        <div class="fontBox keyBox" ng-if="parentType != 'Array' && field.level > 0" spellcheck="false" ng-style="{ 'true': { background: '#DDD' } }[field.key.length == 0]">{{field.key}}</div>
+                        <span style="font-size:90%;" ng-if="parentType == 'Array'">{{$index}}</span>
+                        <span style="font-size:90%;" ng-if="field.level == 0">{{field.key}}</span>
+                     </td>
+                     <td>
+                        <span>:</span>
+                     </td>
+                     <td ng-style="{ 'true': { background: '#FFFFAB' } }[Setting.Search.length > 0&&field.val.toLowerCase().indexOf(Setting.Search.toLowerCase()) >= 0]">
+                        <div ng-if="field.type != 'Object' && field.type != 'Array'" class="fontBox valueBox" spellcheck="false" ng-class="{ 'String': 'string', 'Auto': 'auto', 'ObjectId': 'objectid', 'Regex': 'regex', 'Binary': 'binary', 'Code': 'code', 'Timestamp': 'time', 'Date': 'time', 'Decimal': 'decimal' }[field.type]" ng-style="{ 'true': { background: '#DDD' } }[field.val.length == 0]" text-abstract="field.val"></div>
+                        <span class="fontBox valueBox" ng-if="field.type == 'Object'" ng-bind="'{' + field.val.length + '}'"></span>
+                        <span class="fontBox valueBox" ng-if="field.type == 'Array'" ng-bind="'[' + field.val.length + ']'"></span>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </td>
+         <td class="lineBox">
+            <div ng-if="field.level > 0" ng-switch on="field.type">
+               <button class="treeBtn" style="cursor:default;" ng-attr="{'data-desc':'Object'}"   ng-switch-when="Object">{}</button>
+               <button class="treeBtn" style="cursor:default;" ng-attr="{'data-desc':'Array'}"    ng-switch-when="Array">[]</button>
+               <button class="treeBtn" style="cursor:default;" ng-attr="{'data-desc':'Auto'}"     ng-switch-when="Auto">A</button>
+               <button class="treeBtn" style="cursor:default;" ng-attr="{'data-desc':'String'}"   ng-switch-when="String">""</button>
+               <button class="treeBtn" style="cursor:default;font-size:80%;" ng-attr="{'data-desc':'ObjectId'}" ng-switch-when="ObjectId">oid</button>
+               <button class="treeBtn" style="cursor:default;font-size:80%;" ng-attr="{'data-desc':'Regex'}"    ng-switch-when="Regex">reg</button>
+               <button class="treeBtn" style="cursor:default;font-size:80%;" ng-attr="{'data-desc':'Binary'}"   ng-switch-when="Binary">01</button>
+               <button class="treeBtn" style="cursor:default;" ng-attr="{'data-desc':'Timestamp'}" ng-switch-when="Timestamp"><i class="fa fa-calendar"></i></button>
+               <button class="treeBtn" style="cursor:default;" ng-attr="{'data-desc':'Date'}"     ng-switch-when="Date"><i class="fa fa-calendar"></i></button>
+               <button class="treeBtn" style="cursor:default;" ng-attr="{'data-desc':'Decimal'}"  ng-switch-when="Decimal">D</button>
+               <button class="treeBtn" style="cursor:default;" ng-attr="{'data-desc':'Undefined'}" ng-switch-when="Undefined">U</button>
+            </div>
+            <div ng-if="field.level == 0">
+               <button class="treeBtn" ng-attr="{'data-desc':'Object'}" style="cursor:default;">{}</button>
+            </div>
+         </td>
+      </tr>
+   </table>
+   <!-- 递归 -->
+   <div ng-if="field.type == 'Object' || field.type == 'Array'" ng-show="field.isOpen" ng-include="'./app/template/Component/JsonView_child.html'" ng-eval="fields=field.val;parentType=field.type;"></div>
+</div>

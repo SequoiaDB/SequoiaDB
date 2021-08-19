@@ -1,0 +1,20 @@
+<DeployModList type="array">
+   <FILLER>
+      <DeployMod>distribution</DeployMod>
+      <WebName>distribution Mode</WebName>
+      <BusinessType>zookeeper</BusinessType>
+      <Property type="array">
+         <FILLER>
+            <Name>zoonodenum</Name>
+            <Type>int</Type>
+            <Default>3</Default>
+            <Valid>1,3,5,7</Valid>
+            <Display>select box</Display>
+            <Edit>true</Edit>
+            <Desc>zookeeper node Number</Desc>
+            <Level>0</Level>
+            <WebName>zookeeper node Number</WebName>
+         </FILLER>
+      </Property>
+   </FILLER>
+</DeployModList>

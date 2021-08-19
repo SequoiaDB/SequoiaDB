@@ -1,0 +1,190 @@
+<div ng-controller="Deploy.Sdb.ExtendConf.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+   <div style="padding:10px 15px;" ng-container="{offsetY:-70}">
+
+      <div ng-controller="Deploy.Sdb.ExtendConf.Windows.Ctrl">
+         <div ng-windows="info as SwitchHostWindow.config" windows-callback="SwitchHostWindow.callback">
+            <div style="margin-bottom:10px;">
+               <button ng-click="SelectAll()" class="ng-scope btn btn-default">{{autoLanguage("全选")}}</button>&nbsp;
+               <button ng-click="Unselect()" class="ng-scope btn btn-default">{{autoLanguage("反选")}}</button>
+            </div>
+            <div ng-container="{offsetY:-40}" style="overflow-y:auto;">
+               <table class="table loosen border">
+                  <tr style="background-color:#F1F4F5;height:30px;">
+                     <td width="30"></td>
+                     <td>{{autoLanguage("主机名")}}</td>
+                     <td>{{autoLanguage("IP地址")}}</td>
+                  </tr>
+                  <tr ng-repeat="hostInfo in HostList track by $index">
+                     <td>
+                        <input type="checkbox" ng-model="HostList[$index]['checked']" ng-click="HostRadio()" />
+                     </td>
+                     <td class="Ellipsis" style="word-break:break-all;">{{hostInfo['HostName']}}</td>
+                     <td class="Ellipsis" style="word-break:break-all;">{{hostInfo['IP']}}</td>
+                  </tr>
+               </table>
+            </div>
+         </div>
+      </div>
+
+      <div ng-container="{offsetY:-45}">
+         <div class="pull-left" ng-controller="Deploy.Sdb.ExtendConf.Template.Ctrl" ng-container="{width:370}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("配置")}}</div>
+
+            <div class="borderBox" style="padding:10px;font-size:90%;" ng-container="{offsetY:-30}">
+
+               <div style="margin-top:10px;">
+                  <button class="btn btn-default" ng-click="ShowSwitchHost()">{{autoLanguage("选择安装节点的主机")}}</button>
+               </div>
+
+               <div style="margin-top:20px;">
+                  <div class="pull-left" style="width:130px;">{{autoLanguage("存储集群名")}}</div>
+                  <div class="pull-left Ellipsis" style="padding-left:10px;width:208px;">{{ModuleName}}</div>
+                  <div class="clear-float"></div>
+               </div>
+
+               <div style="margin-top:10px;" form-create para="ConfForm1"></div>
+
+               <div style="margin-top:10px;" form-create para="ConfForm2"></div>
+
+               <div class="alert alert-danger" ng-style="{'zh-CN':{'line-height':'32px'}}[Language]" ng-if="ReplicaTips == true">
+                  {{sprintf(autoLanguage("提示：该服务数据组最大副本数为：?，最小副本数为：?。"),MaxReplicaNum,MinReplicaNum)}}
+               </div>
+            </div>
+
+         </div>
+         <div class="pull-left" ng-controller="Deploy.Sdb.ExtendConf.Preview.Ctrl" ng-container="{offsetX:-380,marginLeft:10}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("预览")}}</div>
+
+            <div class="borderBox" style="padding:10px;overflow-y:auto;overflow-x:hidden;position:relative;" ng-container="{offsetY:-30}">
+               <div style="margin-top:10px;color:#ff0000;">
+                  <table class="table loosen simple" style="color:#666;font-size:90%;">
+                     <tr>
+                        <td style="width:150px;font-weight:bold;"></td>
+                        <td>{{autoLanguage("扩容前")}}</td>
+                        <td>{{autoLanguage("扩容完成")}}</td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("主机数")}}</td>
+                        <td>{{BeforeExtend['NumHosts']}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['NumHosts'] == BeforeExtend['NumHosts'] ? '0' : ( AfterExtend['NumHosts'] > BeforeExtend['NumHosts'] ? '1' : '-1' )]">
+                           {{AfterExtend['NumHosts']}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("总节点数")}}</td>
+                        <td>{{BeforeExtend['TotalNodes']}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['TotalNodes'] == BeforeExtend['TotalNodes'] ? '0' : ( AfterExtend['TotalNodes'] > BeforeExtend['TotalNodes'] ? '1' : '-1' )]">
+                           {{AfterExtend['TotalNodes']}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("总磁盘数")}}</td>
+                        <td>{{BeforeExtend['TotalDisks']}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['TotalDisks'] == BeforeExtend['TotalDisks'] ? '0' : ( AfterExtend['TotalDisks'] > BeforeExtend['TotalDisks'] ? '1' : '-1' )]">
+                           {{AfterExtend['TotalDisks']}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("节点分布率")}}</td>
+                        <td>{{BeforeExtend['NodeSpread']}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['NodeSpread'] == BeforeExtend['NodeSpread'] ? '0' : ( AfterExtend['NodeSpread'] > BeforeExtend['NodeSpread'] ? '1' : '-1' )]">
+                           {{AfterExtend['NodeSpread']}}
+                        </td>
+                     </tr>
+
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("数据组数")}}</td>
+                        <td>{{BeforeExtend['NumDataGroups']}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['NumDataGroups'] == BeforeExtend['NumDataGroups'] ? '0' : ( AfterExtend['NumDataGroups'] > BeforeExtend['NumDataGroups'] ? '1' : '-1' )]">
+                           {{AfterExtend['NumDataGroups']}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("副本数")}}</td>
+                        <td>
+                           <span ng-if="BeforeExtend['NumReplicaMax']>BeforeExtend['NumReplicaMin']">{{BeforeExtend['NumReplicaMin']}}-</span>{{BeforeExtend['NumReplicaMax']}}
+                        </td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[( AfterExtend['NumReplicaMin'] == BeforeExtend['NumReplicaMin'] && AfterExtend['NumReplicaMax'] == BeforeExtend['NumReplicaMax'] ) ? '0' : ( ( AfterExtend['NumReplicaMin'] > BeforeExtend['NumReplicaMin'] || AfterExtend['NumReplicaMax'] > BeforeExtend['NumReplicaMax'] ) ? '1' : '-1' )]">
+                           <span ng-if="AfterExtend['NumReplicaMax']>AfterExtend['NumReplicaMin']&&AfterExtend['NumReplicaMin']!=0">{{AfterExtend['NumReplicaMin']}}-</span>{{AfterExtend['NumReplicaMax']}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("数据节点数")}}</td>
+                        <td>{{BeforeExtend['NumData']}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['NumData'] == BeforeExtend['NumData'] ? '0' : ( AfterExtend['NumData'] > BeforeExtend['NumData'] ? '1' : '-1' )]">
+                           {{AfterExtend['NumData']}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("协调节点数")}}</td>
+                        <td>{{BeforeExtend['NumCoord']}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['NumCoord'] == BeforeExtend['NumCoord'] ? '0' : ( AfterExtend['NumCoord'] > BeforeExtend['NumCoord'] ? '1' : '-1' )]">
+                           {{AfterExtend['NumCoord']}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("编目节点数")}}</td>
+                        <td>{{BeforeExtend['NumCatalog']}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['NumCatalog'] == BeforeExtend['NumCatalog'] ? '0' : ( AfterExtend['NumCatalog'] > BeforeExtend['NumCatalog'] ? '1' : '-1' )]">
+                           {{AfterExtend['NumCatalog']}}
+                        </td>
+                     </tr>
+
+                  </table>
+               </div>
+
+               <div style="margin-top:20px;">
+                  <table class="table loosen simple" style="color:#666;font-size:90%;">
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("总容量")}}</td>
+                        <td>{{SizeConvert(BeforeExtend['DiskTotalSize'])}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['DiskTotalSize'] == BeforeExtend['DiskTotalSize'] ? '0' : ( AfterExtend['DiskTotalSize'] > BeforeExtend['DiskTotalSize'] ? '1' : '-1' )]">
+                           {{SizeConvert(AfterExtend['DiskTotalSize'])}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("可用容量")}}</td>
+                        <td><span ng-if="BeforeExtend['NumReplicaMax']>BeforeExtend['NumReplicaMin'] && !IsNaN(BeforeExtend['DiskValidSize'])">~</span>{{SizeConvert(BeforeExtend['DiskValidSize'])}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['DiskValidSize'] == BeforeExtend['DiskValidSize'] ? '0' : ( AfterExtend['DiskValidSize'] > BeforeExtend['DiskValidSize'] ? '1' : '-1' )]">
+                           <span ng-if="AfterExtend['NumReplicaMax']>AfterExtend['NumReplicaMin'] && !IsNaN(AfterExtend['DiskValidSize'])">~</span>{{SizeConvert(AfterExtend['DiskValidSize'])}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("冗余容量")}}</td>
+                        <td><span ng-if="BeforeExtend['NumReplicaMax']>BeforeExtend['NumReplicaMin'] && !IsNaN(BeforeExtend['DiskRedundancySize'])">~</span>{{SizeConvert(BeforeExtend['DiskRedundancySize'])}}</td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['DiskRedundancySize'] == BeforeExtend['DiskRedundancySize'] ? '0' : ( AfterExtend['DiskRedundancySize'] > BeforeExtend['DiskRedundancySize'] ? '1' : '-1' )]">
+                           <span ng-if="AfterExtend['NumReplicaMax']>AfterExtend['NumReplicaMin'] && !IsNaN(AfterExtend['DiskRedundancySize'])">~</span>{{SizeConvert(AfterExtend['DiskRedundancySize'])}}
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="width:150px;font-weight:bold;">{{autoLanguage("冗余度")}}</td>
+                        <td><span ng-if="BeforeExtend['NumReplicaMax']>BeforeExtend['NumReplicaMin'] && !IsNaN(BeforeExtend['DiskRedundancy'])">~</span>{{BeforeExtend['DiskRedundancy']}}<span ng-if="BeforeExtend['DiskRedundancy']">%</span></td>
+                        <td ng-style="{'1':{'color':'#D9534F','font-weight':'bold'},'-1':{'color':'#00CC66','font-weight':'bold'},'0':{'color':'#000','font-weight':'normal'}}[AfterExtend['DiskRedundancy'] == BeforeExtend['DiskRedundancy'] ? '0' : ( AfterExtend['DiskRedundancy'] > BeforeExtend['DiskRedundancy'] ? '1' : '-1' )]">
+                           <span ng-if="AfterExtend['NumReplicaMax']>AfterExtend['NumReplicaMin'] && !IsNaN(AfterExtend['DiskRedundancy'])">~</span>{{AfterExtend['DiskRedundancy']}}<span ng-if="AfterExtend['DiskRedundancy']">%</span>
+                        </td>
+                     </tr>
+                  </table>
+               </div>
+
+               <div style="margin-top:20px;" ng-container="{height:'auto',marginTop:20}">
+                  <div class="pull-left" ng-container="{width:'50%',height:'45w'}" create-chart="RedundancyChart1"></div>
+                  <div class="pull-left" ng-container="{width:'50%',height:'45w'}" create-chart="RedundancyChart2"></div>
+                  <div class="clear-float"></div>
+               </div>
+
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-click="GotoDeploy()"><i class="fa fa-chevron-left"></i> {{autoLanguage("返回")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn" ng-class="{'true':'btn-primary','false':'btn-danger'}[IsAllClear]" ng-click="GotoExtend()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+
+   </div>
+   
+</div>

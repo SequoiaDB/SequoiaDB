@@ -1,0 +1,33 @@
+﻿<div class="jsonTreeBox" ng-repeat="field in items track by $index">
+   <table class="table">
+      <tr ng-style="{true:{'cursor':'pointer'}}[field.type=='Object' || field.type=='Array']" ng-click="toggle(field)">
+         <td style="width:10px;">
+            <i class="caret caret-5x" ng-class="{ 'caret-right': !field.isOpen, 'caret-bottom': field.isOpen }" ng-if="field.type=='Object' || field.type=='Array'"></i>
+         </td>
+         <td style="width:25px;" ng-switch on="field.type">
+            <img src="./images/tree/object.png" ng-switch-when="Object">
+            <img src="./images/tree/array.png" ng-switch-when="Array">
+            <img src="./images/tree/string.png" ng-switch-when="String">
+            <img src="./images/tree/oid.png" ng-switch-when="ObjectId">
+            <img src="./images/tree/regex.png" ng-switch-when="Regex">
+            <img src="./images/tree/binary.png" ng-switch-when="Binary">
+            <img src="./images/tree/code.png" ng-switch-when="Code">
+            <img src="./images/tree/time.png" ng-switch-when="Timestamp">
+            <img src="./images/tree/time.png" ng-switch-when="Date">
+            <img src="./images/tree/number.png" ng-switch-when="Number">
+            <img src="./images/tree/null.png" ng-switch-when="Null">
+            <img src="./images/tree/minmaxkey.png" ng-switch-when="MinKey">
+            <img src="./images/tree/minmaxkey.png" ng-switch-when="MaxKey">
+            <img src="./images/tree/undefined.png" ng-switch-when="Undefined">
+            <img src="./images/tree/bool.png" ng-switch-when="Bool">
+            <img src="./images/tree/number.png" ng-switch-when="Decimal">
+         </td>
+         <td>
+            <div ng-style="{width: (Setting.width - 53 - field.level * 14 ) + 'px' }" class="Ellipsis" ng-if="field.type=='Object'">{{field.key}}</div>
+            <div ng-style="{width: (Setting.width - 53 - field.level * 14 ) + 'px' }" class="Ellipsis" ng-if="field.type=='Array'">{{field.key}}</div>
+            <div ng-style="{width: (Setting.width - 53 - field.level * 14 ) + 'px' }"  class="Ellipsis" ng-if="field.type!='Object'&&field.type!='Array'">{{field.key}}</div>
+         </td>
+      </tr>
+   </table>
+   <div ng-if="field.isOpen && (field.type=='Object' || field.type=='Array')" style="padding-left:14px;" ng-eval="items = field.val;" ng-include="'./app/template/Component/TreeKey_child.html'"></div>
+</div>

@@ -1,0 +1,63 @@
+<form class="Form" ng-if="Setting.Type != 'grid'&&Setting.Type != 'table'">
+   <div class="FormGroup" ng-repeat="inputInfo in Setting.inputList track by $index" ng-if="inputInfo.enable">
+      <table class="table" ng-element="inputInfo">
+         <tbody>
+            <tr ng-if="inputInfo.type == 'group'">
+               <td colspan="2">
+                  <div class="FormName">
+                     <label><span class="error" ng-if="inputInfo.required == true">*</span> {{inputInfo.webName}}</label> <i ng-if="inputInfo.desc" class="fa fa-info-circle" style="font-size:18px;" ng-attr="{'data-desc':inputInfo.desc}"></i>
+                  </div>
+                  <div class="FormInput" ng-include="'./app/template/Component/Form_child.html'"></div>
+               </td>
+            </tr>
+            <tr ng-if="inputInfo.type != 'group' && inputInfo.type != 'grid'">
+               <td ng-style="{true:{'vertical-align':'middle'},false:{'vertical-align':'top','padding-top':'8px'}}[inputInfo.type!='list'];{width:Setting.KeyWidth}">
+                  <div class="FormName">
+                     <label>
+                        <span class="error" ng-if="inputInfo.required == true">*</span> <span ng-if="!inputInfo.showName">{{inputInfo.webName}}</span>
+                        <span ng-if="inputInfo.showName" data-desc="{{inputInfo.webName}}">{{inputInfo.name}}</span>
+                     </label> <i ng-if="inputInfo.desc" class="fa fa-info-circle" style="font-size:18px;" ng-attr="{'data-desc':inputInfo.desc}"></i>
+                  </div>
+               </td>
+               <td style="padding-left:10px;padding-right:10px;">
+                  <div class="FormInput" ng-include="'./app/template/Component/Form_child.html'"></div>
+               </td>
+               <td ng-if="inputInfo.showName" ng-style="{width:Setting.KeyWidth}">
+                  <span ng-if="inputInfo.webName != inputInfo.name">{{inputInfo.webName}}</span>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="2" class="error" ng-if="!inputInfo.showName">{{inputInfo.error}}</td>
+               <td colspan="3" class="error" ng-if="inputInfo.showName">{{inputInfo.error}}</td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
+</form>
+<div class="Grid" ng-if="Setting.Type == 'grid'" ng-container="{height:'auto'}" ng-grid="Setting.Grid" style="border-bottom:1px solid #E3E7E8;">
+   <div class="GridHeader">
+      <div class="GridTr">
+         <div class="GridTd Ellipsis" ng-repeat="title in Setting.GridTitle track by $index">{{title.text}}</div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+   <div class="GridBody">
+      <div class="GridTr" ng-repeat="tr in Setting.inputList track by $index">
+         <div class="GridTd" ng-repeat="td in tr track by $index" ng-class="{'undefined':'Ellipsis','true':'Ellipsis'}[td.ellipsis]" ng-style="{'word-break':(data.options.grid.tdModel == 'auto' || !data.options.grid.tdModel ? 'break-all' : '' ) }" ng-switch on="td.type">
+            <input ng-switch-when="string" type="text" class="form-control" ng-model="td.value" />
+            <input ng-switch-when="checkbox" type="checkbox" ng-model="td.value" />
+            <span ng-switch-when="textual">{{td.value}}</span>
+            <select class="form-control" ng-switch-when="select" ng-model="td.value" ng-options="selectList.value as selectList.key for selectList in td.valid"></select>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+</div>
+<div ng-if="Setting.Type == 'table'" ng-table="Setting.Table['options']" table-title="Setting.Table['title']" table-content="info in Setting.inputList" table-callback="Setting.Table['callback']">
+   <div class="Ellipsis" table-key="$auto" table-switch on="$autoValue.type">
+      <input table-switch-when="string" type="text" class="form-control" ng-model="$autoValue.value" />
+      <input table-switch-when="checkbox" type="checkbox" ng-disabled="$autoValue.disabled" ng-model="$autoValue.value" />
+      <span table-switch-when="textual">{{$autoValue.value}}</span>
+      <select class="form-control" table-switch-when="select" ng-model="$autoValue.value" ng-options="selectList.value as selectList.key for selectList in $autoValue.valid"></select>
+   </div>
+</div>

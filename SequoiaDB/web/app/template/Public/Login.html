@@ -1,0 +1,43 @@
+<div ng-controller="Login.Ctrl">
+   <div class="top1"></div>
+   <div class="top2">
+      <div>
+         <div id="LoginLogo" class="pull-left">
+            <img class="LoginLogoImg" src="images/logo-1.png">
+            <span class="LoginLogo1">Sequoia</span><span class="LoginLogo2">DB</span>&nbsp;&nbsp;<span class="LoginLogo3">SAC</span>
+            <div class="clear-float"></div>
+         </div>
+       </div>
+   </div>
+   <div class="content">
+      <div>
+         <div class="loginUser">
+            <div>
+               <p class="animateTip">{{autoLanguage("用户名")}}</p>
+               <img src="./images/login.png">
+               <input type="text" ng-model="username">
+            </div>
+         </div>
+         <div class="loginPwd">
+            <div>
+               <p class="animateTip">{{autoLanguage("密码")}}</p>
+               <img src="./images/password.png">
+               <input class="password" type="password" ng-model="password" get-focus="true">
+            </div>
+            <div id="chooseLanguage">
+               <div id="languageBtn" ng-repeat="item in LanguageList track by $index" ng-if="item.key == Language" ng-click="showLanguageMenu()">
+                  {{item.value}}
+               </div>
+               <div id="languageMenu">
+                  <ul>
+                     <li ng-repeat="item in LanguageList track by $index" ng-click="chooseLanguage($index)">{{item.value}}</li>
+                  </ul>
+               </div>   
+            </div>
+            <span class="error" ng-if="result.length > 0">{{result}}</span>
+         </div>
+         <button class="loginBtn" ng-click="login()" ng-if="isLoading == false">{{autoLanguage('登录')}}</button>
+         <button class="loginBtn" ng-if="isLoading == true" disabled><img src="./images/btnLoading.gif" /></button>
+      </div>
+   </div>
+</div>

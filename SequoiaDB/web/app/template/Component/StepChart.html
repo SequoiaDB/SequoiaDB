@@ -1,0 +1,13 @@
+﻿<div class="stepInfo">
+   <ul style="height:10px;">
+      <li ng-repeat="barInfo in Setting.bar track by $index" ng-style="barInfo"></li>
+   </ul>
+   <div class="clear-float"></div>
+   <div class="stepIco" ng-repeat="textInfo in Setting.text track by $index" ng-style="textInfo.style">
+      {{$index+1}}
+      <div class="stepText Ellipsis">
+         <a class="linkButton" ng-if="$index + 1 <= data.step" ng-click="onclick($index)">{{textInfo.text}}</a>
+         <span ng-if="$index + 1 > data.step">{{textInfo.text}}</span>
+      </div>
+   </div>
+</div>

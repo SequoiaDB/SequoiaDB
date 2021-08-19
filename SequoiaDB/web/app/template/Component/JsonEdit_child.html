@@ -1,0 +1,96 @@
+﻿<div ng-repeat="field in fields track by $index">
+   <table class="table">
+      <tr>
+         <td class="lineBox treeBox">
+            <div class="treeEdit" style="text-align:left;" ng-style="{'padding-left':field.level * 14 + 'px'}">
+               <table class="table loosen" style="width:auto;">
+                  <tr>
+                     <td style="width:20px;">
+                        <button class="caretBtn" ng-click="toggle(field)" ng-if="field.type == 'Object' || field.type == 'Array'">
+                           <i class="caret caret-5x" ng-class="{ false: 'caret-right', true: 'caret-bottom' }[field.isOpen]"></i>
+                        </button>
+                     </td>
+                     <td ng-style="{ 'true': { background: '#FFFFAB' } }[Setting.Search.length > 0&&field.key.toLowerCase().indexOf(Setting.Search.toLowerCase()) >= 0]">
+                        <div class="fontBox keyBox" ng-if="parentType != 'Array' && field.level > 0" spellcheck="false" contenteditable="true" ng-model="field.key" ng-style="{ 'true': { background: '#DDD' } }[field.key.length == 0]"></div>
+                        <span style="font-size:90%;" ng-if="parentType == 'Array'">{{$index}}</span>
+                        <span style="font-size:90%;" ng-if="field.level == 0" ng-bind="field.key"></span>
+                     </td>
+                     <td>
+                        <span>:</span>
+                     </td>
+                     <td ng-style="{ 'true': { background: '#FFFFAB' } }[Setting.Search.length > 0&&field.val.toLowerCase().indexOf(Setting.Search.toLowerCase()) >= 0]">
+                        <div ng-if="field.type != 'Object' && field.type != 'Array'" class="fontBox valueBox" spellcheck="false" contenteditable="true" ng-paste="checkHtml($event)" ng-change="htmlEscape(field)" ng-class="{ 'String': 'string', 'Auto': 'auto', 'ObjectId': 'objectid', 'Regex': 'regex', 'Binary': 'binary', 'Code': 'code', 'Timestamp': 'time', 'Date': 'time', 'Decimal': 'decimal' }[field.type]" ng-model="field.val" ng-style="{ 'true': { background: '#DDD' } }[field.val.length == 0]"></div>
+                        <span class="fontBox valueBox" ng-if="field.type == 'Object'" ng-bind="'{' + field.val.length + '}'"></span>
+                        <span class="fontBox valueBox" ng-if="field.type == 'Array'" ng-bind="'[' + field.val.length + ']'"></span>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </td>
+         <td class="lineBox">
+            <div ng-if="field.level > 0" ng-switch on="field.type">
+               <button class="treeBtn" ng-attr="{'data-desc':'Object'}"   ng-switch-when="Object" ng-click="showMenu($event)">{}</button>
+               <button class="treeBtn" ng-attr="{'data-desc':'Array'}"    ng-switch-when="Array" ng-click="showMenu($event)">[]</button>
+               <button class="treeBtn" ng-attr="{'data-desc':'Auto'}"     ng-switch-when="Auto" ng-click="showMenu($event)">A</button>
+               <button class="treeBtn" ng-attr="{'data-desc':'String'}"   ng-switch-when="String" ng-click="showMenu($event)">""</button>
+               <button class="treeBtn" ng-attr="{'data-desc':'ObjectId'}" ng-switch-when="ObjectId" ng-click="showMenu($event)" style="font-size:80%">oid</button>
+               <button class="treeBtn" ng-attr="{'data-desc':'Regex'}"    ng-switch-when="Regex" ng-click="showMenu($event)" style="font-size:80%">reg</button>
+               <button class="treeBtn" ng-attr="{'data-desc':'Binary'}"   ng-switch-when="Binary" ng-click="showMenu($event)" style="font-size:80%">01</button>
+               <button class="treeBtn" ng-attr="{'data-desc':'Timestamp'}" ng-switch-when="Timestamp" ng-click="showMenu($event)"><i class="fa fa-calendar"></i></button>
+               <button class="treeBtn" ng-attr="{'data-desc':'Date'}"     ng-switch-when="Date" ng-click="showMenu($event)"><i class="fa fa-calendar"></i></button>
+               <button class="treeBtn" ng-attr="{'data-desc':'Decimal'}"  ng-switch-when="Decimal" ng-click="showMenu($event)">D</button>
+               <button class="treeBtn" ng-attr="{'data-desc':'Undefined'}" ng-switch-when="Undefined" ng-click="showMenu($event)">U</button>
+            </div>
+            <div ng-if="field.level > 0" class="treeMenu">
+               <ul>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'Object'}" ng-click="changeType($event,field,'Object')">{}</button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'Array'}"  ng-click="changeType($event,field,'Array')">[]</button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'Auto'}"   ng-click="changeType($event,field,'Auto')">A</button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'String'}" ng-click="changeType($event,field,'String')">""</button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'ObjectId'}" ng-click="changeType($event,field,'ObjectId')" style="font-size:90%">oid</button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'Regex'}"  ng-click="changeType($event,field,'Regex')" style="font-size:90%">reg</button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'Binary'}" ng-click="changeType($event,field,'Binary')">01</button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'Timestamp'}" ng-click="changeType($event,field,'Timestamp')"><i class="fa fa-calendar"></i></button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'Date'}"   ng-click="changeType($event,field,'Date')"><i class="fa fa-calendar"></i></button></li>
+                  <li><button class="treeBtn" ng-attr="{'data-desc':'Decimal'}" ng-click="changeType($event,field,'Decimal')">D</button></li>
+               </ul>
+            </div>
+            <div ng-if="field.level == 0">
+               <button class="treeBtn" ng-attr="{'data-desc':'Object'}" style="cursor:default;">{}</button>
+            </div>
+         </td>
+         <td class="lineBox">
+            <button class="treeBtn" ng-attr="{'data-desc':autoLanguage('复制')}" ng-if="field.level > 0" ng-click="copy(fields,field)">
+               <i class="fa fa-copy"></i>
+            </button>
+         </td>
+         <td class="lineBox">
+            <button class="treeBtn treeBtnColor2" ng-attr="{'data-desc':autoLanguage('删除')}" ng-click="remove(fields,field)" ng-if="field.level > 0">
+               <i class="fa fa-remove"></i>
+            </button>
+         </td>
+      </tr>
+   </table>
+   <!-- 递归 -->
+   <div ng-if="field.type == 'Object' || field.type == 'Array'" ng-show="field.isOpen" ng-include="'./app/template/Component/JsonEdit_child.html'" ng-eval="fields=field.val;parentType=field.type;"></div>
+   <!-- 添加 -->
+   <table class="table" ng-show="field.isOpen" ng-if="field.type == 'Object' || field.type == 'Array'">
+      <tr>
+         <td class="lineBox treeBox">
+            <div class="treeEdit" style="text-align:left;" ng-style="{'padding-left':field.level * 14 - 5 + 'px'}">
+               <table class="table loosen" style="width:auto;">
+                  <tr>
+                     <td style="width:20px;"></td>
+                     <td><button class="treeBtn" ng-click="add(field)"><i class="fa fa-plus"></i></button></td>
+                     <td></td>
+                     <td></td>
+                  </tr>
+               </table>
+            </div>
+         </td>
+         <td class="lineBox"></td>
+         <td class="lineBox"></td>
+         <td class="lineBox"></td>
+      </tr>
+   </table>
+</div>

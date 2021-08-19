@@ -1,0 +1,156 @@
+<div ng-controller="Deploy.Task.Install.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList" ng-show="DeployType != 'Task'"></div>
+   <div style="padding:10px 15px;" ng-container="{'true':ContainerBox[0],'false':ContainerBox[1]}[DeployType != 'Task']">
+      
+      <div ng-windows="info as GetLogWindow.config" windows-callback="GetLogWindow.callback">
+         <div class="well" style="overflow-y:auto;">
+            <pre style="padding:10px;margin:0;white-space:pre-wrap;">{{Logstr}}</pre>
+         </div>
+      </div>
+      <div ng-container="{offsetY:-45}">
+         <div class="pull-left" ng-container="{width:400}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("任务信息")}}</div>
+
+            <div class="borderBox" style="padding:10px;font-size:90%;overflow-y:auto;" ng-container="{offsetY:-30}">
+               
+               <div style="margin-bottom:10px;">
+                  <button class="btn btn-default" ng-click="ShowGetLog()">{{autoLanguage("查看任务日志")}}</button>
+               </div>
+
+               <table class="table loosen border">
+                  <tr>
+                     <td style="width: 150px;">{{autoLanguage("任务ID")}}</td>
+                     <td>{{TaskInfo['TaskID']}}</td>
+                  </tr>
+                  <tr ng-if="TaskInfo['Info']['ClusterName'].length > 0">
+                     <td>{{autoLanguage("所属集群")}}</td>
+                     <td>{{TaskInfo['Info']['ClusterName']}}</td>
+                  </tr>
+                  <tr ng-if="TaskInfo['Info']['BusinessName'].length > 0">
+                     <td ng-if="ModuleType == 'sequoiadb'">{{autoLanguage("存储集群名")}}</td>
+                     <td ng-if="ModuleType != 'sequoiadb'">{{autoLanguage("实例名")}}</td>
+                     <td>{{TaskInfo['Info']['BusinessName']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("任务类型")}}</td>
+                     <td>{{TaskInfo['TaskName']}}</td>
+                  </tr>
+                  <tr>
+                     <td ng-if="ModuleType == 'sequoiadb'">{{autoLanguage("类型")}}</td>
+                     <td ng-if="ModuleType != 'sequoiadb'">{{autoLanguage("实例类型")}}</td>
+                     <td>{{ModuleDesc}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("项目数")}}</td>
+                     <td>{{TaskInfo['ResultInfo'].length}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("任务状态")}}</td>
+                     <td>{{TaskInfo['StatusDesc']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("进度")}}</td>
+                     <td>{{TaskInfo['Progress']}}%</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("预计剩余时间")}}</td>
+                     <td>{{TimeLeft}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("代理主机")}}</td>
+                     <td>{{TaskInfo['AgentHost']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("代理端口")}}</td>
+                     <td>{{TaskInfo['AgentService']}}</td>
+                  </tr>
+               </table>
+
+            </div>
+
+         </div>
+         <div class="pull-left" ng-container="{offsetX:-410,marginLeft:10}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("进度")}}</div>
+
+            <div class="borderBox" style="padding:10px;overflow-y:auto;overflow-x:hidden;" ng-container="{offsetY:-30}">
+
+               <div class="progress2">
+                  <div class="bar" ng-class="{'0':'blue','1':'orange','2':'red','3':'green'}[BarColor]" ng-style="{'width':TaskInfo['Progress']+'%'}"></div>
+               </div>
+
+               <div ng-container="{offsetY:-50,marginTop:10}" ng-if="(TaskInfo['TaskName'] == 'ADD_BUSINESS' || TaskInfo['TaskName'] == 'REMOVE_BUSINESS' || TaskInfo['TaskName'] == 'SHRINK_BUSINESS' ) && ModuleType == 'sequoiadb'" ng-table="TaskTable['options']" table-title="TaskTable['title']" table-content="installInfo in NewTaskInfo['ResultInfo']">
+                  <div table-key="Status">
+                     <img src="./images/loading2.gif" style="width:22px;height:22px;" ng-if="installInfo['Status'] == 1 || installInfo['Status'] == 0" />
+                     <i class="fa fa-undo" style="font-size:22px;color:#F9A937;" ng-if="installInfo['Status'] == 2"></i>
+                     <i class="fa fa-check" style="font-size:22px;color:#00CC66;" ng-if="installInfo['Status'] == 4 && installInfo['errno'] == 0"></i>
+                     <i class="fa fa-times" style="font-size:22px;color:#D9534F;" ng-if="installInfo['Status'] == 4 && installInfo['errno'] != 0"></i>
+                  </div>
+                  <div class="Ellipsis" table-key="HostName">{{installInfo['HostName']}}</div>
+                  <div class="Ellipsis" table-key="svcname">{{installInfo['svcname']}}</div>
+                  <div class="Ellipsis" table-key="role">{{installInfo['role']}}</div>
+                  <div class="Ellipsis" table-key="datagroupname">{{installInfo['datagroupname']}}</div>
+                  <div class="Ellipsis" table-key="StatusDesc">{{installInfo['StatusDesc']}}</div>
+                  <div class="Ellipsis" table-key="Flow">{{installInfo['Flow'][installInfo['Flow'].length-1]}}</div>
+               </div>
+
+               <div ng-container="{offsetY:-50,marginTop:10}" ng-if="(TaskInfo['TaskName'] == 'ADD_BUSINESS' || TaskInfo['TaskName'] == 'REMOVE_BUSINESS') && ModuleType == 'sequoiasql'" ng-table="TaskTable['options']" table-title="TaskTable['title']" table-content="installInfo in NewTaskInfo['ResultInfo']">
+                  <div table-key="Status">
+                     <img src="./images/loading2.gif" style="width:22px;height:22px;" ng-if="installInfo['Status'] == 1 || installInfo['Status'] == 0" />
+                     <i class="fa fa-undo" style="font-size:22px;color:#F9A937;" ng-if="installInfo['Status'] == 2"></i>
+                     <i class="fa fa-check" style="font-size:22px;color:#00CC66;" ng-if="installInfo['Status'] == 4 && installInfo['errno'] == 0"></i>
+                     <i class="fa fa-times" style="font-size:22px;color:#D9534F;" ng-if="installInfo['Status'] == 4 && installInfo['errno'] != 0"></i>
+                  </div>
+                  <div class="Ellipsis" table-key="HostName">{{installInfo['HostName']}}</div>
+                  <div class="Ellipsis" table-key="role">{{installInfo['role']}}</div>
+                  <div class="Ellipsis" table-key="StatusDesc">{{installInfo['StatusDesc']}}</div>
+                  <div class="Ellipsis" table-key="Flow">{{installInfo['Flow'][installInfo['Flow'].length-1]}}</div>
+               </div>
+
+               <div ng-container="{offsetY:-50,marginTop:10}" ng-if="(TaskInfo['TaskName'] == 'ADD_BUSINESS' || TaskInfo['TaskName'] == 'REMOVE_BUSINESS') && ModuleType == 'zookeeper'" ng-table="TaskTable['options']" table-title="TaskTable['title']" table-content="installInfo in NewTaskInfo['ResultInfo']">
+                  <div table-key="Status">
+                     <img src="./images/loading2.gif" style="width:22px;height:22px;" ng-if="installInfo['Status'] == 1 || installInfo['Status'] == 0" />
+                     <i class="fa fa-undo" style="font-size:22px;color:#F9A937;" ng-if="installInfo['Status'] == 2"></i>
+                     <i class="fa fa-check" style="font-size:22px;color:#00CC66;" ng-if="installInfo['Status'] == 4 && installInfo['errno'] == 0"></i>
+                     <i class="fa fa-times" style="font-size:22px;color:#D9534F;" ng-if="installInfo['Status'] == 4 && installInfo['errno'] != 0"></i>
+                  </div>
+                  <div class="Ellipsis" table-key="zooid">{{installInfo['zooid']}}</div>
+                  <div class="Ellipsis" table-key="HostName">{{installInfo['HostName']}}</div>
+                  <div class="Ellipsis" table-key="StatusDesc">{{installInfo['StatusDesc']}}</div>
+                  <div class="Ellipsis" table-key="Flow">{{installInfo['Flow'][installInfo['Flow'].length-1]}}</div>
+               </div>
+
+               <div ng-container="{offsetY:-50,marginTop:10}" ng-if="(TaskInfo['TaskName'] == 'ADD_BUSINESS' || TaskInfo['TaskName'] == 'REMOVE_BUSINESS' || TaskInfo['TaskName'] == 'DEPLOY_PACKAGE') && ModuleType == 'sequoiasql-postgresql' || ModuleType == 'sequoiasql-mysql'" ng-table="TaskTable['options']" table-title="TaskTable['title']" table-content="installInfo in NewTaskInfo['ResultInfo']">
+                  <div table-key="Status">
+                     <img src="./images/loading2.gif" style="width:22px;height:22px;" ng-if="installInfo['Status'] == 1 || installInfo['Status'] == 0" />
+                     <i class="fa fa-undo" style="font-size:22px;color:#F9A937;" ng-if="installInfo['Status'] == 2"></i>
+                     <i class="fa fa-check" style="font-size:22px;color:#00CC66;" ng-if="installInfo['Status'] == 4 && installInfo['errno'] == 0"></i>
+                     <i class="fa fa-times" style="font-size:22px;color:#D9534F;" ng-if="installInfo['Status'] == 4 && installInfo['errno'] != 0"></i>
+                  </div>
+                  <div class="Ellipsis" table-key="HostName">{{installInfo['HostName']}}</div>
+                  <div class="Ellipsis" table-key="StatusDesc">{{installInfo['StatusDesc']}}</div>
+                  <div class="Ellipsis" table-key="Flow">{{installInfo['Flow'][installInfo['Flow'].length-1]}}</div>
+               </div>
+
+            </div>
+
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-if="DeployType != 'Task' && IsFinish && IsError" ng-click="GotoMod()"><i class="fa fa-chevron-left"></i> {{autoLanguage("上一步")}}</button>
+         <button class="btn btn-default" ng-if="DeployType == 'Task'" ng-click="GotoDeploy2()"><i class="fa fa-chevron-left"></i> {{autoLanguage("返回")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn" ng-class="{'true':'btn-primary','false':'btn-danger'}[IsFinish]" ng-click="GotoDeploy()">
+            {{autoLanguage("完成")}} <i class="fa fa-chevron-right"></i>
+         </button>
+      </div>
+
+      <div ng-windows="form as InstallModule.config" windows-callback="InstallModule.callback">
+         <div form-create para="form"></div>
+      </div>
+
+   </div>
+
+</div>
