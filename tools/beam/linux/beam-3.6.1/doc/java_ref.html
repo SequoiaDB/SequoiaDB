@@ -1,0 +1,845 @@
+<html>
+<head>
+  <title>BEAM: BEAM for Java Reference</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+    <h1 class="title">BEAM for Java Reference</h1>
+<hr/>
+
+</p>
+<p>
+    This page serves as a reference for BEAM for Java.
+    It covers the implementation details of those
+    parts of BEAM that are specific to Java.
+</p>
+<p>
+<ul>
+  <li><a href="#limitations">Current Known Limitations</a></li>
+  <li><a href="#complaints">Supported Complaints</a></li>
+  <li><a href="#environments">Supported Environments</a></li>
+  <li><a href="#options">Supported javac Options</a></li>
+  <li><a href="#compconf">Compiler Configuration Files</a></li>
+  <li><a href="#beam_configure">The beam_configure Command</a></li>
+  <li><a href="#classpath">Classpath Rules</a></li>
+  <li><a href="#dotbeam">The .beam Files</a></li>
+  <li><a href="#analyzedeps">Analyzing Dependent Java Files</a></li>
+  <li><a href="#fastbuilds">Making Builds Faster</a></li>
+</ul>
+
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="limitations"></a><h1>Current Known Limitations</h1>
+
+
+</p>
+<p>
+    There are some known limitations or places where BEAM
+    doesn't exactly match <span class="command">javac</span>.
+</p>
+<p>
+    <ul>
+    <li>The <span class="command">javac</span> compiler can resolve types that
+        are not in the CLASSPATH if they are seen on the command-line.
+        BEAM cannot do this, and requires all needed classes
+        to exist in the CLASSPATH in order for them to be found.</li>
+</p>
+<p>
+    <li>When the <span class="command">javac</span> compiler sees <span class="option">-sourcepath</span>,
+        it splits the classpath into one for Java files and one for
+        Class files. No Java files will come from the classpath, and
+        no Class files will come from the sourcepath. BEAM
+        cannot do this - when BEAM sees the <span class="option">-sourcepath</span>
+        option, the paths are simply added to the overall classpath
+        (see <a href="#classpath">the classpath rules</a>, below).
+        This hopefully affects very few people who have source files
+        and class files in strange places which need to be ignored.</li>
+    </ul>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="complaints"></a><h1>Supported Complaints</h1>
+
+
+</p>
+<p>
+    The following complaints from the <a href="builtin.html">BEAM
+    built-in complaint list</a> are currently supported for Java:
+</p>
+<p>
+    <table>
+      <tr>
+        <th>Complaint</th>
+        <th>Description</th>
+        <th>On by default?</th>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR2">ERROR2</a></td>
+        <td>Invalid operation involving NULL pointer</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR6">ERROR6</a></td>
+        <td>Invoking a method with a null class pointer</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR7">ERROR7</a></td>
+        <td>Accessing beyond allocated memory</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR9">ERROR9</a></td>
+        <td>Passing `null'</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR19">ERROR19</a></td>
+        <td>Statement always fails</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR22">ERROR22</a></td>
+        <td>Division by 0</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR23">ERROR23</a></td>
+        <td>Resource Leak</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR26">ERROR26</a></td>
+        <td>Property Violation for multiple properties</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR33">ERROR33</a></td>
+        <td>Shift amount is outside of the allowed range</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR34">ERROR34</a></td>
+        <td>Failing Assertion</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#ERROR38">ERROR38</a></td>
+        <td>Exceeding a resource limit</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE1">MISTAKE1</a></td>
+        <td>Statement has no effect</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE2">MISTAKE2</a></td>
+        <td>Statement is unreachable</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE4">MISTAKE4</a></td>
+        <td>A <span class="code">break</span> might be missing</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE5">MISTAKE5</a></td>
+        <td>The expression always evaluates to true or false</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE7">MISTAKE7</a></td>
+        <td>The variable already controls the loop on line ...</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE10">MISTAKE10</a></td>
+        <td>Trying to allocate invalid amount of memory</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE16">MISTAKE16</a></td>
+        <td>The if-statement has an empty then-clause and no else-clause</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE17">MISTAKE17</a></td>
+        <td>Loop will be executed at most once</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE18">MISTAKE18</a></td>
+        <td>Comparing pointers, not the objects themselves</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE21">MISTAKE21</a></td>
+        <td>Advisory</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE22">MISTAKE22</a></td>
+        <td>Switch does not consider all cases</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#MISTAKE23">MISTAKE23</a></td>
+        <td>Result of function is supposed to be checked</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING2">WARNING2</a></td>
+        <td>Value of variable with local scope is never used</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING3">WARNING3</a></td>
+        <td>Value of parameter is never used</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING5">WARNING5</a></td>
+        <td>Operator <span class="code">=</span> should probably be <span class="code">==</span></td>
+        <td>Yes (<span class="code">enabling_policy = &quot;constant&quot;</span>)</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING6">WARNING6</a></td>
+        <td>Value does not fit into its type</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING9">WARNING9</a></td>
+        <td>Return value of function is not used</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING15">WARNING15</a></td>
+        <td>The if clause, then clause, or loop body is not surrounded by braces</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING16">WARNING16</a></td>
+        <td>Function access the same variable through two parameters</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING17">WARNING17</a></td>
+        <td>Variable already contains the value being assigned</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING20">WARNING20</a></td>
+        <td>Field and method declarations shadowing base class declarations</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING21">WARNING21</a></td>
+        <td>Using the result of function as a boolean value may be inefficient</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><a href="builtin.html#WARNING22">WARNING22</a></td>
+        <td>Boolean operator always evaluates both operands.</td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+</p>
+<p>
+    Note that not all complaints are enabled by default, because
+    some would be too noisy. Also note that some complaints need
+    additional configuration in order for BEAM to issue them
+    for your software. See <a href="customize.html">BEAM
+    customization</a> for more details on how to enable complaints
+    and configure them appropriately.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="environments"></a><h1>Supported Environments</h1>
+
+
+</p>
+<p>
+    <h2>Platforms</h2>
+
+</p>
+<p>
+    BEAM can analyze Java programs on all platforms except USS.
+</p>
+<p>
+    <h2>Java SDK Emulation</h2>
+
+</p>
+<p>
+    BEAM should be able to emulate any Java SDK you 
+    normally build your source code with, provided that it:
+</p>
+<p>
+    <ul>
+    <li>Supports the normal <span class="command">javac</span> options, like
+        <span class="option">-classpath</span>, <span class="option">-source</span>,
+        <span class="option">-d</span>, etc
+</p>
+<p>
+    <li>Supports the Java Language Specification version
+        2.0 (with or without the "assert" keyword) or
+        the Java Language Specification version 3.0.
+        These correspond to Sun's Java 1.3, 1.4, and 1.5
+        platforms, respectively. Sun's Java 1.6 is also supported,
+        because it uses the same language level and classfile
+        format as Sun's Java 1.5.
+    </ul>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="options"></a><h1>Supported javac Options</h1>
+
+
+</p>
+<p>
+    Here is a list of the <span class="command">javac</span> options that affect
+    the execution of BEAM. Any <span class="command">javac</span> option not
+    in this list will be ignored; this is so that
+    your entire <span class="command">javac</span> command line can be passed
+    to BEAM "as is".
+</p>
+<p>
+    <ul>
+    <li><span class="option">-d <span class="val">directory</span></span><br>
+        This option specifies where the output files are written, just like
+        for <span class="command">javac</span>. BEAM writes <span class="file">.beam</span> files
+        instead of <span class="file">.class</span> files so that it knows what has
+        already been analyzed.
+</p>
+<p>
+        If this option is given more than once, the last occurrence wins.
+</p>
+<p>
+        As a special case, <span class="option">-d /dev/null</span> causes BEAM to
+        not write <span class="file">.beam</span> files at all.
+</p>
+<p>
+    <li><span class="option">-source <span class="val">level</span></span><br>
+        Set up the source language level. Supported values are:
+</p>
+<p>
+        <ul>
+        <li><span class="strong">1.3</span>, which corresponds to the Java Language Specification 
+            version 2.0 without the <span class="code">assert</span> keyword.
+        <li><span class="strong">1.4</span>, which corresponds to the Java Language Specification 
+            version 2.0 with the <span class="code">assert</span> keyword.
+        <li><span class="strong">1.5</span>, which corresponds to the Java Language Specification 
+            version 3.0.
+        <li><span class="strong">1.6</span>, which also corresponds to the Java Language
+            Specification version 3.0.
+        </ul>
+</p>
+<p>
+        If this option is given more than once, the last occurrence wins.
+    <li><span class="option">-sourcepath <span class="val">path</span></span><br>
+        This adds the directories in the path to the front of the user
+        classpath. This is different from standard Java where the
+        sourcepath splits the classpath into two, where one is only
+        for Java files and the other is only for Class files. BEAM
+        searches the entire path for both. This will be fixed in the future.
+        If this option is given more than once, the last occurrence wins.
+</p>
+<p>
+    <li><span class="option">-classpath <span class="val">path</span></span> or <span class="option">-cp <span class="val">path</span></span><br>
+        This sets up the user classpath just like it does for
+        <span class="command">javac</span>. If this option is given more than once, the
+        last occurrence wins.
+</p>
+<p>
+    <li><span class="option">-endorseddirs <span class="val">path</span></span> or
+        <span class="option">-Djava.endorsed.dirs=<span class="val">path</span></span><br>
+        This overrides the endorsed directories. Any jar or zip file in the
+        directories in this path will be added to the classpath before the
+        boot classpath entries.
+        If this option is given more than once, the last occurrence wins.
+</p>
+<p>
+    <li><span class="option">-bootclasspath <span class="val">path</span></span> or <span class="option">-Xbootclasspath:<span class="val">path</span></span><br>
+        This overrides the boot classpath, which is set up by default in your
+        compiler configuration file for your compiler.
+        If this option is given more than once, the last occurrence wins.
+</p>
+<p>
+    <li><span class="option">-Xbootclasspath/p:<span class="val">path</span></span><br>
+        This prepends the given path to the current system boot classpath.
+</p>
+<p>
+    <li><span class="option">-Xbootclasspath/a:<span class="val">path</span></span><br>
+        This appends the given path to the current system boot classpath.
+</p>
+<p>
+    <li><span class="option">-extdirs <span class="val">path</span></span> or
+        <span class="option">-Djava.ext.dirs=<span class="val">path</span></span><br>
+        This overrides the extension directories. Any jar or zip file in the
+        directories in this path will be added to the classpath after the
+        boot classpath entries, and before the user classpath entries.
+        If this option is given more than once, the last occurrence wins.
+</p>
+<p>
+    <li><span class="option">-encoding <span class="val">encoding</span></span><br>
+        Set up the encoding to use for the source file.        
+        If this option is given more than once, the last occurrence wins.
+</p>
+<p>
+    <li><span class="option">@<span class="val">file</span></span><br>
+        This causes the named file to be read in and all of the arguments
+        inside of it to be placed on the command-line, replacing the
+        @<span class="val">file</span> argument.
+    </ul>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="compconf"></a><h1>Compiler Configuration Files</h1>
+
+
+</p>
+<p>
+    BEAM comes with a script called
+    <a href="#beam_configure">beam_configure</a> that will run
+    some tests on your Java compiler and automatically
+    produce a compiler configuration file that you can load into
+    BEAM.
+</p>
+<p>
+    To load a compiler configuration file, simply
+    add it to the command-line like so:
+</p>
+<pre class="example">
+beam-X.Y.Z/bin/beam_compile --beam::compiler=<span class="val">my_config.tcl</span> \
+                            <span class="val">normal javac options</span> \
+                            File1.java File2.java ...
+</pre>
+<p>
+
+    Here are the settings in the compiler configuration file, and what
+    they do:
+</p>
+<p>
+    <table>
+      <tr>
+        <th>Variable</th>
+        <th>Values</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><span class="var">beam::compiler::java::cc</span></td>
+        <td>
+          <ul>
+          <li>"default"</li>
+          <li>"sun_javac"</li>
+          <li>"ibm_javac"</li>
+          </ul>
+        </td>
+        <td>This variable controls which command-line mapper to use and
+            which compiler-specific attributes to load. BEAM
+            currently supports three values, although they all do
+            the same thing for now.</td>
+      </tr>
+      <tr>
+        <td><span class="var">beam::compiler::java::language_source_level</span></td>
+        <td>
+          <ul>
+          <li>1.3</li>
+          <li>1.4</li>
+          <li>1.5</li>
+          <li>1.6</li>
+          </ul>
+        </td>
+        <td>This variable controls which Java Language Specification
+            the code should conform to. 1.3 corresponds
+            to JLS 2.0 without the <span class="code">assert</span> keyword.
+            1.4 corresponds to JLS 2.0 with the <span class="code">assert</span>
+            keyword. 1.5 and 1.6 correspond
+            to JLS 3.0.</td>
+      </tr>
+      <tr>
+        <td><span class="var">beam::compiler::java::language_encoding</span></td>
+        <td>Any encoding</td>
+        <td>This variable controls the encoding of the source file.
+            It should be the same as the <span class="var">file.encoding</span>
+            property of your Java Virtual Machine when run with
+            no options.</td>
+      </tr>
+      <tr>
+        <td><span class="var">beam::compiler::java::suppressed_diagnostics</span></td>
+        <td>A list of EDG error codes to suppress, or '*'</td>
+        <td>
+          The EDG Java parser may issue diagnostic messages of
+          its own that are separate from BEAM. These messages can be suppressed
+          by setting <span class="var">suppressed_diagnostics</span> to be a
+          list of diagnostic codes to suppress. If one of the items
+          in the list is <span class="code">*</span> (a single asterisk), then all EDG
+          diagnostic messages will be suppressed.
+</p>
+<p>
+          Note that in BEAM 3.5.0 and above, all EDG warnings are suppressed
+          automatically. They must first be enabled via "--edg=--warnings"
+          on the BEAM command-line before you can individually suppress
+          those that you are not interested in.
+</p>
+<p>
+          See <a href="faq.html#EDG_Q10">the FAQ entry</a> for information
+          on how to determine the diagnostic code for a certain message.
+        </td>
+      </tr>
+      <tr>
+        <td>Various classpath variables</td>
+        <td>&nbsp;</td>
+        <td>See the <a href="#classpath">classpath rules</a> below for a list of the
+            compiler configuration variables that influence the classpath.</td>
+      </tr>
+    </table>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="beam_configure"></a><h1>The beam_configure Command</h1>
+
+
+</p>
+<p>
+    The <span class="command">beam_configure</span> command can be found in your
+    BEAM install point as <span class="file">beam-X.Y.Z/bin/beam_configure</span>.
+    It will examine your Java compiler and produce a
+    <a href="#compconf">compiler configuration file</a> automatically.
+</p>
+<p>
+    The <a href="beam_configure.html">beam_configure page</a> contains
+    details about the options and usage of the <span class="command">beam_configure</span>
+    command. The only Java-specific option listed on that page is
+    <span class="option">--javabin</span>, which is only needed if your Java compiler
+    (like <span class="command">javac</span>) does not live in the same directory
+    as your Java Virtual Machine (the <span class="command">java</span> command).
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="classpath"></a><h1>Classpath Rules</h1>
+
+
+</p>
+<p>
+    Reproduced here are the classpath rules for Java that BEAM
+    follows. There are slight changes from the standard Java
+    rules that shouldn't affect anyone except in very rare cases.
+    They are documented here as well.
+</p>
+<p>
+    There are 5 different pieces that contribute to the final classpath
+    that BEAM will use to search for dependencies. These pieces
+    are searched, in order, until the needed class is located. Listed
+    with each piece is the compiler configuration variable that holds
+    the default value, the command-line flag to change it, and what
+    happens if it remains unset.
+</p>
+<p>
+    Note that in standard Java, the <span class="option">-sourcepath</span> option
+    essentially splits the classpath into one for Java files and
+    one for Class files. BEAM does not do this (yet) and
+    so everything is on one path.
+</p>
+<p>
+    <table>
+      <tr>
+        <th>Classpath Piece</td>
+        <th>Compiler Configuration Variable</td>
+        <th>Command-line Option</td>
+        <th>If empty?</td>
+        <th>Notes</td>
+      </tr>
+      <tr>
+        <td>Endorsed Directories</td>
+        <td>beam::compiler::java::system_endorsed_dirs</td>
+        <td>-endorseddirs&nbsp;<span class="val">path1:path2:...</span></td>
+        <td>Ignore</td>
+        <td>
+          All jar files and zip files in the directories
+          in this path will be added to the classpath.
+        </td>
+      </tr>
+      <tr>
+        <td>Boot Classpath</td>
+        <td>beam::compiler::java::system_boot_classpath</td>
+        <td>-bootclasspath&nbsp;<span class="val">path1:path2:...</span></td>
+        <td>Ignore</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>Extension Directories</td>
+        <td>beam::compiler::java::system_ext_dirs</td>
+        <td>-extdirs&nbsp;<span class="val">path1:path2:...</span></td>
+        <td>Ignore</td>
+        <td>
+          All jar files and zip files in the directories
+          in this path will be added to the classpath.
+        </td>
+      </tr>
+      <tr>
+        <td>User Sourcepath</td>
+        <td>beam::compiler::java::system_sourcepath</td>
+        <td>-sourcepath&nbsp;<span class="val">path1:path2:...</span></td>
+        <td>Ingore</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>User Classpath</td>
+        <td>beam::compiler::java::system_classpath</td>
+        <td>-classpath&nbsp;<span class="val">path1:path2:...</span></td>
+        <td>BEAM uses "."</td>
+        <td>
+          The compiler configuration file should be setting
+          this to the value of the environment variable
+          <span class="env">$CLASSPATH</span> by default.
+        </td>
+      </tr>
+    </table>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="dotbeam"></a><h1>The .beam Files</h1>
+
+
+</p>
+<p>
+    BEAM will write one <span class="file">.beam</span> file for each
+    <span class="file">.java</span> file that is processed. These <span class="file">.beam</span>
+    files are written where the <span class="file">.class</span> files would have been
+    written by the compiler. BEAM uses them to decide which Java
+    files have already been analyzed, so that they are not analyzed twice.
+</p>
+<p>
+    More details can be found <a href="refdotbeam.html">here</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="analyzedeps"></a><h1>Analyzing Dependent Java Files</h1>
+
+
+</p>
+<p>
+    If a Java source file depends on other Java source files that have
+    not been analyzed yet, BEAM will automatically analyze them.
+    This happens even though some source files are not explicitly
+    listed on the command-line. This is the same behavior as
+    <span class="command">javac</span>.
+</p>
+<p>
+    Files are only analyzed implicitly if there is no <span class="file">.beam</span>
+    file for them, or if the existing <span class="file">.beam</span> file is out of
+    date when compared to the Java source file. However, if
+    a file is listed on the command-line explicitly, it will be analyzed
+    independent of whether or not a <span class="file">.beam</span> file exists and
+    is current. To avoid this behavior, and skip the analysis of files
+    listed on the command-line if they have up-to-date <span class="file">.beam</span>
+    files, specify the option
+    <span class="option">--beam::skip_cmdline_files_if_analyzed</span>.
+</p>
+<p>
+    To disable implicit dependent file analysis and only analyze the
+    files that were explicitly given on the command-line, specify
+    the option <span class="option">--beam::skip_dependencies</span>.
+</p>
+<p>
+    To see which files are being analyzed (implicitly and explicitly),
+    specify the <span class="option">--beam::display_analyzed_files</span> option
+    to BEAM. More information about this and other options is available
+    on the <a href="beam_compile.html">beam_compile page</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="fastbuilds"></a><h1>Making Builds Faster</h1>
+
+
+</p>
+<p>
+    If you want to speed up the time is takes for BEAM to analyze your Java
+    project, you should be doing incremental BEAM runs. After BEAM runs for
+    the first time, you should end up with a directory tree full of
+    <a href="#dotbeam"><span class="file">.beam</span> files</a>.
+</p>
+<p>
+    The second time BEAM is run over your project, BEAM will use the timestamps
+    of those files to decide which source files need to be re-analyzed, and
+    will skip the rest, saving you lots of time. Simply keep the directory
+    around from one build to the next, and always use the same
+    <span class="option">-d <span class="val">/dir</span></span> option to BEAM.
+</p>
+<p>
+    To get the most out of this incremental process, you must be passing the
+    correct options to BEAM. Find the description below that best matches how
+    your Java project is built, and use the information there to decide which
+    options to use.
+</p>
+<p>
+    <table>
+      <tr>
+        <th>What you do to compile</th>
+        <th>What extra option(s) you should pass to BEAM</th>
+      </tr>
+      <tr>
+        <td>You use Ant to build your Java project.</td>
+        <td>You should use our <a href="ant_ref.html">Ant BEAM Plugin</a></td>
+      </tr>
+      <tr>
+        <td>
+          You use a Makefile or some other process that runs only
+          a few instances of <span class="command">javac</span> over a few Java
+          files, and rely on <span class="command">javac</span> to automatically
+          compile all of the dependent files for you. You don't
+          explicitly mention every Java file that you need to
+          compile.
+        </td>
+        <td>
+          You should run BEAM with the following options:
+</p>
+<pre class="example">
+$ beam_compile  --beam::skip_cmdline_files_if_analyzed \
+                <span class="val">your other options</span>
+</pre>
+<p>
+
+        </td>
+      </tr>
+      <tr>
+        <td>
+          You use a Makefile or some other process that runs one
+          or two instances of <span class="command">javac</span>, passing them
+          <span class="option">@<span class="val">list.file</span></span> arguments. Each <span class="file">list.file</span>
+          contains a list of all of the Java files that
+          should be compiled, one per line.
+        </td>
+        <td>
+          You should run BEAM with the following options:
+</p>
+<pre class="example">
+$ beam_compile  --beam::skip_cmdline_files_if_analyzed \
+                --beam::skip_dependencies \
+                <span class="val">your other options</span>
+</pre>
+<p>
+
+        </td>
+      </tr>
+      <tr>
+        <td>
+          You use a Makefile or some other process that runs one
+          instance of <span class="command">javac</span> for each and every Java
+          source file, one at a time.
+        </td>
+        <td>
+          You should run BEAM with the following options:
+</p>
+<pre class="example">
+$ beam_compile  --beam::skip_cmdline_files_if_analyzed \
+                --beam::skip_dependencies \
+                <span class="val">your other options</span>
+</pre>
+<p>
+
+        </td>
+      </tr>
+    </table>
+</p>
+<p>
+    These options give hints to BEAM about which files can be ignored and which
+    files must be re-analyzed depending on the way you invoke your compiler.
+    Without them, incremental runs still work, but they may not be as
+    efficient as they could be.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

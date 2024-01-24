@@ -1,0 +1,15 @@
+	</div>
+{{if $isConnect eq false && $headerlist neq "setup"}}
+	<script type="text/javascript">
+		if ( checkresolution() === 2 )
+		{
+			showconnectmanager() ;
+		}
+	</script>
+{{else if $headerlist eq "setup"}}
+	<script type="text/javascript">
+		checkresolution() ;
+	</script>
+{{/if}}
+  </body>
+</html>

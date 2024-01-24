@@ -1,0 +1,110 @@
+<div style="padding:10px 15px;" ng-controller="Data.MariaDB.Data.Ctrl" ng-container="{}">
+   <div class="underlineTab" ng-container="{height:50}">
+      <ul class="right">
+         <li class="text Ellipsis" style="width:350px;">
+            <b><a class="linkButton" href="#/Data/SequoiaSQL/MariaDB/Database/Index">{{ModuleName}}</a> <span style="font-size:80%; color:#666;">></span> {{FullName}}</b>
+         </li>
+         <li>
+            <a href="#/Data/SequoiaSQL/MariaDB/Operate/Structure">{{pAutoLanguage("表信息")}}</a>
+         </li>
+         <li class="active">
+            <a href="#/Data/SequoiaSQL/MariaDB/Operate/Data">{{pAutoLanguage("数据")}}</a>
+         </li>
+      </ul>
+   </div>
+   <div ng-controller="Data.MariaDB.Data.Operate.Ctrl" ng-container="{height:25}">
+      <div ng-windows="form as QueryWindow.config" windows-callback="QueryWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as InsertWindow.config" windows-callback="InsertWindow.callback">
+         <div form-create para="form"></div>
+         <div class="error" style="margin-top:10px;">{{pAutoLanguage( ErrorTip )}}</div>
+      </div>
+      <div ng-windows="form as UpdateWindow.config" windows-callback="UpdateWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as DeleteWindow.config" windows-callback="DeleteWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as EditWindow.config" windows-callback="EditWindow.callback">
+         <div class="error" style="margin-bottom:10px;">Tips：{{pAutoLanguage( "如果该表没有主键或唯一索引，该操作可能造成更新多条相同记录。" )}}</div>
+         <div class="error" style="margin-bottom:10px;">{{pAutoLanguage( ErrorTip )}}</div>
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="list as ExecHistoryWindow.config" windows-callback="ExecHistoryWindow.callback">
+         <table class="table loosen border">
+            <tr>
+               <td style="width:20%;background-color:#F1F4F5;">{{pAutoLanguage("执行时间")}}</td>
+               <td style="width:80%;background-color:#F1F4F5;">{{pAutoLanguage("执行语句")}}</td>
+            </tr>
+            <tr ng-repeat="info in list track by $index">
+               <td>{{info['execTime']}}</td>
+               <td>
+                  <a class="linkButton" ng-click="UpdateSqlCommand(info['execSql'])" ng-attr="{'data-desc':pAutoLanguage('将语句粘贴到SQL执行框')}">
+                     {{info['execSql']}}
+                  </a>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <div ng-dropdown="config in FieldDropdown.config" dropdown-callback="FieldDropdown.callback">
+         <label class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="SaveField()">
+            <input type="checkbox" ng-model="config.show" />&nbsp;{{config.field}}
+         </label>
+      </div>
+
+      <button class="topBtn" ng-click="ShowQueryWindow()" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1050]"><i class="fa fa-search"></i> {{pAutoLanguage("查询")}}</button>
+      <button class="topBtn" ng-click="ShowInsertWindow()" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1050]"><i class="fa fa-plus"></i> {{pAutoLanguage("插入")}}</button>
+      <button class="topBtn" ng-click="ShowUpdateWindow()" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1050]"><i class="fa fa-edit"></i> {{pAutoLanguage("更新")}}</button>
+      <button class="topBtn" ng-click="ShowDeleteWindow()" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1050]"><i class="fa fa-remove"></i> {{pAutoLanguage("删除")}}</button>
+      <span style="border-left:2px solid #aaa;vertical-align:middle;"></span>&nbsp;
+      <button class="topBtn" ng-click="ShowExecHistory()" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1050]">{{pAutoLanguage("执行记录")}}</button>
+      <button class="topBtn" ng-click="ShowFieldList($event)" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1050]">{{pAutoLanguage("选择字段")}}&nbsp;<i class="fa fa-caret-down"></i></button>
+
+      <div class="clear-float"></div>
+   </div>
+   <div class="result Ellipsis" ng-controller="Data.MariaDB.Data.Result.Ctrl" ng-class="{true:'success',false:'failed'}[ExecRc]" ng-container="{height:40,marginTop:12}">
+      {{ExecResult}}
+   </div>
+   <div ng-controller="Data.MariaDB.Data.InputBox.Ctrl">
+      <div style="margin-top:10px;height:95px;">
+         <textarea class="form-control" style="height:95px;line-height:initial;font-family:inherit;" rows="5" spellcheck="false" ng-model="SqlCommand"></textarea>
+      </div>
+      <div ng-container="{marginTop:5,height:25}">
+         <button ng-click="ExecQuery()" class="btn btn-primary">{{pAutoLanguage("执行")}}</button>
+      </div>
+   </div>
+
+
+   <div ng-container="{marginTop:10,offsetY:-275}" ng-controller="Data.MariaDB.Data.Table.Ctrl">
+
+      <!--查看单条记录弹窗-->
+      <div ng-windows="list as DataWindow.config" windows-callback="DataWindow.callback">
+         <table class="table loosen border">
+            <tr>
+               <th style="width:40%;background-color:#F1F4F5;">key</th>
+               <th style="width:60%;background-color:#F1F4F5;">value</th>
+            </tr>
+            <tr ng-repeat="(key,value) in list track by $index">
+               <td>{{key}}</td>
+               <td>{{ReturnNull( value )}}</td>
+            </tr>
+         </table>
+      </div>
+
+      <div ng-container="{}" ng-table="GridTable['options']" table-title="GridTable['title']" table-content="info in GridTable['body']" table-callback="GridTable['callback']">
+         <div class="Ellipsis" table-key="#">{{$index+1}}</div>
+         <div class="Ellipsis" table-key="operate">
+            <a class="linkButton" ng-click="ShowEditWindow( $index )">
+               <i class="fa fa-edit" ng-attr="{'data-desc':pAutoLanguage('编辑')}"></i>
+            </a>
+            <a class="linkButton" ng-click="ShowRemoveData( $index )">
+               <i class="fa fa-remove" ng-attr="{'data-desc':pAutoLanguage('删除')}"></i>
+            </a>
+         </div>
+         <div class="Ellipsis" table-key="$auto">
+            <span class="linkButton" ng-click="ShowDataWindow( $index )">{{ReturnNull( $autoValue )}}</span>
+         </div>
+      </div>
+   </div>
+</div>

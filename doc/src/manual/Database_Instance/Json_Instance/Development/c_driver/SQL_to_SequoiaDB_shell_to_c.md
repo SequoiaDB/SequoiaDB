@@ -1,0 +1,16 @@
+
+SequoiaDB 巨杉数据库的查询用 json（bson）对象表示，下表以示例的形式展示 SQL 语句、SDB Shell 语句和 SequoiaDB C 驱动程序语法之间的对照。
+
+| SQL                                                 | SDB Shell                                              | C Driver                                                     |
+| --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| insert into employee( a, b ) values( 1, -1 )        | db.sample.employee.insert( { a: 1, b: -1 } )                 | const char *r = "{ a: 1, b: -1 }" ; <br/> jsonToBson ( &obj, r ); <br/> sdbInsert( collection, &obj ); |
+| select a,b from employee                            | db.sample.employee.find( null, { a: "", b: "" } )            | const char *r = "{ a: "", b: "" }" ; <br/> jsonToBson ( & select, r ) ; <br/> sdbQuery ( collection, NULL, &select, NULL, NULL, 0, -1, cursor ) ; |
+| select * from employee                              | db.sample.employee.find()                                    | sdbQuery ( collection, NULL, NULL, NULL, NULL, 0, -1, cursor ) ; |
+| select * from employee where age = 20               | db.sample.employee.find( { age: 20 } )                       | const char *r = "{ age: 20 }" ; <br/> jsonToBson ( &condition, r ); <br/> sdbQuery ( collection, & condition, NULL, NULL, NULL, 0, -1, cursor ); |
+| select * from employee where age = 20 order by name | db.sample.employee.find( { age: 20 } ).sort( { name: 1 } )   | const char r1 = "{ age: 20 }" ; <br/> const char r2 = "{ name: 1 }" ; <br/> jsonToBson ( & condition, r1 ) ; <br/> jsonToBson ( &orderBy, r2 ) ; <br/> sdbQuery ( collection, & condition, NULL, & orderBy, NULL, 0, -1, cursor ) ; |
+| select * from employee where age > 20 and age < 30  | db.sample.employee.find( { age: { $gt: 20, $lt: 30 } } )     | const char *r = "{ age: { $gt: 20, $lt: 30 } }" ; <br/> jsonToBson ( &condition, r );  <br/> sdbQuery ( collection, & condition , NULL, NULL, NULL, 0, -1, cursor ) ; |
+| create index testIndex on employee( name )          | db.sample.employee.createIndex( "testIndex", { name: 1 }, false ) | const char *r = "{ name: 1 }" ; <br/> jsonToBson ( &obj, r ); <br/> sdbCreateIndex ( collection, &obj, "testIndex", FALSE, FALSE ) |
+| select * from employee limit 20 offset 10           | db.sample.employee.find().limit(20).skip( 10 )               | sdbQuery ( collection, NULL, NULL, NULL, NULL, 10, 20, cursor ) ; |
+| select count( * ) from employee where age > 20      | db.sample.employee.find( { age: { $gt: 20 } } ).count()      | const char *r = "{ age: { $gt: 20 } }" ; <br/> jsonToBson ( &condition, r ); <br/> sdbGetCount ( collection, &condition, &count ) ; |
+| update employee set a=2 where b=-1                  | db.sample.employee.update( { $set: { a: 2 } }, { b: -1 } )   | const char r1 = "{ $set: { a: 2 } }" ; <br/> const char r2 = "{ b: -1 }" ; <br/> jsonToBson ( &rule, r1 ) ;  <br/> jsonToBson ( &condition, r2 ) ; <br/> sdbUpdate( collection, &rule, &condition, NULL ) ; |
+| delete from employee where a=1                      | db.sample.employee.remove( { a: 1 } )                        | const char *r = "{ a: 1 }" ; <br/> jsonToBson ( &condition, r ) ; <br/> sdbDelete ( collection, &condition, NULL ) ; |

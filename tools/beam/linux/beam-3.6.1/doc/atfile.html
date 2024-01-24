@@ -1,0 +1,486 @@
+<html>
+<head>
+  <title>The Format of @file Arguments</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<!--
+  Note: The atfile testcase is in testcases/sh-scripts. The implementation
+        is in tcl/beam_util.tcl. Keep all of these in sync.
+-->
+</p>
+<p>
+<h1 class="title">The Format of @file Arguments</h1>
+<hr/>
+
+</p>
+<p>
+BEAM accepts arguments of the form <span class="option">@file</span>. These
+files are read in (after the leading <span class="option">@</span> is removed),
+and the resulting argument list is treated as if it was
+specified directly on the BEAM command-line in place of
+the <span class="option">@file</span>.
+</p>
+<p>
+The contents of the <span class="option">@file</span> are broken up into separate
+command-line arguments. Spaces and newlines separate arguments,
+just as they do on the command-line.
+</p>
+<p>
+Things get interesting when quotes are placed in the <span class="option">@file</span>.
+BEAM interprets the <span class="option">@file</span> contents depending on the
+compiler being emulated.
+</p>
+<p>
+<ul>
+ <li><a href="#msvc">The Microsoft Visual C/C++ Compiler</a></li>
+ <li><a href="#other">All other compilers</a></li>
+</ul>
+</p>
+<p>
+<a name="msvc"></a><h1>The Microsoft Visual C/C++ Compiler</h1>
+
+
+</p>
+<p>
+When emulating the <a href="emul-msvc.html">MSVC</a> compiler,
+<span class="option">@file</span> arguments are treated like <span class="term">response files</span> that
+the MSVC compiler recognized. BEAM tries to parse the files in
+the same way. The following describes the rules.
+</p>
+<p>
+<table>
+ <tr>
+  <th>Rule</th>
+  <th>Example <span class="option">@file</span></th>
+  <th>Resulting arguments as seen by BEAM (one argument per bullet)</th>
+ </tr>
+ <tr>
+  <td>
+   Spaces and newlines separate arguments.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b
+-c 1
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>-c</li>
+    <li>1</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Double-quotes group multiple space-separated arguments into
+   a single argument with spaces.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b &quot;1 2 3&quot;
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>1 2 3</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Single-quotes do not group any arguments; they are passed through as
+   literal characters.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b '1 2 3'
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>'1</li>
+    <li>2</li>
+    <li>3'</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Strings end at the newline.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b &quot;1 2
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>1 2</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Newlines separate arguments inside double-quoted strings.
+   Double-quotes on the next line start a new string.
+   Strings are glued to arguments (see below).
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b &quot;1 2
+3&quot; -c 4
+5
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>1 2</li>
+    <li>3 -c 4</li>
+    <li>5</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Backslashes don't escape anything; they are passed through literally.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a \n -b &quot;1 2\n3 4\d5&quot;
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>\n</li>
+    <li>-b</li>
+    <li>1 2\n3 4\d5</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Quotes with no spaces on the outside don't separate the arguments.
+   Arguments are glued together if they are adjacent to quoted strings.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b&quot;1 2&quot;3
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b1 23</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Empty strings are ignored.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b &quot;&quot; -c
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>-c</li>
+   </ul>
+  </td>
+ </tr>
+</table>
+</p>
+<p>
+Note that BEAM will not know that you are emulating the MSVC compiler
+unless you correctly specify
+<a href="beam_compile.html#beam::compiler">--beam::compiler=...</a> for
+an MSVC <a href="compiler_configuration.html">compiler configuration
+file</a>. Using <span class="option">--beam::source=...</span> for the compiler
+configuration file will not work correctly, and has been deprecated.
+</p>
+<p>
+<a name="other"></a><h1>All other compilers</h1>
+
+
+</p>
+<p>
+When emulating most compilers, BEAM uses the following rules when
+parsing the contents of <span class="option">@file</span> arguments. These rules are
+intended to match the way Java compilers usually parse <span class="option">@file</span>
+arguments.
+</p>
+<p>
+<table>
+ <tr>
+  <th>Rule</th>
+  <th>Example <span class="option">@file</span></th>
+  <th>Resulting arguments as seen by BEAM (one argument per bullet)</th>
+ </tr>
+ <tr>
+  <td>
+   Spaces and newlines separate arguments.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b
+-c 1
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>-c</li>
+    <li>1</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Double-quotes group multiple space-separated arguments into
+   a single argument with spaces.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b &quot;1 2 3&quot;
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>1 2 3</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Single-quotes group multiple space-separated arguments into
+   a single argument with spaces.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b '1 2 3'
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>1 2 3</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Strings end at the newline.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b &quot;1 2
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>1 2</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Newlines separate arguments inside double-quoted strings.
+   Double-quotes on the next line start a new string.
+   Strings are not glued to arguments (see below).
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b &quot;1 2
+3&quot; -c 4
+5
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>1 2</li>
+    <li>3<li>
+    <li> -c 4</li>
+    <li>5</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Backslashes are escapes, and are un-escaped as they are seen.
+   This only happens inside single or double quoted strings.
+   Known escapes are: <br>
+   \a, \b, \f, \n, \r, \t, \v <br>
+   Unknown escapes simply have the backslash removed.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a \n -b &quot;1 2\n3 4\d5&quot;
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>\n</li>
+    <li>-b</li>
+    <li>1 2<span class="val">newline</span>3 4d5</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Quotes with no spaces on the outside separate the arguments.
+   Arguments are not glued together if they are adjacent to quoted strings.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b&quot;1 2&quot;3
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li>1 2</li>
+    <li>3</li>
+   </ul>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   Empty strings are not ignored.
+  </td>
+  <td>
+</p>
+<pre class="example">
+-a -b &quot;&quot; -c
+</pre>
+<p>
+  </td>
+  <td>
+   <ul>
+    <li>-a</li>
+    <li>-b</li>
+    <li><span class="val">empty arg</span></li>
+    <li>-c</li>
+   </ul>
+  </td>
+ </tr>
+</table>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

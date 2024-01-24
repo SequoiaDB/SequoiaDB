@@ -1,0 +1,150 @@
+<html>
+<head>
+  <title>BEAM: Translating BEAM's XML Output</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Translating BEAM's XML Output</h1>
+<hr/>
+
+</p>
+<p>
+BEAM can output complaints in XML format with the
+<a href="parms.html#beam::xml_complaint_file">beam::xml_complaint_file</a>
+option. This output can be converted to any custom format
+you choose by manipulating the resulting document.
+</p>
+<p>
+Here is an example of this manipulation using
+<a href="http://www.w3.org/TR/xslt">XSLT</a> to transform the XML
+into BEAM's default textual output.
+</p>
+<p>
+This example requires:
+<ul>
+ <li>
+   <a href="http://xmlsoft.org/XSLT/xsltproc2.html">xsltproc</a>, a command-line XSLT engine.
+   This is part of the <span class="file">libxslt</span> library.
+</p>
+<p>
+   Those using Linux should be able to install the binary packages from their distribution.
+   For example, Debian users can install the <span class="file">xsltproc</span> package, and Mandriva
+   users can install the <span class="file">libxslt-proc</span> package. Other distributions should
+   have similar packages.
+</p>
+<p>
+   Windows binaries can be found <a href="http://www.zlatkovic.com/libxml.en.html">here</a>.
+   You want the <span class="file">libxslt</span> package, as well as everything it depends on.
+   Follow the directions on that web page.
+</p>
+<p>
+   Everyone else will have to build <span class="file">libxslt</span> from the
+   <a href="http://xmlsoft.org/XSLT/downloads.html">source</a>. Follow the directions
+   contained within.
+ </li>
+ <li>
+   <a href="beam_xml_to_text.xsl">beam_xml_to_text.xsl</a>, our example XSL file.
+ </li>
+</ul>
+</p>
+<p>
+Simply run BEAM over a source file with the XML option enabled, and then
+post-process the resulting XML complaint file using <span class="file">xsltproc</span>:
+</p>
+<pre class="example">
+$ beam_compile some_test.c --beam::xml_complaint_file=beam_complaints.xml
+$ xsltproc --novalid --nonet beam_xml_to_text.xsl beam_complaints.xml
+</pre>
+<p>
+
+The result should be a textual output that resembles BEAM's default complaint
+output. The <span class="option">--novalid</span> and <span class="option">--nonet</span> options are to
+prevent a warning about fetching the BEAM DTD, since <span class="file">xsltproc</span>
+doesn't seem to know how to fetch via https.
+</p>
+<p>
+By modifying this example XSL file, you can turn the output into whatever
+format you want: a different XML document, HTML, text in any format, etc.
+</p>
+<p>
+This example has been tested with the following version of <span class="file">xsltproc</span>.
+Any later version (and possibly earlier versions) should also work.
+</p>
+<pre class="example">
+$ xsltproc --version
+
+Using libxml 20419, libxslt 10015 and libexslt 706
+xsltproc was compiled against libxml 20418, libxslt 10015 and libexslt 706
+libxslt 10015 was compiled against libxml 20418
+libexslt 706 was compiled against libxml 20418
+</pre>
+<p>
+
+It is also possible to use a programming language and an XML library to
+parse the BEAM XML complaint file into a suitable data structure. From
+there, you can write a program to generate output in the format
+of your choice or process it in any other way that you see fit.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

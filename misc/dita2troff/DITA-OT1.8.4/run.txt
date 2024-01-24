@@ -1,0 +1,10 @@
+参考：
+DITA Open Iookit官网--Documentation--User Guide--Publish DITA content--Building output using the command-line tool
+
+命令格式：java -jar lib/dost.jar /i:input-file /transformation-type /parameter-name:value
+
+例子：
+
+java -jar lib/dost.jar /i:mysource/createCL_en_v2.dita /transtype:troff /outdir:myoutput
+
+java -jar lib/dost.jar /i:E:\sequoiadb\doc\references\methods\topics_en_v2\cl.count.dita /transtype:troff /outdir:E:\sequoiadb\doc\manual

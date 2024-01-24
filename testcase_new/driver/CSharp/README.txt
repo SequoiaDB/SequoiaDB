@@ -1,0 +1,4 @@
+每次提交新的CSharp用例都需要同时提交CSharp.csproj文件，将新的文件名加到CSharp.csproj中
+checkRunCases.py可以用来校验是否将所有的CSharp用例都加到了CSharp.csproj文件文件中
+linux下执行python checkRunCases.py
+python2和python3均可

@@ -1,0 +1,213 @@
+<html>
+<head>
+  <title>BEAM: xlc and vac</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Details of xlc / vac Emulation</h1>
+<hr/>
+
+</p>
+<p>
+The current level of xlc/vac emulation has been proven to be robust
+enough for a wide variety of application programs as well as system
+related code.
+</p>
+<p>
+<h1>Command-line Flags</h1>
+
+</p>
+<p>
+Please see the file <span class="file">tcl/beam_map_vac_flags.tcl</span> or
+<span class="file">beam_map_xlc_flags.tcl</span> in your BEAM installation.
+</p>
+<p>
+<span class="option">beam_map_xlc_flags</span> is for the older IBM compilers
+(version 4 and under). <span class="option">beam_map_vac_flags</span> is
+for the newer compilers, and has been tested with VisualAge
+5, 6, 7, and 8.
+</p>
+<p>
+<h1>Predefined Macros</h1>
+
+</p>
+<p>
+The list of predefined macros can be found in the compiler
+configuration file that <a href="beam_configure.html"><span class="command">beam_configure</span></a>
+generated for you.
+</p>
+<p>
+<h1>Additional Keywords and Syntax Extensions</h1>
+
+</p>
+<p>
+The IBM compilers support additional keywords and syntax extensions
+in source files. The following keywords are recognized and will be
+ignored if the compiler supports them. More specifically, BEAM will 
+create a macro under the covers that replaces the keyword with a
+sequence of blanks.
+</p>
+<p>
+<table>
+<tr>
+  <td><span class="code">__cdecl</span></td>
+  <td><span class="code">_Cdecl</span></td>
+</tr>
+<tr>
+  <td><span class="code">__export</span></td>
+  <td><span class="code">_Export</span></td>
+</tr>
+<tr>
+  <td><span class="code">__far16</span></td>
+  <td><span class="code">_Far16</span></td>
+</tr>
+<tr>
+  <td><span class="code">__far32</span></td>
+  <td><span class="code">_Far32</span></td>
+</tr>
+<tr>
+  <td><span class="code">__fastcall</span></td>
+  <td><span class="code">_Fastcall</span></td>
+</tr>
+<tr>
+  <td><span class="code">__import</span></td>
+  <td><span class="code">_Import</span></td>
+</tr>
+<tr>
+  <td><span class="code">__inline</span></td>
+  <td><span class="code">_Inline</span></td>
+</tr>
+<tr>
+  <td><span class="code">__optlink</span></td>
+  <td><span class="code">_Optlink</span></td>
+</tr>
+<tr>
+  <td><span class="code">__packed</span></td>
+  <td><span class="code">_Packed</span></td>
+</tr>
+<tr>
+  <td><span class="code">__pascal</span></td>
+  <td><span class="code">_Pascal</span></td>
+</tr>
+<tr>
+  <td><span class="code">__seg16</span></td>
+  <td><span class="code">_Seg16</span></td>
+</tr>
+<tr>
+  <td><span class="code">__stdcall</span></td>
+  <td><span class="code">_Stdcall</span></td>
+</tr>
+<tr>
+  <td><span class="code">__system</span></td>
+  <td><span class="code">_System</span></td>
+</tr>
+<tr>
+  <td><span class="code">__unaligned</span></td>
+  <td><span class="code">_Unaligned</span></td>
+</tr>
+</table>  
+</p>
+<p>
+<h1>Configuration Files</h1>
+
+</p>
+<p>
+If no <span class="option">-F</span> flag was given, we attempt to open the default
+configuration file as follows:
+</p>
+<p>
+<table>
+<tr>
+<th>Compiler</th>
+<th>Configuration file</th>
+<th>Stanza</th>
+</tr>
+<tr>
+<td>xlc (ibmcxx)</code> and C file</td>
+<td><span class="file">/etc/ibmcxx.cfg</span></td>
+<td><span class="command">xlc</span></td>
+</tr>
+<tr>
+<td>xlc (ibmcxx)</code> and C++ file</td>
+<td><span class="file">/etc/ibmcxx.cfg</span></td>
+<td><span class="command">xlC</span></td>
+</tr>
+<tr>
+<td>xlc (VisualAge)</code> and C file</td>
+<td><span class="file">/etc/vac.cfg</span></td>
+<td><span class="command">xlc</span></td>
+</tr>
+<tr>
+<td>xlc (VisualAge)</code> and C++ file</td>
+<td><span class="file">/etc/vac.cfg</span></td>
+<td><span class="command">xlC</span></td>
+</tr>
+</table>
+</p>
+<p>
+If your configuration file resides in a non standard location, you
+need to specify it on the command line using the <span class="option">-F</span> flag.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

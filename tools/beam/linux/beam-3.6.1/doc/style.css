@@ -1,0 +1,314 @@
+body 
+{
+  background: #FFFFFF;
+  margin: 9px;
+  margin-bottom: 50px;
+  color: #333333;
+  text-align: center;
+}
+
+
+h1.title
+{
+  font: 30px bold Verdana, serif;
+  padding: 0px;
+  overflow: hidden;
+  min-height: 94px;
+}
+
+
+h1
+{
+  font: 25px bold Verdana, sans-serif;
+}
+
+
+
+h2
+{
+  font: 20px bold Verdana, sans-serif;
+}
+
+
+h3
+{
+  font: 18px bold Verdana, sans-serif;
+}
+
+
+A:link 
+{ 
+  color: #6C8EFF; 
+  text-decoration: none; 
+}
+
+
+A:hover 
+{ 
+  color: #6C8EFF; 
+  text-decoration: underline; 
+}
+
+
+A:active 
+{ 
+  color: #999999; 
+  text-decoration: none; 
+}
+
+
+A:active:hover
+{ 
+  color: #6C8EFF; 
+  text-decoration: underline; 
+}
+
+
+A:visited 
+{ 
+  color: #6C8EFF;  
+  text-decoration: none; 
+}
+
+
+A:visited:hover
+{ 
+  color: #6C8EFF; 
+  text-decoration: underline; 
+}
+
+
+#wrap
+{
+}
+
+
+table.center
+{
+  border-style: none;
+  margin-left: auto;
+  margin-right: auto;
+  font: 14px/18px Verdana, sans-serif;
+}
+
+
+td#left
+{
+  border-style: none;
+  vertical-align: top;
+  width: 150px;
+}
+
+
+td#right
+{
+  border-style: none;
+  vertical-align: top;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+}
+
+
+#navlist
+{
+  padding: 0 1px 1px;
+  margin-left: 0;
+  font: bold 12px Verdana, sans-serif;
+  background: #F3F3F3;
+}
+
+
+#navlist li
+{
+  list-style: none;
+  margin: 0;
+  border-top: #CCCCCC 1px solid;
+  text-align: right;
+}
+
+
+#navlist li a
+{
+  display: block;
+  padding: 0.25em 0.5em 0.25em 0.75em;
+  background: #F3F3F3;
+  text-decoration: none;
+}
+
+
+#navlist li a:link 
+{ 
+  color: #6C8EFF; 
+}
+
+
+#navlist li a:visited 
+{ 
+#  color: #999999; 
+  color: #6C8EFF; 
+}
+
+
+#navlist li a:hover
+{
+  color: #666666;
+  background: #FFFFFF;
+}
+
+
+#navtitle
+{
+  padding: 0 1px 1px;
+  background:#636363;
+  font: bold 16px Verdana, sans-serif;
+  color: #FFFFFF;
+}
+
+
+table
+{
+  border-style: solid;
+  border-width: 1px;
+  border-color: #AAAAAA;
+  border-collapse: separate;
+  border-spacing: 0px;
+  table-layout: automatic;
+  vertical-align: center;
+  empty-cells: show;
+}
+
+
+table th
+{
+  border-style: solid;
+  border-color: #AAAAAA;
+  border-width: 1px;
+  font-weight: bold;  
+  padding: 5px;
+  border-bottom-style: ridge;
+  border-bottom-width: 2px;
+}
+
+
+table td
+{
+  border-style: solid;
+  border-color: #AAAAAA;
+  border-width: 1px;
+  padding: 5px;
+}
+
+
+td ul
+{
+  padding: 5px 10px 5px 20px;
+}
+
+
+table.borderless
+{
+  border-style: none;
+}
+
+
+table.borderless th
+{
+  border-style: none;
+  padding: 1px 3px 1px 3px;
+}
+
+
+table.borderless td
+{
+  border-style: none;
+  padding: 1px 3px 1px 3px;
+}
+
+
+pre.example
+{
+  color: #333333;
+  background: #F3F3F3;
+  padding: 20px;
+  margin: 5px 0px 5px 0px;
+  border: 1px solid #333333;
+  font-style: fixed;
+  font-size: 13px;
+  overflow: auto;
+}
+
+
+.term
+{
+  font-weight: bold;
+}
+
+
+.command
+{
+  font-style: fixed;
+  font-family: monospace;
+}
+
+
+.file
+{
+  font-style: fixed;
+  font-family: monospace;
+}
+
+
+.option
+{
+  font-style: italic;
+}
+
+
+.code
+{
+  font-style: fixed;
+  font-family: monospace;
+}
+
+
+.env
+{
+  font-style: fixed;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+
+.var
+{
+  font-style: fixed;
+  font-family: monospace;
+}
+
+
+.val
+{
+  font-style: italic;
+  font-family: monospace;
+}
+
+
+.strong
+{
+  font-weight: bold;
+}
+
+
+.function
+{
+  font-style: fixed;
+  font-family: monospace;
+}
+
+
+.option .val
+{
+  font-style: normal;
+  font-family: monospace;
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@param ${java.driver.jar} : The path where the java.driver.jar is -->
+<!--@param ${javac.base.dir} : The path where the javac.base.dir is -->
+<!--@param ${root.dir} : The path where the ${WORKSPACE}/sequoiadb/driver/hadoop/hive -->
+
+<project name="sequoiadb-migrater" default="jar" basedir=".">
+
+	<property name="javac.base.dir" value="E:/sequoiadb_trunk/" />
+
+	<property name="root.dir"  value="." />
+	<property name="target.dir" value="${root.dir}/build" />
+	<property name="source.dir" value="${root.dir}/src" />
+	<property name="library.dir" value="${root.dir}/lib" />
+
+	<target name="clean" depends="">
+		<delete dir="${target.dir}" />
+	</target>
+
+	<target name="compile" depends="clean">
+		<mkdir dir="${target.dir}" />
+
+		<echo message="${javac.base.dir}/java/jdk_win64/bin/javac" />
+
+		<javac srcdir="${source.dir}" destdir="${target.dir}" debug="true" fork="true" classpath="" executable="${javac.base.dir}/java/jdk_win64/bin/javac">
+			<classpath>
+				<fileset dir="${library.dir}" includes="*.jar" />
+			</classpath>
+		</javac>
+
+	</target>
+
+	<target name="jar" depends="compile">
+		<tstamp>
+			<format property="tstamp" pattern="dd/MM/yyy HH:mm:ss" />
+		</tstamp>
+
+		<jar file="${root.dir}/sequoiadb-migrater.jar">
+			<manifest>
+				<attribute name="Version" value="1.0" />
+				<attribute name="Build-Timestamp" value="${tstamp}" />
+			</manifest>
+			<fileset dir="${target.dir}" includes="**/*" />
+		</jar>
+	</target>
+</project>

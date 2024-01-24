@@ -1,0 +1,114 @@
+<html>
+<head>
+  <title>BEAM: The Tcl Search Path</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">The BEAM Tcl Search Path</h1>
+<hr/>
+
+</p>
+<p>
+  Whenever a Tcl file is loaded, it has to be located.  Loading
+  happens as a side effect of using <span class="code">source <span class="val">file</span></span> from
+  within a Tcl script, or <span class="option">--beam::source=</span> or <span class="option">--beam::parms=</span> or other similar command-line options that specify
+  Tcl files.
+</p>
+<p>
+  If the file that is given is an absolute path name
+  (it starts with "<span class="file">/</span>"), then no searching
+  is done, and the named file is loaded directly.
+</p>
+<p>
+  If the file that is given is a relative path that
+  contains "<span class="file">/</span>" anywhere in it, then 
+  no searching is done, and the named file is loaded
+  directly, relative to the current working directory.
+</p>
+<p>
+  If the file is a plain file name with no "<span class="file">/</span>"
+  anywhere in it, then it is looked for in the following
+  directories, in the following order. The first file found
+  is loaded.
+</p>
+<p>
+  <ul>
+    <li>The current working directory
+    <li>The <span class="file">tcl</span> subdirectory of the BEAM installation
+  </ul>
+</p>
+<p>
+  Examples:
+</p>
+<pre class="example">
+# Load a file explicitly from a parms.tcl file:
+
+source <span class="val">/home/foo/file.tcl</span>
+
+# Search for the file in the BEAM search path:
+
+beam_compile --beam::source=<span class="val">file.tcl</span> ...
+</pre>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

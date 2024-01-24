@@ -1,0 +1,39 @@
+﻿offset.md
+offset应该没有括号
+
+right outer join
+语法定义比较长，是否可以考虑分行？
+
+split
+是否可以给出一个有多个split()的例子？
+
+push
+是否可以有多个push()的例子？
+
+split和push是否有一起使用的冲突?
+
+limit/offset
+limit和offset结合起来使用的例子，可以考虑加入互相参考引用的连接
+
+SecureSdb.md
+没有说明SecureSdb如何new出来
+
+Sequoiadb_limitation.md
+
+集合空间名字的非法字符还有
+      CHAR  invalidArray[] = {
+         '.',
+         '\\',
+         '/',
+         ':',
+         '*',
+         '?',
+         '"',
+         '<',
+         '>',
+         '|' } ;
+集合空间下还有lobsize的限制
+
+可以提示如果有特殊字符在名字中，可以使用Sdb.getCS(name)或者SdbCS.getCL(name)这样的方法来获取
+
+驱动下面是否可以列出需要注意线程安全的对象？或者给出连接参考引用其他的文档

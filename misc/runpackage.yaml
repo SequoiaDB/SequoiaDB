@@ -1,0 +1,176 @@
+####################################################################
+# Decription:
+#   Used for package framework, define all the action in install
+####################################################################
+# Action scope:
+#   all: takes effect on all installaction
+#   upgrade: only takes effect in upgrade
+
+installInformation:
+  productname: sequoiadb
+  productfullname: SequoiaDB Server
+  # SYS parameters provided by package framwork
+  installerfilename: ${productname}-${SYS_PRODUCT_VERSION}-${SYS_PLATFORM}${SYS_ENTERPRISE}${SYS_HYBRID}-installer.${SYS_PLATFORM_EXEC_SUFFIX}
+  supportmultversion: false
+  # file name in /etc/default
+  sysconfig: sequoiadb
+  licensefile:
+    en: '${SYS_ORIGIN_DIR}/license/license_en.txt'
+    cn: '${SYS_ORIGIN_DIR}/license/license_zh.txt'
+  # registered environment variable
+  path: '${SYS_INSTALL_DIR}/bin: '
+  libpath: '${SYS_INSTALL_DIR}/lib: '
+  user:
+    enable: true
+    name: sdbadmin
+    groupname: sdbadmin_group
+    password: Admin@1024
+  # registered initd and systemd service
+  service:
+    enable: true
+    name: sdbcm
+    init: '${SYS_INSTALL_DIR}/sequoiadb'
+    systemd: '${SYS_INSTALL_DIR}/sdbcm.service'
+preInstallAction:
+  enable: true
+  actions:
+    # unpack file into ${SYS_TMP_DIR}, provided by package framwork
+    - name: unpackFile
+      parameters:
+        - '${SYS_ORIGIN_DIR}/bin/sdbstop'
+        - '${SYS_ORIGIN_DIR}/bin/sdbcmtop'
+        - '${SYS_ORIGIN_DIR}/tools/script/generate_version_file.sh'
+        - '${SYS_ORIGIN_DIR}/tools/script/install_file_changes.sh'
+        - '${SYS_ORIGIN_DIR}/tools/script/service_control.sh'
+        - '${SYS_ORIGIN_DIR}/compatible.sh'
+        - '${SYS_ORIGIN_DIR}/sequoiadb'
+        - '${SYS_ORIGIN_DIR}/version.conf'
+      cmd: null
+      scope: all
+      enable: true
+    - name: generateVersionFile
+      cmd: '${SYS_TMP_DIR}/generate_version_file.sh'
+      scope: upgrade 
+      enable: true
+installCheck:
+  enable: true
+  actions:
+    # freeDiskSpace/umask/hostName/etcHosts action provided by package framwork
+    # check freeDiskSpace have enough space for install sequoadb
+    - { name: freeDiskSpace, parameters: [ { name: size, value: 1.3GB } ], scope: all, enable: true }
+    # check whether umask is 0022
+    - { name: umask, parameters: [ { name: mode, value: 0022 } ], scope: all, enable: true }
+    # check whether host name is configured
+    - { name: hostName, scope: all, enable: true }
+    # check whether etcHosts is configured
+    - { name: etcHosts,  scope: all, enable: true}
+runtimeCheck:
+  enable: true
+  actions:
+    - name: checkCompatibility
+      cmd: '${SYS_TMP_DIR}/compatible.sh'
+      parameters:
+        - '${SYS_PERV_PRODUCT_VERSION} ${SYS_PERV_PRODUCT_TYPE} ${SYS_PRODUCT_VERSION} ${SYS_PRODUCT_TYPE} --db'
+      enable: true
+      scope: upgrade
+    - name: createDir
+      cmd: '${SYS_TMP_DIR}/service_control.sh'
+      parameters:
+        - name: createDir
+        - name: userName
+          value: '${SYS_USERNAME}'
+        - name: groupName
+          value: '${SYS_GROUPNAME}'
+      scope: all
+      enable: true
+    - name: stopService
+      cmd: '${SYS_TMP_DIR}/service_control.sh'
+      parameters:
+        - name: stopService
+          value: true
+        - name: path
+          value: ${SYS_TMP_DIR}
+      enable: true
+      scope: upgrade
+
+postInstallAction:
+  actions:
+    - name: force
+      cmd: '${SYS_TMP_DIR}/service_control.sh'
+      parameters:
+        - name: forceStopService
+          value:
+            # the from field will become a user interaction option name, like --force
+            from: force
+            type: BOOL
+            default: false
+            description:
+              - cn: 是否强制安装。
+              - en: Force Installation.
+            explanation:
+              - cn: 是否强制安装？强制安装时可能会强杀残留进程。
+              - en: Do you want to force the install? It may kill residual processes.
+        - name: path
+          value: '${SYS_INSTALL_DIR}/bin'
+      scope: all
+      enable: true
+    - name: changeOMTool
+      cmd: '${SYS_TMP_DIR}/install_file_changes.sh'
+      scope: all
+      enable: true
+    - name: startService
+      cmd: '${SYS_TMP_DIR}/service_control.sh'
+      parameters:
+        - name: startService
+          value: true
+        - name: path
+          value: '${SYS_INSTALL_DIR}/bin'
+      scope: all
+      enable: true
+  configs:
+    - file: '${SYS_INSTALL_DIR}/conf/sdbcm.conf'
+      scope: install
+      items:
+        - name: AutoStart
+          value:
+            from: processAutoStart
+            type: BOOL
+            default: true
+            description:
+              - cn: Sequoiadb相关进程开机自启动。
+              - en: Process Auto Start.
+            explanation:
+              - cn: 是否允许Sequoiadb相关进程开机自启动？
+              - en: Do You Want To Start Sequoiadb Processes When Machine Restart?
+        - name: defaultPort
+          value:
+            from: port
+            type: PORT
+            default: 11790
+            description:
+              - cn: 集群管理服务端口。
+              - en: SequoiaDB Cluster Manager Port.
+            explanation:
+              - cn: 配置SequoiaDB集群管理服务端口，集群管理用于远程启动添加和启停数据库节点。
+              - en: SequoiaDB Cluster Manager port.
+
+preUninstallAction:
+  enable: true
+  actions:
+    - name: preUninstall
+      cmd: '${SYS_INSTALL_DIR}/preUninstall.sh'
+      enable: true
+      scope: all
+
+    - name: stopCMService
+      cmd: '${SYS_INSTALL_DIR}/bin/sdbcmtop'
+      enable: true
+      scope: all
+
+    - name: stopService
+      cmd: '${SYS_INSTALL_DIR}/bin/sdbstop'
+      parameters:
+        - name: type
+          value: all
+      enable: true
+      scope: all

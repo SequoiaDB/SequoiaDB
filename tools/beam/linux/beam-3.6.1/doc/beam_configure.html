@@ -1,0 +1,617 @@
+<html>
+<head>
+  <title>BEAM: The beam_configure Command</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">The beam_configure Command</h1>
+<hr/>
+
+</p>
+<p>
+<h1>1. Introduction</h1>
+
+This command is used to automagically determine characteristics of the
+target machine and of the compiler. It will write a configuration file
+that is later read by <span class="command">beam_compile</span>.
+The configuration file may need some manual editing depending on how 
+much information <span class="command">beam_configure</span> could detect.
+This is typically the case when probing cross-compilers.
+</p>
+<p>
+<h1>2. Caveats</h1>
+
+To run <span class="command">beam_configure</span> you need a working installation of
+Perl. The Perl version must be 5.004 or higher. Non-standard Perl modules
+are not required. Make sure <span class="command">perl</span> is on your <span class="env">$PATH</span>.
+</p>
+<p>
+Windows users might need to run <span class="command">beam_configure</span> if they are
+not using the Microsoft Visual C++ compiler configuration provided by
+BEAM. The information in this document will work for Windows users as
+well, as long as a Perl interpreter is installed, and all
+<span class="command">beam_configure</span> commands shown below are prefixed by the
+Perl interpreter.
+</p>
+<p>
+Here is an example of running <span class="command">beam_configure</span> on Windows,
+if <span class="command">perl</span> is in your Windows <span class="env">PATH</span>:
+</p>
+<pre class="example">
+perl beam_configure --c gcc -o C:\Compilers\gcc.tcl
+</pre>
+<p>
+
+See <a href="windows.html">our windows documentation</a> for information
+on how to obtain and install a Perl interpreter.
+</p>
+<p>
+<a name="options"></a><h1>3. Command Line Arguments</h1>
+
+
+Command line arguments are processed from left to right and can be given
+in any order.
+</p>
+<p>
+The default output file is <span class="file">compiler_<span class="val">lang</span>_config.tcl</span>
+when running normally, and <span class="file">template_<span class="val">lang</span>_config.tcl</span>
+when running with the <span class="option">--template</span> option.
+</p>
+<p>
+To change the file name that gets written, specify
+the <span class="option">--output</span> option.
+</p>
+<p>
+      <span class="strong">Required Options:</span>
+</p>
+<p>
+    <table>
+      <tr>
+        <th width="30%">
+          Option
+        </th>
+        <th>
+          Description
+        </th>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td>
+          <span class="val">compiler</span>
+        </td>
+        <td>
+          The compiler must be given on the command line
+          unless <span class="option">--template</span> is being used. The compiler will be
+	  searched for in the directories on <span class="env">$PATH</span>. You may also
+	  specify an absolute pathname. <span class="strong">Important:</span> Make sure this is
+	  the compiler that you use to build your software. It might be
+	  different from the one that is found on <span class="env">$PATH</span>.
+        </td>
+      </tr>
+    </table>
+</p>
+<p>
+      <span class="strong">One of the following language options is required:</span>
+</p>
+<p>
+    <table>
+      <tr>
+        <th width="30%">
+          Option
+        </th>
+        <th>
+          Description
+        </th>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--c</span></td>
+        <td>
+          Treat the compiler as a C compiler, or generate a C template
+          file (if <span class="option">--template</span> is given).
+        </td>
+      </tr>
+      <tr>
+        <td><span class="option">--cpp</span></td>
+        <td>
+          Treat the compiler as a C++ compiler or generate a C++ template
+          file (if <span class="option">--template</span> is given).
+        </td>
+      </tr>
+      <tr>
+        <td><span class="option">--java</span></td>
+        <td>
+          Treat the compiler as a Java compiler or generate a Java template
+          file (if <span class="option">--template</span> is given).
+        </td>
+      </tr>
+    </table>
+</p>
+<p>
+      <span class="strong">C and C++ options:</span>
+</p>
+<p>
+    <table>
+      <tr>
+        <th width="30%">
+          Option
+        </th>
+        <th>
+          Description
+        </th>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--headers <span class="val">hdr1</span>,<span class="val">hdr2</span>...</span></td>
+        <td>Additional, non-standard header files to look for.
+	  This may require additional <span class="option">-I</span> options to
+	  be passed to the native compiler. If the header file is
+	  found the corresponding directory will be added to the
+	  search path for system headers. See also 
+	  <a href="#system_include_dirs">finding the system include directories</a>.
+	  The flag can be specified any number of times.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--macros <span class="val">m1</span>,<span class="val">m2</span>...</span></td>
+        <td>
+          Additional macros to try during the built-in macro
+          detection. Any macro in this comma-separated list
+          that is defined by your compiler proper will be
+          included in the configuration file, with its value.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--preproc_flag=<span class="val">flag</span></span></td>
+        <td>
+          This is the flag that advises your compiler to only
+          preprocess a file. Defaults to <span class="option">-E</span>.
+          Don't forget the <span class="code">&quot;=&quot;</span>.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--macro_flag=<span class="val">flag</span></span></td>
+        <td>
+	  If your compiler has a command line option that makes it
+	  write out its predefined macros you should specify that option here.
+	  E.g. for GCC that would be <span class="option">-E -dM</span> which is also
+	  the default setting. Don't forget the <span class="code">&quot;=&quot;</span>.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--compile_flag=<span class="val">flag</span></span></td>
+        <td>
+          This is the flag that will make the compiler
+          compile (but not link) a file. The default is <span class="option">-c</span>.
+	  If you need to undefine the flag use
+	  <span class="option">--compile-flag=&quot; &quot;</span>.
+	  Don't forget the <span class="code">&quot;=&quot;</span>.
+	  It is also assumed that the return code of a
+          compiler invocation can be used to detect whether a
+          compilation was successful or not. 
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--bin_flag=<span class="val">flag</span></span></td>
+        <td>
+</p>
+<p>
+            This is the flag that will make the compiler
+            compile the file, producing an executable.
+</p>
+<p>
+            The beam_configure script needs to specify
+            the resulting executable file name when using
+            this flag. To do so, beam_configure will replace
+            the string "%s" with the executable file name
+            that should be written.
+</p>
+<p>
+            The default is "-o %s", which results in two
+            options to be passed to the compiler: "-o" and
+            the executable file name to write.
+</p>
+<p>
+            Another example would be if your compiler only
+            needed one flag, but the file name was part of
+            it. Something like the following would work
+            for you.
+</p>
+<pre class="example">
+--bin_flag=&quot;/o:%s&quot;
+</pre>
+<p>
+
+            When specifying this option, don't forget the "=".
+            To set the flag to nothing, use --bin_flag=" ".
+            It is also assumed that the return code of the
+            compiler can be used to determine if compilation
+            was successful or not.
+</p>
+<p>
+        </td>
+      </tr>
+    </table>
+</p>
+<p>
+      <span class="strong">Java options</span>
+</p>
+<p>
+    <table>
+      <tr>
+        <th width="30%">
+          Option
+        </th>
+        <th>
+          Description
+        </th>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--javabin <span class="val">file</span></span></td>
+        <td>
+          Override the Java executable to use when running
+          compiled class files. By default, the <span class="command">java</span>
+          binary is found by looking in the same directory where the
+          given compiler is located.
+        </td>
+      </tr>
+    </table>
+</p>
+<p>
+      <span class="strong">Additional options</span>
+</p>
+<p>
+    <table>
+      <tr>
+        <th width="30%">
+          Option
+        </th>
+        <th>
+          Description
+        </th>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--template</span> | <span class="option">-t</span></td>
+        <td>
+          Skip detection and write a template configuration
+          file. If <span class="option">-o</span> was not specified,
+	  then the configuration will be written to
+	  <span class="file">template_c_config.tcl</span> or
+	  <span class="file">template_c_config.tcl</span>.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--output <span class="val">file</span></span> | <span class="option">-o</span></td>
+        <td>
+          Write the configuration to the specified file.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--force</span> | <span class="option">-f</span></td>
+        <td>
+          Overwrite the output file if it exists. By default,
+          <span class="command">beam_configure</span> won't overwrite existing
+          files.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--keeptemp</span> | <span class="option">-k</span></td>
+        <td>
+          Keep temporary files around. Useful for troubleshooting problems.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--verbose</span> | <span class="option">-v</span></td>
+        <td>
+          Verbose output about what is being run, etc.
+          If specified more than once, even more
+          information will be displayed. This can be
+          specified up to 3 times.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--</span></td>
+        <td>
+          Anything after this option will be passed
+          directly to the compiler during every invocation.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--version</span></td>
+        <td>
+          Writes version information to <span class="code">stdout</span>.
+        </td>
+      </tr>
+</p>
+<p>
+      <tr>
+        <td><span class="option">--help</span></td>
+        <td>
+          Writes usage information to <span class="code">stderr</span>.
+        </td>
+      </tr>
+    </table>
+</p>
+<p>
+      This C++ example uses most of the options for clarification:
+</p>
+<pre class="example">
+beam_configure xlC \
+               --cpp \
+               -o /tmp/vac_cpp_config.tcl \
+               --force \
+               --headers iso646.h,secret.h \
+               --preproc_flag=&quot;-E&quot; \
+               --macro_flag=&quot;-E -dM&quot; \
+               --compile_flag=&quot;-c&quot; \
+               --macros __foo,__bar \
+               --verbose \
+               -- \
+               -I /some/secret/header/location
+</pre>
+<p>
+
+      Here is a Java example:
+</p>
+<pre class="example">
+beam_configure javac \
+               --java \
+               -o /tmp/javac_config.tcl \
+               --javabin /usr/lib/java-1.5/bin/java
+</pre>
+<p>
+
+      Here is an example of running beam_configure over
+      the VisualAge for Windows compiler. The flags that
+      beam_configure uses won't work for this compiler,
+      so custom flags have to be specified.
+</p>
+<pre class="example">
+beam_configure icc.exe \
+               --cpp \
+               -o /tmp/icc_cpp_config.tcl \
+               --compile_flag=&quot;/C+&quot; \
+               --preproc_flag=&quot;/Pd+&quot; \
+               --bin_flag=&quot;/Fe%s&quot;
+</pre>
+<p>
+
+   On USS: If <span class="command">beam_configure</span> cannot locate the system
+   header files, invoke it like so for C:
+</p>
+<pre class="example">
+_C89_ELINES=1 beam_configure ...
+</pre>
+<p>
+
+   and like so for C++:
+</p>
+<pre class="example">
+_CXX_ELINES=1 beam_configure ...
+</pre>
+<p>
+
+   That may or may not help.
+</p>
+<p>
+<h1>4. How beam_configure Works for C and C++</h1>
+
+</p>
+<p>
+<h2>4.1 Determining Target Machine Characteristics</h2>
+
+</p>
+<p>
+<span class="command">beam_configure</span> tries a few things to test for certain
+target machine characteristics. If your compiler can produce native
+binaries that <span class="command">beam_configure</span> can then execute,
+<span class="command">beam_configure</span> will automatically build test
+executables that print out information like sizes and alignments
+of types.
+</p>
+<p>
+If <span class="command">beam_configure</span> cannot build native executables,
+there are still a few other tricks that are used to determine
+information.
+<ul>
+  <li>Certain macros from system headers, like <span class="var">CHAR_MIN</span>,
+      can be used to determine if characters are signed by default,
+      for example
+  <li>Certain features can be tested simply by trying to compile
+      a file that will fail if the feature does not exist.
+  <li>Some sizes and alignments can be determined at compile-time,
+      without executing a binary, if the compiler supports liberal
+      constant expressions like the following:
+</p>
+<pre class="example">
+int global_array [ ( sizeof(int) == <span class="var">N</span> ) ? 1 : -1 ];
+</pre>
+<p>
+
+      If a compiler succeeds in compiling that file with a certain
+      value of <span class="var">N</span>, then we know the size of <span class="code">int</span>
+      is <span class="var">N</span>.
+</ul>
+</p>
+<p>
+<h2>4.2 Figuring Out Predefined Macros</h2>
+
+</p>
+<p>
+<span class="command">beam_configure</span> will use the <span class="option">--macro_flag</span>
+option to try to get the compiler to list all of the predefined
+macros. Also, <span class="command">beam_configure</span> will search all
+header files in all of the detected system include directories.
+For each header file, all text that could be a macro name is
+extracted.
+</p>
+<p>
+<span class="command">beam_configure</span> then tries to build a native binary
+that would print out the value of all macros that are defined,
+using <span class="code">#ifdef</span> and <span class="function">printf</span> to test
+all possible identifiers that it discovered. If this works,
+the macro identifiers and values are recorded as predefined macros.
+</p>
+<p>
+Finally, <span class="command">beam_configure</span> uses the compiler
+to preprocess a source file containing the identifiers that may
+be macro names (using the <span class="option">--preproc_flag</span>).
+If any macros get expanded by the preprocessor, then
+<span class="command">beam_configure</span> records the identifier and value
+as a predefined macro.
+</p>
+<p>
+<a name="system_include_dirs"></a><h2>4.3 Finding The System Include Directories</h2>
+
+
+</p>
+<p>
+<span class="command">beam_configure</span> will try to include some standard C and/or
+C++ header files like <span class="file">limits.h, math.h, stddef.h, stdio.h</span>
+and <span class="file">cstddef, string, vector</span>, and <span class="file">algorithm</span>.
+For each of these include files, <span class="command">beam_configure</span> tries
+to preprocess a source file that includes the header. If this is successful,
+and if the preprocessing output includes a <span class="code">#line</span> directive
+that lists the full path to the header file that was eventually
+included, then <span class="command">beam_configure</span> will use that directory
+from the full path name as a system include directory.
+</p>
+<p>
+This means that if you append <span class="option">-I</span> options to the compiler
+command line when you invoke <span class="command">beam_configure</span>, any
+headers that get included from those directories will be
+added to the system include path.
+</p>
+<p>
+You can also specify additional headers to search for to "flush out"
+other directories by passing the header file names to
+<span class="option">--headers</span>. Be sure to specify them in the same format
+as you would in a <span class="code">#include</span> directive - don't specify
+a full file name. And don't include surrounding double quotes or
+angle brackets either.
+</p>
+<p>
+<h1>5. How beam_configure Works for Java</h1>
+
+</p>
+<p>
+After <span class="command">beam_configure</span> tests to ensure that the
+given Java compiler actually compiles some basic Java code,
+<span class="command">beam_configure</span> simply compiles and runs a Java
+program that displays the values of some of the system
+properties.
+</p>
+<p>
+For example, the value of the system property
+<span class="code">sun.boot.class.path</span> is used as the default
+value for the <span class="var">system_boot_classpath</span> variable.
+</p>
+<p>
+<h1>6. Messages</h1>
+
+As the configuration process can take some time <span class="command">beam_configure</span>
+will print a few messages indicating progress (or a few more when you
+give <span class="option">--verbose</span>). These are written to <span class="code">stdout</span>.
+In contrast, warnings and error messages are written to <span class="code">stderr</span>.
+</p>
+<p>
+Typically, error messages include additional information about what 
+<span class="command">beam_configure</span> tried to do and how that failed. Sometimes,
+you can rectify the situation by tweaking the command line. 
+</p>
+<p>
+Warning messages usually indicate that some manual configuration will be
+required afterwards.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

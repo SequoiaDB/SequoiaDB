@@ -1,0 +1,4 @@
+tar -zxvf iperf-2.0.5.tar.gz
+cd iperf-2.0.5
+./configure
+make && make install

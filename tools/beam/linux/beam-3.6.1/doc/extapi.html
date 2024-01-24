@@ -1,0 +1,259 @@
+<html>
+<head>
+  <title>BEAM: External APIs</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+    <h1 class="title">External APIs</h1>
+<hr/>
+
+</p>
+<p>
+      When writing a program, one generally uses functions from
+      external libraries. Whether the functions are simply from the
+      basic standard C library, the standard math library, or from
+      other external libraries that are used, one thing remains the
+      same: functions are called which exist in the library, and if
+      BEAM knows information about those functions, then more valid
+      complaints can be issued while more invalid complaints can be
+      suppressed.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <h1>Contents:</h1>
+
+</p>
+<p>
+<ul>
+  <li><a href="#defaults">Default configurations included with BEAM</a></li>
+  <li><a href="#overriding">Overriding BEAM's defaults</a></li>
+  <li><a href="#writing">Writing a configuration for your own library</a></li>
+  <li><a href="#reading">Reading in multiple configurations with BEAM</a></li>
+</ul>
+    
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="defaults"></a><h1>Default configurations included with BEAM</h1>
+
+
+</p>
+<p>
+      BEAM comes with some library configurations that are read in by
+      default, depending on the language being used. These
+      configuration files contain
+      <a href="attributes.html">function attributes</a>
+      and some basic
+      <a href="parms.html">parameters</a>
+      that are specific to the language or library.
+</p>
+<p>
+    <h2>C code</h2>
+
+</p>
+<p>
+      When reading in C code, BEAM automatically reads in configurations
+      for <span class="file">libc</span> and <span class="file">libm</span>. These files can be
+      found in the BEAM installation directory as
+      <span class="file">tcl/beam_attributes_libc.tcl</span> and
+      <span class="file">tcl/beam_attributes_libm.tcl</span>, respectively.
+      BEAM also reads in configuration related to the C language itself. This
+      file is <span class="file">tcl/beam_attributes_c.tcl</span>.
+</p>
+<p>
+    <h2>C++ code</h2>
+
+</p>
+<p>
+      When reading in C++ code, BEAM automatically reads in all of
+      the above C code configurations. In addition, BEAM reads in a
+      configuration specifically for C++. This
+      configuration file can be found in the BEAM installation as
+      <span class="file">tcl/beam_attributes_cpp.tcl</span>.
+</p>
+<p>
+    <h1>Java code</h1>
+
+</p>
+<p>
+      When reading in Java code, BEAM automatically reads in a
+      configuration specifically for java. This configuration file
+      can be found in the BEAM installation as
+      <span class="file">tcl/beam_attributes_java.tcl</span>.
+</p>
+<p>
+    <h2>PL8 code</h2>
+
+</p>
+<p>
+      When reading in PL8 code, BEAM automatically reads in a
+      configuration specifically for PL8. This configuration file can
+      be found in the BEAM installation as
+      <span class="file">tcl/beam_attributes_pl8.tcl</span>.
+</p>
+<p>
+    <h2>Compiler</h2>
+
+</p>
+<p>
+      BEAM also has some configuration options that are compiler-specific.
+      These contain things like attributes for built-in compiler functions.
+      For now, there is <span class="file">tcl/beam_attributes_gcc.tcl</span> which
+      is read in if BEAM is emulating <span class="command">gcc</span>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="overriding"></a><h1>Overriding BEAM's defaults</h1>
+
+
+</p>
+<p>
+      If you <span class="strong">do not</span> want the default configuration files read
+      for the language that you are using, pass the
+      <span class="option">--beam::nostdattr</span> command line flag to
+      <a href="beam_compile.html">beam_compile</a>. You can then
+      read back in some of the configuration files, if only a subset
+      is desired, by using the <span class="option">--beam::source</span> command
+      line flag with the configuration files that you do want.
+</p>
+<p>
+      Here is an example command line for running BEAM on some C code
+      which does not want the default <span class="file">libm</span> attributes to
+      be read in.
+</p>
+<pre class="example">
+$ beam_compile  \
+           --beam::nostdattr  \
+           --beam::source=beam_attributes_libc  \
+           myfile.c
+</pre>
+<p>
+
+      Notice that since <span class="option">--beam::nostdattr</span> removes
+      <span class="strong">all</span> of the default configurations,
+      <span class="file">beam_attributes_libc</span> has to be explicitly included
+      if it is desired.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="writing"></a><h1>Writing a configuration for your own library</h1>
+
+
+</p>
+<p>
+      If your code is used by others, it is very convenient if they
+      can source a configuration file for your code that describes the
+      external functions that they might be calling. By doing this, a
+      BEAM run on their code will point out to them where they do not
+      use your API correctly. For example, if they forget to check for
+      NULL return values coming from functions in your API where you
+      require such checks to be done.
+</p>
+<p>
+      A configuration file for your library should describe those
+      functions and macros which others can use externally. For
+      an example, look in your BEAM installation at the file
+      <span class="file">tcl/beam_attributes_libc.tcl</span>. This configuration
+      file contains some important attributes for the standard C
+      library.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="reading"></a><h1>Reading in multiple configurations with BEAM</h1>
+
+
+</p>
+<p>
+      Once your dependencies provide BEAM configuration files for
+      their libraries, you can use them simply by adding multiple
+      <span class="option">--beam::source=<span class="val">file</span></span> options to your
+      <a href="beam_compile.html">beam_compile</a> command line.
+</p>
+<p>
+      Here is an example of using multiple configurations at once:
+</p>
+<pre class="example">
+$ beam_compile  \
+     --beam::source=/location/one/configuration1.tcl  \
+     --beam::source=/location/two/configuration2.tcl  \
+     --beam::source=/other/location/configuration3.tcl  \
+     myfile.c
+</pre>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

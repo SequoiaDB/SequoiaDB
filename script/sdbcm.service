@@ -1,0 +1,13 @@
+[Unit]
+Description=SequoiaDB Daemon
+After=network.target
+
+[Service]
+Type=forking
+KillMode=none
+PIDFile=SYS_INSTALL_DIR/conf/log/sdbcm.pid
+ExecStart=SYS_INSTALL_DIR/bin/sdbcmart
+ExecStop=-SYS_INSTALL_DIR/bin/sdbcmtop
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,186 @@
+﻿<div style="padding:10px 15px;" ng-controller="Config.SDB.Index.Ctrl" ng-container="{}">
+
+   <div class="underlineTab" style="padding:0 15px;height:50px;">
+      <ul class="left">
+         <li class="Ellipsis" style="max-width:300px;" ng-if="ModuleMode != 'standalone'" ng-class="{'Node':'active'}[BrowseMode]">
+            <a ng-click="SwitchTab('Node')">{{ModuleName}}</a>
+         </li>
+         <li class="Ellipsis" style="max-width:300px;" ng-if="ModuleMode != 'standalone'" ng-class="{'Config':'active'}[BrowseMode]">
+            <a ng-if="ConfigName.length == 0" ng-click="SwitchNodeList()">{{autoLanguage("节点列表")}}</a>
+            <a ng-if="ConfigName.length > 0" ng-click="SwitchTab('Config')">{{ConfigName}}</a>
+         </li>
+         <li class="Ellipsis active" style="max-width:300px;" ng-if="ModuleMode == 'standalone'">
+            {{ModuleName}}
+         </li>
+      </ul>
+   </div>
+   <div ng-container="{offsetY:-50}" ng-show="BrowseMode=='Node'">
+      <div ng-controller="Config.SDB.Group.Ctrl" class="pull-left" ng-container="{width:330}" style="font-size:90%;">
+         <div>
+            <input class="form-control" style="width:200px;height:25px;margin-right:5px;" ng-model="SearchGroupName" ng-change="Find()"><i class="fa fa-search" style="font-size:22px;color:#777;" data-desc="{{autoLanguage('搜索')}}"></i>
+         </div>
+         <div class="borderBox" style="overflow-y:auto;" ng-container="{marginTop:10,maxHeight:'100%',offsetY:-42}">
+            <div style="height:55px;border-top:1px solid;" ng-repeat="groupInfo in GroupList track by $index" ng-style="{'true':{'border-color':'#fff'},'false':{'border-color':'#E3E7E8'}}[$index==0]">
+               <div style="height:47px;margin:1px;border:3px solid #fff;cursor:pointer;" ng-style="{'true':{'border-color':'#80c0ff'},'false':{'border-color':'#fff'}}[groupInfo['checked']==true]" ng-click="SwitchGroup($index)">
+                  <table class="table" style="margin-top:15px;">
+                     <tr>
+                        <td style="padding-left:10px;">
+                           <div class="Ellipsis" style="font-weight:bold;">
+                              {{groupInfo['groupName']}}
+                           </div>
+                        </td>
+                        <td style="padding-left:10px;width:60px;">
+                           <span style="font-size:90%;color:#888;padding-top:3px;">{{autoLanguage("节点数")}}: {{groupInfo['nodeNum']}}</span>
+                        </td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div ng-controller="Config.SDB.Node.Ctrl" class="pull-left" ng-container="{offsetX:-340,marginLeft:10}">
+
+         <div>
+            <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="SelectAll()">{{autoLanguage("全选")}}</button>
+            <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="Unselect()">{{autoLanguage("反选")}}</button>
+            <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="BatchNode()">{{autoLanguage("批量修改配置")}}</button>
+            <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="CreateExportConfigModel()">
+               {{autoLanguage("编辑配置")}}
+            </button>
+         </div>
+
+         <div ng-windows="config as ConfigWindows.config" windows-callback="ConfigWindows.callback">
+            <div style="height:40px;">
+               <select class="form-control" style="width:100px;" ng-model="config.type" ng-change="BuildConfig()">
+                  <option value="csv">CSV</option>
+                  <option value="json">JSON</option>
+                  <option value="xml">XML</option>
+               </select>
+               <button class="btn btn-primary" ng-click="DownloadConfig()">{{autoLanguage("下载配置")}}</button>
+            </div>
+            <textarea spellcheck="false" style="font-family:Consolas;font-size:15px;" class="form-control" ng-container="{offsetY:-40}" ng-model="config.text"></textarea>
+         </div>
+
+         <div ng-container="{marginTop:10,offsetY:-40}" ng-table="NodeTable['options']" table-title="NodeTable['title']" table-content="nodeInfo in NodeTable['body']" table-callback="NodeTable['callback']">
+            <div table-key="checked">
+               <input type="checkbox" ng-model="nodeInfo.checked" />
+            </div>
+            <div class="Ellipsis" table-key="status">
+               <span style="color:red;" ng-if="nodeInfo.status == 'change'">{{autoLanguage("变化")}}</span>
+            </div>
+            <div class="Ellipsis" table-key="NodeName">
+               <a class="linkButton" ng-click="SwitchNode(nodeInfo.NodeName)">{{nodeInfo.NodeName}}</a>
+            </div>
+            <div class="Ellipsis" table-key="dbpath">
+               <a class="linkButton" ng-click="SwitchNode(nodeInfo.NodeName)">{{nodeInfo.dbpath}}</a>
+            </div>
+            <div class="Ellipsis" table-key="role">
+               <a class="linkButton" ng-click="SwitchNode(nodeInfo.NodeName)">{{nodeInfo.role}}</a>
+            </div>
+            <div class="Ellipsis" table-key="datagroupname">
+               <a class="linkButton" ng-click="SwitchNode(nodeInfo.NodeName)">{{nodeInfo.datagroupname}}</a>
+            </div>
+         </div>
+
+      </div>
+
+      <div class="clear-float"></div>
+   </div>
+
+   <div ng-container="{offsetY:-50}" ng-show="BrowseMode=='Config'" ng-controller="Config.SDB.Config.Ctrl">
+
+      <div ng-windows="config as ConfigItemWindow.config" windows-callback="ConfigItemWindow.callback">
+         <table class="table loosen border">
+            <thead>
+               <tr>
+                  <td style="background-color:#F1F4F5;">{{autoLanguage("节点")}}</td>
+                  <td style="background-color:#F1F4F5;" ng-if="config.key != 'NodeName'">{{autoLanguage("值")}}</td>
+               </tr>
+            </thead>
+            <tbody>
+               <tr ng-repeat="item in config.value track by $index">
+                  <td>{{item['node']}}</td>
+                  <td ng-if="config.key != 'NodeName'">{{item['value']}}</td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <div ng-windows="config as ModifyConfigWindow.config" windows-callback="ModifyConfigWindow.callback">
+         <div class="underlineTab" style="height:50px;">
+            <ul class="left">
+               <li ng-class="{true:'active'}[config.ShowType == 1]">
+                  <a class="linkButton" ng-click="config.ShowType=1">{{autoLanguage('普通')}}</a>
+                  <span class="badge badge-danger" ng-if="config.inputErrNum1 > 0">{{config.inputErrNum1}}</span>
+               </li>
+               <li ng-class="{true:'active'}[config.ShowType == 2]">
+                  <a class="linkButton" ng-click="config.ShowType=2">{{autoLanguage('高级')}}</a>
+                  <span class="badge badge-danger" ng-if="config.inputErrNum2 > 0">{{config.inputErrNum2}}</span>
+               </li>
+               <li ng-class="{true:'active'}[config.ShowType == 3]">
+                  <a class="linkButton" ng-click="config.ShowType=3">{{autoLanguage('自定义')}}</a>
+                  <span class="badge badge-danger" ng-if="config.inputErrNum3 > 0">{{config.inputErrNum3}}</span>
+               </li>
+            </ul>
+         </div>
+         <div form-create para="config.form1" ng-show="config.ShowType == 1"></div>
+         <div form-create para="config.form2" ng-show="config.ShowType == 2"></div>
+         <div form-create para="config.form3" ng-show="config.ShowType == 3"></div>
+      </div>
+
+      <div>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="ReloadConfig()">{{autoLanguage("刷新")}}</button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="OpenModifyConfigWindow()">
+            {{autoLanguage("修改配置")}}
+         </button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="RestartNode()">{{autoLanguage("重启节点")}}</button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="SwitchExpandConfigs()">
+            <span ng-if="!Expand">{{autoLanguage("查看详细配置")}}</span>
+            <span ng-if="Expand">{{autoLanguage("查看配置")}}</span>
+         </button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="OpenShowFieldDropdown($event)" ng-if="NodeNum > 1">
+            {{autoLanguage("选择显示列")}}&nbsp;<i class="fa fa-caret-down"></i>
+         </button>&nbsp;
+         <div ng-dropdown="config in FieldDropdown.config" dropdown-callback="FieldDropdown.callback">
+            <label class="Ellipsis" style="padding:5px 10px;display:block;cursor:pointer;" data-desc="{{TemplateDesc[config.key]['Desc']}}" ng-click="SaveField()">
+               <input type="checkbox" ng-model="config.isShow" />&nbsp;{{config.value}}
+            </label>
+         </div>
+      </div>
+
+      <div ng-container="{marginTop:10,offsetY:-40}" style="overflow-y:auto;position:absolute;">
+
+         <div ng-if="NodeNum == 1" ng-container="{}" ng-table="OneNodeTable['table']" table-title="OneNodeTable['title']" table-content="row in OneNodeTable['content']" table-callback="OneNodeTable['callback']">
+            <div table-key="name" ng-style="{'true':{'color':'red'}}[row.diff == true]">
+               {{row.name}}
+            </div>
+            <div table-key="webName" ng-style="{'true':{'color':'red'}}[row.diff == true]">
+               <span ng-if="TemplateDesc[row.name]['WebName'] != row.name">{{TemplateDesc[row.name]['WebName']}}</span>
+            </div>
+            <div table-key="value" ng-style="{'true':{'color':'red'}}[row.diff == true]" table-if="IsConfigsSame == false">
+               {{row.value}}
+            </div>
+            <div table-key="value1" ng-style="{'true':{'color':'red'}}[row.diff == true]" table-if="IsConfigsSame == true">
+               {{row.value1}}
+            </div>
+            <div table-key="value2" ng-style="{'true':{'color':'red'}}[row.diff == true]" table-if="IsConfigsSame == true">
+               {{row.value2}}
+            </div>
+            <div table-key="reloadable" ng-style="{'true':{'color':'red'}}[row.diff == true]" table-if="IsConfigsSame == true">
+               <span ng-if="row.diff == true">{{TemplateDesc[row.name]['reloadable']}}</span>
+            </div>
+            <div table-key="desc" ng-style="{'true':{'color':'red'}}[row.diff == true]">
+               {{TemplateDesc[row.name]['Desc']}}
+            </div>
+         </div>
+
+         <div ng-if="NodeNum > 1" ng-container="{}" ng-table="MultiNodeTable['table']" table-title="MultiNodeTable['title']" table-content="row in MultiNodeTable['content']" table-callback="MultiNodeTable['callback']">
+            <div table-key="$auto" ng-style="{'true':{'color':'red'}}[DiffNodesConfigs[$index].indexOf('$auto')>=0]" data-desc="{{TemplateDesc['$auto']['Desc']}}">{{$autoValue}}</div>
+         </div>
+
+      </div>
+
+   </div>
+
+</div>

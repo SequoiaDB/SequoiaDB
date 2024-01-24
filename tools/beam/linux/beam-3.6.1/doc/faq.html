@@ -1,0 +1,631 @@
+<html>
+<head>
+  <title>BEAM: FAQ</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Frequently Asked Questions</h1>
+<hr/>
+
+</p>
+<p>
+<a name="general"></a><h1>General</h1>
+
+
+</p>
+<p>
+<ul>
+  <!--- Q5 is no longer a frequently asked question and has been removed -->
+  <li><a href="faq.html#Q6">I do not want BEAM to see some of my code. And conversely I want BEAM to see something that the compiler should not. How can I do that?</a>
+  <li><a href="faq.html#Q7">BEAM appears to hang while processing a file. What's going on?</a>
+  <li><a href="faq.html#Q7b">BEAM gives me an error about &quot;No locks available&quot;. What do I do?</a>
+  <li><a href="faq.html#Q8">What is the difference between a syntactic check and a semantic one?</a>
+  <li><a href="faq.html#Q9">I'm developing code in an operating system that BEAM does not run in. Is that a problem?</a>
+  <li><a href="faq.html#Q10">Can I add a new compiler emulation to BEAM?</a>
+  <li><a href="faq.html#Q11">What is the meaning of &quot;truncating leading bits&quot;?</a>
+  <li><a href="faq.html#Q12">When I run BEAM I get something like &quot; .. cannot exec ...: Arg list too long&quot;</a>
+  <li><a href="faq.html#Q13">My mainframe code has sequence numbers in columns 73-80. BEAM cannot parse that. What can I do?</a>
+  <li><a href="faq.html#Q14">When I run BEAM for the first time, I get something like &quot; ... catastrophic error: could not open source file &lt;stddef.h&gt; &quot;</a>
+  <li><a href="faq.html#Q15">BEAM is reporting zillions of WARNINGs and other invalid complaints. What is going on?</a>
+  <li><a href="faq.html#Q16">How does BEAM find the compiler configuration files?</a> 
+  <li><a href="faq.html#Q17">How can I run ant under <span class="command">nohup</span>?</a>
+</ul>
+</p>
+<p>
+<a name="edg"></a><h1>EDG Parser</h1>
+
+
+</p>
+<p>
+<ul>
+  <li><a href="faq.html#EDG_Q1">What is the EDG parser anyway?</a>
+  <li><a href="faq.html#EDG_Q2">What are the advantages of using the EDG parser?</a>
+  <li><a href="faq.html#EDG_Q3">What are the disadvantages of using the EDG parser</a>
+  <!--- EDG_Q4 is no longer a frequently asked question and has been removed -->
+  <li><a href="faq.html#EDG_Q5">Does the EDG parser support GCC language extensions?</a>
+  <li><a href="faq.html#EDG_Q6">Are there any known limitations with the EDG parser?</a>
+  <li><a href="faq.html#EDG_Q7">How can I determine the parser coverage?</a>
+  <li><a href="faq.html#EDG_Q10">How do I turn off warning messages from EDG?</a> 
+  <!-- I've run beam_configure and am now getting an assertion failure in float_pt.c -->
+</ul>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Answers: General</h1>
+
+</p>
+<p>
+<dl>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q6"></a>
+     <span class="strong">I do not want BEAM to see some of my code. 
+              And conversely I want BEAM to see something that the
+              compiler should not. How can I do that?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     BEAM automaticaly defines <code>__BEAM__</code> to be <code>1</code>
+     when BEAM is parsing your file.
+</p>
+<p>
+     In your source code you can use it like so:
+</p>
+<p>
+     <ul>
+      <li><span class="code">#ifdef __BEAM__</span><br>
+          to indicate code that BEAM (but not the compiler) can see
+      <li><span class="code">#ifndef __BEAM__</span><br>
+          to indicate code that the compiler (but not BEAM) can see
+     </ul>
+</p>
+<p>
+     If for some reason you want to undefine this macro, you can do so
+     from the command-line using standard compiler options:
+</p>
+<pre class="example">
+beam_compile ... -U__BEAM__ ...
+</pre>
+<p>
+
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q7"></a>
+     <span class="strong">BEAM appears to hang while processing a file. 
+              What's going on?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     The most likely reason is that BEAM is trying to obtain a lock on
+     a file.  BEAM waits until the lock is granted. And this is what
+     makes it hang.  We do not know why the lock is not granted. Yes,
+     we are aware, that we could try to obtain a lock and not block
+     the process, but that is not helpful for what we need to do.
+</p>
+<p>
+     To see whether your file system is able to obtain a file lock in
+     general, please compile and link <a href="lock.c">this file</a> and
+     see whether it hangs when you run it. Make sure you run it on the
+     same file system where the file is located that BEAM was trying
+     to process. If this program does not hang, your problem does not
+     seem to be related to file locking.
+</p>
+<p>
+     Another reason why BEAM appears to hang is when you run it on
+     functions that have excessively large bodies and/or spaghetti
+     control flow. In those cases the number of paths to analyze grows
+     beyond reasonable bounds and BEAM will chew on it for some
+     time. We allow 10 CPU minutes per 1000 lines of code.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q7b"></a>
+     <span class="strong">BEAM gives me an error about &quot;No locks available&quot;. What
+              do I do?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     If you are running BEAM in a directory that is mounted from an
+     NFS server, the problem is most likely that the client or server
+     is not running the correct NFS locking daemon. Depending on your
+     distribution, this can be <span class="file">/etc/init.d/nfslock</span> (RedHat),
+     <span class="file">rpc.lockd</span>, <span class="file">rpc.statd</span> (which may be needed by
+     the locking daemon), or something else along these lines.
+</p>
+<p>
+     Try to compile and link <a href="lock.c">this file</a> and run it
+     in the same directory that you were running BEAM in; it should
+     give you the same "No locks available" message. Then, work with
+     your local technical support to fix your NFS setup so that basic
+     locking works. Once that test application succeeds, BEAM should
+     too.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q8"></a> 
+     <span class="strong">What is the difference between a syntactic check and a 
+              semantic one?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     Semantic checks understand data operations, while syntactic
+     checks do not.  Semantic checks are more expensive because they
+     do theorem proving.  All complaints listing a path are the result
+     of semantic checking.  An example of a syntactic check is an
+     operator precedence error (MISTAKE3).
+</p>
+<p>
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q9"></a> 
+     <span class="strong">I'm developing code in an operating system that BEAM
+              does not run in. Is that a problem?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     Yes. The details of what needs to be done to run BEAM on your
+     code are described in the document <a href="cross.html">Dealing with foreign
+     compilers and operating systems</a>.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q10"></a> 
+     <span class="strong">Can I add a new compiler emulation to BEAM?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     Yes. To add an emulation for the <span class="val">foo</span> compiler you need
+     to create a Tcl script for the <a href="compiler_configuration.html"> compiler configuration</a>, and a Tcl script for the <a href="argument_mapper.html">argument mapper</a>. Then, you can load
+     them both into BEAM, and BEAM will use the settings to emulate
+     your compiler.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q11"></a>
+     <span class="strong">What is the meaning of &quot;truncating leading bits&quot;?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     A complaint may show a path containing the following
+</p>
+<pre class="example">
+&quot;foo.c&quot;, line 9: assigning into `num_devs' (truncating leading bits)
+</pre>
+<p>
+
+     It means that the value on the right hand side of the assignment
+     has more bits than can fit into the target variable on the left
+     hand side of the assignment.  Thus the assignment truncates the
+     leading bits of the value.  And that contributes to the error;
+     the error would not happen if the right hand side was
+     sufficiently small to fit into the left.  This happens typically
+     as a result of BEAM considering the possibility of an overflow.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->  
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q12"></a> 
+     <span class="strong">When I run BEAM I get something like
+              &quot; ... cannot exec ...: Arg list too long&quot;</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     This means that the number of arguments being passed to the
+     compiler plus the amount of space being taken up by all of the
+     environment variables exceeds your system's limit. This is a
+     general problem with any command, especially if you are passing
+     numerous include paths on the command line, and each one is
+     fairly long.
+</p>
+<p>
+     The long-term solution is to try to use smaller command lines, or
+     a smaller environment. This isn't easy to fix, but it's the only
+     real solution.
+</p>
+<p>
+     For a quick fix on AIX, you can increase the amount of space that
+     the system will allow you to use, with this command:
+</p>
+<pre class="example">
+chdev -l sys0 -a ncargs=16
+</pre>
+<p>
+    
+     No reboot should be required, and the command must be run as
+     root. The "16" is the new limit size, measured in 4K blocks.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->  
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q13"></a> 
+     <span class="strong">My mainframe code has sequence numbers in columns 73-80. 
+              BEAM cannot parse that. What can I do?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     There is no magic command line option that will make BEAM accept
+     these sequence numbers. You need to preprocess your file to get
+     rid of those numbers.  The <span class="command">cut</span> command is particular
+     handy. Assuming that column 73 is the column where the sequence
+     number begins, the following does the trick:
+</p>
+<pre class="example">
+cut -b 1-72 file.c | sed 's/\\[ ]*$/\\/' &gt; patched-file.c
+</pre>
+<p>
+
+     Then you can pack this in a loop over all files in a directory
+     tree and while you're at it, also restore the original file name
+     (using Bourne shell notation):
+</p>
+<pre class="example">
+for file in `find . -name '*.c'`
+do
+  cut -b 1-72 $file | sed 's/\\[ ]*$/\\/' &gt; tmp
+  mv tmp $file
+done
+</pre>
+<p>
+
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q14"></a> 
+     <span class="strong">When I run BEAM for the first time, I get something
+              like &quot; ... catastrophic error: could not open source file &lt;stddef.h&gt; &quot;</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     This is because you have not set up your compiler configuration
+     file, or you are not loading it into BEAM correctly. BEAM 3.x and
+     above use this file to determine where header files live on your
+     system.
+</p>
+<p>
+     Please read the <a href="quick.html">quick start guide</a> for
+     details on how to get started. If that doesn't answer your
+     question, please read more about the 
+     <a href="compiler_configuration.html">compiler configuration file</a>.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q15"></a> 
+     <span class="strong">BEAM is reporting zillions of WARNINGs and other
+              invalid complaints. What is going on?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     Your parameter setting is overly ambitious. The recommended way
+     to obtain a parameter setting that works for your project is
+     start with the default setting and adjust it over time to your
+     needs.
+</p>
+<p>
+     Under absolutely no circumstances should you be using <span class="option">beam_always_parms</span>. As is explained in the 
+     <a href="build.html#adjust">Build Integration Guide</a> that
+     parameter file is meant to seed your own configuration. But it
+     should never be used standalone.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q16"></a>
+     <span class="strong">How does BEAM find the compiler configuration files?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     You need to source the configuration file by name, either on the
+     command line or from a parms file. The <a href="search_path.html">usual search rules</a> apply.  Some configuration files come
+     with BEAM, while others will have to be generated with <span class="command">beam_configure</span> or written by hand.  See the <a href="compilers.html">compilers</a> page for details.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="Q17"></a>
+     <span class="strong">How can I run ant under <span class="command">nohup</span>?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     The <span class="command">nohup</span> utility sets <span class="code">SIGHUP</span> to be ignored,
+     and then invokes a process. If that process leaves the handler
+     for <span class="code">SIGHUP</span> alone, then any <span class="code">SIGHUP</span> sent by the
+     shell will be ignored, and the process will not die on logout.
+</p>
+<p>
+     BEAM correctly leaves <span class="code">SIGHUP</span> alone if it is ignored when
+     BEAM starts. However, Java is known to have various problems with
+     <span class="code">SIGHUP</span> and <span class="command">nohup</span> functionality.
+</p>
+<p>
+     Our tests have shown that processes launched from Java (and
+     ant) do not have <span class="code">SIGHUP</span> set to be ignored as
+     they should if they were invoked from within <span class="command">nohup</span>.
+</p>
+<p>
+     Erick Kissel suggested this work-around:
+</p>
+<pre class="example">
+sh -c &quot;nohup ant -d beam &lt; /dev/null &amp;&quot;
+</pre>
+<p>
+
+</dl>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Answers: EDG Parser</h1>
+
+</p>
+<p>
+<dl>
+ <!--- ---------------------------------------------------------------- --> 
+ <dt><span class="strong">Question</span>
+ <dd><a name="EDG_Q1"></a>
+     <span class="strong">What is the EDG parser anyway?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     The EDG C/C++ parser is a product of <a href="http://www.edg.com">Edison Design Group</a>. It is used in a variety of commercial
+     compilers (e.g. Borland, Intel) as well as in several
+     IBM/Rational products (e.g. TestRealTime).  IBM has bought a
+     source code license of this parser for internal use.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->  
+ <dt><span class="strong">Question</span>
+ <dd><a name="EDG_Q2"></a>
+     <span class="strong">What are the advantages of using the EDG parser?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     <ol>
+      <li><span class="strong">Precise modeling of the target machine</span><br>
+          The EDG parser allows to describe the characteristics of the
+          target machine (e.g. size and alignment of data types,
+          endianess, etc) at runtime. This means that the very same
+          BEAM executable can be used to analyze code for many
+          different platforms (e.g. ILP32, LP64).  We've added a
+          simple Tcl interface to ease the target machine
+          configuration.  See <a href="edg_config.tcl">this file</a> for
+          a complete example.
+</p>
+<p>
+      <li><span class="strong">Better compiler emulation</span><br>
+          The EDG parser is very compliant to the language standards
+          (C89, C99, C++).  It also supports the GCC and Microsoft
+          VisualC++ language extensions.  In addition a wide variety
+          of C++ anachronisms are supported, e.g. cfront
+          compatibility. This should allow BEAM to achieve high parser
+          coverage with C++ code that predates the language standard.
+</p>
+<p>
+      <li><span class="strong">Memory performance</span><br>
+          The runtime memory requirements of the EDG parser are
+          significantly lower than those of the GCC compiler that was
+          used in older version od BEAM.  We have observed memory
+          reductions of up to 50% with EDG although your mileage may
+          vary.
+</p>
+<p>
+      <li><span class="strong">Better source code correspondence</span><br>
+          We have found the EDG parser to provide more precise source
+          code correspondence, i.e. column information. Reporting of
+          complaints will benefit from this.
+</p>
+<p>
+      <li><span class="strong">External BEAM product</span><br>
+          Our management wants this option and has asked us to remove
+          all open source code from the BEAM code base.
+</p>
+<p>
+      <li><span class="strong">Support issues</span><br>
+          We've found the EDG developers to be very responsive to our
+          bug reports.
+    </ol>
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->
+ <dt><span class="strong">Question</span>
+ <dd><a name="EDG_Q3"></a>
+     <span class="strong">What are the disadvantages of using the EDG parser?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     There are only disadvantages if you need to migrate from BEAM
+     2.x. In that case you will encounter the following pains:
+     <ol>
+      <li><span class="strong">Migration issues</span><br>
+          There is no free lunch. Being able to correctly describe
+          your target machine also means that you need to store that
+          description somewhere.  You might also have to change the
+          command line that invokes BEAM, by adding and/or removing a
+          few flags.
+</p>
+<p>
+      <li><span class="strong">Innocent codes</span><br>
+           Some <a href="innocent.html">innocent codes</a> will change.
+           This will only affect you if you're using those funny
+           looking strings to mark certain BEAM complaints as
+           innocent.
+     </ol>
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->
+ <dt><span class="strong">Question</span>
+ <dd><a name="EDG_Q5"></a>
+     <span class="strong">Does the EDG parser support GCC language extensions?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     Yes. More specifically, it is compatible to GCC versions 3.2.0 -
+     4.0.2.  The EDG parser can successfully parse the Linux kernel
+     which uses GCC extensions heavily in its source code.
+</p>
+<p>
+     Nested functions are not supported and there is no plan to add
+     support for this feature.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->
+ <dt><span class="strong">Question</span>
+ <dd><a name="EDG_Q6"></a>
+     <span class="strong">Are there any known limitations with the EDG parser?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     Yes, but it is not likely that you will be affected by them. The
+     current list of limitations can be found <a href="limitations.html">here</a>.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->
+ <dt><span class="strong">Question</span>
+ <dd><a name="EDG_Q7"></a>
+     <span class="strong">How can I determine the parser coverage?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     The quick answer is "by comparing the stats files". More detailed
+     information can be found in the <a href="refstats.html">reference document for
+     stats files.</a>.
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->
+</p>
+<p>
+ <!-- Question 8 is unused -->
+</p>
+<p>
+ <!--- ---------------------------------------------------------------- -->
+ <dt><span class="strong">Question</span>
+ <dd><a name="EDG_Q10"></a>
+     <span class="strong">How do I turn off warning messages from EDG?</span>
+ <dt><span class="strong">Answer</span>
+ <dd>
+     BEAM 3.5.0 and above suppress EDG warnings by default. To turn
+     them off in previous versions, add <span class="option">--edg=--no_warnings</span>
+     to the BEAM invocation.  Alternatively, you can add one or all of
+     the following to your compiler configuration file or your parms
+     file, depending on which languages you want to suppress
+     complaints from. This works for C, C++, and Java:
+</p>
+<pre class="example">
+set beam::compiler::c::suppressed_diagnostics {*}
+set beam::compiler::cpp::suppressed_diagnostics {*}
+set beam::compiler::java::suppressed_diagnostics {*}
+</pre>
+<p>
+
+     To enable warnings, add <span class="option">--edg=--warnings</span> to your
+     command-line.
+</p>
+<p>
+     To suppress all warnings for a specific file or filename pattern,
+     set the <a href="parms.html#beam::disabled_files_for_parser_warnings"><span class="option">beam::disabled_files_for_parser_warnings</span></a> variable
+     in your parms file or compiler configuration file.
+</p>
+<pre class="example">
+set beam::disabled_files_for_parser_warnings { /home/me/project/* }
+</pre>
+<p>
+
+     This would suppress all parser warnings for all source files in 
+     the directory <span class="file">/home/me/project</span>. Note that for BEAM versions 
+     3.5.0 and later, since parser warnings are turned off by default, 
+     this option would have no effect unless parser warnings have been
+     explicitly turned on by specifying the command-line option 
+     <span class="option">--edg=--warnings</span>.
+</p>
+<p>
+     To suppress a particular warning, you first need to determine the
+     number of the diagnostic(s) you want to suppress.  Simply add
+     <span class="option">--edg=--warnings --edg=--display_error_number</span> to the
+     BEAM command line and rerun. Now, add <span class="option">--edg=--warnings
+     --edg=--diag_suppress=<span class="val">num1,num2,...</span></span>. For example:
+</p>
+<pre class="example">
+--edg=--warnings --edg=--diag_suppress=111
+--edg=--warnings --edg=--diag_suppress=111,549,1102
+</pre>
+<p>
+
+     Again, you can achieve the same by adding the following to your
+     compiler configuration file:
+</p>
+<pre class="example">
+lappend beam::compiler::<span class="val">lang</span>::suppressed_diagnostics 111; # unreachable code
+lappend beam::compiler::<span class="val">lang</span>::suppressed_diagnostics 549; # used before set
+</pre>
+<p>
+
+     but you'll still have to run with <span class="option">--edg=--warnings</span> on
+     the command-line to get the other warnings you are interested
+     in. This is the preferred way.
+</p>
+<p>
+     For a complete list of EDG command line options, some of which allow
+     finer control over parser output, see the
+     <a href="edg-command-line.html">EDG command line options documentation</a>.
+</p>
+<p>
+     See the <a href="compiler_configuration.html#section5">C/C++ compiler configuration documentation</a> or the
+     <a href="java_ref.html#compconf">Java compiler configuration documentation</a> for details on
+     <span class="var">beam::compiler::<span class="val">lang</span>::suppressed_diagnostics</span>.
+</p>
+<p>
+</dl>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

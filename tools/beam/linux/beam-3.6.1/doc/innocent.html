@@ -1,0 +1,294 @@
+<html>
+<head>
+  <title>BEAM: Shut up</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">How to Suppress a BEAM Complaint</h1>
+<hr/>
+
+</p>
+<p>
+It is sometimes necessary to suppress a given BEAM complaint.
+There are several ways to do so which differ in their granularity.
+The description below goes from the coarsest to the finest control.
+BEAM will consider these controls in the order listed.
+</p>
+<p>
+<ul>
+<li><span class="strong">Globally suppress a complaint</span>
+</p>
+<p>
+Every complaint has a Tcl variable <span class="var">enabling_policy</span>
+whose value can turn a complaint completely on or off. For example:
+</p>
+<pre class="example">
+set  beam::WARNING2::enabling_policy  &quot;always&quot; ; # turn completely on
+set  beam::WARNING2::enabling_policy  &quot;&quot;       ; # turn completely off
+</pre>
+<p>
+
+<li><span class="strong">Suppress all complaints in certain files</span>
+</p>
+<p>
+The setting of the global BEAM variable <span class="var">beam::disabled_files</span>
+controls for which files complaints will be issued. The default setting is:
+</p>
+<pre class="example">
+set  beam::disabled_files  { *.h *.hpp *.H *.HPP }
+</pre>
+<p>
+
+and its intent is to suppress complaints in header files.
+If, for instance, you also do not want complaints in certain generated files
+such as <span class="file">y.tab.c</span> and <span class="file">lex.yy.c</span> you can simply add
+those:
+</p>
+<pre class="example">
+lappend  beam::disabled_files  { y.tab.c lex.yy.c }
+</pre>
+<p>
+
+The value of <span class="var">disabled_files</span>
+is a <a href="parms.html#patterns">pattern</a> which allows for 
+more complex suppressions.
+</p>
+<p>
+<li><span class="strong">Suppress a specific complaint in certain files</span>
+</p>
+<p>
+Every complaint has a Tcl variable <span class="var">disabled_files</span>
+whose value controls for which files a given complaint will be issued.
+For example:
+</p>
+<pre class="example">
+set  beam::WARNING2::disabled_files  { bug.c }
+</pre>
+<p>
+
+means that WARNING2 will not be issued for the file <span class="file">bug.c</span>
+but it will be issued for all other files.
+</p>
+<p>
+The value of <span class="var">disabled_files</span>
+is a <a href="parms.html#patterns">pattern</a> which allows for 
+more complex suppressions.
+</p>
+<p>
+<li><span class="strong">Suppress all complaints in certain functions</span>
+</p>
+<p>
+The setting of the global BEAM variable <span class="var">beam::disabled_functions</span>
+controls for which functions complaints will be issued. The default setting is
+to complain about all functions that are not disabled in other ways.
+For example:
+</p>
+<pre class="example">
+set  beam::disabled_functions  { yyparse yylex }
+</pre>
+<p>
+
+has the effect that no complaints will be issued for the two listed functions.
+</p>
+<p>
+The value of <span class="var">disabled_functions</span>
+is a <a href="parms.html#patterns">pattern</a> which allows for 
+more complex suppressions.
+</p>
+<p>
+<li><span class="strong">Suppress a specific complaint in certain functions</span>
+</p>
+<p>
+Every complaint has a Tcl variable <span class="var">disabled_functions</span>
+whose value controls for which functions a given complaint will be issued.
+For example:
+</p>
+<pre class="example">
+set  beam::WARNING2::disabled_functions  { *_callback }
+</pre>
+<p>
+
+means that WARNING2 will not be issued for any functions whose name ends in
+<span class="function">_callback</span> but it will be issued for all other functions.
+</p>
+<p>
+The value of <span class="var">disabled_functions</span>
+is a <a href="parms.html#patterns">pattern</a> which allows for 
+more complex suppressions.
+</p>
+<p>
+<li><span class="strong">Complaint specific suppression mechanisms</span>
+</p>
+<p>
+Some complaints have additional Tcl variables for disabling.
+For example, <a href="builtin.html#WARNING1">WARNING1</a> which complains
+about unused static variables has an additional Tcl variable
+<span class="var">disabled_variables</span>. Setting it allows to suppress the complaint
+for certain variables. For example
+</p>
+<pre class="example">
+set  beam::WARNING1::disabled_variables  { sccsid }
+</pre>
+<p>
+
+has the effect that WARNING1 will not be issued for static variables
+named <span class="var">sccsid</span>.
+</p>
+<p>
+<li><span class="strong">Using a structured comment in the source code</span>
+</p>
+<p>
+Any BEAM complaint can be suppressed by putting a structured
+comment on the line for which the complaint is issued.
+Which comment to use is shown in the BEAM complaint. For example:
+</p>
+<pre class="example">
+-- ERROR1     <span class="strong">/*uninitialized*/</span>     &gt;&gt;&gt;ERROR1_f_5fb909ae2b607
+&quot;foo.c&quot;, line 7: variable `b' is used, but never assigned
+</pre>
+<p>
+
+By placing the comment <span class="code">/*uninitialized*/</span> on line 7,
+this complaint can be suppressed.
+</p>
+<p>
+Every complaint has a Tcl variable <span class="var">disabling_comment</span> whose
+value is a list of strings. Any of those strings can be used to suppress
+the complaint. To see the default setting run with
+<span class="option">--beam::display_parms</span> and grep the result. And of course you're
+free to change them to your liking.
+</p>
+<p>
+If you want to place the disabling comment before or after 
+the line for which the complaint is issued, you can do so by changing
+the setting of 
+<a href="parms.html#beam::disabling_comment_policy">beam::disabling_comment_policy</a>.
+</p>
+<p>
+<li><span class="strong">Using innocence codes</span>
+</p>
+<p>
+Any BEAM complaint can be suppressed by adding its <span class="term">innocence code</span>
+to a file (more about that in a second). This method is useful if you do
+not want (or are not allowed) to change the source code. To use this
+feature you need to specify a 
+<a href="parms.html#beam::data"><span class="var">beam::data</span></a> directory
+because the innocence codes will be stored underneath that directory.
+</p>
+<p>
+The innocence code is shown in
+a BEAM complaint and it is that string that begins with ">>>".
+</p>
+<pre class="example">
+beam_compile <span class="strong">--beam::data=/opt/project/beamstuff</span> foo.c
+
+
+BEAM_VERSION=3.4.2
+BEAM_ROOT=/var/tmp/flo
+BEAM_BUILD_ROOT=/var/tmp/flo
+BEAM_DIRECTORY_WRITE_INNOCENTS=<span class="strong">/opt/project/beamstuff/innocent1</span>
+BEAM_DIRECTORY_WRITE_ERRORS=
+
+-- ERROR1     /*uninitialized*/     <span class="strong">&gt;&gt;&gt;ERROR1_f_5fb909ae2b607</span>
+&quot;foo.c&quot;, line 7: variable `b' is used, but never assigned
+</pre>
+<p>
+
+To suppress this complaint you add this innocence code to a file
+that is named just like your source file (here <span class="file">foo.c</span>) 
+and resides in the directory that is named at the top of the file
+with the complaints:
+</p>
+<pre class="example">
+BEAM_DIRECTORY_WRITE_INNOCENTS=/opt/project/beamstuff/innocent1
+</pre>
+<p>
+
+In other words, for the example above you would add the string
+<span class="code">&gt;&gt;&gt;ERROR1_f_5fb909ae2b607</span> to the file
+<span class="file">/opt/project/beamstuff/innocent1/foo.c</span>.
+</p>
+<p>
+If you're using the <a href="emacs.html">emacs macros</a>, you can add the
+code with a simple keystroke.
+</p>
+<p>
+<font color=red>
+<span class="strong">WARNING! POZOR! VORSICHT! XIAO XIN! KIKEN! OBS!</span>
+<!--- If you can contribute a new translation, please let us know. -->
+</font>
+</p>
+<p>
+The use of innocent codes is discouraged. Before you use them you should
+explore BEAM's configuration options and get rid of any innocent complaints
+that way. 
+</p>
+<p>
+It is quite difficult to keep these innocent codes identical across BEAM
+releases. And although we try hard to keep them the same there is no guarantee
+that they will be. 
+</ul>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

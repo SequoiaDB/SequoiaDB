@@ -1,0 +1,393 @@
+<html>
+<head>
+  <title>BEAM: Portable Header Files</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Portable Header Files</h1>
+<hr/>
+
+</p>
+<p>
+The following is a list of header files that you can use in portable programs.
+</p>
+<p>
+<h1>Standard C Headers</h1>
+
+The term "ISO C-89" refers to the original C standard as of 1989.
+The term "ISO C-99" refers to the revised C standard as of 1999.
+</p>
+<p>
+<table>
+<tr><th>File</th><th>ISO C-89</th><th>ISO C-99</th><th>POSIX</th></tr>
+<tr>
+  <td><span class="file">assert.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img>
+  <td align="center"><img src="images/greencheck.png"></img>
+  <td align="center"><img src="images/greencheck.png"></img>
+</tr>
+<tr>
+  <td><span class="file">complex.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><span class="file">ctype.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">dirent.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">errno.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">fcntl.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">fenv.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><span class="file">float.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">grp.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">inttypes.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><span class="file">iso646.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><span class="file">limits.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">locale.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">math.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img>
+</tr>
+<tr>
+  <td><span class="file">pwd.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img>
+</tr>
+<tr>
+  <td><span class="file">setjmp.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">signal.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">stdarg.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">stdbool.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><span class="file">stddef.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">stdint.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><span class="file">stdio.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">stdlib.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">string.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">sys/stat.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">sys/times.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">sys/types.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">sys/utsname.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">sys/wait.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">termios.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">tgmath.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><span class="file">time.h</span></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">unistd.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">utime.h</span></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+</tr>
+<tr>
+  <td><span class="file">wchar.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><span class="file">wctype.h</span></td>
+  <td>&nbsp;</td>
+  <td align="center"><img src="images/greencheck.png"></img></td>
+  <td>&nbsp;</td>
+</tr>
+</table>
+</p>
+<p>
+<h1>Standard C++ Headers</h1>
+
+<table>
+<tr>
+ <td><span class="file">bitset</span></td>
+ <td><span class="file">cstdarg</span></td>
+ <td><span class="file">functional</span></td>
+ <td><span class="file">new</span></td>
+ <td><span class="file">valarray</span></td>
+</tr>
+<tr>
+ <td><span class="file">cassert</span></td>
+ <td><span class="file">cstddef</span></td>
+ <td><span class="file">iomanip</span></td>
+ <td><span class="file">numeric</span></td>
+ <td><span class="file">vector</span></td>
+</tr>
+<tr>
+ <td><span class="file">cctype</span></td>
+ <td><span class="file">cstdio</span></td>
+ <td><span class="file">ios</span></td>
+ <td><span class="file">ostream</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">cerrno</span></td>
+ <td><span class="file">cstdlib</span></td>
+ <td><span class="file">iosfwd</span></td>
+ <td><span class="file">queue</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">cfloat</span></td>
+ <td><span class="file">cstring</span></td>
+ <td><span class="file">iostream</span></td>
+ <td><span class="file">set</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">ciso646</span></td>
+ <td><span class="file">ctime</span></td>
+ <td><span class="file">istream</span></td>
+ <td><span class="file">sstream</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">climits</span></td>
+ <td><span class="file">cwchar</span></td>
+ <td><span class="file">iterator</span></td>
+ <td><span class="file">stack</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">clocale</span></td>
+ <td><span class="file">cwctype</span></td>
+ <td><span class="file">limits</span></td>
+ <td><span class="file">stdexcept</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">cmath</span></td>
+ <td><span class="file">cxxabi</span></td>
+ <td><span class="file">list</span></td>
+ <td><span class="file">streambuf</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">complex</span></td>
+ <td><span class="file">deque</span></td>
+ <td><span class="file">locale</span></td>
+ <td><span class="file">string</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">csetjmp</span></td>
+ <td><span class="file">exception</span></td>
+ <td><span class="file">map</span></td>
+ <td><span class="file">typeinfo</span></td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td><span class="file">csignal</span></td>
+ <td><span class="file">fstream</span></td>
+ <td><span class="file">memory</span></td>
+ <td><span class="file">utility</span></td>
+ <td>&nbsp;</td>
+</tr>
+</table>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

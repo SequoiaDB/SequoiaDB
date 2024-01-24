@@ -1,0 +1,2700 @@
+# Generated automatically from ../www/builtin.html
+
+<snippet "ERROR1">
+ERROR1: Variable xyz is used, but never assigned
+
+ERROR1: Uninitialized xyz
+
+The value of 'xyz' is used although it was not assigned. In such a
+situation 'xyz' evaluates to some random bit string, which is rarely
+desired. 
+
+This complaint can be issued with either of the two wordings. The first
+wording is used if there is not a single assignment to 'xyz' anywhere in
+the function. The second wording is used even if there are some assignments
+to 'xyz', but there exists a feasible path to the usage of 'xyz',
+by-passing all assignments. If so, the path is displayed. 
+
+If you get this complaint please try to avoid the temptation of simply
+initializing the variable even if you think that it is unnecessary. In our
+experience the majority of uninitialized variables are not caused by lack
+of initialization at the declaration, but rather by some mistake along the
+identified path.
+</snippet>
+
+<snippet "ERROR2">
+ERROR2: Invalid operation involving NULL pointer
+
+Example 1:
+
+  a = &(p->f);
+  b = &(q[2]);
+  c = r + 2;
+
+The C standard considers these invalid in case 'p', 'q', or 'r' is the NULL
+pointer. 
+
+This complaint is suppressed in case of explicitly writing
+
+  a = &(NULL->f);
+
+because that is a common way of calculating the offset of the field 'f'
+(typically via the offsetof macro). 
+
+Example 2:
+
+  i = p->f;
+  j = *p;
+
+In case 'p' is NULL the assignment to 'j' involves dereferencing NULL
+pointer, which will be reported as ERROR5. In fact ERROR2 is closely
+related to dereferencing of NULL pointer, but it is not the same thing.
+Consider the above assignment to 'i', and suppose that the field 'f' is at
+offset 4. If 'p' is NULL then "p->f" does not constitute dereferencing NULL
+(i.e., address 0) but dereferencing the address 4.
+</snippet>
+
+<snippet "ERROR3">
+ERROR3: Deallocating an already deallocated contents of xyz
+
+This complaint is followed by a path though the program. This paths ends in
+a deallocation, such as "free('xyz')". Somewhere along that path there is
+another deallocation of 'xyz'. 
+
+Deallocating a memory location more than once can lead to memory corruption
+and random crashes much later in the program. 
+
+Common causes include using two pointers to the same memory instead of
+making a copy of an object, or falling through an unexpected path of code
+where a second deallocation is occurring. 
+
+Take a look at where the memory was allocated, and see if there is any
+reason that there is more than one place that the memory can be
+deallocated. There should be a one-to-one correspondence between
+allocations and deallocations for each pointer.
+</snippet>
+
+<snippet "ERROR4">
+ERROR4: Accessing an already deallocated xyz
+
+This complaint is followed by a path though the program. This paths ends in
+an access to a memory location 'xyz'; this could be an assignment or use of
+the value of 'xyz'. But somewhere along that path the location 'xyz' was
+previously deallocated. Once memory is deallocated, its value is undefined,
+and should not be used. 
+
+This is commonly caused by having more than one pointer to a memory
+location, and deallocating the memory through one of them. All of the other
+pointers will still contain the correct address, but the value at that
+address will be non-deterministic, and should never be used. 
+
+Some things to look at include where the memory is being used and why it is
+possible to get to that point after the memory has been deallocated.
+</snippet>
+
+<snippet "ERROR5">
+ERROR5: Dereferencing NULL pointer
+
+This complaint is followed by a path though the program. This paths ends in
+dereferencing of a pointer, e.g. "*xyz". When dereferenced, 'xyz' will be
+"NULL", which is a problem because dereferencing a "NULL" pointer is likely
+to cause a crash. There are two ways the path might cause 'xyz' to be
+considered "NULL" -- by an assignment, for example
+
+  xyz = NULL;
+
+or by a test, for example,
+
+  if ( xyz )
+
+Any path that follows the else branch of such a test implies that 'xyz' is
+"NULL". 
+
+Common causes include forgetting to check if a pointer is "NULL" before
+using it, or moving through a path of code where the pointer is expected to
+be valid, but is "NULL" instead.
+</snippet>
+
+<snippet "ERROR6">
+ERROR6: Invoking a method with a NULL class pointer
+
+This complaint is followed by a path though the program. This paths ends in
+an expression of the form "xyz->foo()". When dereferenced, 'xyz' will be
+"NULL", which is a problem because calling a method via a "NULL" class
+pointer is very dangerous, and will not work in many cases. There are two
+ways the path might cause 'xyz' to be considered "NULL" -- by an
+assignment, for example
+
+  xyz = NULL;
+
+or by a test, for example,
+
+  if ( xyz )
+
+Any path that follows the else branch of such a test implies that 'xyz' is
+"NULL". 
+
+Common causes include forgetting to check if a pointer is "NULL" before
+using it, or moving through a path of code where the pointer is expected to
+be valid, but is "NULL" instead.
+</snippet>
+
+<snippet "ERROR7">
+ERROR7: Accessing beyond allocated memory
+
+ERROR7: Accessing beyond array bounds
+
+This complaint is followed by a path though the program. This paths ends in
+one of
+
+  * dereferencing a pointer, e.g. "*xyz"
+  * subscripting an array, e.g. "A[I]" (which is the same as "*(A+I)")
+  * calling a function accessing a buffer, e.g. "strcpy(A, B)"
+
+Reading from memory outside of an array's bounds may result in a random
+value. Writing into memory outside of an array's bounds may result in
+memory corruption. 
+
+Common causes include not checking a variable's value before using it to
+index an array, or using a value that is the same as the number of array
+elements (which is too large to actually index the array with). A common
+cause of buffer overflow is forgetting about terminating null character. 
+
+Look at the index being used - if it is a variable, make sure it can only
+contain values that are within the array's bounds. If it is not a variable,
+ensure the declaration of the array is large enough, and ensure that the
+index is correct.
+</snippet>
+
+<snippet "ERROR8">
+ERROR8: Passing pointer to deallocated memory
+
+This complaint is followed by a path though the program. This paths ends in
+the use of some variable 'xyz', which is a pointer previously freed along
+the path. For example,
+
+  free ( xyz );
+  a = xyz;
+  foo ( xyz );
+  if (xyz) ...
+  b = (xyz == another_ptr) ? c : d;
+
+The reason for the complaint is that normally nobody wants a dangling
+pointer to deallocated memory. Using a pointer to deallocated memory is
+dangerous because it is usually unknown whether or not it will be
+dereferenced in the future. The only possibly exception is comparing the
+value of a deallocated pointer to some other pointer. In the above example
+the if-statement compares 'xyz' against "NULL" and in the assignment to 'b'
+there is a comparison of 'xyz' against 'another_ptr'. In contrast, the
+assignment to 'a' and the call to 'foo' does not involve any comparison.
+Setting of 'enabling_policy' allows you to specify whether you allow
+comparison of deallocated pointers.
+</snippet>
+
+<snippet "ERROR9">
+ERROR9: Passing NULL
+
+This complaint is followed by a path though the program. The paths ends in
+a function call like
+
+  f ( xyz );
+
+At that point 'xyz' will be "NULL", which is a problem because 'f' is
+incapable of handling a "NULL" pointer. 
+
+Passing "NULL" to certain functions will result in undefined behavior. 
+
+Common causes include forgetting to check whether a pointer is "NULL"
+before passing it to a function, using the wrong function, or assuming that
+the function allows "NULL" pointers as arguments. 
+
+Look at the argument that is being passed into the function, and look back
+at its declaration or definition. Decide if you should be checking its
+value against "NULL" before using it in the function call.
+</snippet>
+
+<snippet "ERROR10">
+ERROR10: Function with variable number of arguments is being passed non-POD
+structure xyz
+
+Passing an object of non-POD class type to a variable argument list is
+undefined in C++. This complaint does nothing for C. 
+
+Here is an example that BEAM has encountered on several occasions:
+
+  class yasc { // Yet Another String Class
+    private:
+    const char *name;
+    size_t      len;
+
+    public:
+    const char *c_str() { return name; }
+    // more stuff
+  };
+
+  yasc answer = "42";
+
+  printf(".. and the answer is '%s'\n", answer); // should be answer.c_str()
+
+This code works by accident because the data layout of the class happens to
+allocate 'name' at offset zero. It will break in mysterious ways if 'name'
+gets assigned a different offset, e.g. by changing the order of the data
+members, by defining virtual functions, or by modifying the class's
+inheritance. 
+
+Passing a non-POD structure to a variable-argument function is undefined
+according to the C++ Standard, section 5.2.2, paragraph 7. For some
+compilers, there may be an abort at runtime. For others, anything can
+happen. 
+
+Common causes include passing a structure when you meant to pass the
+structure's address or one of the structure's members, using the wrong
+variable, using a variable with the wrong type, or calling the wrong
+function. 
+
+Look at the function's definition to see why it expects a variable number
+of arguments, and then look at the variable's declaration to see what its
+type is. Variable-argument functions should usually only be passed "scalar"
+types (built-in types, pointers, etc).
+</snippet>
+
+<snippet "ERROR11">
+ERROR11(resource): Leaving a function with a pointer to deallocated
+resource
+
+Because the resource (e.g. memory) is not going to exist after the function
+returns, making a pointer to that resource available from outside the
+function is usually an error, and dereferencing that pointer will result in
+a random value. 
+
+Example 1:
+
+  char *bar(void)
+  {
+    char foo[100];
+    ...
+    return foo;
+  }
+
+The array 'foo' is allocated on the stack and will be deallocated just as
+the function returns, causing a pointer to deallocated memory to be
+returned. 
+
+Example 2:
+
+  void bar(void)
+  {
+    static int *foo;
+    ...
+    free ( foo );
+  }
+
+This will leave 'foo' pointing to deallocated memory, which may be a
+problem if 'foo' is accessed later. It is generally recommended to code it
+like this
+
+  void bar(void)
+  {
+    static int *foo;
+    ...
+    free ( foo );
+    foo = NULL;
+  }
+
+This way, testing "(foo == NULL)" can be used to determine whether 'foo'
+contains a valid pointer or not. 
+
+In Example 1 the deallocated memory was exposed via return, in Example 2 it
+was via a static variable. In general this complaint is issued if a
+resource is allocated and then deallocated in a function, and a pointer to
+the resource is made accessible after a return from the function. There are
+6 ways of exposing deallocated memory, all illustrated in the following
+example
+
+  extern char *Extern;
+  static char *Static_File;
+  static char **Heap;
+
+  char *foo(char **Parameter, int a)
+  {
+    static char *Static_Local;
+    char Local[10];  
+    
+    Heap = (char **) malloc(sizeof(char *));  
+    
+    switch(a)
+      {
+       case 1: *Heap        = Local; break;
+       case 2: *Parameter   = Local; break;
+       case 3: Extern       = Local; break;
+       case 4: Static_Local = Local; break;
+       case 5: Static_File  = Local; break;
+       case 6: return         Local;
+       }
+    return 0;
+  }
+
+Common causes include forgetting to allocate the memory in a more permanent
+fashion (on the heap, for example), using the wrong address, or using a
+pointer instead of the dereferenced type. 
+
+Examine where the external address of the temporary memory is being
+assigned, and decide if it should remain a pointer or not. If so, you must
+change the memory that is pointed to so that it will remain after the
+function returns. If not, then you should change the type of the external
+assignment so that it is no longer a pointer to temporary memory.
+</snippet>
+
+<snippet "ERROR12">
+ERROR12: Memory leak
+
+This complaint has been replaced by ERROR23(heap_memory).
+</snippet>
+
+<snippet "ERROR13">
+ERROR13: printf argument xyz of type type is being passed to the underlined
+
+Example:
+
+  int xyz;
+  ...
+  printf("beginning of pattern %s rest of pattern", xyz);
+
+will generate the complaint
+
+  printf argument 'xyz' of type 'int' is being passed to the underlined
+  beginning of pattern %s rest of pattern
+                       ^^
+
+Passing the wrong type to a format string will result in the type being
+converted incorrectly, which will result in garbage values in the final
+string. 
+
+Common causes include missing a format specification or an argument, which
+leaves the arguments mismatched with the specifications, or passing the
+wrong variable or value. 
+
+Look at the format pattern and ensure that the parameter's type matches
+what the format pattern expects.
+</snippet>
+
+<snippet "ERROR14">
+ERROR14: No printf argument to match the underlined
+
+Example:
+
+  printf("beginning of pattern %s rest of pattern");
+
+will generate the complaint
+
+  No printf argument to match the underlined
+  beginning of pattern %s rest of pattern
+                       ^^
+
+When there aren't enough arguments to match all of the format
+specifications, the function will begin reading uninitialized stack values
+to fill their places. This will result in random values in the final
+string. 
+
+Common causes include forgetting to pass enough parameters to the format
+pattern, or forgetting to remove the specification from the format pattern,
+if it is no longer needed. 
+
+Ensure that the number of format specifications is the same as the number
+of parameters being passed to it. 
+
+The function 'printf' is not the only one whose format will be checked.
+BEAM will check any function's arguments for incorrect format, provided
+that function is given a format attribute. For an example, see the usage of
+'printf_like' in the file "tcl/beam_attributes.tcl".
+</snippet>
+
+<snippet "ERROR15">
+ERROR15: Argument xyz not used in the printf pattern pattern
+
+Example:
+
+  printf("pat", xyz);
+
+will generate the complaint
+
+  Argument `xyz' not used in the printf pattern
+  pat
+
+When there are too many parameters to a format pattern, the format pattern
+will simply ignore the rest. This won't cause any undefined behavior, but
+will result in values not being added to the final string. 
+
+The problem is much more serious if the pattern uses the notation "%5$d"
+(instead of %d). That allows the possibility that an argument in the middle
+is not used resulting in unpredictable behavior. 
+
+Common causes include forgetting to add the specification to the pattern,
+or passing too many parameters to the function. 
+
+Ensure that the number of format specifications is the same as the number
+of parameters being passed to it. 
+
+The function 'printf' is not the only one whose format will be checked.
+BEAM will check any function's arguments for incorrect format, provided
+that function is given a format attribute. For an example, see the usage of
+'printf_like' in the file "tcl/beam_attributes.tcl".
+</snippet>
+
+<snippet "ERROR16">
+ERROR16: The underlined is an invalid printf conversion specification
+
+Example:
+
+  printf("beginning of pattern %l rest of pattern", xyz);
+
+will generate the complaint
+
+  The underlined is an invalid printf conversion specification
+  beginning of pattern %l rest of pattern
+                       ^^
+
+In the example, it should probably be "%ld". 
+
+The format pattern contains a conversion specification that is unknown.
+This will usually cause the rest of the arguments to be off-by-one since
+the parameter for this specification will not be used here. 
+
+Common causes include using the wrong conversion specifier (writing "%l"
+when you meant "%ld" for example), or writing a single percent sign to
+represent a literal percent sign in the output (which must be written as
+"%%" in the format pattern). 
+
+Look at the format specification and decide what you meant for it to be.
+Either change it so that it is a valid conversion specification or remove
+it from the format string. Also ensure that the arguments are still
+correct, given the new format string. 
+
+The function 'printf' is not the only one whose format will be checked.
+BEAM will check any function's arguments for incorrect format, provided
+that function is given a format attribute. For an example, see the usage of
+'printf_like' in the file "tcl/beam_attributes.tcl".
+</snippet>
+
+<snippet "ERROR17">
+ERROR17: scanf argument xyz needs to be a pointer
+
+Example:
+
+  int xyz;
+  scanf("%d", xyz);
+
+should probably be
+
+  int xyz;
+  scanf("%d", &xyz);
+
+Since scanf dereferences its arguments as pointers, they must all be
+pointers. Passing anything else will usually lead to undefined behavior
+since scanf will treat the value as an address and attempt to write to that
+memory. 
+
+Common causes include forgetting to take the address of a variable instead
+of using the variable itself, passing the wrong variable, or passing a
+variable of the wrong type. 
+
+Ensure that all of scanf's arguments are pointers to valid memory. 
+
+The function 'scanf' is not the only one whose arguments will be checked.
+BEAM will check any function's arguments, provided that function is given a
+format attribute with "kind=scanf". For an example, see the usage of
+'scanf_like' in the file "tcl/beam_attributes.tcl".
+</snippet>
+
+<snippet "ERROR18">
+ERROR18: Function foo lacks a return statement with a value
+
+The named function was declared to return a value. However, there is a path
+through the function along which no value is returned. This can happen for
+instance if control flow reaches the end of the function without
+encountering a return statement. E.g.
+
+  int foo()
+  {
+     if (a != 0) return 10;
+     --a;
+  }              <-- complaint
+
+In this situation the compiler will arrange for a return statement under
+the covers but it will not return any value. Hence, a random value is
+returned to the caller. 
+
+ERROR18 is also issued for explicit return statements that do not return
+anything as in this example:
+
+  int foo()
+  {
+     if (a != 0) return;         <-- complaint
+     --a;
+     return 10;
+  }
+
+This error is also often found in functions that have no declared return
+type. The compiler then assumes an implicit return type of "int" not
+"void". 
+
+Look at the path through the function and decide where a return statement
+should go, and what should be returned.
+</snippet>
+
+<snippet "ERROR19">
+ERROR19: Statement always fails
+
+This is a statement (typically an assignment) that is normally not meant to
+fail, yet it always causes some runtime error. 
+
+Example:
+
+  #define M(x)   x == 0 ? 10   :   x == 1 ? 20   :   (abort(), 0)
+  y = M(2);
+
+Causes of failure include the functions 'abort', 'fail', as well as several
+project specific functions. 
+
+Look at the statement and decide why it will always fail. For some reason,
+all possible paths lead to failure, which is rarely desired. Figure out
+which path(s) should not have led to failure, and make the appropriate
+change.
+</snippet>
+
+<snippet "ERROR20">
+ERROR20: Return with no value, in function returning type
+
+This complaint is issued for explicitly written return statements that do
+not return a value, although the containing function has a non-void return
+type. 
+
+Example:
+
+  int foo()
+  {
+    ...
+    return;
+  }
+
+The return statement specifies no return value, therefore the function will
+return a random value. 
+
+This error happens often in legacy C/C++ code where functions that do not
+return a value were declared without a return type, like so:
+
+  foo()
+  {
+    ...
+    return;
+  }
+
+In this case the compiler will give the function an implicit "int" return
+type and not, as might be expected, a "void" type. Declaring functions this
+way is deprecated practice and in C++ it's an error nowadays. Code that
+uses this old-style declaration should be changed and use "void" instead.
+</snippet>
+
+<snippet "ERROR21">
+ERROR21: Argument of function should be a pointer
+
+Example:
+
+  struct s {int a; int b:} S;
+    ...
+  free(S);
+
+The function 'free()' expects a pointer. The above would be a syntax error,
+if the compiler had a the standard declaration of 'free()' as in
+"stdlib.h". However, in the absence of a declaration for 'free()', this is
+not a syntax error; the compiler will assume that the function 'free' takes
+"struct s" as argument. 
+
+A common cause of this error is typing "free(*p)" instead of "free(p)".
+</snippet>
+
+<snippet "ERROR22">
+ERROR22: Division by 0
+
+Division by 0 typically causes an execution exception. If BEAM finds that
+such a possibility exists then it issues ERROR22 and displays an execution
+path that would lead to the error.
+</snippet>
+
+<snippet "ERROR23">
+ERROR23(resource): Resource leak
+
+This complaint is followed by a path though the program. Along this path a
+resource is obtained (e.g. memory is allocated, file is opened) and becomes
+inaccessible before it can be released (e.g. memory is freed, file is
+closed). It becomes inaccessible because variables containing a pointer to
+the resource receive new values, or become deallocated themselves. 
+
+As an example consider a memory leak: Losing all pointers to allocated
+memory means that the memory can never be freed. This memory leak can cause
+the application to run out of memory if it happens enough times. If the
+memory was an object, its destructor will never be called, which can also
+lead to incorrect or missing behavior. 
+
+Common causes include forgetting to deallocate the memory before assigning
+over the pointer, forgetting to save the pointer somewhere, or allocating
+memory when you meant to simply use a pointer to memory that was already
+allocated somewhere else. 
+
+Look at the memory allocation, and watch the pointer. Before it is assigned
+over, it should be either deallocated, or stored somewhere.
+</snippet>
+
+<snippet "ERROR24">
+ERROR24: Failure to close file
+
+This complaint has been replaced by ERROR23(file).
+</snippet>
+
+<snippet "ERROR25">
+ERROR25: uninitialized member xyz
+
+This complaint should be turned on if you intend constructors to initialize
+all class members. The complaint will be issued if there is a path through
+a constructor along which a member is not initialized. 
+
+The same kind of conservatism applies here as for uninitialized variables
+in general. In particular, this complaint will be suppressed if the
+constructor calls a method, whose side-effects BEAM does not understand,
+because that method might do all the initializations.
+</snippet>
+
+<snippet "ERROR26">
+ERROR26(property): xyz is not v
+
+Example 1:
+
+  a = new int;
+  free(a);
+
+For this code BEAM would generate the following complaint
+
+  -- ERROR26(memory allocation source)     /*wrong deallocator*/     >>>ERROR26_f_a19412af0a39ba
+  "p.C", line 11: `a' is not `from malloc'
+  ONE POSSIBLE PATH LEADING TO THE ERROR:
+   "p.C", line 10: `operator new' generates a value that is `from new'
+   "p.C", line 11: `free' requires its argument to be `from malloc'
+
+When memory is allocated via one mechanism, it needs to be freed via the
+matching mechanism. This is because each mechanism (malloc/free,
+new/delete, etc) allocates and deallocates memory in a certain way, which
+might be drastically different from the others. Using the wrong one can
+lead to anything from a memory leak to incorrect behavior or corrupt
+memory. 
+
+BEAM knows about this rule of pairing allocators and deallocators because
+they have been assigned certain values of the property "memory allocation
+source". Properties can be assigned to functions using attributes. 
+
+Besides allocators and deallocators, other properties might have been
+assigned by yourself or somebody on tour team. For example, you can have a
+property "sortedness"; a function 'sort' might declare its output to have
+the value "sorted", and a function 'binary_search' might require its input
+to have the value "sorted". Another example would be a property "security";
+the function 'fgets' might declare its output to have the value
+"not_trusted", and a function 'system' might require its input to have the
+value "trusted". 
+
+The following pairings are provided with BEAM installation: 
+
+Property Value Provided by Required by memory allocation source from malloc
+malloc calloc realloc mlalloc clalloc relalloc free realloc relalloc from
+new new new (nothrow) delete delete (nothrow) from new array new [] new []
+(nothrow) delete [] delete [] (nothrow) file source from fopen fopen fclose
+</snippet>
+
+<snippet "ERROR27">
+ERROR27: Invalid value
+
+This complaint has been replaced by WARNING6.
+</snippet>
+
+<snippet "ERROR28">
+ERROR28: The arguments to function must be terminated by NULL
+
+Some functions that take a variable number of arguments rely on a
+terminating "NULL". In this case, a terminating "NULL" was not found. 
+
+Ensure that you meant to call this function that expects "NULL" as its last
+argument, and then terminate the argument list with "NULL".
+</snippet>
+
+<snippet "ERROR29">
+ERROR29: It is not allowed to access printf arguments both randomly and
+sequentially
+
+Example:
+
+  printf("print arg2 by random access: %2$d, sequential access: %d", abc, uvw, xyz);
+
+will generate the complaint
+
+  It is not allowed to access printf arguments both randomly and sequentially
+   print arg2 by random access: %2$d, sequential access: %d
+                                  ^^                     ^^
+
+If a format pattern uses the random method of accessing arguments, then it
+must use that method throughout. Otherwise something undefined will happen. 
+
+The complaint prints the format pattern and underlines two argument
+accesses one random and one sequential indicating the inconsistency. 
+
+The function 'printf' is not the only one whose format will be checked.
+BEAM will check any function's arguments for incorrect format, provided
+that function is given a format attribute. For an example, see the usage of
+'printf_like' in the file "tcl/beam_attributes.tcl".
+</snippet>
+
+<snippet "ERROR30">
+ERROR30: Exception type must be caught, or declared by this function
+
+ERROR30: Calling function may throw type, which must be caught, or declared
+by this function
+
+An exception may be thrown, either explicitly via 'throw()', or implicitly
+by calling a function which throws exceptions. This thrown exception is not
+caught inside the current function, and the current function isn't allowed
+to throw it because it isn't declared in the function's exception
+specification list. 
+
+Example:
+
+  void foo() throw(int)
+  {
+    ...
+    bar(); // declared to throw double
+    ...
+  }
+
+If 'bar()' throws an exception of type "double", then the special C++
+function 'unexpected()' will be called (because 'foo()' can't throw a
+double). The default action of 'unexpected()' is to terminate the
+application. 
+
+There are two exception types that are treated specially:
+'std::bad_exception' and 'std::bad_alloc'. 
+
+'std::bad_exception' is automatically thrown by the special function
+'unexpected()' if an exception reaches a function which doesn't list it in
+the exception specification. For this reason, if BEAM sees a function list
+'std::bad_exception' in its exception specification, BEAM will not complain
+about exceptions that aren't listed. BEAM assumes that you expect the
+unexpected. 
+
+'std::bad_alloc' is thrown by allocators (like "operator new") when there
+is no more memory. For this reason, BEAM ignores 'std::bad_alloc' unless
+the BEAM configuration parameter beam::allocation_may_return_null is set to
+"yes".
+</snippet>
+
+<snippet "ERROR31">
+ERROR31: Re-throwing with no exception handler will terminate the
+application
+
+It is valid to call 'throw()' with no throw expression while within an
+exception handler. This will re-throw the exception that is currently being
+handled by the exception handler. However, calling 'throw()' outside of any
+exception handler will immediately call the special function 'terminate()',
+which will terminate the application.
+</snippet>
+
+<snippet "ERROR32">
+ERROR32: Initialization of type may throw an exception during exception
+handling
+
+ERROR32: Destructor for variable may throw an exception during exception
+handling
+
+When an exception is thrown, some things happen behind the scenes. This
+includes initializing the exception object that was thrown, unwinding the
+stack to the correct exception handler, and initializing the exception
+handler's parameter. 
+
+If a second exception is raised during these tasks, before the exception
+handler for the original exception is entered, then the special function
+'terminate()' is called, which will terminate the application. 
+
+It is dangerous to use classes as exception objects if their copy
+constructors may throw an exception, because the copy constructors may be
+invoked to initialize the thrown object or the parameter to the exception
+handler. 
+
+It is also dangerous to declare an object on the stack if its destructor
+may throw an exception, and if it is along a path that will be unwound when
+a later exception is thrown. 
+
+Here are examples of both:
+
+  class A
+  {
+  public:
+    A();
+    A(const A &) throw(int);
+    ~A() throw(double);
+  };
+
+  void foo(A obj)
+  {
+    ...
+    throw(obj); // copy constructor may throw 'int' during initialization
+    ...
+  }
+
+  void bar()
+  {
+    A obj; // destructor may throw 'double' during stack unwind
+    ...
+    throw(...);
+  }
+
+
+</snippet>
+
+<snippet "ERROR33">
+ERROR33: Shift amount is outside of the allowed range
+
+Example:
+
+  int i = x;
+  i <<= 32;
+
+The C and C++ standards define the result of a shift operation only for
+positive shift amounts that are smaller than the width of the left operand.
+For all other shift amounts the behavior is undefined which means that the
+result is unpredictable and different compilers may produce different
+results. For instance, the value of 'i' in above example can be anything
+(assuming that "sizeof(int) <= 32"). Certain versions of xlc will produce a
+result of 0, whereas certain versions of GCC will leave the value of 'i'
+unchanged. 
+
+If you are relying on one of these behaviors then you need to ensure it by
+other means, perhaps a special shift function or macro. 
+
+The Java standard specifies that the shift amount is subject to a mod
+operation, which guarantees that the shift amount is in the valid range.
+If, notwithstanding, you do turn ERROR33 on for a Java program, we will
+assume that you do not mean to rely on that mod operation, and this error
+will be issued whenever the right operand of a shift operation is not in
+legal range.
+</snippet>
+
+<snippet "ERROR34">
+ERROR34: Failing assertion
+
+Example1:
+
+  if (x < 0)  x = -x;
+  assert(x > 0);
+
+The above assertion will fail for x == 0. 
+
+We do not recommend that ERROR34 be turned on because of inadequate assert
+facilities in most languages. Consider the following. 
+
+Example2:
+
+  file = fopen("xyz", "r");
+  assert(file);
+
+Suppose that your coding guidelines require that nobody rely on 'fopen()'
+succeeding, and you expressed it using the "force_test" function attribute.
+That attribute tells BEAM that 'fopen()' can return NULL. As a result BEAM
+will issue ERROR34 because the above assertion could fail. 
+
+The issue is that the above assert will fail if a file is missing, which is
+not an error in your code. You would like BEAM to issue complaints
+regarding asserts about your code only, but there is no facility to
+distinguish them. More generally, an asserts claims that an expression will
+be true for all values of inputs, without specifying which inputs. Ideally
+we would like to distinguish among asserts on inputs into a function,
+inputs into a larger module, inputs into the whole program, etc. Until
+there is such a distinction, it is not useful to check assertions
+statically.
+</snippet>
+
+<snippet "ERROR35">
+ERROR35: The expression expr1 modifies the same location assigned by the
+expression expr2
+
+ERROR35: The expression expr1 modifies the same location used by the
+expression expr2
+
+Example1:
+
+  i = 5;
+  a[i++] = i;
+
+The C and C++ language standard gives compilers considerable leeway in
+reordering expressions for evaluation. In the above example a compile is
+free to first increment 'i' in the array index and only then fetch the
+contents of 'i' on the right hand side of the assignment. Or, the compiler
+is free to delay storing the new value of i until the end of the evaluation
+of the entire expression. Because of this, the effect of the example above
+is undefined, and no logical result can be assumed. 
+
+For this reason the language standard disallows certain expressions such as
+the array assignment in Example1. The rules disallow even certain
+expressions where the final outcome would happen to be the same no matter
+what the order of evaluation, as in 
+
+Example2:
+
+  i++   +  i++; 
+  i = i = 5;
+
+Since the standard declares that the above expressions are undefined, a
+compiler is free to, for example, set 'i' to 42, or do nothing with it.
+Therefore BEAM flags expressions like Example2 as well. 
+
+The exact rules of undefined expressions are rather involved and are not
+reproduced here. But you are encouraged to look them up in your language
+document, usually under "sequence points". If you find the rules too
+complicated, a simple and safe rule of thumb is to avoid sub-expressions
+with side-effects. 
+
+BEAM does not guarantee to find all violations, as illustrated in the
+following example. 
+
+Example3:
+
+  a[i] = a[j]++;
+
+Example3 is illegal if "i=j", but BEAM will flag it only if it can
+determine that "i=j" from local context.
+</snippet>
+
+<snippet "ERROR36">
+ERROR36: NULL function pointer
+
+This complaint is followed by a path though the program. This paths ends in
+function call, e.g. "foo(123)", where 'foo' is a function pointer whose
+value is NULL. Such a call would cause a crash due to invalid instruction. 
+
+This usually happen inside a function 'bar' whose parameter is a function
+pointer 'foo'. If the caller of 'bar' could pass NULL as value of 'foo',
+then 'foo' needs to be checked for NULL before used in a call.
+</snippet>
+
+<snippet "ERROR37">
+ERROR37: variadic function given wrong number of arguments
+
+Some variadic function determine expected number of arguments from data
+passed in. That information is provided to BEAM using the function
+attribute "vararg". ERROR37 is then issued for calls where the function is
+given different number of arguments than what it expects.
+</snippet>
+
+<snippet "ERROR38">
+ERROR38(resource): Exceeding limit on resource
+
+Some environments have a limit on the maximal amount of resources. For
+example, embedded software may have a limit on stack size. Also many
+operating systems have a limit on the number of files that can be open at
+any one time. 
+
+ERROR38 lets you specify such limits for various resources. You can have a
+version for any resource, e.g., "ERROR38(stack_memory), ERROR38(file),
+ERROR38(my_special_resource)," where "my_special_resource" might be a user
+defined resource.
+</snippet>
+
+<snippet "ERROR39">
+ERROR39: Undefined right shift of a negative number
+
+The C and C++ standards declare as undefined the result of a right shift
+applied to a negative number. That means that the outcome is unpredictable
+and different compilers may produce different results. What is worse, the
+standard actually allows a compiler to, for example, generate the number 42
+for any right shift of a negative number. But BEAM is not that mean -- in
+the undefined case it follows the behavior of the host machine it is
+running on.
+</snippet>
+
+<snippet "ERROR41">
+ERROR41: Overwriting literal string
+
+Example:
+
+  char *s = "xyz";
+  s[1] = 'a';
+
+Modifying a string literal can cause the program to abort, if the compiler
+chose to place them in read-only memory. If your compiler does this, BEAM
+will complain. It recognizes command line flags that advise the compiler to
+place string literals in memory that can be modified. It will not issue the
+complaint in that case.
+</snippet>
+
+<snippet "ERROR43">
+ERROR43: Loop condition unchanged by loop body
+
+Example:
+
+  while (p) {
+    p->a = 42;
+  }
+
+The programmer probably forgot to advance the pointer 'p'. The result is
+either an infinite loop or a noop, depending on whether the initial value
+of 'p' is the NULL pointer or not. 
+
+Other common causes are misspelling of a variable name, or forgetting to
+declare a variable "volatile". 
+
+No ERROR43 will be issued for either of the two following loops, which are
+common examples of intended infinite loops.
+
+  while (1) {
+    ...
+  }
+
+  for (;;) {
+    ...
+  }
+
+If you do want BEAM to flag that "while (1)", or any other loop with a
+constant condition then turn on MISTAKE5. (ERROR43 is different from
+MISTAKE5, which reports conditions with identical value for all program
+inputs; ERROR43 reports conditions that may have different value for
+different program inputs, but that value is not changed by the loop.) 
+
+There is one situation where a programmer might intentionally have a loop
+condition unchanged by loop body.
+
+  while (p) {
+    if (foo()) return;
+  }
+
+That might be a somewhat obscure way of expressing
+
+  if (p) {
+    while (1) {
+      if (foo()) return;
+    }
+  }
+
+If this is your coding style then
+
+  set beam::ERROR43::enabling_policy "without_exit"
+
+That setting will enable ERROR43 only for loops without any kind of exit in
+the form of "break", "goto", "return", throwing an exception, or
+terminating the thread.
+</snippet>
+
+<snippet "ERROR44">
+ERROR44(Resource): Missing deallocation
+
+The function fails to deallocate an instance of "Resource". It does not
+actually leak the Resource, because it may be available to the calling
+environment upon the function's return. But it is likely that deallocation
+was intended.
+</snippet>
+
+<snippet "MISTAKE1">
+MISTAKE1: Statement has no effect
+
+MISTAKE1: Expression has no effect
+
+MISTAKE1: The value computed by an operation is not used
+
+Example 1: (Probably missing '=')
+
+  x + 2;   /* Statement has no effect */
+
+Example 2: (Probably missing '=')
+
+  x << 1;  /* Statement has no effect */
+
+Example 3: (The address of a variable is never 0)
+
+  char x[100];
+  assert(x);  /* Statement has no effect */
+
+Example 4: (Using comma instead of '=')
+
+  x, y = 0;  /* Expression `x' has no effect */
+
+Example 5: (Using comma instead of '&&')
+
+  for (I = 0, J = 0;     I < N, J < M;      I++, J++) /* Expression `I < N' has no effect */
+
+Example 6: (Precedence error: *a++ instead of *(a++))
+
+  *a++;   /* The value computed by `*(a++)' is not used */
+
+Example 7: (Whole statement has an effect, but last operation `+' does not)
+
+  x + foo();  /* The value computed by `x + foo()' is not used */
+
+In all of these cases, valid code results in something being lost. Either
+the only effect of the expression is being ignored, or there are effects of
+the expression that are being discarded unintentionally, or the expression
+is unnecessary all together. 
+
+Look at the expression in question and see if it comes close to any of
+these examples. Also look to see if the expression is really doing what it
+was meant to do, and that the result of the expression is really being
+used.
+</snippet>
+
+<snippet "MISTAKE2">
+MISTAKE2: Statement is unreachable
+
+This complaint is issued because normally programmers do not intend to
+write unreachable statements. Unreachable statements are the result of a
+label that is:
+
+    * not the target of any goto, or
+    * testing an expression that is always true or always false, or 
+    * an impossible case in a switch statement, or
+    * preceding unconditional branch
+
+Example: (The label L is unreachable)
+
+  if (0 == 1) goto L;
+  return 0;
+  L: return 1;
+
+Another example of an unreachable statement is here
+
+  typedef enum {red, green} color;
+
+  int f(color c)
+  {
+     switch(c)
+       {
+       case red:   return 0;
+       case green: return 1;
+       default:    return 2;
+       }
+  }
+
+The default case will be flagged as unreachable, provided the type 'color'
+is "clean" (see beam::clean_enum). That means the variable 'c' cannot have
+a value other than one listed by the enumerators of the type 'color'. 
+
+Look at the unreachable statements, and decide under which circumstances
+they really should be reachable. If they should never be reachable, think
+about removing them all together. 
+
+Note, that this complaint is not issued for statements that have no effect.
+The rationale is that such statements can be removed anyway without
+changing the program behavior and therefore that fact that they cannot be
+reached is not interesting. 
+
+A handler of exceptions may appear unreachable just because functions are
+not required to specify all the exceptions they can throw. Consider this
+example.
+
+  try {
+    foo1();
+    foo2();
+    cleanup();
+  } catch (...) {
+    return;
+  }
+
+Consider the common case that none of the functions in the example
+specifies that it could throw an exception, and that according to the
+parameter beam::no_throw_list we should ignore the possibility that they
+might throw an exception. Then the handler of the catch clause appears
+unreachable, and will be reported as such. That can be suppressed by the
+extra parameter 'beam::MISTAKE2::enabled_for_handler'.
+</snippet>
+
+<snippet "MISTAKE3">
+MISTAKE3: Beware, relation == binds more tightly than &
+
+Operator precedence defined by the programming language is not always
+expected by programmers. In this case, what was written is probably not
+what was meant, and should be inspected for correctness. 
+
+Common causes include assuming the wrong precedence, using the wrong
+operator, or forgetting parenthesis around part of the expression. 
+
+Example:
+
+  if (A&B == 0)
+
+should probably be
+
+  if ((A&B) == 0)
+
+In the above example the programmer probably expected '&' to bind more
+tightly than '==', which is the opposite of the C language definition. 
+
+Examine the expression and decide which precedence was intended. When in
+doubt as to what the language defines the precedence to be, use extra
+parenthesis.
+</snippet>
+
+<snippet "MISTAKE4">
+MISTAKE4: A break might be missing
+
+When executing a "case" statement, the execution path will continue through
+all "case" statements until a "break" is encountered. This means that more
+than one "case" statement might be executed accidentally. 
+
+Example:
+
+  switch (A)
+  {
+    case 0: B = 0;
+    case 1: B = 1;
+  }
+
+Without a break statement, after assigning 0 to B, 1 will be assigned to B. 
+
+Look at your case statements. If you intend to fall through from one
+statement to the next, consider marking this error innocent. Otherwise,
+insert the appropriate "break" statements so that the execution path is
+correct. 
+
+Sometimes it is intended to fall from one case to the next. The most common
+example is
+
+  switch (A)
+  {
+    case 0: 
+    case 1: B = 1;
+  }
+
+This is so common that BEAM will not issue any complaint regarding cases
+with no statements, such as case 0.
+</snippet>
+
+<snippet "MISTAKE5">
+MISTAKE5: The expression xyz always evaluates to ...
+
+Normally people do not mean to test conditions that are always true or
+always false. 
+
+Example 1:
+
+  if (strlen(S) >= 0)  /* Condition is always true */
+
+Example 2:
+
+  typedef enum {A, B} AB;
+
+  void foo(AB ab)
+  {
+    switch(ab)
+      {
+      case 0: break;    /* Case is possible */
+      case 1: break;    /* Case is possible */
+      case 2: break;    /* Case is not possible */
+      default: break;   /* Default is not possible */
+      }
+  }
+
+Common causes include testing the wrong conditional, using the wrong
+operator (= instead of ==), using operators that evaluate in an unexpected
+order, or testing a condition that has already been tested for.
+</snippet>
+
+<snippet "MISTAKE6">
+MISTAKE6: The third argument of strncmp should probably be ...
+
+When using 'strncmp', the 'length' argument is usually meant to be the
+length of the smaller of the two strings. 
+
+Example:
+
+  if (!strncmp(S, "abcd", 3))
+
+Here the third argument should probably be 4. Otherwise 'S' is being
+compared against "abc" only.
+</snippet>
+
+<snippet "MISTAKE7">
+MISTAKE7: The variable xyz already controls the loop on line ...
+
+Using the same variable to control nested loops can cause unwanted side
+effects on the loop conditional tests, which is rarely intended. 
+
+Example 1:
+
+  for (I = 0; I < N; I++)
+    for (I = 0; I < M; I++)
+
+will cause the complaint
+
+  "f.C", line 123: The variable 'I' already controls the loop on line 122
+
+Example 2:
+
+  while (I < N)
+    for (I = 0; I < M; I++)
+
+Again the inner loop has a side-effect on the test of the outer while loop.
+However, this situation is more often intended than the situation in
+Example 1. Therefore there a setting of 'beam::enabling_policy' that allows
+generation of complaints for Example 1, while disabling complaints for
+Example 2. 
+
+No complaint will be issued if the inner for-loop contains no initializer,
+as in this example.
+
+  while (I < N)
+    for (; I < M; I++)
+
+The lack of initializer in a for-loop is an indication that the programmer
+does intend the side-effect. 
+
+Check the variables that are controlling the nested loops, and be sure that
+they should be the same variable. If not, change them so that the loops
+have separate controlling variables.
+</snippet>
+
+<snippet "MISTAKE8">
+MISTAKE8: The size argument of malloc should probably involve sizeof(type)
+
+This check complains if the size of allocated memory looks somehow
+suspicious. For instance:
+
+  long *Array = malloc(11 * sizeof(long *));
+
+should probably be
+
+  long *Array = malloc(11 * sizeof(long));
+
+Likewise:
+
+  long *Array = realloc(Array, 64);
+
+should probably be
+
+  long *Array = realloc(Array, 64 * sizeof(long));
+
+By default BEAM considers a size suspicious if it is not a multiple of the
+size of the element-type of the array that is being allocated. In this
+mode, there would be a complaint about the first example but not about the
+second, because 64 by itself already is a multiple of "long". To catch the
+latter the enabling_policy must be set to "strict". In that case a the
+presence of a "sizeof" expression is required.
+</snippet>
+
+<snippet "MISTAKE10">
+MISTAKE10: Trying to allocate invalid amount of memory
+
+Passing an invalid value to an allocator can result in anything from
+failing to get the intended memory to crashing the application. Some
+functions allocating memory are unable to satisfy a request for 0 bytes or
+for a negative amount of bytes. If this happens MISTAKE10 is issued. 
+
+Common causes include not checking the size being passed to an allocator,
+or allocating a negative amount of memory by mistake. 
+
+Things to look for include where the size being allocated is calculated,
+and why it is invalid. Ensure that the request contains a valid size, so
+that memory can be returned successfully. 
+
+BEAM recognizes a function as allocating memory when it is given such an
+attribute. Part of the attribute specifies what the function will do what
+asked for 0 bytes or for a negative number of bytes. For an example, see
+the usage of 'malloc_like' in the file "tcl/beam_attributes.tcl".
+</snippet>
+
+<snippet "MISTAKE11">
+MISTAKE11: The function will be invoked more than once with identical
+arguments
+
+This is usually a symptom of unintentionally invoking a function more than
+once with the same arguments. Invoking a function in such a manner (if it
+was unintended) is inefficient, and may be incorrect if the function has
+any side-effects. BEAM will issue the complaint iff the function
+invocations stem from a macro expansion. 
+
+Example:
+
+  #define MIN(a,b) a < b ? a : b
+  ...
+  MIN(foo(), 5)
+
+The macro MIN may invoke the function 'foo' twice. It is better to code it
+like this:
+
+  t = foo();
+  MIN(t, 5)
+
+
+</snippet>
+
+<snippet "MISTAKE12">
+MISTAKE12: 1-st argument arg of abs will lose precision. Consider using
+fabs instead
+
+The function 'abs' converts its argument to an integer before computing the
+absolute value. In the cases where the argument is a float or double (or
+long), precision will be lost. 
+
+Example:
+
+  double d = 1.5;
+  double a = abs(d);
+
+This was probably meant to be 'fabs', which handles floating point numbers. 
+
+In general, ensure that the type of the variable you are passing to certain
+functions is compatible with the type of the argument that the function
+expects.
+</snippet>
+
+<snippet "MISTAKE13">
+MISTAKE13: In an enum two enumerators have the same value
+
+Most of the time, enumerators are meant to contain distinct values. This
+complaint is issued when an enumeration maps more than one enumerator to
+the same value. 
+
+Example:
+
+  enum {
+    A,
+    B,
+    C,
+    D = 0x01,
+    E
+  };
+
+BEAM will issue the following two complaints
+
+  The enumerator D has the same value 1 as B
+  The enumerator E has the same value 2 as C
+
+Common causes include assigning the wrong value to one of the enumerators,
+or assigning values at all. If this was intended, it should be marked
+innocent, or (if it happens commonly throughout this code), the complaint
+should be disabled.
+</snippet>
+
+<snippet "MISTAKE14">
+MISTAKE14: Implicit declaration of function foo.
+
+The C language does not require that functions be declared before use, but
+it is generally recommended. The C compiler will issue a warning for
+undeclared functions and the linker will actually fail if an implementation
+of the function is not provided. 
+
+Therefore this complaint is not intended to catch programming errors, but
+rather failures to provide some include files. It is recommended that this
+complaint be turned on because otherwise BEAM may issue other complaints,
+which the user might find hard to understand. The real cause might be a
+missing include file or incorrect defines given to BEAM. 
+
+Common causes include misspelled function or type names, or missing include
+files. Determine if the correct function or type is being used, and if so,
+include the appropriate header files that define that function or type. 
+
+If many functions are intended to be undeclared, then this complaint could
+result in too much noise. In that case it is recommended that
+'beam::enabling_policy' be set to "capitals". This will cause the complaint
+to be issued only for functions whose name is all in capitals, which was
+probably meant to be a macro, but its definition was omitted. 
+
+In any case this complaint is issued only once per source file and
+undeclared function.
+</snippet>
+
+<snippet "MISTAKE15">
+MISTAKE15: Lack of parenthesization around macro definition foo could
+result in an incorrect evaluation when expanded
+
+MISTAKE15: Lack of parenthesization around parameter parm of macro foo
+could result in an incorrect evaluation when expanded
+
+This check is no longer available. 
+
+--> MISTAKE16(while): The while-construct is followed by a semicolon,
+resulting in an empty body
+
+MISTAKE16(for): The for-construct is followed by a semicolon, resulting in
+an empty body
+
+MISTAKE16(switch): The switch-construct is followed by a semicolon,
+resulting in an empty body
+
+MISTAKE16(if): The if-statement has an empty then-clause and no else-clause
+
+Example1:
+
+  while (a > b);
+    foo();
+
+Example2:
+
+  for (p = str; *p != '?'; p++);
+  foo();
+
+Example3:
+
+  switch (x);
+  {
+    case 0: ...
+  }
+
+Example4:
+
+  {
+    if (a > b);
+  }
+
+Example5:
+
+  {
+    if (a > b);
+    else x++;
+  }
+
+There are several language constructs -- "while", "for", "switch", "if" --
+that apply to the next single statement or block of code. A semi-colon
+denotes the end of a single statement, and therefore a spurious semi-colon
+after one of these constructs will give those constructs an empty body. 
+
+A human eye is bad at noticing spurious semi-colons and sees the next
+non-empty statement as the body of the construct. At the same time it is
+possible that the semi-colon is actually an intentional expression of an
+empty body. In Example1 the call to "foo()" is probably meant to be
+executed on every iteration of the while-loop, but in Example2 the same
+call is probably meant to be executed only after the for-loop. That
+intention is conveyed by indentation. Similarly the semi-colon in Example3
+is almost surely unintended, judging from the following block of code.
+(Please note that Example3 is syntactically correct in C/C++, provided it
+is embedded in another switch statement. Example3 is not syntactically
+correct in Java.) 
+
+An if-statement is somewhat different in that it applies to two statements
+-- then and else clauses. While Example4 shows an if-statement with no
+effect, the semi-colon in Example5 is quite surely intended because it
+would not be syntactically correct otherwise. 
+
+MISTAKE16 reports spurious semi-colons and its 'enabling_policy' allows you
+to express when MISTAKE16 should be suppressed because you actually do mean
+an empty body.
+</snippet>
+
+<snippet "MISTAKE17">
+MISTAKE17: Loop will be executed at most once
+
+If a loop is encountered that will never execute more than once, then
+either the loop construct was not needed, or more likely, there is an error
+in the logic that decides when to exit the loop. 
+
+Example:
+
+  for (i = 0; i < n; i++)
+  {
+    ... some statements not containing "continue" ...
+    break;
+  }
+
+This loop will break on the very first iteration, therefore the loop
+construct is not needed. This is sometimes an indication of an error in the
+conditions for terminating the loop. 
+
+The exact cause for this error is tough to track down sometimes. Some
+things to look for include any "break" or "continue" statements in the
+loop, and under what conditions they are encountered. Also look at the
+loop's conditional statement, and ensure that it is correct and executes
+the loop as many times as you expect it to. When all else fails, use a
+debugging technique to watch the variables and the loop iterations to
+better understand what is happening.
+</snippet>
+
+<snippet "MISTAKE18">
+MISTAKE18: Comparing pointers to strings, not the strings themselves.
+
+MISTAKE18: Comparing pointers, not the objects themselves.
+
+Example 1:
+
+  void foo(char *string1, char *string2)
+  {
+    if (string1 == string2) ...
+  }
+
+This will compare whether string1 and string2 are identical pointers and
+will evaluate to false whenever the pointers are different, even if their
+two character strings are the same. If you meant to check whether the
+strings were the same, you want to write it as
+
+  void foo(char *string1, char *string2)
+  {
+    if (strcmp(string1, string2) == 0) ...
+  }
+
+
+</snippet>
+
+<snippet "MISTAKE19">
+MISTAKE19: Terminating \0 not copied.
+
+You are taking advantage of a rather dangerous feature of the C language,
+which is in fact disallowed in C++. 
+
+Example:
+
+  char s[2] = "ab";
+
+In C this initializes the array `s' to the string "ab", but there is no
+room for the terminating 0 character. Therefore the terminating 0 character
+will not be copied into `s' and `s' will not be a legal C-string. This is
+rarely intended, instead the following is intended
+
+  char s[3] = "ab";
+
+
+</snippet>
+
+<snippet "MISTAKE20">
+MISTAKE20: Exception handler for type is unreachable
+
+The exception handler is unreachable because a previous exception handler
+is masking it. 
+
+Example:
+
+  try {
+    throw(...);
+  } catch(const char *) {
+    ...
+  } catch(char *) { // unreachable handler
+    ...
+  }
+
+Because the handler for "const char *" will also catch "char *", then the
+handler for "char *" is unreachable. 
+
+This complaint exists because there are special rules for catching
+exceptions that allow unexpected types to be caught at unexpected times.
+</snippet>
+
+<snippet "MISTAKE21">
+MISTAKE21: For function func the following category advisory has been
+issued:
+
+The function being called has an advisory associated with it (see the
+advisory attribute). The advisory text should explain why the advisory was
+issued and what steps should be taken to avoid the advisory in the future.
+In most cases, the advisory will suggest calling a different function. 
+
+The category of the advisory is a free-form string which should describe
+the severity of the advisory. The category is also used to filter out
+unwanted advisory messages (see below). 
+
+Example:
+
+  char buff[64];
+  gets(buff);
+
+This will print an advisory for the call to 'gets' because calling 'gets'
+is unsafe, and 'fgets' should be used instead.
+</snippet>
+
+<snippet "MISTAKE22">
+MISTAKE22: switch does not consider all cases
+
+Example 1:
+
+  typedef enum {A, B, C, D} E;
+  int foo(E e)
+  {
+    switch(e) {
+     case A: return 1;
+     case B: return 2;
+    }
+    return 0;
+  }
+
+BEAM will issue the following complaint
+
+  "foo.c", line 20: switch does not consider all cases
+
+   Missing C, D
+
+MISTAKE22 is meant to support the following policy toward default clauses
+in switch statements. 
+
+(I) If you intentionally did not list all possibilities and you do want the
+switch statement to have no effect for the omitted cases, then clarify your
+intention by
+
+  default: break;
+
+(II) If you intentionally did not list all possibilities because and you
+are relying on callers to your function "foo(E e)" to pass only listed
+cases, then clarify your intention by
+
+  default: abort();  /* or something like it */
+
+(III) If you intended to list all possibilities then omit any default
+clause and let BEAM tell you if you missed something. 
+
+Example 2:
+
+  typedef enum {A, B, C, D} E;
+  int foo(E e)
+  {
+    if (e == C || e == D) return 0;
+    switch(e) {
+     case A: return 1;
+     case B: return 2;
+    }
+    return 0;
+  }
+
+In Example 2 all possible values of e are meant to be considered inside the
+function "foo(E e)" and therefore it is best to omit the default clause.
+The advantage of omitting the default clause will be realized if somebody
+adds another value to the enum type 'E', and BEAM will be able to report
+that the new value is not being handled.
+</snippet>
+
+<snippet "MISTAKE23">
+MISTAKE23: Result of function foo is supposed to be checked, because it has
+a force_test attribute
+
+This is intended for functions with a return code or some other kind of
+indication of failure. For example, the 'fopen' function indicates failure
+by returning NULL. Suppose that you want to require everybody to perform
+some recovery action in case 'fopen' fails. Currently there is no way to
+tell BEAM what the correct recover action should be, but BEAM is able to
+check that at least something special is done in case 'fopen' returns NULL.
+</snippet>
+
+<snippet "MISTAKE24">
+MISTAKE24: Boolean expression expr is used in a non-boolean context
+
+This mistake is intended to catch unintentional uses of boolean values. In
+some cases, the use may be unintentional because of a simple typo:
+
+  if (!x & y)
+
+In other cases, the use may be unintentional because the wrong operator was
+used:
+
+  if (~(x && y))
+
+Examine the boolean expression and the context in which it is used, and
+decide if you really meant to use it in a non-boolean context.
+</snippet>
+
+<snippet "MISTAKE25">
+MISTAKE25: Pointer out of range
+
+This complaint is followed by a path though the program. The paths ends in
+pointer addition, e.g., "p + i", and the result of the addition is an
+address beyond the allocated memory into which p is pointing. 
+
+Example 1:
+
+  int a[5];
+  int *x = a + 10;  /* same as x = &(a[10]) */
+  int *y = a + 5;   /* same as y = &(a[5])  */
+
+Forming an address outside allocated memory will not cause a failure by
+itself, but it is an indication of something unintended. There is no use
+for such an address; the only exception is a pointer pointing just beyond
+allocated memory to be used in comparison with other pointers. In the above
+example, 'y' could be useful for checking whether another pointer exceeds
+the array 'a'. For that reason a common configuration of MISTAKE25 would
+flag the assignment to 'x', but not the assignment to 'y'.
+</snippet>
+
+<snippet "WARNING1">
+WARNING1: Value of static variable xyz with file scope is never used
+
+The value of the static variable 'xyz' is never used, which is sometimes an
+indication of forgotten functionality. 
+
+This complaint is issued very conservatively; it will not be issued if the
+address of the variable is ever taken (i.e. &xyz), as that might lead to
+using its value. 
+
+You should check any code that is supposed to be using this variable, and
+ensure that it is indeed being used. Make sure there are no local variables
+with the same name that could be "shadowing" this global, and make sure
+that the paths of code that use this variable are reachable.
+</snippet>
+
+<snippet "WARNING2">
+WARNING2: Value of variable xyz with local scope is never used
+
+The value of the variable 'xyz' is never used, which is sometimes an
+indication of forgotten functionality. 
+
+This complaint is issued very conservatively; it will not be issued if the
+address of the variable is ever taken (i.e. &xyz), as that might lead to
+using its value. 
+
+You should check any code that is supposed to be using this variable, and
+ensure that it is indeed being used. Make sure there are no local variables
+with the same name that could be "shadowing" this variable, and make sure
+that the paths of code that use this variable are reachable.
+</snippet>
+
+<snippet "WARNING3">
+WARNING3: Value of parameter xyz is never used
+
+The value of the parameter 'xyz' is never used, which is sometimes an
+indication of forgotten functionality. 
+
+This check is issued very conservatively; it will not be issued if the
+address of the parameter is ever taken (i.e. &xyz), as that might lead to
+using its value. 
+
+You should check any code that is supposed to be using this variable, and
+ensure that it is indeed being used. Make sure that the paths of code that
+use this variable are reachable. 
+
+This complaint may be issued under some unexpected circumstances, for
+example
+
+  int foo(char c)
+  {
+    return c == EOF;
+  }
+
+
+</snippet>
+
+<snippet "WARNING4">
+WARNING4: Possible inefficiency when passing parameter parm
+
+WARNING4: Possible inefficiency when returning from func
+
+Declaring a function that takes in a structure as a parameter or that
+returns a structure by value is inefficient because every invocation will
+copy all of the structure's fields. 
+
+Example:
+
+  struct CC
+  {
+    ...
+  };
+
+  void f(struct CC xyz);
+
+  struct CC g(void);
+
+In this example, every call to 'f()' and 'g()' involves copying all of the
+fields of "struct CC". It is usually much more efficient to declare the
+function to take in or return an address or a reference to the structure
+instead. 
+
+In C++, passing objects in this fashion may involve calls to the "copy
+constructor" of the class. This can also lead to inefficiencies.
+</snippet>
+
+<snippet "WARNING5">
+WARNING5: Operator = in the boolean expression should possibly be ==
+
+This potential typo can result in drastically different results, and can be
+difficult to track down. Using "=" when "==" was meant will lead to the
+boolean result being the value of the right hand side, instead of a test
+for equality. 
+
+This complaint would be issued in the following example
+
+  if (foo = bar)
+
+The if statement performs an assignment to 'foo', which should possibly be
+a mere comparison. On the other hand, it might have been really intended as
+an assignment followed by testing "foo != 0". 
+
+BEAM allows differentiation among three possibilities:
+
+  * Right hand side is constant; here are three examples
+  if (a = 5)
+  if (a = SOME_DEFINED_CONSTANT)
+  if (a = &b)
+
+  This possibility is very unlikely intended, because the if condition would be always true
+  (or always false if the right hand side were the constant 0).
+  * Right hand side is memory access; here are two examples
+  if (a = b)
+  if (a = b->x.y)
+
+  This possibility is more likely intended.
+  * Right hand side is some computation, which covers all the remaining situations;
+  here are two examples
+  if (a = b+c)
+  if (a = f(b))
+
+  This possibility is most likely intended.
+
+Decide if you meant for this to be an assignment (with the boolean result
+being the value of the right hand side), or a real test for equality. If
+this should remain an assignment, consider changing something like:
+
+  if(a = b)
+
+to:
+
+  if((a = b) != 0)
+
+The intentions are made clear, and beam will not warn about this.
+</snippet>
+
+<snippet "WARNING6">
+WARNING6: Expression xyz has a value not allowed for its type type
+
+An integer value is assigned to an object, but the value is outside the
+domain of values for the object's type. 
+
+Examples:
+
+  unsigned char uc;
+  signed   char sc;
+
+  ......
+
+  sc = uc + 100000;
+
+Independent of what 'uc''s value might be, the result of the addition is
+too large for a signed character object. 
+
+Other examples include mixing integers and enums. Casting a number to an
+enumeration is dangerous when the number doesn't map to any enumeration
+value. 
+
+Example:
+
+  typedef enum {
+    red, 
+    blue,
+    green
+  } color;
+
+  color xyz = (color) 5;
+
+This could be caused by casting to the wrong type, or casting the wrong
+value. Or, maybe the cast is valid, and the variable should have a value
+not covered by the enumeration. 
+
+By default BEAM assumes that all variables declared to be of enumerated
+type can only contain values derived from the enumerators. If the type
+'color' does not have this property you can declare it as such using the
+global parameter 'beam::dirty_enum' or 'beam::unused_enum_value'
+</snippet>
+
+<snippet "WARNING7">
+WARNING7: The cast truncates many bits into few
+
+Example:
+
+  char c;
+  int  i;
+
+  c = i;
+
+This will cause the following complaint:
+
+  "d.c", line 7:  The cast `(char)i' truncates 32 bits into 8
+
+This complaint is usually useful only when the loss of information is
+unexpected, namely when the cast is implied by the compiler, not written
+explicitly by the programmer. Please recall that this behavior can be
+ensured by setting
+
+  set beam::WARNING7::enabled_for_compiler_generated  "yes"
+  set beam::WARNING7::disabled_for_user_written       "yes"
+
+
+</snippet>
+
+<snippet "WARNING8">
+WARNING8: Label is not the target of any goto
+
+A label was found that no one uses. This is either a label that can be
+deleted, or a symptom of a missing "goto" that should be using this label. 
+
+Check for any spots where someone should be using "goto" with this label.
+If there are no such spots, this label could be deleted. Otherwise,
+something may be missing somewhere else.
+</snippet>
+
+<snippet "WARNING9">
+WARNING9: Return value of function is not used
+
+The return value of the given function is ignored which is sometimes
+unintended. Make sure that it is safe to ignore the value in particular if
+the return value might indicate an error condition.
+</snippet>
+
+<snippet "WARNING10">
+WARNING10: assert statement might have side-effect
+
+Invoking functions or using expressions that have side-effects from macros
+that could be compiled out (like 'assert') is usually incorrect because the
+side-effect is lost in some cases, like when compiling optimized code. 
+
+Example:
+
+  assert(++a > 0);
+
+The assertion might be disabled when compiling optimized executable, and
+the incrementation of 'a' would be lost. It is better practice to take care
+of expressions and function calls outside of the macro, save the result in
+a temporary, and then assert a simple equality or inequality. 
+
+This warning is issued for any function invoked from an assert, even if
+that function actually has no side-effect.
+</snippet>
+
+<snippet "WARNING11">
+WARNING11: goto statement considered harmful
+
+See this classic paper for some ammunition to enable this warning. Read
+Donald Knuth, Structured Programming with goto Statements, Computing
+Surveys 6 (4), pp. 261-301, December 1974 to argue for disabling this
+warning.
+</snippet>
+
+<snippet "WARNING12">
+WARNING12: Expression is cast into signed from unsigned
+
+Example:
+
+  long long negate(unsigned c)
+  {
+    return -c;
+  }
+
+This will produce the following complaint for ILP32 targets:
+
+  Expression `(long long) -c' is cast into signed 64 bits from unsigned 32 bits
+
+This complaint is issued in situations where most peoples' expectation of
+casting effects differs from the official definition. In the above example
+suppose that the variable 'c' has the value 1. Most people would expect a
+return value of -1, but the function will in fact return 4294967295. 
+
+The reason is as follows. Since 'c' has type "unsigned int", so does "-c".
+Because of the wrap-around semantics of unsigned arithmetic the value of
+"-c" on a 32 bit machine is 4294967295. That number is then cast into a 64
+bit "long long" as is. 
+
+The recommended fix is:
+
+  return -(long long)c;
+
+
+</snippet>
+
+<snippet "WARNING13">
+WARNING13: Function foo is never used
+
+The static function 'foo' is declared but never called, which is sometimes
+an indication of forgotten functionality. 
+
+Because the function is static, no one outside of this file can call it.
+This could be the symptom of a typo (perhaps it was meant to be called from
+within this file). This could also be a function that was meant to be used,
+but never was, or a function that used to be used, but no longer is.
+</snippet>
+
+<snippet "WARNING14">
+WARNING14: Comparing e1 of type t1 with e2 of type t2
+
+WARNING14: Comparing e1 of type t1 with switch expression e2 of type t2
+
+WARNING14: Assigning e1 of type t1 to e2 of type t2
+
+WARNING14: Passing e1 of type t1 to parameter p of f having type t2
+
+WARNING14: Initializing x of type t1 with expression of type t2
+
+Consider the following motivational example:
+
+  typedef float time;
+  typedef float length;
+
+  time T;        // in seconds
+  length L;      // in meters
+
+  if (T == L) ....      // complaint
+
+BEAM complains here, because you're comparing a length against something
+that is considered 'time'. That does not seem sensible. You get the idea. 
+
+Note, that the example compiles just fine. The reason is that 'time' and
+'length' are not different types. They are only synonyms for "float" and
+therefore compilers keep quiet about it. BEAM however treats 'time' and
+'length' as different types, intentionally, because that is sometimes what
+was intended with the typedef. 
+
+The complaint can occur in comparisons, assignments, initializations (which
+includes passing arguments to functions). It involves two types and both
+types must either be enum types or defined via typedef.
+</snippet>
+
+<snippet "WARNING15">
+WARNING15: The then clause is not surrounded by braces
+
+WARNING15: The else clause is not surrounded by braces
+
+WARNING15: The loop body is not surrounded by braces
+
+Example:
+
+  if (a)
+    a = 0;
+
+Some coding guidelines disallow this form and require that the then clause
+be surrounded by braces, as in
+
+  if (a) {
+    a = 0;
+  }
+
+This is to prevent a common mistake of the form
+
+  if (a)
+    a = 0;
+    b = 0;
+
+Here the programmer probably meant to make the added assignment "b = 0" to
+be conditional, but it is unconditional. 
+
+Same rules apply to else clauses and loop bodies. 
+
+Some coding guidelines do not require the braces if the clause is on the
+same line as the condition, as in
+
+  if (a) a = 0;
+
+The reason is that this form will not lead to the above mistake. Therefore
+the beam::WARNING15::enabling policy can be "next_line", in which case the
+complaint will be issued only if the clause ("a = 0;") terminates below the
+last line of the previous construct. The previous construct can be "if(a)"
+or "else" or "while(a)", etc.
+</snippet>
+
+<snippet "WARNING16">
+WARNING16: Function foo accesses the same variable through two parameters
+
+Each of the two given parameters is either a pointer or a reference, and
+both are given the address of the same variable. This is dangerous because
+inside the function 'foo' that variable is accessed under two separate
+parameters. 
+
+Example:
+
+  scanf("%d %d", &x, &x);
+
+This will yield the complaint
+
+  "foo.C", line 5: Function `scanf' accesses the same variable `x' through two parameters #2 and #3
+
+
+</snippet>
+
+<snippet "WARNING17">
+WARNING17: xyz already contains the value being assigned
+
+Higher in the code the variable 'xyz' was already assigned this value. This
+could be caused by misspelling the variable name in one of the assignments,
+assigning the wrong value, or just by being extra careful to make sure that
+xyz will have that value. 
+
+Look at the previous assignment to 'xyz' and determine if the current
+assignment is necessary. It may need to be changed because it is incorrect,
+or it may be unnecessary all together.
+</snippet>
+
+<snippet "WARNING18">
+WARNING18: class_name object is being copied with a compiler-generated copy
+constructor
+
+Example:
+
+  class widget 
+  {
+    /* some class definition without copy constructor or assignment operator */
+  };
+  ...
+  widget new_w = new widget(old_w);
+
+The above code creates a new instance 'new_w' initialized to a copy of
+'old_w'. Given that the class 'widget' has no copy constructor, a
+compiler-generated copy constructor will be invoked, which copies each
+member. That may be unintended and can cause serious problems, for example,
+if the class has a destructor freeing memory created by a constructor. 
+
+For the above code you would get the complaint
+
+  "foo.C", line 42: widget `old_w' is being copied with a compiler-generated copy constructor
+
+If you do know that 'widget' can be safely copied with the
+compiler-generated copy constructor then you can indicate so by adding
+'widget' to the pattern 'beam::WARNING18::disabled_classes'.
+</snippet>
+
+<snippet "WARNING19">
+WARNING19: Beware, strcmp is true if the arguments differ
+
+Since 'strcmp' returns "0" ("false") if the arguments are the same, the
+expected result is sometimes incorrect. 
+
+Example:
+
+  if(strcmp(a,b))
+
+This "if" statement may appear to check if the arguments are the same, but
+it will only succeed if they are different. To avoid this misunderstanding
+a coding guideline may require that the if-statement be written as:
+
+  if(strcmp(a,b) == 0)
+
+which succeeds when the arguments are the same, or
+
+  if(strcmp(a,b) != 0)
+
+which succeeds when they are different. 
+
+One of these options should be chosen and used, depending on whether this
+"if" statement was meant to check equality or inequality.
+</snippet>
+
+<snippet "WARNING20">
+WARNING20: This declaration shadows variable on line ...
+
+WARNING20: This declaration shadows field on line ...
+
+WARNING20: This declaration shadows method on line ...
+
+This check warns you of variable or parameter declarations that hide (or
+"shadow") other variables or parameters in enclosing scopes. This also
+warns you of class field declarations and class method declarations that
+hide (or "shadow") class fields and methods in base classes. 
+
+Example:
+
+  int x;
+
+  int foo(int x)
+  {
+    return x + 1;
+  }
+
+The parameter 'x' of function 'foo' shadows the global variable 'x'.
+
+  class Parent {
+  public:
+    int x;
+  };
+  class Child : public Parent {
+  public:
+    int x;
+  };
+
+The field 'Child::x' shadows the base class field 'Parent::x'. 
+
+This check will catch the shadowing of global variables, function
+parameters, and local variables interchangeably. It also catches the
+shadowing of class fields and class methods when defining derived classes.
+</snippet>
+
+<snippet "WARNING21">
+WARNING21: Using the result of function as a boolean value may be
+inefficient
+
+This check warns you if you call a function and use the result as a boolean
+value (by comparing it equal or not equal to zero, or by using it in a
+boolean context) because there may be a more efficient alternative. 
+
+This may be useful for certain functions like 'strlen'. Comparing the first
+character to the ASCII '\0' character may be more efficient than comparing
+the length of the string to zero. 
+
+Example:
+
+  int foo(char *x)
+  {
+    if (strlen(x)) {
+      return 1;
+    }
+    return 0;
+  }
+
+Depending on your compiler, this may be inefficient. The following can be
+used if efficiency is more important than clarity:
+
+  int foo(char *x)
+  {
+    if (x[0] != '\0') {
+      return 1;
+    }
+    return 0;
+  }
+
+
+</snippet>
+
+<snippet "WARNING22">
+WARNING22: Boolean operator op always evaluates both operands.
+
+This check warns you if you use the "&" or "|" operator on boolean values
+in Java code. These operators act the same as the "&&" and "||" operators,
+except that the single-character versions will always evaluate both
+operands, while the double-character versions won't evaluate the right-hand
+side if it doesn't have to (commonly called "short-circuiting"). 
+
+Most programmers expect this short-circuit evaluation, especially in cases
+where evaluating the right-hand side under certain conditions would lead to
+an error:
+
+  /* Oops, programmer meant '||' */
+  if (o == null | o.checkFlag()) {
+    ...
+  }
+
+Here is another example where the short-circuit evaluation is preferred.
+The right-hand side contains a lengthy calculation:
+
+  /* Oops, programmer meant '&&' */
+  if (doLongCheck & someLongCheck()) {
+    ...
+  }
+
+Changing these operators to the short-circuiting operators is usually more
+clear and correct. Only in very rare performance-critical code should the
+single-character, non-short-circuiting boolean operators be used.
+</snippet>
+
+<snippet "WARNING24">
+WARNING24: Promotion of character literals.
+
+This check warns you if you add character literals promoted to "int" in
+Java code in a context where a String would have also been syntactically
+correct. This addition doesn't concatenate the characters like String
+concatenation would, which might have been the intention. 
+
+Example:
+
+  Object o = 'a' + 'b'; /* Probably meant to be string concatenation */
+
+To avoid this misunderstanding this statement should be written as:
+
+  Object o = "a" + "b";
+
+This check also warns you if you pass a promoted character literal to a
+method which overloads another method with a String parameter, and the
+method calls could be confused. 
+
+Example:
+
+  public void doWork(int x);
+  public void doWork(String x);
+  ...
+  doWork('x'); /* Probably meant to be String literal */
+
+To avoid this misunderstanding this method invocation should be written as:
+
+  doWork("x"); /* If you meant a String literal */
+
+  doWork((int)'c'); /* If you meant an integer value */
+
+
+</snippet>
+
+<snippet "PORTABILITY1">
+PORTABILITY1: The cast (int) ptr will cause truncation the portability
+target machine
+
+For example, on a 64 bit machine pointers are 64 bits, while an "int" is
+only 32 bits. Some casts that work in 32 bit mode will behave differently
+in 64 bit mode. 
+
+Example:
+
+  int* ptr;
+  ...
+  int num = (int) ptr;
+
+In this example, the cast will work fine in 32 bit mode, but will truncate
+the value of "ptr" in 64 bit mode. 
+
+This complaint is issued whenever a pointer of a certain size on the build
+machine is cast into a numeric type that is large enough on the build
+machine, but would be too small on the portability target machine. 
+
+If casting must be done to store pointers in integer types, use a type
+large enough on all targets (usually "unsigned long").
+</snippet>
+
+<snippet "PORTABILITY2">
+PORTABILITY2: The cast (int) long will cause truncation on the portability
+target machine
+
+PORTABILITY2: The operation 'op' will cause truncation on the portability
+target machine
+
+For example, on a 64 bit machine "long" is 64 bits, while "int" is only 32
+bits. Some casts that work in 32 bit mode will behave differently in 64 bit
+mode. 
+
+Examples:
+
+  long num1;
+  ...
+  int num2 = (int) num1; // Explicit cast from long to int
+  ...
+  num2 += num1; // Implicit conversion from long to int
+
+In these examples, the conversion will work fine in 32 bit mode, but will
+truncate the value of 'num1' or "num1 + num2" in 64 bit mode. 
+
+This complaint is issued whenever a variable of numeric type of a certain
+size on the build machine is cast into a numeric type that is large enough
+on the build machine, but would be too small on the portability target
+machine. 
+
+If casting must be done between integer types, use a type that is large
+enough on all targets, or beware of truncation on some.
+</snippet>
+
+<snippet "PORTABILITY3">
+PORTABILITY3: The cast (ptr) int may behave differently on the portability
+target machine
+
+For example, on a 64 bit machine pointers are 64 bits, while "int" is only
+32 bits. Some casts that work in 32 bit mode will behave differently in 64
+bit mode. 
+
+Example:
+
+  int num;
+  ...
+  int* ptr = (int*)num;
+
+In this example, the cast will work fine in 32 bit mode, but will pad the
+result in 64 bit mode. Since the result is a pointer, and the source type
+can not hold a pointer in 64 bit mode, this is almost always incorrect. 
+
+This complaint is issued whenever a variable of numeric type of a certain
+size on the build machine is cast into a pointer type, where the numeric
+type is large enough on the build machine to represent all pointer values,
+but would be too small on the portability target machine. 
+
+If casting must be done between pointers and integer types, use a type that
+is large enough on all platforms (usually "unsigned long").
+</snippet>
+
+<snippet "PORTABILITY4">
+PORTABILITY4: The cast (long) ptr may cause irreproducible behavior
+
+Casting a pointer to a numeric type can cause irreproducible behavior
+depending on where the address exists in memory, if that location not
+deterministic. 
+
+If possible, casting pointers to numeric types should be avoided. The
+complaint is issued whenever a pointer type is cast into a numeric type.
+Certain numeric types can be ignored by customizing the 'disabled_types'
+parameter.
+</snippet>
+
+<snippet "PORTABILITY5">
+PORTABILITY5: The cast (long *) ptr_to_int may behave differently on the
+portability target machine
+
+For example, some casts that work in 32 bit mode will behave differently in
+64 bit mode. 
+
+Example:
+
+  int i;                 /* 32 bits */
+  long *l = (long *) &i; /* l thinks it has a pointer to 64 bits */
+  *l = 5;                /* 64 bits starting with the address of i are being overwritten */
+
+In this example, the cast will work fine in 32 bit mode, but memory will be
+overwritten in 64 bit mode. 
+
+This complaint is issued whenever a pointer to a type of a certain size on
+the build machine is cast to a pointer to a type that is the same size on
+the build machine, but would be a different size on the portability target
+machine. 
+
+If casting must be done between numeric types, ensure that the destination
+type is never larger than the source type, or memory may be corrupted by
+assignments into the pointer, and invalid memory may be read by
+dereferencing the pointer.
+</snippet>
+
+<snippet "SECURITY1">
+SECURITY1: String pat is used as a pattern for printf
+
+Example:
+
+  printf(pat);
+
+will generate the complaint
+
+  String 'pat' is used as a pattern for `printf'
+
+If the string "pat" contained any % specifications, then printf will access
+whatever happens to be on the stack, which could allow violation of
+security. It is safer to code the example like this
+
+  printf("%s", pat);
+
+The function 'printf' is not the only one whose format will be checked.
+BEAM will check any function's arguments for insecure format, provided that
+function is given a format attribute. For an example, see the usage of
+'printf_like' in the file "tcl/beam_attributes.tcl".
+</snippet>
+
+<snippet "SECURITY2">
+SECURITY2: Passing untrusted input to argument
+
+Example:
+
+  void complain(char *s)
+  {
+    strcpy(buff, s);
+  }
+
+will generate the complaint
+
+  Passing untrusted input to argument #2 of `strcpy'
+
+If the string 's' is longer than 'buff' then some memory will be
+overwritten. This can be used by an attacker to make the machine execute
+his code. 
+
+This complaint is related to ERROR7, which also checks for buffer overruns.
+The difference lies in the amount of evidence necessary to issue the
+compliant. For SECURITY2 sufficient evidence is the mere absence of any
+checking of length of 's'. That is, SECURITY2 should be turned on in code
+where any input string is assumed to be too long unless programmer checked
+it and determined that it is not too long. In contrast, for ERROR7 the
+burden of proof is on BEAM to find evidence that the input string is indeed
+too long.
+</snippet>
+
+<snippet "JNI1">
+JNI1: JNI invalid local reference
+
+JNI1 detects using invalid local references.
+
+Example:
+
+  static jclass stringClass;
+  JNIEXPORT void JNICALL Java_Foo_initialize(JNIEnv *env, jclass cls)
+  {
+    stringClass = (*env)->FindClass(env, "java/lang/String");
+  }
+
+will generate the complaint
+
+  Assigning a local reference to a global variable
+
+The value assigned to 'stringClass' is a local reference and native code
+should not store a local reference in a global variable and expect to use
+it in later invocations of the native method. 
+
+This example should be modified so it can assign a global reference like
+this
+
+  static jclass stringClass;
+  JNIEXPORT void JNICALL Java_Foo_initialize(JNIEnv *env, jclass cls)
+  {
+    jclass tmp;
+    tmp = (*env)->FindClass(env, "java/lang/String");
+    stringClass = (*env)->NewGlobalRef(env, tmp);
+  }
+
+
+</snippet>
+
+<snippet "JNI2">
+JNI2: JNI type error
+
+JNI2 detects the following errors, which relate to passing invalid
+arguments to JNI functions. 
+
+Class not found Class name given to, for example, a call to 'FindClass' is
+not found in the classpath. 
+
+Method not found Given a class, a method specified by the name and the
+signature in a call to 'GetMethodID' is not found. 
+
+Field not found Given a class, a field specified by the name in a call to
+'GetFieldID' is not found. 
+
+Type mismatch Type of a field or a method parameter doesn't match the class
+definition. 
+
+Signature format error The signature passed to 'GetMethodID' or
+'GetFieldID' is wrong. 
+
+Wrong number of arguments The number of arguments for a method call
+function (e.g. 'Call<Type>Method') is wrong. 
+
+Example:
+
+  JNIEXPORT void JNICALL Java_Foo_initialize(JNIEnv *env, jobject arg)
+  {
+    jclass cls = (*env)->FindClass(env, "com/ibm/beam/NonexistentByConstant"); /* Class not found */
+    cls = (*env)->FindClass(env, "java/lang/Object");
+    jfieldID fid = (*env)->GetFieldID(env, cls, "xyz", "I");     /* Field not found */
+    jmethodID mid = (*env)->GetMethodID(env, cls, "xyz", "()I"); /* Method not found */
+    mid = (*env)->GetMethodID(env, cls, "toString", "()Ljava/lang/String;");
+    (*env)->CallObjectMethod(env, obj, mid, arg);                /* Wrong number of arguments */
+    cls = (*env)->FindClass(env, "java/awt/Point");
+    fid = (*env)->GetFieldID(env, cls, "x", "Z");                /* Type mismatch */
+    fid = (*env)->GetFieldID(env, cls, "x", "Lbadsignature");    /* Signature format error */
+    ...
+  }
+
+
+</snippet>
+
+<snippet "CONCURRENCY1">
+CONCURRENCY1: Storing into field ... modifies global shared object ...
+
+CONCURRENCY1: Calling method ... may modify global shared object ...
+
+As this check is currently project specific, it is not documented for
+general use.
+</snippet>
+
+<snippet "CONCURRENCY2">
+CONCURRENCY2: Storing non-shared value ...
+
+As this check is currently project specific, it is not documented for
+general use.
+</snippet>
+
+<snippet "CONCURRENCY3">
+CONCURRENCY3: Possible deadlock as follows
+
+This complaint is issued in code assumed to be executed concurrently by
+multiple threads. It describes a possibility where several threads acquire
+a lock each, and then they wait on each other to release a lock.
+</snippet>
+
+<snippet "CONCURRENCY4">
+CONCURRENCY4: Acquiring non-recursive lock already held
+
+This complaint is issued if a thread attempts to acquire twice the same
+non-recursive lock.
+</snippet>
+
+<snippet "CONCURRENCY5">
+CONCURRENCY5: Operation unprotected by lock
+
+This complaint is issued for an operation (e.g., an assignment) on memory
+shared by several threads, where the operation is not protected by a lock.
+"Shared memory" is memory reachable from external or static variables.
+</snippet>
+

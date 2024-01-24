@@ -1,0 +1,21 @@
+导入之前需要把原本的项目先删掉，不然会报错
+
+右键点击项目栏空白处——》Import——》Import——》Maven——》Existing Maven Projects
+
+查找项目pom.xml文件路径，如：E:\trunk\testcase_new\story\java
+
+找到目录后，可选pom文件，完成导入
+
+
+修改\trunk\testcase_new\testcase-base下的pom文件（注意这是另一个pom文件）
+在testcase-base下创建lib目录，将sdb驱动放入该目录，并修改驱动包名为sequoiadb-driver-xxx版本.jar
+打开pom.xml进行编辑
+修改以下选项
+<sdbdriver.version>3.0.2</sdbdriver.version>
+<sdbdriver.dir>E:/trunk/testcase_new/testcase-base/lib</sdbdriver.dir>
+
+修改完成后，右键点击项目——》Maven——》update project
+
+注意：重新导入项目时com.sequoiadb.testcommon.TimePrinterListener类的dbMsgBeginTime，dbMsgEndTime里的new Sdb需要自己写主机名/ip
+
+完成之后，执行用例和之前一样用testng.xml就可以了

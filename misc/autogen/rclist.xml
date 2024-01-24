@@ -1,0 +1,3310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<rclist>
+   <conslist>
+      <constant>
+        <name>SDB_MAX_ERROR</name>
+        <value>1024</value>
+      </constant>
+
+      <constant>
+        <name>SDB_MAX_WARNING</name>
+        <value>1024</value>
+      </constant>
+
+      <constant>
+        <name>SDB_OK</name>
+        <value>0</value>
+      </constant>
+   </conslist>
+
+   <codelist>
+      <code>
+         <name>SDB_IO</name>
+         <description>
+            <en>IO Exception</en>
+            <cn>IO 错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OOM</name>
+         <description>
+            <en>Out of Memory</en>
+            <cn>无可用内存</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PERM</name>
+         <description>
+            <en>Permission Error</en>
+            <cn>权限错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_FNE</name>
+         <description>
+            <en>File Not Exist</en>
+            <cn>文件不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_FE</name>
+         <description>
+            <en>File Exist</en>
+            <cn>文件已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALIDARG</name>
+         <description>
+            <en>Invalid Argument</en>
+            <cn>非法输入参数</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALIDSIZE</name>
+         <description>
+            <en>Invalid size</en>
+            <cn>非法长度</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INTERRUPT</name>
+         <description>
+            <en>Interrupt</en>
+            <cn>中断错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_EOF</name>
+         <description>
+            <en>Hit end of file</en>
+            <cn>文件结束</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SYS</name>
+         <description>
+            <en>System error</en>
+            <cn>系统错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NOSPC</name>
+         <description>
+            <en>No space is left on disk</en>
+            <cn>无剩余空间</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_EDU_INVAL_STATUS</name>
+         <description>
+            <en>EDU status is not valid</en>
+            <cn>引擎调度单元状态错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_TIMEOUT</name>
+         <description>
+            <en>Timeout error</en>
+            <cn>超时错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_QUIESCED</name>
+         <description>
+            <en>Database is quiesced</en>
+            <cn>数据库已暂停</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NETWORK</name>
+         <description>
+            <en>Network error</en>
+            <cn>网络错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NETWORK_CLOSE</name>
+         <description>
+            <en>Network is closed from remote</en>
+            <cn>网络已从远程关闭</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DATABASE_DOWN</name>
+         <description>
+            <en>Database is in shutdown status</en>
+            <cn>数据库正在关闭</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_APP_FORCED</name>
+         <description>
+            <en>Application is forced</en>
+            <cn>应用被强制退出</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALIDPATH</name>
+         <description>
+            <en>Given path is not valid</en>
+            <cn>非法路径错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALID_FILE_TYPE</name>
+         <description>
+            <en>Unexpected file type specified</en>
+            <cn>非预期文件类型</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_NOSPC</name>
+         <description>
+            <en>There's no space for DMS</en>
+            <cn>存储单元中无可用空间</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_EXIST</name>
+         <description>
+            <en>Collection already exists</en>
+            <cn>集合已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_NOTEXIST</name>
+         <description>
+            <en>Collection does not exist</en>
+            <cn>集合不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_RECORD_TOO_BIG</name>
+         <description>
+            <en>User record is too large</en>
+            <cn>数据记录过大</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_RECORD_NOTEXIST</name>
+         <description>
+            <en>Record does not exist</en>
+            <cn>数据记录不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_OVF_EXIST</name>
+         <description>
+            <en>Remote overflow record exists</en>
+            <cn>溢出记录已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_RECORD_INVALID</name>
+         <description>
+            <en>Invalid record</en>
+            <cn>非法记录</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_SU_NEED_REORG</name>
+         <description>
+            <en>Storage unit need reorg</en>
+            <cn>存储单元需要重组</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_EOC</name>
+         <description>
+            <en>End of collection</en>
+            <cn>集合结尾</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CONTEXT_IS_OPEN</name>
+         <description>
+            <en>Context is already opened</en>
+            <cn>上下文已打开</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CONTEXT_IS_CLOSE</name>
+         <description>
+            <en>Context is closed</en>
+            <cn>上下文已关闭</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OPTION_NOT_SUPPORT</name>
+         <description>
+            <en>Option is not supported yet</en>
+            <cn>选项暂不支持</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CS_EXIST</name>
+         <description>
+            <en>Collection space already exists</en>
+            <cn>集合空间已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CS_NOTEXIST</name>
+         <description>
+            <en>Collection space does not exist</en>
+            <cn>集合空间不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_INVALID_SU</name>
+         <description>
+            <en>Storage unit file is invalid</en>
+            <cn>非法存储单元</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_CONTEXT_NOTEXIST</name>
+         <description>
+            <en>Context does not exist</en>
+            <cn>上下文不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_MULTIPLE_ARRAY</name>
+         <description>
+            <en>More than one fields are array type</en>
+            <cn>超过一个索引字段包含数组</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_DUP_KEY</name>
+         <description>
+            <en>Duplicate key exist</en>
+            <cn>索引键已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_KEY_TOO_LARGE</name>
+         <description>
+            <en>Index key is too large</en>
+            <cn>索引键过大</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_NOSPC</name>
+         <description>
+            <en>No space can be found for index extent</en>
+            <cn>索引块无空间</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_KEY_NOTEXIST</name>
+         <description>
+            <en>Index key does not exist</en>
+            <cn>索引键不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_MAX_INDEX</name>
+         <description>
+            <en>Hit max number of index</en>
+            <cn>最大数量索引已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_INIT_INDEX</name>
+         <description>
+            <en>Failed to initialize index</en>
+            <cn>初始化索引失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_COL_DROPPED</name>
+         <description>
+            <en>Collection is dropped</en>
+            <cn>集合已被删除</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_IDENTICAL_KEY</name>
+         <description>
+            <en>Two records get same key and rid</en>
+            <cn>两条记录拥有同样的键值和RID</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_EXIST</name>
+         <description>
+            <en>Duplicate index name</en>
+            <cn>同名索引已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_NOTEXIST</name>
+         <description>
+            <en>Index name does not exist</en>
+            <cn>索引不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_UNEXPECTED_STATUS</name>
+         <description>
+            <en>Unexpected index flag</en>
+            <cn>非预期索引状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_EOC</name>
+         <description>
+            <en>Hit end of index</en>
+            <cn>索引结束</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_DEDUP_BUF_MAX</name>
+         <description>
+            <en>Hit the max of dedup buffer</en>
+            <cn>去重缓冲区已满</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_INVALID_PREDICATES</name>
+         <description>
+            <en>Invalid predicates</en>
+            <cn>非法谓词</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_INDEX_NOTEXIST</name>
+         <description>
+            <en>Index does not exist</en>
+            <cn>索引不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_INVALID_HINT</name>
+         <description>
+            <en>Invalid hint</en>
+            <cn>索引提示非法</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_NO_MORE_TEMP</name>
+         <description>
+            <en>No more temp collections are avaliable</en>
+            <cn>无可用临时集合</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_SU_OUTRANGE</name>
+         <description>
+            <en>Exceed max number of storage unit</en>
+            <cn>存储空间数量已最大</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_DROP_ID</name>
+         <description>
+            <en>$id index can't be dropped</en>
+            <cn>$id索引不可被删除</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_LOG_NOT_IN_BUF</name>
+         <description>
+            <en>Log was not found in log buf</en>
+            <cn>日志不在缓冲区内</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_LOG_NOT_IN_FILE</name>
+         <description>
+            <en>Log was not found in log file</en>
+            <cn>日志不在文件中</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PMD_RG_NOT_EXIST</name>
+         <description>
+            <en>Replication group does not exist</en>
+            <cn>复制组不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PMD_RG_EXIST</name>
+         <description>
+            <en>Replication group exists</en>
+            <cn>复制组已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALID_REQID</name>
+         <description>
+            <en>Invalid request id is received</en>
+            <cn>非法请求ID</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PMD_SESSION_NOT_EXIST</name>
+         <description>
+            <en>Session ID does not exist</en>
+            <cn>会话ID不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PMD_FORCE_SYSTEM_EDU</name>
+         <description>
+            <en>System EDU cannot be forced</en>
+            <cn>系统引擎调度单元不可被终止</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NOT_CONNECTED</name>
+         <description>
+            <en>Database is not connected</en>
+            <cn>数据库未连接</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_UNEXPECTED_RESULT</name>
+         <description>
+            <en>Unexpected result received</en>
+            <cn>非预期结果</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CORRUPTED_RECORD</name>
+         <description>
+            <en>Corrupted record</en>
+            <cn>记录损坏</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BACKUP_HAS_ALREADY_START</name>
+         <description>
+            <en>Backup has already been started</en>
+            <cn>备份已开始</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BACKUP_NOT_COMPLETE</name>
+         <description>
+            <en>Backup is not completed</en>
+            <cn>备份未结束</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_IN_BACKUP</name>
+         <description>
+            <en>Backup is in progress</en>
+            <cn>备份正在进行</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BAR_DAMAGED_BK_FILE</name>
+         <description>
+            <en>Backup is corrupted</en>
+            <cn>备份文件损坏</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_NO_PRIMARY_FOUND</name>
+         <description>
+            <en>No primary node was found</en>
+            <cn>主节点不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_1</name> <!-- SDB_CAT_NODE_NOT_FOUND -->
+         <description>
+            <en>Reserved</en> <!-- Requested node does not exist -->
+            <cn>保留</cn> <!-- 请求节点不存在 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PMD_HELP_ONLY</name>
+         <description>
+            <en>Engine help argument is specified</en>
+            <cn>引擎帮助参数</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PMD_CON_INVALID_STATE</name>
+         <description>
+            <en>Invalid connection state</en>
+            <cn>非法连接状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLT_INVALID_HANDLE</name>
+         <description>
+            <en>Invalid handle</en>
+            <cn>非法句柄</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLT_OBJ_NOT_EXIST</name>
+         <description>
+            <en>Object does not exist</en>
+            <cn>对象已释放或不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_ALREADY_LISTENED</name>
+         <description>
+            <en>Listening port is already occupied</en>
+            <cn>监听端口已被占用</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_CANNOT_LISTEN</name>
+         <description>
+            <en>Unable to listen the specified address</en>
+            <cn>无法监听端口</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_CANNOT_CONNECT</name>
+         <description>
+            <en>Unable to connect to the specified address</en>
+            <cn>无法连接到指定地址</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_NOT_CONNECT</name>
+         <description>
+            <en>Connection does not exist</en>
+            <cn>连接不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_SEND_ERR</name>
+         <description>
+            <en>Failed to send</en>
+            <cn>发送失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_TIMER_ID_NOT_FOUND</name>
+         <description>
+            <en>Timer does not exist</en>
+            <cn>定时器标示不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_ROUTE_NOT_FOUND</name>
+         <description>
+            <en>Route info does not exist</en>
+            <cn>路由信息不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_BROKEN_MSG</name>
+         <description>
+            <en>Broken msg</en>
+            <cn>消息错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_INVALID_HANDLE</name>
+         <description>
+            <en>Invalid net handle</en>
+            <cn>非法网络句柄</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_INVALID_REORG_FILE</name>
+         <description>
+            <en>Invalid reorg file</en>
+            <cn>重组文件不合法</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_REORG_FILE_READONLY</name>
+         <description>
+            <en>Reorg file is in read only mode</en>
+            <cn>重组文件为只读模式</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_INVALID_COLLECTION_S</name>
+         <description>
+            <en>Collection status is not valid</en>
+            <cn>集合状态非法</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_NOT_IN_REORG</name>
+         <description>
+            <en>Collection is not in reorg state</en>
+            <cn>集合不为重组状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_REPL_GROUP_NOT_ACTIVE</name>
+         <description>
+            <en>Replication group is not activated</en>
+            <cn>复制组未激活</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_REPL_INVALID_GROUP_MEMBER</name>
+         <description>
+            <en>Node does not belong to the group</en>
+            <cn>非法复制组成员</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_INCOMPATIBLE_MODE</name>
+         <description>
+            <en>Collection status is not compatible</en>
+            <cn>集合状态不兼容</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_INCOMPATIBLE_VERSION</name>
+         <description>
+            <en>Incompatible version for storage unit</en>
+            <cn>存储单元版本不兼容</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_REPL_LOCAL_G_V_EXPIRED</name>
+         <description>
+            <en>Version is expired for local group</en>
+            <cn>本地组版本信息过期</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_INVALID_PAGESIZE</name>
+         <description>
+            <en>Invalid page size</en>
+            <cn>非法数据页大小</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_REPL_REMOTE_G_V_EXPIRED</name>
+         <description>
+            <en>Version is expired for remote group</en>
+            <cn>远程组版本信息过期</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_VOTE_FAILED</name>
+         <description>
+            <en>Failed to vote for primary</en>
+            <cn>投票失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_CORRUPTED_LOG</name>
+         <description>
+            <en>Log record is corrupted</en>
+            <cn>日志记录损坏</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_LSN_OUTOFRANGE</name>
+         <description>
+            <en>LSN is out of boundary</en>
+            <cn>LSN超出边界</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_UNKNOWN_MESSAGE</name>
+         <description>
+            <en>Unknown message is received</en>
+            <cn>未知消息</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NET_UPDATE_EXISTING_NODE</name>
+         <description>
+            <en>Updated information is same as old one</en>
+            <cn>更新信息无变化</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_UNKNOW_MSG</name>
+         <description>
+            <en>Unknown message</en>
+            <cn>未知消息</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_EMPTY_HEAP</name>
+         <description>
+            <en>Empty heap</en>
+            <cn>空栈错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NOT_PRIMARY</name>
+         <description>
+            <en>Node is not primary</en>
+            <cn>非主节点</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NODE_NOT_ENOUGH</name>
+         <description>
+            <en>Not enough number of data nodes</en>
+            <cn>数据节点不足</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NO_CATALOG_INFO</name>
+         <description>
+            <en>Catalog information does not exist on data node</en>
+            <cn>数据节点不存在编目信息</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_DATA_NODE_CAT_VER_OLD</name>
+         <description>
+            <en>Catalog version is expired on data node</en>
+            <cn>数据节点编目版本过旧</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_COORD_NODE_CAT_VER_OLD</name>
+         <description>
+            <en>Catalog version is expired on coordinator node</en>
+            <cn>协调节点编目版本过旧</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_INVALID_GROUP_NUM</name>
+         <description>
+            <en>Exceeds the max group size</en>
+            <cn>超出最大组上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_SYNC_FAILED</name>
+         <description>
+            <en>Failed to sync log</en>
+            <cn>同步日志失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_REPLAY_LOG_FAILED</name>
+         <description>
+            <en>Failed to replay log</en>
+            <cn>执行日志失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_REST_EHS</name>
+         <description>
+            <en>Invalid HTTP header</en>
+            <cn>HTTP头结构错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_CONSULT_FAILED</name>
+         <description>
+            <en>Failed to negotiate</en>
+            <cn>协商失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_MOVE_FAILED</name>
+         <description>
+            <en>Failed to change DPS metadata</en>
+            <cn>日志元数据移动失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CORRUPTED_SME</name>
+         <description>
+            <en>SME is corrupted</en>
+            <cn>数据文件空间管理段错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_APP_INTERRUPT</name>
+         <description>
+            <en>Application is interrupted</en>
+            <cn>应用程序中断</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_APP_DISCONNECT</name>
+         <description>
+            <en>Application is disconnected</en>
+            <cn>应用程序断开连接</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OSS_CCE</name>
+         <description>
+            <en>Character encoding errors</en>
+            <cn>字符编码错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_QUERY_FAILED</name>
+         <description>
+            <en>Failed to query on coord node</en>
+            <cn>协调节点查询失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_BUFFER_FULL</name>
+         <description>
+            <en>Buffer array is full</en>
+            <cn>缓冲区数组满</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_SUBCONTEXT_CONFLICT</name>
+         <description>
+            <en>Sub context is conflict</en>
+            <cn>子上下文冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_QUERY_EOC</name>
+         <description>
+            <en>EOC message is received by coordinator node</en>
+            <cn>协调节点接收到集合结尾消息</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_FILE_SIZE_NOT_SAME</name>
+         <description>
+            <en>Size of DPS files are not the same</en>
+            <cn>日志文件大小不统一</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_FILE_NOT_RECOGNISE</name>
+         <description>
+            <en>Invalid DPS log file</en>
+            <cn>日志文件不可识别</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OSS_NORES</name>
+         <description>
+            <en>No resource is avaliable</en>
+            <cn>无可用资源</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_INVALID_LSN</name>
+         <description>
+            <en>Invalid LSN</en>
+            <cn>非法LSN编号</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OSS_NPIPE_DATA_TOO_BIG</name>
+         <description>
+            <en>Pipe buffer size is too small</en>
+            <cn>命名管道请求发送的数据过大</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_AUTH_FAILED</name>
+         <description>
+            <en>Catalog authentication failed</en>
+            <cn>编目授权错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_FULL_SYNC</name>
+         <description>
+            <en>Full sync is in progress</en>
+            <cn>节点间正在全量同步</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_ASSIGN_NODE_FAILED</name>
+         <description>
+            <en>Failed to assign data node from coordinator node</en>
+            <cn>协调节点分配数据节点失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PHP_DRIVER_INTERNAL_ERROR</name>
+         <description>
+            <en>PHP driver internal error</en>
+            <cn>PHP驱动内部错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_SEND_MSG_FAILED</name>
+         <description>
+            <en>Failed to send the message</en>
+            <cn>协调节点发送失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_NO_NODEGROUP_INFO</name>
+         <description>
+            <en>No activated group information on catalog</en>
+            <cn>不存在已激活节点组的信息</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_REMOTE_DISC</name>
+         <description>
+            <en>Remote-node is disconnected</en>
+            <cn>远程节点断开连接</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_NO_MATCH_CATALOG</name>
+         <description>
+            <en>Unable to find the matched catalog information</en>
+            <cn>无法找到匹配的编目信息</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_UPDATE_CAT_FAILED</name>
+         <description>
+            <en>Failed to update catalog</en>
+            <cn>更新协调节点失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_UNKNOWN_OP_REQ</name>
+         <description>
+            <en>Unknown request operation code</en>
+            <cn>未知操作请求</cn>
+         </description>
+      </code>
+
+     <code>
+       <name>SDB_COOR_NO_NODEGROUP_INFO</name>
+       <description>
+         <en>Group information cannot be found on coordinator node</en>
+         <cn>协调节点无法找到本地节点组信息</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDB_DMS_CORRUPTED_EXTENT</name>
+       <description>
+         <en>DMS extent is corrupted</en>
+         <cn>DMS数据块损坏</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDBCM_FAIL</name>
+       <description>
+         <en>Remote cluster manager failed</en>
+         <cn>远程集群管理失败</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDBCM_STOP_PART</name>
+       <description>
+         <en>Remote database services have been stopped</en>
+         <cn>远程引擎已部分被停止</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDBCM_SVC_STARTING</name>
+       <description>
+         <en>Service is starting</en>
+         <cn>服务正在启动</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDBCM_SVC_STARTED</name>
+       <description>
+         <en>Service has been started</en>
+         <cn>服务已经启动</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDBCM_SVC_RESTARTING</name>
+       <description>
+         <en>Service is restarting</en>
+         <cn>服务正在重启</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDBCM_NODE_EXISTED</name>
+       <description>
+         <en>Node or its configuration file exists</en>
+         <cn>节点或其配置文件已存在</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDBCM_NODE_NOTEXISTED</name>
+       <description>
+         <en>Node does not exist</en>
+         <cn>节点不存在</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDB_LOCK_FAILED</name>
+       <description>
+         <en>Unable to lock</en>
+         <cn>锁定失败</cn>
+       </description>
+     </code>
+
+     <code>
+       <name>SDB_DMS_STATE_NOT_COMPATIBLE</name>
+       <description>
+         <en>DMS state is not compatible with current command</en>
+         <cn>DMS状态与当前请求不兼容</cn>
+       </description>
+     </code>
+
+      <code>
+        <name>SDB_REBUILD_HAS_ALREADY_START</name>
+        <description>
+          <en>Database rebuild is already started</en>
+          <cn>数据库重建已开始</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_RTN_IN_REBUILD</name>
+        <description>
+          <en>Database rebuild is in progress</en>
+          <cn>数据库重建正在进行</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_RTN_COORD_CACHE_EMPTY</name>
+        <description>
+          <en>Cache is empty on coordinator node</en>
+          <cn>协调节点的缓存中无数据</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_SPT_EVAL_FAIL</name>
+        <description>
+          <en>Evalution failed with error</en>
+          <cn>求值过程发生错误</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_CAT_GRP_EXIST</name>
+        <description>
+          <en>Group already exist</en>
+          <cn>分区组已经存在</cn>
+        </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_GRP_NOT_EXIST</name>
+         <description>
+            <en>Group does not exist</en>
+            <cn>分区组不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NODE_NOT_EXIST</name>
+         <description>
+            <en>Node does not exist</en>
+            <cn>节点不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CM_RUN_NODE_FAILED</name>
+         <description>
+            <en>Failed to start the node</en>
+            <cn>启动节点失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CM_CONFIG_CONFLICTS</name>
+         <description>
+            <en>Invalid node configuration</en>
+            <cn>节点配置冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_EMPTY_GROUP</name>
+         <description>
+            <en>Group is empty</en>
+            <cn>空分区组</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_COORD_ONLY</name>
+         <description>
+            <en>The operation is for coord node only</en>
+            <cn>该操作仅适用于协调节点</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CM_OP_NODE_FAILED</name>
+         <description>
+            <en>Failed to operate on node</en>
+            <cn>在节点上执行操作失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_MUTEX_JOB_EXIST</name>
+         <description>
+            <en>The mutex job already exist</en>
+            <cn>已经存在互斥任务</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_JOB_NOT_EXIST</name>
+         <description>
+            <en>The specified job does not exist</en>
+            <cn>指定任务不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_CORRUPTION</name>
+         <description>
+            <en>The catalog information is corrupted</en>
+            <cn>系统集合数据损坏</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_DROP_SHARD</name>
+         <description>
+            <en>$shard index can't be dropped</en>
+            <cn>$shard索引不可被删除</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_CMD_NO_NODE_AUTH</name>
+         <description>
+            <en>The command can't be run in the node</en>
+            <cn>该节点不能运行该命令</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_CMD_NO_SERVICE_AUTH</name>
+         <description>
+            <en>The command can't be run in the service plane</en>
+            <cn>该服务平面不能运行该命令</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NO_GROUP_INFO</name>
+         <description>
+            <en>The group info not exist</en>
+            <cn>该Group信息不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_GROUP_NAME_CONFLICT</name>
+         <description>
+            <en>Group name is conflict</en>
+            <cn>Group名称冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COLLECTION_NOTSHARD</name>
+         <description>
+            <en>The collection is not sharded</en>
+            <cn>非分区集合</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALID_SHARDINGKEY</name>
+         <description>
+            <en>The record does not contains valid sharding key</en>
+            <cn>记录不包含合法的分区键</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_TASK_EXIST</name>
+         <description>
+            <en>A task that already exists does not compatible with the new task</en>
+            <cn>存在一个不兼容的任务</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CL_NOT_EXIST_ON_GROUP</name>
+         <description>
+            <en>The collection does not exists on the specified group</en>
+            <cn>集合在指定复制组中不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_TASK_NOTFOUND</name>
+         <description>
+            <en>The specified task does not exist</en>
+            <cn>指定的任务不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_MULTI_SHARDING_KEY</name>
+         <description>
+            <en>The record contains more than one sharding key</en>
+            <cn>记录包含超过一条分区键</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_MUTEX_TASK_EXIST</name>
+         <description>
+            <en>The mutex task already exist</en>
+            <cn>已存在互斥任务</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_BAD_SPLIT_KEY</name>
+         <description>
+            <en>The split key is not valid or not in the source group</en>
+            <cn>指定的分区键不合法或不在源节点范围内</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SHARD_KEY_NOT_IN_UNIQUE_KEY</name>
+         <description>
+            <en>The unique index must include all fields in sharding key</en>
+            <cn>唯一索引必须包含分区键中的所有字段</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_UPDATE_SHARD_KEY</name>
+         <description>
+            <en>Sharding key cannot be updated</en>
+            <cn>分区键不可被更新</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTH_AUTHORITY_FORBIDDEN</name>
+         <description>
+            <en>Authority is forbidden</en>
+            <cn>没有权限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_NO_ADDR_LIST</name>
+         <description>
+            <en>There is no catalog address specified by user</en>
+            <cn>编目节点地址未指定</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CURRENT_RECORD_DELETED</name>
+         <description>
+            <en>Current record has been removed</en>
+            <cn>当前记录已被删除</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_QGM_MATCH_NONE</name>
+         <description>
+            <en>No records can be matched for the search condition</en>
+            <cn>搜索条件无法满足任何条件的匹配</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_REORG_DONE</name>
+         <description>
+            <en>Index page is reorged and the pos got different lchild</en>
+            <cn>索引页重组后指定位置存在不同左子节点</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_DUPLICATE_FIELDNAME</name>
+         <description>
+            <en>Duplicate field name exists in the record</en>
+            <cn>记录内含有重复字段名</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_QGM_MAX_NUM_RECORD</name>
+         <description>
+            <en>Too many records to be inserted at once</en>
+            <cn>插入操作尝试写入过多数据</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_QGM_MERGE_JOIN_EQONLY</name>
+         <description>
+            <en>Sort-Merge Join only supports equal predicates</en>
+            <cn>合并连接只接受相等谓词</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PD_TRACE_IS_STARTED</name>
+         <description>
+            <en>Trace is already started</en>
+            <cn>跟踪已经启动</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PD_TRACE_HAS_NO_BUFFER</name>
+         <description>
+            <en>Trace buffer does not exist</en>
+            <cn>跟踪缓冲区不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PD_TRACE_FILE_INVALID</name>
+         <description>
+            <en>Trace file is not valid</en>
+            <cn>跟踪文件不合法</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_TRANS_LOCK_INCOMPATIBLE</name>
+         <description>
+            <en>Incompatible lock</en>
+            <cn>请求的事务锁不兼容</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_TRANS_DOING_ROLLBACK</name>
+         <description>
+            <en>Rollback operation is in progress</en>
+            <cn>系统正在执行回滚操作</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_MIG_IMP_BAD_RECORD</name>
+         <description>
+            <en>Invalid record is found during import</en>
+            <cn>导入数据库时遇到无效的记录</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_QGM_REPEAT_VAR_NAME</name>
+         <description>
+            <en>Repeated variable name</en>
+            <cn>发现相同的变量名</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_QGM_AMBIGUOUS_FIELD</name>
+         <description>
+            <en>Column name is ambiguous</en>
+            <cn>列名存在歧义</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SQL_SYNTAX_ERROR</name>
+         <description>
+            <en>SQL syntax error</en>
+            <cn>SQL中存在语法错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_TRANS_NO_TRANS</name>
+         <description>
+            <en>Invalid transactional operation</en>
+            <cn>无效的事务操作</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_TRANS_APPEND_TO_WAIT</name>
+         <description>
+            <en>Append to lock-wait-queue</en>
+            <cn>加入锁的等待队列中</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_DELETING</name>
+         <description>
+            <en>Record is deleted</en>
+            <cn>记录已被删除</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_INVALID_INDEXCB</name>
+         <description>
+            <en>Index is dropped or invalid</en>
+            <cn>索引被删除或非法状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_RECREATE_CATALOG</name>
+         <description>
+            <en>Unable to create new catalog when there's already one exists</en>
+            <cn>重复创建编目节点集群</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_UTIL_PARSE_JSON_INVALID</name>
+         <description>
+            <en>Failed to parse JSON file</en>
+            <cn>解析json文件错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_UTIL_PARSE_CSV_INVALID</name>
+         <description>
+            <en>Failed to parse CSV file</en>
+            <cn>解析CSV文件错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_LOG_FILE_OUT_OF_SIZE</name>
+         <description>
+            <en>No writable log space</en>
+            <cn>可写日志空间不足</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CATA_RM_NODE_FORBIDDEN</name>
+         <description>
+            <en>Unable to remove the last node or primary with data in a group</en>
+            <cn>不能删除组内唯一的非空节点或者主节点</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CATA_FAILED_TO_CLEANUP</name>
+         <description>
+            <en>Unable to clean up catalog, manual cleanup may be required</en>
+            <cn>需要手工完成清理工作</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CATA_RM_CATA_FORBIDDEN</name>
+         <description>
+            <en>Unable to remove primary catalog or catalog group for non-empty database</en>
+            <cn>系统存在其它组时不能删除主编目节点和编目节点组</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_2</name> <!-- SDB_CAT_GRP_NOT_EXIST -->
+         <description>
+            <en>Reserved</en> <!-- Group does not exist -->
+            <cn>保留</cn> <!-- 分区组不存在 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_RM_GRP_FORBIDDEN</name>
+         <description>
+            <en>Unable to remove non-empty group</en>
+            <cn>无法删除存在非空组</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_MIG_END_OF_QUEUE</name>
+         <description>
+            <en>End of queue</en>
+            <cn>到达Queue队列结尾</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_SPLIT_NO_SHDIDX</name>
+         <description>
+            <en>Unable to split because of no sharding index exists</en>
+            <cn>集合不存在分区键索引,不能按百分比分区</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_FIELD_NOT_EXIST</name>
+         <description>
+            <en>The parameter field does not exist</en>
+            <cn>指定参数字段不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_TOO_MANY_TRACE_BP</name>
+         <description>
+            <en>Too many break points are specified</en>
+            <cn>跟踪断点数量过多</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BUSY_PREFETCHER</name>
+         <description>
+            <en>All prefetchers are busy</en>
+            <cn>预取器繁忙</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_DOMAIN_NOT_EXIST</name>
+         <description>
+            <en>Domain does not exist</en>
+            <cn>域不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_DOMAIN_EXIST</name>
+         <description>
+            <en>Domain already exists</en>
+            <cn>域已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_GROUP_NOT_IN_DOMAIN</name>
+         <description>
+            <en>Group is not in domain</en>
+            <cn>组不存在指定域中</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_SHARDING_NOT_HASH</name>
+         <description>
+            <en>Sharding type is not hash</en>
+            <cn>分区类型不为哈希</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_SPLIT_PERCENT_LOWER</name>
+         <description>
+            <en>split percentage is lower then expected</en>
+            <cn>分区百分比过低</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_TASK_ALREADY_FINISHED</name>
+         <description>
+            <en>Task is already finished</en>
+            <cn>后台任务已完成</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COLLECTION_LOAD</name>
+         <description>
+            <en>Collection is in loading status</en>
+            <cn>集合已处于装载状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOAD_ROLLBACK</name>
+         <description>
+            <en>Rolling back load operation</en>
+            <cn>进行装载操作回滚</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALID_ROUTEID</name>
+         <description>
+            <en>RouteID is different from the local</en>
+            <cn>RouteID与当前节点不一致</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DUPLICATED_SERVICE</name>
+         <description>
+            <en>Service already exists</en>
+            <cn>服务已经存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_UTIL_NOT_FIND_FIELD</name>
+         <description>
+            <en>Field is not found</en>
+            <cn>未找到字段</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_UTIL_CSV_FIELD_END</name>
+         <description>
+            <en>csv field line end</en>
+            <cn>csv字段行结束</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_MIG_UNKNOW_FILE_TYPE</name>
+         <description>
+            <en>Unknown file type</en>
+            <cn>未知的文件类型</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_EXPORTCONF_NOT_COMPLETE</name>
+         <description>
+            <en>Exporting configuration does not complete in all nodes</en>
+            <cn>部分节点导出配置文件失败</cn>
+         </description>
+      </code>
+
+     <code>
+        <name>SDB_CLS_NOTP_AND_NODATA</name>
+        <description>
+           <en>Empty non-primary node</en>
+           <cn>非主空节点</cn>
+        </description>
+     </code>
+
+      <code>
+         <name>SDB_DMS_SECRETVALUE_NOT_SAME</name>
+         <description>
+            <en>Secret value for index file does not match with data file</en>
+            <cn>索引文件特征值与数据文件不匹配</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_PMD_VERSION_ONLY</name>
+         <description>
+            <en>Engine version argument is specified</en>
+            <cn>引擎版本参数</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SDB_HELP_ONLY</name>
+         <description>
+            <en>Help argument is specified</en>
+            <cn>客户端帮助参数</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SDB_VERSION_ONLY</name>
+         <description>
+            <en>Version argument is specified</en>
+            <cn>客户端版本参数</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_FMP_FUNC_NOT_EXIST</name>
+         <description>
+            <en>Stored procedure does not exist</en>
+            <cn>存储过程不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ILL_RM_SUB_CL</name>
+         <description>
+            <en>Unable to remove collection partition</en>
+            <cn>非法删除集合分区</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RELINK_SUB_CL</name>
+         <description>
+            <en>Duplicated attach collection partition</en>
+            <cn>重复关联集合分区</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALID_MAIN_CL</name>
+         <description>
+            <en>Invalid partitioned-collection</en>
+            <cn>无效的分区集合</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BOUND_CONFLICT</name>
+         <description>
+            <en>New boundary is conflict with the existing boundary</en>
+            <cn>新增区间与现有区间冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BOUND_INVALID</name>
+         <description>
+            <en>Invalid boundary for the shard</en>
+            <cn>新增区间不合法</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_HIT_HIGH_WATERMARK</name>
+         <description>
+            <en>Hit the high water mark</en>
+            <cn>达到高水位</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BAR_BACKUP_EXIST</name>
+         <description>
+            <en>Backup already exists</en>
+            <cn>该备份已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BAR_BACKUP_NOTEXIST</name>
+         <description>
+            <en>Backup does not exist</en>
+            <cn>该备份不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALID_SUB_CL</name>
+         <description>
+            <en>Invalid collection partition</en>
+            <cn>无效的集合分区</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_TASK_HAS_CANCELED</name>
+         <description>
+            <en>Task has been canceled</en>
+            <cn>后台任务被取消</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_INVALID_MAIN_CL_TYPE</name>
+         <description>
+            <en>Sharding type must be ranged partition for partitioned-collection</en>
+            <cn>分区集合的分区类型必须是范围分区</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NO_SHARDINGKEY</name>
+         <description>
+            <en>There is no valid sharding-key defined</en>
+            <cn>未包含合法的分区键字段</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_MAIN_CL_OP_ERR</name>
+         <description>
+            <en>Operation is not supported on partitioned-collection</en>
+            <cn>分区集合不支持此操作</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_REDEF</name>
+         <description>
+            <en>Redefine index</en>
+            <cn>重复定义索引</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CS_DELETING</name>
+         <description>
+            <en>Dropping the collection space is in progress</en>
+            <cn>正在删除CS</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_REACHED_MAX_NODES</name>
+         <description>
+            <en>Hit the limit of maximum number of nodes in the cluster</en>
+            <cn>节点数量达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NODE_BSFAULT</name>
+         <description>
+            <en>The node is not in normal status</en>
+            <cn>节点处于业务故障状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NODE_INFO_EXPIRED</name>
+         <description>
+            <en>Node information is expired</en>
+            <cn>节点信息过期</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_WAIT_SYNC_FAILED</name>
+         <description>
+            <en>Failed to wait for the sync operation from secondary nodes</en>
+            <cn>等待备节点同步该操作失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_TRANS_DIABLED</name>
+         <description>
+            <en>Transaction is disabled</en>
+            <cn>未开启事务功能</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DRIVER_DS_RUNOUT</name>
+         <description>
+            <en>Connection pool has been exhausted</en>
+            <cn>客户端连接池已满</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_TOO_MANY_OPEN_FD</name>
+         <description>
+            <en>Too many opened file description</en>
+            <cn>文件描述符已达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DOMAIN_IS_OCCUPIED</name>
+         <description>
+            <en>Domain has been used</en>
+            <cn>域已被使用</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_REST_RECV_SIZE</name>
+         <description>
+            <en>The data received by REST is larger than the max size</en>
+            <cn>REST接收的数据大小超过最大值</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DRIVER_BSON_ERROR</name>
+         <description>
+            <en>Failed to build bson object</en>
+            <cn>构建bson失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OUT_OF_BOUND</name>
+         <description>
+            <en>Arguments are out of bound</en>
+            <cn>参数越界</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_REST_COMMON_UNKNOWN</name>
+         <description>
+            <en>Unknown REST command</en>
+            <cn>未知的REST命令</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_BUT_FAILED_ON_DATA</name>
+         <description>
+            <en>Failed to execute command on data node</en>
+            <cn>在数据节点上执行命令失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_NO_GROUP_IN_DOMAIN</name>
+         <description>
+            <en>The domain is empty</en>
+            <cn>域中不包含任何数据组</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OM_PASSWD_CHANGE_SUGGEST</name>
+         <description>
+            <en>Changing password is required</en>
+            <cn>提示用户修改登陆密码</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_NOT_ALL_DONE</name>
+         <description>
+            <en>One or more nodes did not complete successfully</en>
+            <cn>部分节点未返回成功</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OMA_DIFF_VER_AGT_IS_RUNNING</name>
+         <description>
+            <en>There is another OM Agent running with different version</en>
+            <cn>不同版本的OMAgent已运行</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OM_TASK_NOT_EXIST</name>
+         <description>
+            <en>Task does not exist</en>
+            <cn>无法找到后台任务信息</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OM_TASK_ROLLBACK</name>
+         <description>
+            <en>Task is rolling back</en>
+            <cn>后台任务正在回滚</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_SEQUENCE_NOT_EXIST</name>
+         <description>
+            <en>LOB sequence does not exist</en>
+            <cn>大对象的序列不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_IS_NOT_AVAILABLE</name>
+         <description>
+            <en>LOB is not useable</en>
+            <cn>大对象处于不可用状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_MIG_DATA_NON_UTF</name>
+         <description>
+            <en>Data is not in UTF-8 format</en>
+            <cn>数据格式非UTF-8编码</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OMA_TASK_FAIL</name>
+         <description>
+            <en>Task failed</en>
+            <cn>后台任务失败</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_NOT_OPEN</name>
+         <description>
+            <en>Lob does not open</en>
+            <cn>大对象没有打开</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_HAS_OPEN</name>
+         <description>
+            <en>Lob has been open</en>
+            <cn>大对象已打开</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDBCM_NODE_IS_IN_RESTORING</name>
+         <description>
+            <en>Node is in restoring</en>
+            <cn>节点正在启动恢复</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CS_NOT_EMPTY</name>
+         <description>
+            <en>There are some collections in the collection space</en>
+            <cn>集合空间中存在有效集合</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_LOCALHOST_CONFLICT</name>
+         <description>
+            <en>'localhost' and '127.0.0.1' cannot be used mixed with other hostname and IP address</en>
+            <cn>'localhost'和'127.0.0.1'不能与其它hostname和IP地址混合使用</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_NOT_LOCALCONN</name>
+         <description>
+            <en>If use 'localhost' and '127.0.0.1' for hostname, coord and catalog must in the same host </en>
+            <cn>如果使用'localhost'和'127.0.0.1'作为节点主机名，协调节点与编目节点必须在同一主机上</cn>
+         </description>
+      </code>
+
+      <code>
+        <name>SDB_CAT_IS_NOT_DATAGROUP</name>
+        <description>
+          <en>The special group is not data group</en>
+          <cn>指定分区组不是数据分区组</cn>
+        </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_AUTOINDEXID_IS_FALSE</name>
+         <description>
+            <en>no $id index found</en>
+            <cn>缺少 $id 索引</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_CAN_NOT_STEP_UP</name>
+         <description>
+            <en>can not step up when primary node exists or LSN is not the biggest</en>
+            <cn>当存在主节点或者本地LSN不为最大值时无法强行升主</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_IMAGE_ADDR_CONFLICT</name>
+         <description>
+            <en>Image address is conflict with the self cluster</en>
+            <cn>镜像地址和本集群地址冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_GROUP_HASNOT_IMAGE</name>
+         <description>
+            <en>The data group does not have image group</en>
+            <cn>数据组不存在镜像</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_GROUP_HAS_IMAGE</name>
+         <description>
+            <en>The data group has image group</en>
+            <cn>数据组存在镜像</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_IMAGE_IS_ENABLED</name>
+         <description>
+            <en>The image is in enabled status</en>
+            <cn>镜像处于生效状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_IMAGE_NOT_CONFIG</name>
+         <description>
+            <en>The cluster's image does not configured</en>
+            <cn>集群未配置镜像</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_DUAL_WRITABLE</name>
+         <description>
+            <en>This cluster and image cluster is both writable</en>
+            <cn>本集群和镜像集群都为可写状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_CLUSTER_IS_READONLY</name>
+         <description>
+            <en>This cluster is readonly</en>
+            <cn>集群为只读模式</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_QUERYMODIFY_SORT_NO_IDX</name>
+         <description>
+            <en>Sorting of 'query and modify' must use index</en>
+            <cn>在 “查询并修改” 操作使用排序时必须使用索引</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_QUERYMODIFY_MULTI_NODES</name>
+         <description>
+            <en>'query and modify' can't use skip and limit in multiple nodes or sub-collections</en>
+            <cn>“查询并修改” 操作不能在多个节点或子表上执行skip和limit操作</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DIR_NOT_EMPTY</name>
+         <description>
+            <en>Given path is not empty</en>
+            <cn>指定目录不为空</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_EXIST_COVERD_ONE</name>
+         <description>
+            <en>Exist one index which can cover this scene</en>
+            <cn>已经存在一个可以处理本场景的索引</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_IMAGE_IS_CONFIGURED</name>
+         <description>
+            <en>The cluster's image has already configured</en>
+            <cn>集群已配置镜像</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_CMD_IN_LOCAL_MODE</name>
+         <description>
+            <en>The command is in local mode</en>
+            <cn>命令为本地运行模式</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SPT_NOT_SPECIAL_JSON</name>
+         <description>
+            <en>The object is not a special object in sdb shell</en>
+            <cn>不是一个特殊类型的Sdb Shell对象</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTH_USER_ALREADY_EXIST</name>
+         <description>
+            <en>The specified user already exist</en>
+            <cn>指定用户已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_EMPTY_COLLECTION</name>
+         <description>
+            <en>The collection is empty</en>
+            <cn>表记录为空</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_SEQUENCE_EXISTS</name>
+         <description>
+            <en>LOB sequence exists</en>
+            <cn>大对象的序列已经存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OM_CLUSTER_NOT_EXIST</name>
+         <description>
+            <en>cluster do not exist</en>
+            <cn>集群不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OM_BUSINESS_NOT_EXIST</name>
+         <description>
+            <en>business do not exist</en>
+            <cn>业务不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTH_USER_NOT_EXIST</name>
+         <description>
+            <en>user specified is not exist or password is invalid</en>
+            <cn>用户不存在或密码错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_UTIL_COMPRESS_INIT_FAIL</name>
+         <description>
+            <en>Compression initialization failed</en>
+            <cn>压缩初始化失败</cn>
+         </description>
+      </code>
+      <code>
+         <name>SDB_UTIL_COMPRESS_FAIL</name>
+         <description>
+            <en>Compression failed</en>
+            <cn>压缩算法执行压缩失败</cn>
+         </description>
+      </code>
+      <code>
+         <name>SDB_UTIL_DECOMPRESS_FAIL</name>
+         <description>
+            <en>Decompression failed</en>
+            <cn>压缩算法执行解压缩失败</cn>
+         </description>
+      </code>
+      <code>
+         <name>SDB_UTIL_COMPRESS_ABORT</name>
+         <description>
+            <en>Compression abort</en>
+            <cn>压缩中断</cn>
+         </description>
+      </code>
+      <code>
+         <name>SDB_UTIL_COMPRESS_BUFF_SMALL</name>
+         <description>
+            <en>Buffer for compression is too small</en>
+            <cn>压缩缓存过小</cn>
+         </description>
+      </code>
+      <code>
+         <name>SDB_UTIL_DECOMPRESS_BUFF_SMALL</name>
+         <description>
+            <en>Buffer for decompression is too small</en>
+            <cn>解压缓存过小</cn>
+         </description>
+      </code>
+      <code>
+         <name>SDB_OSS_UP_TO_LIMIT</name>
+         <description>
+            <en>Up to the limit</en>
+            <cn>达到最大或最小限制</cn>
+         </description>
+      </code>
+      <code>
+         <name>SDB_CLIENT_CONNPOOL_CLOSE</name>
+         <description>
+            <en>Connection pool had been closed</en>
+            <cn>连接池已关闭</cn>
+         </description>
+      </code>
+      <code>
+         <name>SDB_CLIENT_CONNPOOL_NO_REACHABLE_COORD</name>
+         <description>
+            <en>No reachable coord nodes</en>
+            <cn>无可用协调节点</cn>
+         </description>
+      </code>
+
+      <code>
+        <name>SDB_RULE_ID_IS_NOT_EXIST</name>
+        <description>
+           <en>the record which exclusive ruleID is not exist</en>
+           <cn>不存在指定ruleID的记录</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_STRTGY_TASK_NAME_CONFLICT</name>
+        <description>
+           <en>Task name conflict</en>
+           <cn>任务名冲突</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_STRTGY_TASK_NOT_EXISTED</name>
+        <description>
+           <en>The task is not existed</en>
+           <cn>任务不存在</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_DPS_LOG_NOT_ARCHIVED</name>
+        <description>
+           <en>Replica log is not archived</en>
+           <cn>复制日志未归档</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_CLIENT_CONNPOOL_NOT_INIT</name>
+        <description>
+           <en>Connection pool has not been initialized</en>
+           <cn>连接池未初始化</cn>
+        </description>
+      </code>
+
+      <code>
+        <name>SDB_OPERATION_INCOMPATIBLE</name>
+        <description>
+           <en>Operation is incompatible with the object</en>
+           <cn>操作类型与操作对象不兼容</cn>
+        </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_CLUSTER_IS_DEACTIVED</name>
+         <description>
+            <en>This cluster is deactived</en>
+            <cn>集群为非激活状态</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_IS_IN_USE</name>
+         <description>
+            <en>LOB is in use</en>
+            <cn>LOB当前正在使用</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_VALUE_OVERFLOW</name>
+         <description>
+            <en>Data operation is overflowed</en>
+            <cn>数值运算出现溢出</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_PIECESINFO_OVERFLOW</name>
+         <description>
+            <en>LOB's pieces info is overflowed</en>
+            <cn>LOB切片信息溢出</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_LOCK_CONFLICTED</name>
+         <description>
+            <en>LOB lock is conflicted</en>
+            <cn>LOB锁冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_TRUNCATED</name>
+         <description>
+            <en>Collection is truncated</en>
+            <cn>集合被清空</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_CONF_NOT_TAKE_EFFECT</name>
+         <description>
+            <en>Some configuration changes didn't take effect</en>
+            <cn>部分配置修改未生效</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEQUENCE_EXIST</name>
+         <description>
+            <en>Sequence already exists</en>
+            <cn>序列已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEQUENCE_NOT_EXIST</name>
+         <description>
+            <en>Sequence not exists</en>
+            <cn>序列不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEQUENCE_EXCEEDED</name>
+         <description>
+            <en>Sequence is exceeded</en>
+            <cn>序列值超出范围</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CS_UNIQUEID_CONFLICT</name>
+         <description>
+            <en>CS uniqueID conflict</en>
+            <cn>集合空间的UniqueID冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_UNIQUEID_CONFLICT</name>
+         <description>
+            <en>CL uniqueID conflict</en>
+            <cn>集合的UniqueID冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CS_REMAIN</name>
+         <description>
+            <en>CS uniqueID conflict with remain cs</en>
+            <cn>集合空间的UniqueID与残留的集合空间冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_REMAIN</name>
+         <description>
+            <en>CL uniqueID conflict with remain cl</en>
+            <cn>集合的UniqueID与残留的集合冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_CS_UNIQUEID_EXCEEDED</name>
+         <description>
+            <en>CS uniqueID exceeds the maximum</en>
+            <cn>集合空间的UniqueID达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_CL_UNIQUEID_EXCEEDED</name>
+         <description>
+            <en>CL uniqueID exceeds the maximum</en>
+            <cn>集合的UniqueID达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTOINCREMENT_FIELD_CONFLICT</name>
+         <description>
+            <en>Autoincrement field conflicts on collection</en>
+            <cn>自增字段冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTOINCREMENT_FIELD_NOT_EXIST</name>
+         <description>
+            <en>Autoincrement field does not exist on collection</en>
+            <cn>自增字段不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OPERATION_CONFLICT</name>
+         <description>
+            <en>Operations conflict</en>
+            <cn>操作冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_GLOBALID_EXCEEDED</name>
+         <description>
+            <en>GlobalID exceeds the maximum</en>
+            <cn>GlobalID达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_INVALID_LOCK_UPGRADE_REQUEST</name>
+         <description>
+            <en>Invalid lock upgrade request</en>
+            <cn>非法锁升级请求</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_CS_RENAMING</name>
+         <description>
+            <en>Renaming the collection space is in progress</en>
+            <cn>正在对集合空间改名</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_DATA_NOT_SYNC</name>
+         <description>
+            <en>Data not yet synchronized</en>
+            <cn>数据未同步</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_KEY_NOTNULL</name>
+         <description>
+            <en>Any field of index key should exist and cannot be null</en>
+            <cn>索引键的任意一个字段都不允许不存在或者为NULL</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_EXIST_INDOUBT_TRANS</name>
+         <description>
+            <en>Exists in-doubt transaction</en>
+            <cn>存在未确认事务</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_ALREADY_IN_AUTO_TRANS</name>
+         <description>
+            <en>Exists unfinished auto-commit transaction</en>
+            <cn>存在未完成的自动提交事务</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_FMP_FUNC_EXIST</name>
+         <description>
+            <en>Stored procedure exists</en>
+            <cn>存储过程已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OP_INCOMPLETE</name>
+         <description>
+            <en>Operation is incomplete</en>
+            <cn>操作不完整</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NOT_SECONDARY</name>
+         <description>
+            <en>Node is not secondary</en>
+            <cn>非备节点</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTH_INCOMPATIBLE</name>
+         <description>
+            <en>Incompatible authentication mode</en>
+            <cn>鉴权模式不兼容</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_UNQIUEID_UPGRADE</name>
+         <description>
+            <en>Upgrade for unique id is not finished</en>
+            <cn>UniqueID还未升级完成</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_UPDATE_MULTI_NODES</name>
+         <description>
+            <en>Update one can't be used in multiple partitions or sub-collections</en>
+            <cn>“只更新一条”操作不能在多个分区或子表上执行</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_DELETE_MULTI_NODES</name>
+         <description>
+            <en>Delete one can't be used in multiple partitions or sub-collections</en>
+            <cn>“只删除一条” 操作不能在多个分区或子表上执行</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_349</name> <!-- STP_NOT_AVAILABLE -->
+         <description>
+            <en>Reserved</en> <!-- SequoiaDB Time Protocol node is not available -->
+            <cn>保留</cn> <!-- 时间服务不可用 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_350</name> <!-- STP_SYNC_FAILED -->
+         <description>
+            <en>Reserved</en> <!-- Serial Time Protocol node failed to synchronize -->
+            <cn>保留</cn> <!-- 时间服务同步失败 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_351</name> <!-- STP_TIME_AHEAD_AFTER_SYNC -->
+         <description>
+            <en>Reserved</en> <!-- Time of Serial Time Protocol node is ahead of the source after synchronization -->
+            <cn>保留</cn> <!-- 时间服务同步后本地时间太快 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_352</name> <!-- STP_SYNC_BUSY -->
+         <description>
+            <en>Reserved</en> <!-- Serial Time Protocol node is busy synchronizing -->
+            <cn>保留</cn> <!-- 时间服务正在同步 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_353</name> <!-- SDB_GLOB_TRANS_NOT_AVAILABLE -->
+         <description>
+            <en>Reserved</en> <!-- Global transaction is not available -->
+            <cn>保留</cn> <!-- 全局事务不可用 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_354</name> <!-- SDB_GLOB_LOWTRAN_UNKNOWN -->
+         <description>
+            <en>Reserved</en> <!-- Global LowTran is unknown -->
+            <cn>保留</cn> <!-- 全局事务最早正在执行的事务 ID 未知 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_355</name> <!-- SDB_GLOB_TRANS_NOT_SYNC -->
+         <description>
+            <en>Reserved</en> <!-- Global transaction times of nodes are not synchronized -->
+            <cn>保留</cn> <!-- 节点间的全局逻辑时间不同步 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_STAT_NOTEXIST</name>
+         <description>
+            <en>Index statistics do not exist</en>
+            <cn>索引统计信息不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLIENT_CATA_VER_OLD</name>
+         <description>
+            <en>sdb client cata version old</en>
+            <cn>驱动端编目版本过旧</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_358</name> <!-- SDB_RESTORE_IN_PROGRESS -->
+         <description>
+            <en>Reserved</en> <!-- Database in restore-in-progress state -->
+            <cn>保留</cn> <!-- 数据库处于恢复中状态 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_359</name> <!-- SDB_RESTORE_NOT_IN_PROGRESS -->
+         <description>
+            <en>Reserved</en> <!-- Database is not in restore-in-progress state -->
+            <cn>保留</cn> <!-- 数据库不处于恢复中状态 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_360</name> <!-- SDB_RESTORE_NO_CONSISTENT_PIT -->
+         <description>
+            <en>Reserved</en> <!-- No valid consistency point for point-in-time restore -->
+            <cn>保留</cn> <!-- 按时间还原没有一致的有效时间点 -->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEQUENCE_VALUE_USED</name>
+         <description>
+            <en>Sequence value has been used</en>
+            <cn>序列值已经被使用</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEQUENCE_NEVER_USED</name>
+         <description>
+            <en>Sequence has never been used</en>
+            <cn>序列尚未被使用</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEQUENCE_OUT_OF_CACHE</name>
+         <description>
+            <en>Out of sequence cache</en>
+            <cn>超出序列缓存</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_KEY_NOT_SUPPORT_ARRAY</name>
+         <description>
+            <en>Any field of index key cannot be array</en>
+            <cn>索引键的任意一个字段都不允许为数组</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_TASK_ROLLBACK</name>
+         <description>
+            <en>Task has been rolled back</en>
+            <cn>任务被回滚</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_366</name> <!--Not used-->
+         <description>
+            <en>Reserved</en> <!--Not used-->
+            <cn>保留</cn> <!--Not used-->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_367</name> <!--Not used-->
+         <description>
+            <en>Reserved</en> <!--Not used-->
+            <cn>保留</cn> <!--Not used-->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_368</name> <!--Not used-->
+         <description>
+            <en>Reserved</en> <!--Not used-->
+            <cn>保留</cn> <!--Not used-->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_DATASOURCE_EXIST</name>
+         <description>
+            <en>Data source already exists</en>
+            <cn>数据源已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_DATASOURCE_NOTEXIST</name>
+         <description>
+            <en>Data source dose not exist</en>
+            <cn>数据源不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_DATASOURCE_INUSE</name>
+         <description>
+            <en>Data source is being used</en>
+            <cn>数据源在使用中</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_DATASOURCE_PERM_DENIED</name>
+         <description>
+            <en>Data source permission denied</en>
+            <cn>数据源权限错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_COORD_DATASOURCE_TRANS_FORBIDDEN</name>
+         <description>
+            <en>Transaction is not allowed on data source</en>
+            <cn>事务中不能操作数据源</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_CONTEXT_NUM_UP_TO_LIMIT</name>
+         <description>
+            <en>Number of opened contexts is up to config limit</en>
+            <cn>同时开启的上下文个数达到指定配置上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_TRANS_LOCK_UP_TO_LIMIT</name>
+         <description>
+            <en>Transaction has acquired too many record locks</en>
+            <cn>事务持记录锁达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DPS_TRANS_LOG_SPACE_UP_TO_LIMIT</name>
+         <description>
+            <en>Transaction has occupied too much log space</en>
+            <cn>事务使用的日志空间达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_MAINCL_NOIDX_NOSUB</name>
+         <description>
+            <en>Main-collection has no index or sub-collection</en>
+            <cn>主表下无索引或者无子表</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_TASK_CANNOT_CANCEL</name>
+         <description>
+            <en>The task cannot be canceled</en>
+            <cn>该任务不能被取消</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IDX_UNIQUEID_EXCEEDED</name>
+         <description>
+            <en>Index uniqueID exceeds the maximum</en>
+            <cn>索引的UniqueID达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_DROP_STANDALONE_ONLY</name>
+         <description>
+            <en>Only standalone index can be dropped</en>
+            <cn>只能删除独立索引</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CL_NOT_EXIST_ON_NODE</name>
+         <description>
+            <en>The collection does not exist on the specified node</en>
+            <cn>集合在指定节点中不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_IDXTASK_EXCEEDED</name>
+         <description>
+            <en>The number of index tasks exceeds the maximum</en>
+            <cn>索引任务的数量达到上限</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CAT_TASK_STATUS_ERROR</name>
+         <description>
+            <en>Task status error</en>
+            <cn>任务状态错误</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RECYCLE_ITEM_NOTEXIST</name>
+         <description>
+            <en>Recycle bin item does not exist</en>
+            <cn>回收站项目不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RECYCLE_CONFLICT</name>
+         <description>
+            <en>Recycle bin item conflicts</en>
+            <cn>回收站项目存在冲突</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RECYCLE_FULL</name>
+         <description>
+            <en>Recycle bin is full</en>
+            <cn>回收站已满</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_CREATING</name>
+         <description>
+            <en>The index is creating</en>
+            <cn>索引正在创建</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_SAME_NAME_CREATING</name>
+         <description>
+            <en>An index with the same name is creating</en>
+            <cn>有一个同名的索引正在创建</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_COVER_CREATING</name>
+         <description>
+            <en>An index which can cover this scene is creating</en>
+            <cn>有一个可以处理本场景的索引正在创建</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_DROPPING</name>
+         <description>
+            <en>The index is dropping</en>
+            <cn>索引正在删除</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_IXM_ADVANCE_EOC</name>
+         <description>
+            <en>End of index advance section</en>
+            <cn>当前索引范围结束</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_DMS_SCANNER_INTERRUPT</name>
+         <description>
+            <en>Data scanner is interrupted</en>
+            <cn>数据扫描被中断</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_NO_PRIVILEGES</name>
+         <description>
+            <en>No privileges for the operation</en>
+            <cn>权限不足</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OPERATION_DENIED</name>
+         <description>
+            <en>Operation denied</en>
+            <cn>操作被拒绝</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NOT_LOCATION_PRIMARY</name>
+         <description>
+            <en>Node is not primary of location set</en>
+            <cn>非位置集主节点</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_396</name> <!--Not used-->
+         <description>
+            <en>Reserved</en> <!--Not used-->
+            <cn>保留</cn> <!--Not used-->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_OPERATION_RETRY</name>
+         <description>
+            <en>Operation need retry</en>
+            <cn>操作需要重试</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEC_KEYS_INITIALIZED</name>
+         <description>
+            <en>Security keys already initialized</en>
+            <cn>安全密钥已初始化</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEC_KEYS_UNINITIALIZED</name>
+         <description>
+            <en>Security keys are uninitialized</en>
+            <cn>安全密钥未初始化</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEC_KEYS_CORRUPTED</name>
+         <description>
+            <en>Security keys are corrupted</en>
+            <cn>安全密钥损坏</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_SEC_DEK_NOT_EXIST</name>
+         <description>
+            <en>Data encryption key does not exist</en>
+            <cn>数据加密密钥不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_LOB_OUT_OF_PUT_SIZE</name>
+         <description>
+            <en>The lob which to put is out of page size</en>
+            <cn>集合空间页无法容纳该对象</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_RTN_CONTEXT_NOTOWNED</name>
+         <description>
+            <en>Context is not owned by current session</en>
+            <cn>上下文不属于当前会话</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_404</name> <!--Not used-->
+         <description>
+            <en>Reserved</en> <!--Not used-->
+            <cn>保留</cn> <!--Not used-->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_405</name> <!--Not used-->
+         <description>
+            <en>Reserved</en> <!--Not used-->
+            <cn>保留</cn> <!--Not used-->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ERROR_RESERVED_406</name> <!--Not used-->
+         <description>
+            <en>Reserved</en> <!--Not used-->
+            <cn>保留</cn> <!--Not used-->
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_CLS_NODE_IN_MAINTENANCE</name>
+         <description>
+            <en>Node is in maintenance mode</en>
+            <cn>节点处于运维模式</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTH_ROLE_EXIST</name>
+         <description>
+            <en>Role already exists</en>
+            <cn>角色已存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTH_ROLE_NOT_EXIST</name>
+         <description>
+            <en>Role does not exist</en>
+            <cn>角色不存在</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_AUTH_ROLE_CYCLE_DETECTED</name>
+         <description>
+            <en>The cycle of the role inheritance detected</en>
+            <cn>角色继承关系中存在环</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ENTERPRISE_ONLY</name>
+         <description>
+            <en>The operation is for enterprise version only</en>
+            <cn>该操作仅适用于企业版</cn>
+         </description>
+      </code>
+
+      <code>
+         <name>SDB_ENGINE_NOT_SUPPORT</name>
+         <description>
+            <en>The operation is not supported in current storage engine</en>
+            <cn>当前存储引擎不支持该操作</cn>
+         </description>
+      </code>
+
+   </codelist>
+</rclist>

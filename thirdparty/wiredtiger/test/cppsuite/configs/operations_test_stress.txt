@@ -1,0 +1,65 @@
+# Used as a stress test for the framework.
+duration_seconds=1500,
+cache_size_mb=1000,
+compression_enabled=true,
+checkpoint_manager=
+(
+    enabled=true,
+    op_rate=30s
+),
+runtime_monitor=
+(
+    stat_db_size=
+    (
+        runtime=false,
+        save=true,
+    )
+),
+timestamp_manager=
+(
+    enabled=true,
+    oldest_lag=5,
+    op_rate=1s,
+    stable_lag=10
+),
+workload_generator=
+(
+    populate_config=
+    (
+        collection_count=500,
+        #5GB of data
+        key_count_per_collection=1000,
+        key_size=100,
+        thread_count=20,
+        value_size=10000
+    ),
+    insert_config=
+    (
+        key_size=100,
+        op_rate=10ms,
+        ops_per_transaction=(max=20,min=10),
+        thread_count=25,
+        value_size=10000
+    ),
+    read_config=
+    (
+        op_rate=3ms,
+        ops_per_transaction=(max=100,min=50),
+        thread_count=20
+    ),
+    update_config=
+    (
+        op_rate=10ms,
+        ops_per_transaction=(max=10,min=5),
+        thread_count=25,
+        value_size=10000
+    )
+),
+workload_tracking=
+(
+    # FIXME-WT-8640 Enable the tracking again once we have moved to a different host or modified the
+    # workload.
+    enabled=false,
+    # Run after checkpoint most of the time.
+    op_rate=40s
+)

@@ -1,0 +1,248 @@
+# -*- mode: python; -*-
+import os
+import re
+import textwrap
+import time
+from datetime import datetime
+from os.path import join
+
+Import("wtEnv")
+Import("guess_os")
+Import("guess_arch")
+Import("debugBuild")
+Import("zlib_lib")
+Import("snappy_lib")
+Import("zstd_lib")
+Import("wiredtiger_dir")
+Import("wtVariantDir")
+
+wtEnv.Decider( "MD5-timestamp" )
+wtEnv.Append(CPPPATH=[ join(wiredtiger_dir, "src", "include") ])
+wtEnv.Append(CPPPATH=[ "." ])
+
+g_silent = False
+if GetOption("silent"):
+    g_silent = True
+g_compiledb = False
+f_compiledb = GetOption("compiledb")
+if f_compiledb is not None and False != f_compiledb and "" != f_compiledb:
+    g_compiledb = True
+
+def get_path_mtime(path):
+    datetime_obj = datetime.fromtimestamp(os.path.getmtime(path))
+    local_timestamp = long(time.mktime(
+            datetime_obj.timetuple()) * 1000000.0 + datetime_obj.microsecond)
+    return local_timestamp
+
+def check_rebuild():
+    arch_dir = os.path.abspath(".")
+    root_dir = os.path.abspath(wiredtiger_dir)
+    check_files = [ "wiredtiger.h", "wiredtiger_ext.h", "libwiredtiger.a", "wiredtiger.h" ]
+    for file in check_files:
+        file_path = os.path.join(arch_dir, file)
+        if not os.path.exists(file_path):
+            if not g_silent:
+                print("WiredTiger: file {} does not exist".format(file_path))
+            return True
+    check_files = sorted(check_files,
+                         key=lambda x: os.path.getmtime(os.path.join(arch_dir, x)),
+                         reverse=True)
+    latest_file = os.path.join(arch_dir, check_files[0])
+    latest_time = get_path_mtime(latest_file)
+    root_time = get_path_mtime(root_dir)
+    if root_time > latest_time:
+        if not g_silent:
+            print("WiredTiger: root directory has been modified")
+        return True
+
+    for root, dirs, files in os.walk(root_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_time = get_path_mtime(file_path)
+            if file_time > latest_time:
+                if not g_silent:
+                    print("WiredTiger: file {} has been modified".format(file_path))
+                return True
+
+    if not g_silent:
+        print("WiredTiger: all files are up to date, no need to rebuild")
+
+    return False
+
+if not g_compiledb and not check_rebuild():
+    print("WiredTiger: no need to rebuild")
+else:
+    print("WiredTiger: need to rebuild")
+    # Enable asserts in debug builds
+    if debugBuild:
+        wtEnv.Append(CPPDEFINES=[
+            "HAVE_DIAGNOSTIC",
+            ])
+
+    # Enable optional rich logging
+    wtEnv.Append(CPPDEFINES=["HAVE_VERBOSE"])
+
+    conf = Configure(wtEnv)
+    if conf.CheckFunc("fallocate"):
+        conf.env.Append(CPPDEFINES=[
+            "HAVE_FALLOCATE"
+        ])
+    if conf.CheckFunc("sync_file_range"):
+        conf.env.Append(CPPDEFINES=[
+            "HAVE_SYNC_FILE_RANGE"
+        ])
+
+    # GCC 8+ includes x86intrin.h in non-x64 versions of the compiler so limit the check to x64.
+    if guess_arch == 'ia64' and conf.CheckCHeader('x86intrin.h'):
+        conf.env.Append(CPPDEFINES=[
+            "HAVE_X86INTRIN_H"
+        ])
+    if conf.CheckCHeader('arm_neon.h'):
+        conf.env.Append(CPPDEFINES=[
+            "HAVE_ARM_NEON_INTRIN_H"
+        ])
+    wtEnv = conf.Finish()
+
+    if 'win32' == guess_os:
+        wtEnv.Append(CPPPATH=["build_win"])
+        wtEnv.Append(CFLAGS=[
+            "/wd4090" # Ignore warning about mismatched const qualifiers
+        ])
+        if wtEnv['MONGO_ALLOCATOR'] in ['tcmalloc', 'tcmalloc-experimental']:
+            wtEnv.InjectThirdParty(libraries=['gperftools'])
+            wtEnv.Append(CPPDEFINES=['HAVE_LIBTCMALLOC'])
+    elif 'linux' == guess_os:
+        wtEnv.Append(CPPPATH=["build_linux"])
+        wtEnv.Append(CPPDEFINES=["_GNU_SOURCE"])
+    else:
+        print("Wiredtiger is not supported on this platform. " +
+            "Please generate an approriate wiredtiger_config.h")
+        Exit(1)
+
+    useZlib = True
+    useSnappy = True
+    useZstd = True
+    useLz4 = True
+
+    version_file = 'cmake/configs/version.cmake'
+
+    VERSION_MAJOR = None
+    VERSION_MINOR = None
+    VERSION_PATCH = None
+    VERSION_STRING = None
+
+    # Read the version information from the version.cmake file
+    for l in open(File(version_file).srcnode().abspath):
+        m = re.match(r'^set\(WT_(VERSION_[A-Z]+) (.+)\)', l)
+        if m and len(m.groups()) == 2:
+            exec('%s=%s' % (m.group(1), m.group(2)))
+
+    if (VERSION_MAJOR == None or
+        VERSION_MINOR == None or
+        VERSION_PATCH == None or
+        VERSION_STRING == None):
+        print("Failed to find version variables in " + version_file)
+        Exit(1)
+
+    wiredtiger_includes = """
+            #include <sys/types.h>
+            #ifndef _WIN32
+            #include <inttypes.h>
+            #endif
+            #include <stdarg.h>
+            #include <stdbool.h>
+            #include <stdint.h>
+            #include <stdio.h>
+        """
+    wiredtiger_includes = textwrap.dedent(wiredtiger_includes)
+    replacements = {
+        '@VERSION_MAJOR@' : VERSION_MAJOR,
+        '@VERSION_MINOR@' : VERSION_MINOR,
+        '@VERSION_PATCH@' : VERSION_PATCH,
+        '@VERSION_STRING@' : '"' + VERSION_STRING + '"',
+        '@uintmax_t_decl@': "",
+        '@uintptr_t_decl@': "",
+        '@off_t_decl@' : 'typedef int64_t wt_off_t;' if 'win32' == guess_os
+            else "typedef off_t wt_off_t;",
+        '@wiredtiger_includes_decl@': wiredtiger_includes
+    }
+
+    wiredtiger_h = wtEnv.Substfile(
+        target='wiredtiger.h',
+        source=[
+            'src/include/wiredtiger.in',
+        ],
+        SUBST_DICT=replacements)
+
+    wiredtiger_ext_h = wtEnv.Install(
+        target='.',
+        source=[
+            'src/include/wiredtiger_ext.h'
+        ],
+    )
+
+    #
+    # WiredTiger library
+    #
+    # Map WiredTiger build conditions: any conditions that appear in WiredTiger's
+    # dist/filelist must appear here, and if the value is true, those files will be
+    # included.
+    #
+    condition_map = {
+        'POSIX_HOST'   : 'win32' != guess_os,
+        'WINDOWS_HOST' : 'win32' == guess_os,
+
+        'ARM64_HOST'   : guess_arch == 'arm64',
+        'X86_HOST'     : guess_arch == 'ia64',
+    }
+
+    def filtered_filelist(f, checksum):
+        for line in f:
+            file_cond = line.split()
+            if line.startswith("#") or len(file_cond) == 0:
+                continue
+            if len(file_cond) == 1 or condition_map.get(file_cond[1], False):
+                if line.startswith('src/checksum/') == checksum:
+                    yield file_cond[0]
+
+    filelistfile = 'dist/filelist'
+    with open(File(filelistfile).srcnode().abspath) as filelist:
+        wtsources = list(filtered_filelist(filelist, False))
+
+    with open(File(filelistfile).srcnode().abspath) as filelist:
+        cssources = list(filtered_filelist(filelist, True))
+
+    wtsources.append(cssources)
+
+    if useZlib:
+        wtEnv.Append(CPPDEFINES=['HAVE_BUILTIN_EXTENSION_ZLIB'])
+        wtsources.append("ext/compressors/zlib/zlib_compress.c")
+
+    if useSnappy:
+        wtEnv.Append(CPPDEFINES=['HAVE_BUILTIN_EXTENSION_SNAPPY'])
+        wtsources.append("ext/compressors/snappy/snappy_compress.c")
+
+    if useZstd:
+        wtEnv.Append(CPPDEFINES=['HAVE_BUILTIN_EXTENSION_ZSTD'])
+        wtsources.append("ext/compressors/zstd/zstd_compress.c")
+
+    if useLz4:
+        wtEnv.Append(CPPDEFINES=['HAVE_BUILTIN_EXTENSION_LZ4'])
+        wtsources.append("ext/compressors/lz4/lz4_compress.c")
+
+    wtlib = wtEnv.StaticLibrary("wiredtiger", wtsources)
+    wtEnv.Depends([wtlib], [filelistfile, version_file])
+    wtEnv.Depends([wtlib], ['wiredtiger.h', 'wiredtiger_ext.h'])
+
+    if 'win32' == guess_os:
+        # C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++
+        # conformant name: _strdup. See online help for details.
+        wtEnv.Append(CFLAGS=["/wd4996"])
+    elif 'linux' == guess_os:
+        wtEnv.Append(_LIBFLAGS=" -lstdc++ " )
+
+    wtbin = wtEnv.Program(
+        "wt",
+        Glob("src/utilities/*.c"),
+        LIBDEPS=["wiredtiger"],
+    )

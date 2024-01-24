@@ -1,0 +1,11 @@
+db=new Sdb();
+db.tpcc.warehouse.createIndex("pk_warehouse",{w_id:1},true,true,128);
+db.tpcc.district.createIndex("pk_district",{d_w_id:1, d_id:1},true,true,128);
+db.tpcc.customer.createIndex("pk_customer",{c_w_id:1, c_d_id:1, c_id:1},true,true,128);
+db.tpcc.customer.createIndex("ndx_customer_name",{c_w_id:1, c_d_id:1, c_last:1, c_first:1},false,false,128);
+db.tpcc.oorder.createIndex("pk_oorder",{o_w_id:1, o_d_id:1, o_id:1},true,true,128);
+db.tpcc.oorder.createIndex("ndx_oorder_carrier",{o_w_id:1, o_d_id:1, o_carrier_id:1, o_id:1},true,false,128);
+db.tpcc.new_order.createIndex("pk_new_order",{no_w_id:1, no_d_id:1, no_o_id:1},true,true,128);
+db.tpcc.order_line.createIndex("pk_order_line",{ol_w_id:1, ol_d_id:1, ol_o_id:1, ol_number:1},true,true,512);
+db.tpcc.stock.createIndex("pk_stock",{s_w_id:1, s_i_id:1},true,true,512);
+db.tpcc.item.createIndex("pk_item",{i_id:1},true,true,512);

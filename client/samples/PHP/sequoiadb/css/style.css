@@ -1,0 +1,10 @@
+body { margin:0;text-align:center;color:#000;font:normal 12px Arial,Verdana,Tahoma;text-align:center;background:#C8D0D5;line-height:150%}
+a:link,a:visited { color:#385065;text-decoration:none;}
+a:hover{text-decoration:underline}
+#menu {width:150px;margin:0px 15px;padding:0px;text-align:left;list-style:none}
+
+a.title:link,a.title:visited,a.title:hover { display:block;color:#385065;font-weight:bold;padding:2px 0 0 22px;width:128px;line-height:23px;cursor:pointer;text-decoration:none}
+
+#buttons { border:1px solid #9FACB7;margin:0;width:30px;padding:3px 0px 0px 5px; background:#fff;list-style:none;}
+#output {color:#385065;font-weight:bold;font-size:16px}
+#centres{padding-left:10%;padding-right:10%;margin-top:20px}

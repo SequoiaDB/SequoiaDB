@@ -1,0 +1,192 @@
+<html>
+<head>
+  <title>BEAM: Reading Files and Creating Patterns in Tcl</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Reading Files and Creating Patterns in Tcl</h1>
+<hr/>
+
+</p>
+<p>
+Some of the <a href="builtin.html">built-in checks</a> are configurable
+via <a href="parms.html#patterns">patterns</a>. Some patterns, like the
+ones that are a list of function names, may get very long. Also, it may
+be desirable to update the list of function names without having to
+edit your customized Tcl file.
+</p>
+<p>
+In order to accomplish this, one may leverage the full power of Tcl.
+We have included some small utility functions with BEAM that will
+help with such situations. For other situations, writing Tcl
+procedures may be a good solution. To learn Tcl basics,
+visit <a href="http://www.tcl.tk">Tcl's Website</a>.
+</p>
+<p>
+<h1>beam::read_file</h1>
+
+</p>
+<p>
+One function that is included in BEAM is <span class="function">beam::read_file</span>. This
+takes one argument, which is the file name to read, and returns a Tcl list
+of all of the lines in the file, with any newline characters removed. If
+the file could not be opened or read, the normal Tcl exceptions are raised.
+</p>
+<p>
+<span class="function">beam::read_file</span> skips empty lines and lines starting with '#'.
+It also strips any whitespace at the beginning and end of each line.
+</p>
+<p>
+<pre class="example">
+beam::read_file <span class="val">filename</span>
+</pre>
+
+</p>
+<p>
+<h1>beam::make_pattern</h1>
+
+</p>
+<p>
+Also included with BEAM is <span class="function">beam::make_pattern</span>. This function
+takes in a pattern string and a list of pattern elements, and creates
+a pattern by placing the pattern string between each element.
+</p>
+<p>
+<pre class="example">
+beam::make_pattern <span class="val">pattern_string list</span>
+</pre>
+
+</p>
+<p>
+<h1>Using the functions in your Tcl file</h1>
+
+</p>
+<p>
+In order for Tcl to know about the functions that are included with BEAM,
+you must source <span class="function">beam_define_proc</span> from your custom Tcl file.
+See the example below.
+</p>
+<p>
+<h1>Example</h1>
+
+</p>
+<p>
+This example reads in <span class="file">/home/joe/funcs.list</span>
+and creates a pattern to include all of the things that are
+listed in that file in the setting for
+<span class="var">beam::ERROR1::disabled_functions</span>.
+</p>
+<pre class="example">
+# This pulls in the functions that BEAM defines
+source beam_define_proc
+
+# This reads the file into the variable 'lines'
+set lines [beam::read_file &quot;/home/joe/functions.list&quot;]
+
+# This creates a pattern with '+'
+set patt [beam::make_pattern + $lines]
+
+# This sets the configuration item in BEAM
+set beam::ERROR1::disabled_functions $patt
+</pre>
+<p>
+
+If <span class="file">/home/joe/funcs.list</span> looked like this:
+</p>
+<pre class="example">
+foo
+bar
+
+# Disable this one too
+baz
+</pre>
+<p>
+
+... then the pattern set in <span class="var">beam::ERROR1::disabled_functions</span> above
+would have been <span class="code">{ foo + bar + baz }</span>.
+</p>
+<p>
+This example is similar, but instead of creating a pattern that includes
+things, this creates a pattern that excludes things.
+</p>
+<pre class="example">
+# This pulls in the functions that BEAM defines
+source beam_define_proc
+
+# This reads the file into the variable 'lines'
+set lines [beam::read_file &quot;/home/joe/functions.list&quot;]
+
+# This creates a pattern with '-'
+set patt [beam::make_pattern - $lines]
+
+# This sets the configuration item in BEAM
+set beam::ERROR1::disabled_functions [concat * - $patt]
+</pre>
+<p>
+
+Using the same file as the first example, this pattern would have ended up as
+<span class="code">{ * - foo - bar - baz }</span>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

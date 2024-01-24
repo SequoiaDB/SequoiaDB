@@ -1,0 +1,252 @@
+<html>
+<head>
+  <title>BEAM: Java Native Interface Checking Guide</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Java Native Interface (JNI) Checking Guide</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Introduction</h1>
+
+</p>
+<p>
+JNI is error-prone as described in 
+<a href="http://java.sun.com/docs/books/jni/html/pitfalls.html#25706">The Java Native Interface Programmer's Guide and Specification, Chpater 10</a>.
+Although the <span class="option">-Xcheck:jni</span>
+option to Java Virtual Machine is able to detect some errors at
+runtime, many errors in untested paths are missed.  Even in tested
+paths, errors such as memory leaks cannot be found.
+</p>
+<p>
+BEAM can find JNI programming errors, some of which are not detected
+by the Java Virtual Machine's runtime check, without executing your program.
+</p>
+<p>
+<h1>Errors found by BEAM</h1>
+
+<h2><a href="http://java.sun.com/docs/books/jni/html/pitfalls.html#25943">Error Checking</a></h2>
+
+</p>
+<p>
+Java method invocation from native code can throw exceptions.
+However, programmers tend to forget to write exception checks
+following the method invocation.  For example, the following native
+code can ignore an exception raised by the first method call.
+</p>
+<pre class="example">
+jmethodID mid;
+
+void
+simpleCallWithoutCheck(JNIEnv *env, jobject obj)
+{
+  env-&gt;CallVoidMethod(obj, mid); /* this statement can throw an exception,
+                                    which should be handled in this native code
+                                    or returned to Java code. */
+  env-&gt;CallVoidMethod(obj, mid); /* the pending exception raised from the previous
+                                    statement is lost. If this statement throws an
+                                    exception, you cannot tell where it originates */
+}
+</pre>
+<p>
+
+BEAM recognizes all JNI functions that can throw, check, or clear an exception.
+With that it can detect the usual errors related to exception handling
+mistakes as ERROR26.  For the code above BEAM complains as follows:
+</p>
+<pre class="example">
+-- ERROR26     /*violated property*/     &gt;&gt;&gt;ERROR26_simpleCallWithoutCheck_eacd477159b0be07
+&quot;CallVoidMethod.C&quot;, line 8: `env' is not `cleared of exception' (it is `with unchecked exception')
+ONE POSSIBLE PATH LEADING TO THE ERROR:
+ &quot;CallVoidMethod.C&quot;, line 5: `JNIEnv_::CallVoidMethod' generates a value that is `with unchecked exception' (used as evidence that error is possible)
+ &quot;CallVoidMethod.C&quot;, line 8: `JNIEnv_::CallVoidMethod' requires argument `this' to be `cleared of exception'
+</pre>
+<p>
+
+To fix this issue, the code should be written as in this example:
+</p>
+<pre class="example">
+jmethodID mid;
+
+void
+simpleCallWithoutCheck(JNIEnv *env, jobject obj)
+{
+  env-&gt;CallVoidMethod(obj, mid);
+  if (env-&gt;ExceptionCheck()) { /* if it throws an exception */
+    ...                        /* do some error recovery.
+                                  If return without clearing,
+                                  the exception is thrown to Java code */
+    env-&gt;ExceptionClear();     /* clear the pending exception */
+  }
+  env-&gt;CallVoidMethod(obj, mid);
+}
+</pre>
+<p>
+
+<h2><a href="http://java.sun.com/docs/books/jni/html/pitfalls.html#29163">Retaining Virtual Machine Resources</a></h2>
+
+</p>
+<p>
+BEAM recognizes all JNI functions that allocate/deallocate memory.
+With that it can detect the usual errors related to dynamic memory
+allocation:
+<ul>
+<li> <a href="builtin.html#ERROR23">memory leaks</a>
+<li> <a href="builtin.html#ERROR3">deallocating something more than once</a>
+<li> <a href="builtin.html#ERROR4">accessing deallocated memory</a>
+<!--(c) using a deallocating function that does not match the function 
+    that was used for allocating the memory being freed. For instance,-->
+</ul>
+<!-- examples already exists at
+     http://java.sun.com/docs/books/jni/html/pitfalls.html#29163
+     So, we don't describe them here.
+-->
+</p>
+<p>
+<h2>JNI function calls between GetStringCritical/GetPrimitiveArrayCritical and ReleaseStringCritical/ReleasePrimitiveArrayCritical</h2>
+
+</p>
+<p>
+No JNI function should be called between
+<a href="http://java.sun.com/j2se/1.5.0/docs/guide/jni/spec/functions.html#GetStringCritical"><span class="function">GetStringCritical</span></a>/<a href="http://java.sun.com/j2se/1.5.0/docs/guide/jni/spec/functions.html#GetPrimitiveArrayCritical"><span class="function">GetPrimitiveArrayCritical</span></a> and
+<a href="http://java.sun.com/j2se/1.5.0/docs/guide/jni/spec/functions.html#ReleaseStringCritical"><span class="function">ReleaseStringCritical</span></a>/<a href="http://java.sun.com/j2se/1.5.0/docs/guide/jni/spec/functions.html#ReleasePrimitiveArrayCritical"><span class="function">ReleasePrimitiveArrayCritical</span></a>
+calls.  (See <a href="http://java.sun.com/j2se/1.5.0/docs/guide/jni/spec/functions.html#GetStringCritical">the specification</a> for more details.) 
+BEAM also recognizes such JNI function calls.  For example, the
+following native code includes a code segment enclosed by
+<span class="function">Get/ReleaseStringCritical</span> calls.  However, it must not
+issue arbitrary JNI calls, or cause the current thread to block.
+</p>
+<pre class="example">
+jmethodID mid;
+
+void
+CallFunctionBetweenAllocateAndDecallocate(JNIEnv *env, jobject obj, jstring jstr)
+{
+  jboolean isCopy;
+  const jchar *cstr = env-&gt;GetStringCritical(jstr, &amp;isCopy);
+  env-&gt;CallVoidMethod(obj, mid);         /* Any JNI function must not called here */
+  env-&gt;ReleaseStringCritical(jstr, cstr);
+}
+</pre>
+<p>
+
+BEAM will complain for this example like this:
+</p>
+<pre class="example">
+-- ERROR26     /*violated property*/     &gt;&gt;&gt;ERROR26_CallFunctionBetweenAllocateAndDecallocate_a49dd5297240566c
+&quot;GetStringCritical.C&quot;, line 6: `env' is not `not critical' (it is `critical')
+ONE POSSIBLE PATH LEADING TO THE ERROR:
+ &quot;GetStringCritical.C&quot;, line 5: `JNIEnv_::GetStringCritical' generates a value that is `critical' (used as evidence that error is possible)
+ &quot;GetStringCritical.C&quot;, line 6: `JNIEnv_::CallVoidMethod' requires argument `this' to be `not critical'
+</pre>
+<p>
+
+<h2><a href="http://java.sun.com/docs/books/jni/html/pitfalls.html#11231">Using Invalid Local References</a></h2>
+
+See <a href="builtin.html#JNI1">JNI1</a>.
+<h2><a href="http://java.sun.com/docs/books/jni/html/pitfalls.html#11223">Passing Invalid Arguments to JNI Functions</a></h2>
+
+See <a href="builtin.html#JNI2">JNI2</a>.
+</p>
+<p>
+<h1>How to check JNI code</h1>
+
+</p>
+<p>
+In order to enable <a href="builtin.html#JNI1">JNI1</a> and <a href="builtin.html#JNI2">JNI2</a>, you need to load the JNI
+parameter file <span class="file">jni_default_parms.tcl</span> which comes with
+your BEAM installation.  In addition, JNI2 requires setting of the
+<span class="var">classpath</span> parameter.  Create your parameter file
+(call your_jni_parms.tcl) and include the setting like so
+</p>
+<pre class="example">
+source jni_default_parms
+
+set jni::JNI2::classpath <span class="val">&quot;(semi-)colon-separated list of JARs and directories&quot;</span>
+</pre>
+<p>
+
+And you can load it on the command line like so
+</p>
+<pre class="example">
+--beam::parms=your_jni_parms.tcl
+</pre>
+<p>
+
+In order to detect other JNI programming errors in C++, you need to load the Tcl file
+<span class="file">beam_attributes_jni_cpp.tcl</span> which comes with your BEAM
+installation. You can load it on the command line like so
+</p>
+<pre class="example">
+--beam::source=beam_attributes_jni_cpp.tcl
+</pre>
+<p>
+
+or source the file from your BEAM parameter file.  In C, you need to
+load the other Tcl file <span class="file">beam_attributes_jni_c.tcl</span>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

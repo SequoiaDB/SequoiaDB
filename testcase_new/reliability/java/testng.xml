@@ -1,0 +1,129 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--This xml is for ci. -->
+<!--Testcases for reliability test, except disk-full testcases. -->
+
+<suite name="reliability" verbose="1" preserve-order="true">
+
+    <!--主机名，CI默认传入localhost-->
+    <parameter name="HOSTNAME"        value="${HOSTNAME}" />
+    <!--协调节点端口号，CI默认传入11810-->
+    <parameter name="SVCNAME"         value="${SVCNAME}" />
+    <!--全文索引ES端主机名，CI默认传入192.168.28.143-->
+    <parameter name="ESHOSTNAME"      value="${ESHOSTNAME}" />
+    <!--全文索引ES端端口号，CI默认传入9200-->
+    <parameter name="ESSVCNAME"       value="${ESSVCNAME}" />
+    <!--全文索引前缀，CI传入与工程名相关，例如NORMALTESTG3D3-->
+    <parameter name="FULLTEXTPREFIX"  value="${FULLTEXTPREFIX}" />
+    <!--公共CS名-->
+    <parameter name="CHANGEDPREFIX"   value="reliability_test" />
+    <!--用例创建节点预留端口号最小值-->
+    <parameter name="RSRVPORTBEGIN"   value="26000" />
+    <!--用例创建节点预留端口号最大值-->
+    <parameter name="RSRVPORTEND"     value="27000" />
+    <!--用例新建节点的存放路径 -->
+    <parameter name="RSRVNODEDIR"     value="${RSRVNODEDIR}" />
+    <!--用例临时文件存放路径 -->
+    <parameter name="WORKDIR"         value="/tmp/ci_reliability" />
+    <!--用例新增节点备份日志文件路径-->
+    <parameter name="BACKUPTMPNODELOGPATH"   value="${BACKUPTMPNODELOGPATH}" />
+    <!--远程机器root用户密码-->
+    <parameter name="ROOTPASSWD"      value="${ROOTPASSWD}" />
+    <!--远程机器用户名-->
+    <parameter name="REMOTEUSER"      value="${REMOTEUSER}" />
+    <!--远程机器用户密码-->
+    <parameter name="REMOTEPASSWD"    value="${REMOTEPASSWD}" />
+    <!--可靠性shell脚本位置-->
+    <parameter name="SCRIPTDIR"       value="${SCRIPTDIR}" />
+    <!-- 适配器配置文件的父目录，默认是/opt/sequoiadb/conf/sdbseadapter -->
+    <parameter name="SDBSEADAPTERDIR" value="${SDBSEADAPTERDIR}" />
+
+    <listeners>
+        <listener
+            class-name="com.sequoiadb.commlib.ReliabilityInvokeMethodListener" />
+        <listener
+            class-name="com.sequoiadb.commlib.TimePrinterListener" />
+    </listeners>
+
+    <!-- 磁盘满的用例请放到testng_release.xml中 -->
+    <test name="reliability_normal" preserve-order="true">
+        <packages>
+            <package name="com.sequoiadb.datasource"/>
+            <package name="com.sequoiadb.snapshot" />
+            <package name="com.sequoiadb.subcl.brokennetwork" />
+            <package name="com.sequoiadb.subcl.killnode"/>
+            <package name="com.sequoiadb.subcl.restartnode"/>
+            <package name="com.sequoiadb.clsmgr.brokennetwork"/>
+            <package name="com.sequoiadb.split.killnode"/>
+            <package name="com.sequoiadb.split.restartnode"/>
+            <package name="com.sequoiadb.split.brokennetwork" />
+            <package name="com.sequoiadb.metaopr.killnode" />
+            <package name="com.sequoiadb.metaopr.networkfail.cl" />
+            <package name="com.sequoiadb.metaopr.networkfail.cs" />
+            <package name="com.sequoiadb.metaopr.networkfail.domain" />
+            <package name="com.sequoiadb.metaopr.noderestart" />
+            <package name="com.sequoiadb.autoincrement.killnode" />
+            <package name="com.sequoiadb.cappedCL.killnode" />
+            <package name="com.sequoiadb.cappedCL.restartnode" />
+            <package name="com.sequoiadb.rename.killnode" />
+            <package name="com.sequoiadb.rename.networkfail" />
+            <package name="com.sequoiadb.lob.killnode" />
+            <package name="com.sequoiadb.lob.networkfail" />
+            <package name="com.sequoiadb.lob.noderestart" />
+            <!--全文索引用例暂时屏蔽，待问题单SEQUOIADBMAINSTREAM-4325修复后再统一放开 -->
+            <!-- <package name="com.sequoiadb.fulltext.killnode" /> <package 
+                name="com.sequoiadb.fulltext.restartnode" /> -->
+            <package name="com.sequoiadb.compress" />
+            <package name="com.sequoiadb.faulttolerance.restartnode" />
+            <package name="com.sequoiadb.faulttolerance.slownode" />
+            <package name="com.sequoiadb.faulttolerance.killnode" />
+        </packages>
+    </test>
+
+    <test name="reliability_fullSync" preserve-order="true">
+        <packages>
+            <package name="com.sequoiadb.datasync.brokennetwork" />
+            <package name="com.sequoiadb.datasync.killnode" />
+            <package name="com.sequoiadb.datasync.restartnode" />
+        </packages>
+    </test>
+
+    <test name="reliability_transaction_rcauto"
+        preserve-order="true">
+        <groups>
+            <run>
+                <include name="rcauto" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.brokennetwork" />
+            <package name="com.sequoiadb.transaction.killnode" />
+            <package name="com.sequoiadb.transaction.restartnode" />
+        </packages>
+    </test>
+
+    <test name="reliability_transaction_rc" preserve-order="true">
+        <groups>
+            <run>
+                <include name="rc" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.brokennetwork" />
+            <package name="com.sequoiadb.transaction.killnode" />
+            <package name="com.sequoiadb.transaction.restartnode" />
+        </packages>
+    </test>
+
+<!--    <test name="location7" preserve-order="true">-->
+<!--        <parameter name="EXPANDNODENUM" value="7" />-->
+<!--        <groups>-->
+<!--            <run>-->
+<!--                <include name="location" />-->
+<!--            </run>-->
+<!--        </groups>-->
+<!--        <packages>-->
+<!--            <package name="com.sequoiadb.location.killnode" />-->
+<!--        </packages>-->
+<!--    </test>-->
+</suite>
+    

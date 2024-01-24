@@ -1,0 +1,124 @@
+<html>
+<head>
+  <title>BEAM: Windows Port</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM for Windows</h1>
+<hr/>
+
+</p>
+<p>
+BEAM has been ported to run natively in a Windows environment.
+</p>
+<p>
+We consider the current release to be Beta because it has
+not received an equal amount of testing as Linux/AIX. Getting beta testers
+has proven to be a very difficult endeavor.
+</p>
+<p>
+Here is a quick fact sheet:
+<ul>
+  <li>BEAM for Windows was built on Windows 2000 and should run on all Windows
+      versions newer than that. Our nightly regression buckets run on XP and
+      that works just fine.
+  <li>The languages C, C++, and Java are supported.
+  <li>The BEAM <a href="ant_ref.html">Ant Task</a> is supported and
+      installed with BEAM.
+  <li>The BEAM <a href="eclipse/">Eclipse Plugin</a> is supported
+      and available from our web site.
+  <li>BEAM ships with some Perl scripts in the <span class="file">bin</span> directory.
+      These scripts require a Perl interpreter in order to properly function.
+      If you don't have Perl installed, visit the
+      <a href="http://www.activestate.com/products/activeperl/">ActivePerl page</a>
+      and download Perl from there. ActivePerl is a Perl distribution
+      provided by <a href="http://www.activestate.com">ActiveState</a> for
+      no charge.
+</p>
+<p>
+      Note that while some scripts (like <span class="command">beam_configure</span>) will
+      work with MSYS Perl, BEAM in general does not support it.
+      BEAM requires a Windows-flavored Perl.
+</p>
+<p>
+      Once you download and install ActivePerl, the Perl program will be
+      in your <span class="env">PATH</span>. You can run any BEAM Perl program by
+      prefixing the BEAM command with <span class="command">perl</span> as you run it
+      from the Windows command console, like so:
+</p>
+<pre class="example">
+perl beam\bin\beam_configure <span class="val">--c gcc -o gcc.tcl</span>
+perl beam\bin\beam_sort_log <span class="val">a.complaints a.sorted</span>
+perl beam\bin\beam_diff_log <span class="val">--common a.complaints b.complaints</span>
+perl beam\bin\beam_stats <span class="val">a.stats</span>
+</pre>
+<p>
+  <li>Compiler emulation for Microsoft Visual-C++ version 8 is provided.
+      See <a href="emul-msvc.html">this page</a> for more details.
+  <li>Compiler emulation for IBM VisualAge for Windows is provided.
+      See <a href="emul-vacwin.html">this page</a> for more details.
+</ul>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<TestConfig>
+  <UserName></UserName>
+  <Password></Password>
+  <Coord>192.168.28.192:11810</Coord>
+  <CHANGEDPREFIX>driver_csharp_test</CHANGEDPREFIX>
+</TestConfig>

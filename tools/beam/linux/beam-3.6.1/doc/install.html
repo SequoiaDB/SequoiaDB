@@ -1,0 +1,282 @@
+<html>
+<head>
+  <title>BEAM: Installation Instructions</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Download and Installation Instructions</h1>
+<hr/>
+
+</p>
+<p>
+The BEAM distribution contains all executables, libraries, and
+configuration scripts that are necessary to run BEAM.
+</p>
+<p>
+<ol>
+ <li><span class="strong">License</span><br>
+BEAM is licensed for IBM internal use only. That means: BEAM can only
+be installed on IBM-owned hardware and only regular IBM employees 
+and IBM contractors may run BEAM. By downloading BEAM
+you acknowledge and agree to this license.
+</p>
+<p>
+ <li><span class="strong">Download</span><br>
+     Click on one of these links.
+</p>
+<p>
+     Note: If you are downloading one of our non-Windows packages from
+     Internet Explorer, it may save the file as <span class="strong">.tar.tar</span>.
+     You will have to rename it to <span class="strong">.tar.gz</span> before you will
+     be able to extract it. This seems to be a Windows or
+     Internet Explorer bug.
+</p>
+<p>
+     <table>
+       <tr>
+         <th>Platform
+         <th>C
+         <th>C++
+         <th>Java
+         <th>PL8
+         <th><a href="beam_trace.html">Build Tracing</a>
+         <th><a href="ant_ref.html">Ant Task</a>
+         <th><a href="eclipse/">Eclipse Plugin</a>
+       </tr>
+       <tr>
+         <td><a href="download/aix-5.1.x/beam-3.6.1.tar.gz">AIX-5.1.0 and up</a>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td>
+         <td align="center">
+         <td align="center"><img src="images/greencheck.png"></img>
+         <td align="center">
+       </tr>
+       <tr>
+         <td><a href="download/linux-x86/beam-3.6.1.tar.gz">GNU/Linux for x86</a>
+             <br>(glibc 2.3.2 or higher)
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td align="center"><img src="images/greencheck.png"></img>
+         <td align="center"><img src="images/greencheck.png"></img>
+         <td align="center"><img src="images/greencheck.png"></img>
+       </tr>
+       <tr>
+         <td><a href="download/linux-s390x/beam-3.6.1.tar.gz">GNU/Linux for s390x</a>
+             <br>(glibc 2.3.3 or higher)
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td align="center"><img src="images/greencheck.png"></img>
+         <td align="center"><img src="images/greencheck.png"></img>
+         <td align="center">
+       </tr>
+       <!-- 'ppc' disabled for now
+       <tr>
+         <td><a href="download/linux-ppc/beam-3.6.1.tar.gz">GNU/Linux for ppc/ppc64</a>
+             <br>(glibc 2.3.2 or higher)
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td>
+         <td align="center"><img src="images/greencheck.png"></img>
+         <td align="center"><img src="images/greencheck.png"></img>
+         <td align="center">
+       </tr>
+       -->
+       <tr>
+         <td><a href="download/windows/beam-3.6.1-install.exe">Windows 2000 and up</a>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td>
+         <td align="center">
+         <td align="center"><img src="images/greencheck.png"></img>
+         <td align="center"><img src="images/greencheck.png"></img>
+       </tr>
+       <tr>
+         <td><a href="download/uss/beam-3.6.1.tar.gz">z/os release 4 and up</a>
+         <td><img src="images/greencheck.png"></img>
+         <td><img src="images/greencheck.png"></img>
+         <td>
+         <td>
+         <td align="center">
+         <td align="center">
+         <td align="center">
+       </tr>
+     </table>
+</p>
+<p>
+     Save the file to disk. Depending on which browser you use, you might have 
+     to press the "shift" key while clicking on the link.
+</p>
+<p>
+  <li><span class="strong">Extract</span><br>
+      Enter one of the following commands depending on your OS:
+</p>
+<p>
+      <table>
+      <tr>
+       <th>OS</th>
+       <th>Command</th>
+      </tr>
+      <tr>
+       <td>AIX</td>
+       <td>gunzip -c beam-3.6.1.tar.gz | tar pxf -</td>
+      </tr>
+      <tr>
+       <td>GNU/Linux</td>
+       <td>gunzip -c beam-3.6.1.tar.gz | tar pxf -</td>
+      </tr>
+      <tr>
+       <td>Windows</td>
+       <td>Execute the installer by double-clicking on beam-3.6.1-install.exe</td>
+      </tr>
+      <tr>
+       <td>USS</td>
+       <td>gunzip -c beam-3.6.1.tar.gz | pax -rv -pp</td>
+      </tr>
+      </table>
+</p>
+<p>
+      This will extract the BEAM distribution into a single directory
+      <span class="file">beam-3.6.1</span>.  If you need
+      <span class="command">gunzip</span> and don't have it, you can get get it from <a href="http://www.gzip.org">http://www.gzip.org</a>.
+</p>
+<p>
+  <li><span class="strong">File permissions</span><br>
+      If you are installing BEAM in one of the afs/dfs/gsa file
+      systems, make sure that the access control lists for the
+      directory containing the BEAM installation are set
+      appropriately.
+</p>
+<p>
+  <li><span class="strong">Verify</span><br>
+      Save <a href="example.c">this C file</a> to disk and then invoke
+      BEAM using the <span class="command">beam_compile</span> from your installation's
+      <span class="file">bin</span> directory like this:
+</p>
+<pre class="example">
+beam-3.6.1/bin/beam_compile -c example.c
+</pre>
+<p>
+
+      You should see <a href="example.out">these complaints</a>.
+</p>
+<p>
+  <li><span class="strong">Install point overview</span><br>
+</p>
+<p>
+      There are several subdirectories. For BEAM users only the
+      <span class="file">bin</span>, <span class="file">doc</span>, and <span class="file">tcl</span> directories are of
+      interest.
+</p>
+<p>
+      <ul>
+        <li><span class="strong">bin</span><br>
+            BEAM binaries and scripts. The ones that might interest
+            you are:
+            <ul>
+              <li><span class="strong">beam_compile</span><br>
+                  The BEAM driver. Invokes the corresponding BEAM
+                  frontend on one or more source files.
+              <li><span class="strong">beam_configure</span><br>
+                  Figures out compiler and target machine specifics
+                  and write them to a configuration file.
+              <li><span class="strong">beam_diff_log</span><br>
+                  Compute differences between two file with BEAM complaints.
+              <li><span class="strong">beam_sort_log</span><br>
+                  Sort a file containing BEAM complaints.
+              <li><span class="strong">beam_stats</span><br>
+                  Analyzes a <span class="term">stats</span> file.
+              <li><span class="strong">beam_trace</span><br>
+                  Watches a build and invokes BEAM alongside the compiler.
+            </ul>
+        <li><span class="strong">doc</span><br>
+            A copy of BEAM's online documentation. For those who like
+            to <span class="command">grep</span> for things.
+        <li><span class="strong">tcl</span><br>
+            Tcl configuration scripts. You will need to refer to some
+            of the scripts in this directory if you want to customize
+            BEAM.
+      </ul>
+</p>
+<p>
+      All other subdirectories are for BEAM's internal organization
+      only and are subject to change without notice.
+</p>
+<p>
+  <li><span class="strong">Leave it alone</span><br>
+      Never modify any of the files of the BEAM distribution. Doing so
+      makes it very hard to recreate a problem that you might
+      encounter.
+</ol>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

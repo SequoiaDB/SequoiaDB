@@ -1,0 +1,121 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>com.sequoiadb</groupId>
+   <artifactId>sequoiadb-testcase-base</artifactId>
+   <version>3.4</version>
+   <packaging>pom</packaging>
+
+   <properties>
+      <sdbdriver.version>${sdbdriver}</sdbdriver.version>
+      <sdbdriver.dir>${sdbdriverDir}</sdbdriver.dir>
+      <threadexecutor.dir>${threadexecutorDir}</threadexecutor.dir>
+
+      <!-- jars properties -->
+      <testng.version>6.13.1</testng.version>
+      <jcommander.version>1.72</jcommander.version>
+      <compiler-plugin.version>3.6.0</compiler-plugin.version>
+
+      <!-- compiler settings properties -->
+      <java_source_version>1.7</java_source_version>
+      <java_target_version>1.7</java_target_version>
+      <file_encoding>UTF-8</file_encoding>
+
+      <!-- surefire properties -->
+      <surefire-plugin.version>2.20.1</surefire-plugin.version>
+
+      <slf4j-api.version>1.7.5</slf4j-api.version>
+
+      <!-- spring jars -->
+      <spring-boot-starter-web.version>1.5.10.RELEASE</spring-boot-starter-web.version>
+      <apache-httpclient.version>4.5.2</apache-httpclient.version>
+
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>${slf4j-api.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <version>${slf4j-api.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-dbcp2</artifactId>
+         <version>2.1.1</version>
+      </dependency>
+
+      <dependency>
+         <groupId>mysql</groupId>
+         <artifactId>mysql-connector-java</artifactId>
+         <version>5.1.48</version>
+      </dependency>
+
+      <dependency>
+         <groupId>com.sequoiadb</groupId>
+         <artifactId>sequoiadb-driver</artifactId>
+         <version>${sdbdriver.version}</version>
+         <scope>system</scope>
+         <systemPath>${sdbdriver.dir}/sequoiadb-driver-${sdbdriver.version}.jar</systemPath>
+      </dependency>
+      <dependency>
+         <groupId>com.sequoiadb</groupId>
+         <artifactId>threadexecutor</artifactId>
+         <version>1.0.0-SNAPSHOT</version>
+         <scope>system</scope>
+         <systemPath>${threadexecutor.dir}/threadexecutor-1.0.0-SNAPSHOT.jar</systemPath>
+      </dependency>
+
+      <!-- tools dependency -->
+      <dependency>
+         <groupId>org.testng</groupId>
+         <artifactId>testng</artifactId>
+         <version>${testng.version}</version>
+      </dependency>
+      <!--dependency> <groupId>com.beust</groupId> <artifactId>jcommander</artifactId> 
+         <version>${jcommander.version}</version> </dependency -->
+
+      <!-- spring dependency -->
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-web</artifactId>
+         <version>${spring-boot-starter-web.version}</version>
+         <exclusions>
+            <exclusion>
+               <groupId>ch.qos.logback</groupId>
+               <artifactId>logback-classic</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+
+      <dependency>
+         <groupId>org.apache.httpcomponents</groupId>
+         <artifactId>httpclient</artifactId>
+         <version>${apache-httpclient.version}</version>
+      </dependency>
+
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${compiler-plugin.version}</version>
+            <configuration>
+               <source>${java_source_version}</source>
+               <target>${java_target_version}</target>
+               <encoding>${file_encoding}</encoding>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+
+</project>

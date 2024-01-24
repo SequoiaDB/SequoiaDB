@@ -1,0 +1,169 @@
+<html>
+<head>
+  <title>BEAM: Complaints About Freeing NULL</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Complaints About Freeing NULL</h1>
+<hr/>
+
+</p>
+<p>
+Although the C and C++ standards allow passing <span class="code">NULL</span> to 
+<span class="code">free</span>, <span class="code">delete</span>, and <span class="code">delete []</span> many developers
+consider that bad style and don't want to use this language 'feature'.
+Thusly, they want BEAM to warn about it. 
+</p>
+<p>
+For that purpose BEAM provides a parameter 
+<a href="parms.html#beam::may_free_null"><span class="var">beam::may_free_null</span></a>
+whose setting controls whether a complaint is being issued.
+This parameter applies to both the builtin deallocating functions as well as
+any function for which you wrote a function attribute that makes that
+function a deallocator.
+</p>
+<p>
+Here are your options.
+</p>
+<p>
+<span class="strong">Case 1:</span> Passing the null pointer to a deallocator is universally 
+forbidden.
+</p>
+<pre class="example">
+set beam::may_free_null &quot;no&quot;
+</pre>
+<p>
+
+<span class="strong">Case 2:</span> Passing the null pointer to a deallocator is universally 
+allowed.
+</p>
+<pre class="example">
+set beam::may_free_null &quot;yes&quot;
+</pre>
+<p>
+
+<span class="strong">Case 3:</span> Some of your deallocators accept the null pointer while 
+others do not.
+</p>
+<p>
+<span class="strong">Case 3.1:</span> It is easier to enumerate those that accept the null 
+pointer.
+</p>
+<p>
+First, you universally forbid passing the null pointer:
+</p>
+<pre class="example">
+set beam::may_free_null &quot;no&quot;
+</pre>
+<p>
+
+Secondly, for those deallocators that accept the null pointer, 
+you make the deallocator attribute conditional. That is the snippet
+typeset in <span class="strong">bold</span> below:
+</p>
+<pre class="example">
+  namespace eval beam::attribute {
+    beam::function_attribute {
+      deallocator ( pointer_index = 1,
+                    resource = &quot;heap_memory&quot;)
+<span class="strong">      if ( index = 1,
+           type = requires,
+           test_type = not_equal,
+           test_value = 0),</span>
+      no_other_side_effects
+    } -signatures &quot;my_deallocator&quot;
+  }
+</pre>
+<p>
+
+<span class="strong">Case 3.2:</span> It is easier to enumerate those that do not accept the 
+null pointer.
+</p>
+<p>
+First, you universally allow passing the null pointer:
+</p>
+<pre class="example">
+set beam::may_free_null &quot;yes&quot;
+</pre>
+<p>
+
+Secondly, for those deallocators that do not accept the null pointer, 
+you add a property as in the coming example. That is the snippet
+typeset in <span class="strong">bold</span> below:
+</p>
+<pre class="example">
+  namespace eval beam::attribute {
+    beam::function_attribute {
+      deallocator ( pointer_index = 1,
+                    resource = &quot;heap_memory&quot;),
+<span class="strong">      property (index = 1,
+                type = requires,
+                test_type = not_equal,
+                test_value = 0),</span>
+      no_other_side_effects
+    } -signatures &quot;my_deallocator&quot;
+  }
+</pre>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

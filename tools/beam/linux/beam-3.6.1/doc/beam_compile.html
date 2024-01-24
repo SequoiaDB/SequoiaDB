@@ -1,0 +1,533 @@
+<html>
+<head>
+  <title>BEAM: The beam_compile Command</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">The beam_compile Command</h1>
+<hr/>
+
+</p>
+<p>
+<h1>1. Introduction</h1>
+
+This is the command that is used to run BEAM on a given source file.
+Its invocation can be as simple as 
+</p>
+<pre class="example">
+beam_compile -c foo.c
+</pre>
+<p>
+
+The <span class="command">beam_compile</span> command is meant to be invoked instead of the 
+compiler. Therefore, <span class="command">beam_compile</span> 
+<ul>
+<li>accepts the same command line flags as your compiler
+<li>creates files (if any) in the very spots where the compiler 
+would create them
+</ul>
+</p>
+<p>
+Having said this, integration into build environments should be fairly
+straightforward. 
+</p>
+<p>
+<h1>2. Command Line Arguments</h1>
+
+The <span class="command">beam_compile</span> command accepts three kinds of options:
+<ol>
+<li><span class="strong">Compiler options</span><br>
+These are the options that you would normally pass to your compiler, including 
+any source files.
+<li><span class="strong">BEAM specific options</span><br>
+These are the options to control BEAM behavior, if any.
+<li><span class="strong">EDG specific options</span><br>
+These options are passed directly to the EDG parser. Typically they are not 
+required. 
+</ol>
+</p>
+<p>
+Options are processed mostly from left to right and can be given
+in any order (See below for details). It is probably a good idea,
+though, to group like options together
+and invoke <span class="command">beam_compile</span> like this:
+</p>
+<pre class="example">
+beam_compile <span class="val">beam-options</span> <span class="val">compiler-options</span>
+</pre>
+<p>
+
+BEAM accepts multiple source files, and will act as if it
+was invoked on each source file individually, with all other
+command-line options preserved. However, all of the source
+files given to a single BEAM invocation must be of the same
+language (C, C++, etc).
+</p>
+<pre class="example">
+beam_compile <span class="val">options</span> a.c b.c c.c
+</pre>
+<p>
+
+BEAM also accepts arguments of the form <span class="option">@file</span>.
+These arguments cause BEAM to read the named file and
+treat the contents as if they appeared on the command-line
+instead of <span class="option">@file</span>, with each line being a separate
+command-line option or input file name.
+</p>
+<pre class="example">
+beam_compile @optfile a.c
+beam_compile <span class="val">options</span> @files.list
+</pre>
+<p>
+
+The rules for parsing the arguments inside <span class="option">@file</span>
+arguments depends on the compiler being emulated. This 
+is explained on the <a href="atfile.html">@file</a> page.
+</p>
+<p>
+An overview of BEAM's execution, including argument parsing
+orders, can be found on the <a href="execution.html">execution page</a>.
+</p>
+<p>
+<h2>2.1 BEAM Specific Options</h2>
+
+The table below lists all BEAM specific command line options.
+Note, that they all start with <span class="option">--beam</span>. 
+This might look a bit unusual. However, having a common prefix
+minimizes the likelihood that a BEAM option conflicts with a compiler option.
+Some BEAM options have additional parameters, such as a file name.
+We strongly advise to avoid parameters containing characters that
+have special meaning to a shell (such as '*') or are
+known to cause trouble (such as whitespace). Otherwise, you might end up in
+<a href="quoting-hell.html">quoting hell</a>.
+</p>
+<p>
+<table>
+<tr valign=top>
+  <th>OPTION</th>
+  <th>EFFECT</th>
+  <th>DEFAULT</th>
+</tr>
+<tr>
+  <td><span class="option">--beam::parms=</span><span class="val">file</span></td>
+  <td>Tcl file containing <a href="parameter_files.html">parameter settings</a></td>
+  <td><span class="file">beam_default_parms.tcl</span></td>
+</tr>
+<tr>
+  <td><span class="option">--beam::steps=</span><span class="val">file</span></td>
+  <td>Tcl file containing steps to be performed</td>
+  <td><span class="file">beam_default_steps.tcl</span></td>
+</tr>
+<tr>
+  <td><span class="option">--beam::source=</span><span class="val">file</span></td>
+  <td>
+    Tcl file containing additional configurations, like
+    <a href="attributes.html">function attributes</a> or a
+    <a href="compiler_configuration.html">compiler configuration file</a>.
+    Also see information about <a href="extapi.html">external API</a>
+    configurations. This flag may be specified more than once.
+  </td>
+  <td>
+    No extra configurations are loaded above BEAM's defaults (see
+    <span class="option">--beam::nostdattr</span>)
+  </td>
+</tr>
+<tr>
+  <td><span class="option">--beam::complaint_file=</span><span class="val">file</span></td>
+  <td>
+    File to write complaints to. See the entry on the
+    <a href="parms.html#beam::complaint_file">parms page</a>.
+  </td>
+  <td>
+    Complaints are written to <span class="code">stdout</span>.
+  </td>
+</tr>
+<tr>
+  <td><span class="option">--beam::parser_file=</span><span class="val">file</span></td>
+  <td>
+    File to write parser messages to. See the entry on the
+    <a href="parms.html#beam::parser_file">parms page</a>.
+  </td>
+  <td>
+    Messages are written to <span class="code">stderr</span>.
+  </td>
+</tr>
+<tr>
+ <td><span class="option">--beam::prefixcc</span></td>
+ <td><a name="beam::prefixcc"></a>
+     This option takes no value. If it is present, then BEAM expects the compiler
+     binary itself to be the first non-BEAM option on the command-line. This
+     is meant to allow you to simply prefix your compiler invocation with
+     BEAM and have BEAM do the work of configuring itself for your compiler
+     automatically.
+</p>
+<p>
+     BEAM will automatically configure the compiler and store the result
+     in the <a href="parms.html#beam::data">beam::data</a> directory, if given. If
+     it is not given, the configuration will be stored in the
+     <span class="file">~/.beam</span> directory.
+</p>
+<p>
+     Since this option causes BEAM to manage the compiler configuration files
+     automatically, you should not specify any <span class="option">--beam::compiler</span>
+     options.
+</p>
+<p>
+     BEAM supports the compiler if it recognizes it by the name of the binary.
+     If your compiler binary is not recognized by BEAM, you can try to force
+     BEAM to recognize it by adding <span class="option">--beam::cc=</span><span class="val">compiler</span>
+     to the command-line. This may not always work. If you have problems,
+     please <a href="mailing-lists.html">contact us</a> and we will help
+     get BEAM working for your environment.
+</p>
+<p>
+     See the <a href="compilers.html">supported compilers</a> page for details about
+     which compilers support this option.
+</p>
+<p>
+     Note: On Windows, the <span class="command">perl</span> binary must be in your <span class="env">PATH</span>.
+     This is required by <a href="beam_configure.html"><span class="command">beam_configure</span></a>.
+ </td>
+ <td>
+  Without this option, BEAM relies on a compiler configuration file to be loaded
+  via <span class="option">--beam::compiler</span>.
+ </td>
+</tr>
+<tr>
+  <td><span class="option">--beam::compiler=</span><span class="val">file</span></td>
+  <td>
+    <a name="beam::compiler"></a>
+    This tells BEAM up front what compiler is being emulated
+    by specifying the <a href="compiler_configuration.html">compiler configuration file</a> here. This can also be
+    used to load a custom <a href="argument_mapper.html">argument mapper</a>,
+    but this is rarely needed.
+</p>
+<p>
+    In the past, the <span class="option">--beam::source=</span> flag was used
+    to load compiler configuration files, and that still works,
+    but is no longer recommended.
+    If <span class="option">--beam::compiler=</span> is used, BEAM will know
+    what compiler is emulated earlier in the argument parsing
+    process, which allows BEAM to more correctly emulate the
+    compiler in more situations.
+</p>
+<p>
+    This flag can be specified more than once, and all of the given
+    files will be loaded. It is an error if two compiler configuration
+    files are loaded for different compilers at the same time.
+  </td>
+  <td>
+    No compiler configuration files are loaded and BEAM's default
+    settings are used, which only work for trivial programs.
+  </td>
+</tr>
+<tr>
+  <td><span class="option">--beam::display_analyzed_files</span></td>
+  <td>Causes BEAM to print the full path to the file that is about
+      to be analyzed. The file name is printed to standard error.
+       Note that this option does not work for PL8.</td>
+  <td>Do not display file names as they are analyzed.</td>
+</tr>
+<tr>
+  <td><span class="option">--beam::nostdattr</span></td>
+  <td>Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::nostdattr">beam::nostdattr</a>=yes</span></td>
+  <td>Specific configurations are loaded depending
+      on the language of the source and the
+      compiler being emulated</td>
+</tr>
+<tr>
+  <td><span class="option">--beam::new_returns_null</span></td>
+  <td><a name="new_returns_null"></a>
+      Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::new_returns_null">beam::new_returns_null</a>=yes</span></td>
+  <td>BEAM assumes that <span class="code">operator new</span> and 
+      <span class="code">operator new[]</span> never return NULL.</td>
+</tr>
+<tr>
+  <td><span class="option">--beam::display_parms</span></td>
+  <td>Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::display_parms">beam::display_parms</a>=yes</span></td>
+  <td>Do not display parameters</td>
+</tr>
+<tr>
+<tr>
+  <td><span class="option">--beam::skip_dependencies</span></td>
+  <td>By default, BEAM analyzes Java files that are dependencies
+      of those files listed on the command-line. This flag
+      prevents that behavior, and forces BEAM to only analyze
+      the files explicitly listed. This flag is Java-only.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><span class="option">--beam::skip_cmdline_files_if_analyzed</span></td>
+  <td>By default, BEAM analyzes Java files listed on the
+      command-line, whether or not their <span class="file">.beam</span>
+      file is up-to-date. Specifying this option will cause
+      BEAM to skip the analysis of those files that already
+      have up-to-date <span class="file">.beam</span> files. This is
+      useful to specify in build scripts so that duplicate
+      analysis of certain source files is avoided. This
+      flag is Java-only.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><span class="option">--beam::conservative_dotbeam</span></td>
+  <td>Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::conservative_dotbeam">beam::conservative_dotbeam</a>=yes</span></td>
+  <td>The <span class="file">.beam</span> file is written if there are no parse
+      errors, even if there are BEAM complaints.</td>
+</tr>
+<tr>
+  <td><span class="option">--beam::exit0</span></td>
+  <td>Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::exit0">beam::exit0</a>=yes</span></td>
+  <td>0 if no syntax error, 1 if syntax errors</td>
+</tr>
+<tr>
+  <td><span class="option">--beam::list-all-ids</span></td>
+  <td>Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::list-all-ids">beam::list-all-ids</a>=yes</span></td>
+  <td>Not listed</td>
+</tr>
+<tr>
+  <td><span class="option">--beam::list-all-variables</span></td>
+  <td>Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::list-all-variables">beam::list-all-variables</a>=yes</span></td>
+  <td>Not listed</td>
+</tr>
+<tr>
+  <td><span class="option">--beam::list-ids</span></td>
+  <td>Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::list-ids">beam::list-ids</a>=yes</span></td>
+  <td>Not listed</td>
+</tr>
+<tr>
+  <td><span class="option">--beam::list-variables</span></td>
+  <td>Shorthand notation for 
+      <span class="option">--<a href="parms.html#beam::list-variables">beam::list-variables</a>=yes</span></td>
+  <td>Not listed</td>
+</tr>
+<tr>
+  <td><span class="option">--version</span></td>
+  <td>Writes BEAM's version to <span class="code">stdout</span>.</td>
+  <td>n/a</td>
+</tr>
+<tr>
+  <td><span class="option">--help</span></td>
+  <td>Writes BEAM's usage information to <span class="code">stderr</span>.</td>
+  <td>n/a</td>
+</tr>
+</table>
+</p>
+<p>
+Example usage:
+</p>
+<pre class="example">
+beam_compile --beam::parms=../myparms.tcl         \
+             --beam::steps=mysteps.tcl            \
+             --beam::parser_file=/dev/null        \
+             --beam::complaint_file=BEAM.barf     \
+             --beam::stats_file=foo.stats         \
+             --beam::compiler=cc_config.tcl       \
+             --beam::source=more_attributes.tcl   \
+             --beam::post_parms=extra_parms.tcl   \
+             --beam::display_parms                \
+             --beam::root=.:/afs/eda/prod         \
+             --beam::exit0                        \
+             --beam::list-ids                     \
+             foo.c
+</pre>
+<p>
+
+Some Tcl variables allow an empty value, for example
+</p>
+<pre class="example">
+beam_compile --beam::data=             \
+             --beam::root=             \
+             foo.c
+</pre>
+<p>
+
+<h3>2.1.1 Assigning Values to BEAM Parameters on the Command Line</h3>
+
+</p>
+<p>
+It is convenient to be able to assign a value to a BEAM
+<a href="parms.html">parameter</a> on the command line.
+The general syntax is:
+</p>
+<pre class="example">
+--<span class="var">parameter</span>=<span class="val">value</span>
+</pre>
+<p>
+
+For instance, if you want to set the severity of ERROR1
+to <span class="val">lethal</span> you can do so by adding
+<span class="option">--beam::ERROR1::severity=lethal</span> to the command line.
+The additional <span class="var">beam::</span> prefix is the namespace in which all 
+BEAM parameters reside.
+</p>
+<p>
+Note that this only accepts Tcl string syntax for the value of
+the parameter. If you need to set a parameter that is a Tcl
+list, or you need to escape special characters, we recommend
+that you place the parameter setting in a Tcl file and
+load that with <span class="option">--beam::source=</span>.
+</p>
+<p>
+<a name="beam::order_of_evaluation"></a><h3>2.1.2 Order of Evaluation</h3>
+
+
+</p>
+<p>
+The order that most command-line options are evaluated in won't change anything,
+and so it remains unspecified. However, a few command-line options interact with
+the Tcl interpreter, and so the order will make a difference (the last set of a
+variable wins, for example). Files may also be loaded more than once if multiple
+source files are involved. Compiler configuration files are also loaded multiple
+times.
+</p>
+<p>
+For details, see the <a href="execution.html">BEAM execution document</a>.
+</p>
+<p>
+<h3>2.1.3 Locating Tcl Files</h3>
+
+</p>
+<p>
+If a command line option specifies the name of a Tcl file which needs
+to be loaded the file will be located according to the 
+<a href="search_path.html">BEAM search path rules</a>.
+</p>
+<p>
+<h2>2.2 EDG Specific Options</h2>
+
+To pass an option to the EDG parser use 
+<span class="option">--edg=<span class="val">option</span></span>. In this example
+</p>
+<pre class="example">
+beam_compile -c foo.c --edg=--no_warnings
+</pre>
+<p>
+
+the <span class="option">--no_warnings</span> option will be passed to the EDG parser.
+Any number of <span class="option">--edg</span> options can be specified. They will be passed to
+EDG in the order they were specified. Remember to quote properly, should the
+option that you want to pass to EDG contain spaces, single or double quotes, or
+other characters that are special to your shell. 
+As an example, if you want to pass:
+</p>
+<pre class="example">
+--xref=&quot;a b&quot;
+</pre>
+<p>
+
+you would have to specify:
+</p>
+<pre class="example">
+beam_compile --edg='--xref=&quot;\&quot;a b\&quot;&quot;'
+</pre>
+<p>
+
+Otherwise, <a href="quoting-hell.html">quoting hell</a> awaits thee
+at the end.
+</p>
+<p>
+<a name="beam::exit_codes"></a><h1>3. Exit Codes</h1>
+
+
+The <span class="command">beam_compile</span> command returns
+</p>
+<p>
+<ul>
+<li>0, if there were no compiler errors or
+<li>1, if there were compiler errors.
+</ul>
+</p>
+<p>
+A non-zero return code does <span class="strong">not</span> mean that BEAM did not run on that
+file. For each function in a file BEAM keeps track of whether the function
+had syntax errors or not. Only functions with syntax errors will be skipped.
+</p>
+<p>
+The number of BEAM complaints does <span class="strong">not</span> influence the exit code.
+</p>
+<p>
+You can enforce a '0' exit code by adding
+<span class="option">--beam::exit0</span> on the command line.
+</p>
+<p>
+<h1>4. The .beam File</h1>
+
+The <span class="file">.beam</span> file is BEAM's equivalent of the compiler's <span class="file">.o</span> file.
+Its purpose is to enable incremental BEAM runs. The 
+<a href="refdotbeam.html">gory details are here</a>.
+</p>
+<p>
+For more information see 
+<a href="build.html#makefile">How to invoke BEAM from your makefile</a>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

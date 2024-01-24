@@ -1,0 +1,155 @@
+EnsureSConsVersion( 1, 1, 0 )
+import platform
+import os
+import re
+from os.path import join, dirname, abspath
+
+Import("env")
+Import("dllBuildEnv")
+Import("staticBuildEnv")
+Import("client_lib_dir")
+
+gtestFiles = [
+      "../../../../../SequoiaDB/engine/gtest/src/gtest-all.cc"
+      ]
+
+gtestMainFile = [
+      "../../../../../SequoiaDB/engine/gtest/src/gtest_main.cc"
+      ]
+
+clientStaticLib = [
+       client_lib_dir + "/libstaticsdbc.a"
+       ]
+
+testCommonFiles = [
+      "testcommon.c",
+      ]
+
+clientStaticLibFile = join( client_lib_dir, 'libstaticsdbc.a' )
+
+
+testFiles1 = [
+        "collection.cpp"
+      ]
+testFiles2 = [
+        "collectionspace.cpp"
+      ]
+testFiles3 = [
+        "cursor.cpp"
+      ]
+testFiles4 = [
+        "sdb.cpp"
+      ]
+testFiles5 = [
+        "snapshot.cpp"
+      ]
+testFiles6 = [
+       "concurrent_insert.cpp"
+      ]
+testFiles7 = [
+        "shard.cpp"
+      ]
+testFiles8 = [
+        "debug.cpp"
+      ]
+testFiles9 = [
+        "cbson.cpp"
+      ]
+testFiles10 = [
+        "domain.cpp"
+      ]
+testFiles11 = [
+        "lob.cpp"
+      ]
+testFiles12 = [
+        "selector_query.cpp"
+      ]
+testFiles13 = [
+        "rg.cpp"
+      ]
+
+testFiles14 = [
+        "mutex.cpp"
+      ]
+
+testFiles15 = [
+        "dc.cpp"
+      ]
+
+testFiles16 = [
+        "bson_test.cpp"
+      ]
+
+testFiles17 = [
+        "jira.cpp"
+      ]
+
+# compile common lib
+gtestall = env.StaticLibrary('gtest', gtestFiles)
+gtestMainObj = env.Object('gtestMainObj', gtestMainFile)
+testCommon = env.StaticLibrary("testCommon", [testCommonFiles])
+
+# dll compile
+collection = dllBuildEnv.Program("collection", [testFiles1, testCommon, gtestMainObj])
+#                     _LIBDEPS='$_LIBDEPS_OBJS')
+collectionspace = dllBuildEnv.Program("collectionspace", [testFiles2, testCommon, gtestMainObj])
+cursor = dllBuildEnv.Program("cursor", [testFiles3, testCommon, gtestMainObj])
+sdb = dllBuildEnv.Program("sdb", [testFiles4, testCommon, gtestMainObj])
+snapshot = dllBuildEnv.Program("snapshot", [testFiles5, testCommon, gtestMainObj])
+concurrent = dllBuildEnv.Program("concurrent", [testFiles6, testCommon, gtestMainObj])
+#shard = dllBuildEnv.Program("shard", [testFiles7, testCommon, gtestMainObj])
+debug = dllBuildEnv.Program("debug", [testFiles8, testCommon, gtestMainObj])
+cbson = dllBuildEnv.Program("cbson", [testFiles9, testCommon, gtestMainObj])
+domain = dllBuildEnv.Program("domain", [testFiles10, testCommon, gtestMainObj])
+lob = dllBuildEnv.Program("lob", [testFiles11, testCommon, gtestMainObj])
+selector = dllBuildEnv.Program("selector", [testFiles12, testCommon, gtestMainObj])
+rg = dllBuildEnv.Program("rg", [testFiles13, testCommon, gtestMainObj])
+mutex = dllBuildEnv.Program("mutex", [testFiles14, testCommon, gtestMainObj])
+dc = dllBuildEnv.Program("dc", [testFiles15, testCommon, gtestMainObj])
+bson_test = dllBuildEnv.Program("bson_test", [testFiles16, testCommon, gtestMainObj])
+jira = dllBuildEnv.Program("jira", [testFiles17, testCommon, gtestMainObj])
+
+# static compile
+collection.static = staticBuildEnv.Program("collection.static", [testFiles1, testCommon, gtestMainObj])
+collectionspace.static = staticBuildEnv.Program("collectionspace.static", [testFiles2, testCommon, gtestMainObj])
+cursor.static = staticBuildEnv.Program("cursor.static", [testFiles3, testCommon, gtestMainObj])
+sdb.static = staticBuildEnv.Program("sdb.static", [testFiles4, testCommon, gtestMainObj])
+snapshot.static = staticBuildEnv.Program("snapshot.static", [testFiles5, testCommon, gtestMainObj])
+concurrent.static = staticBuildEnv.Program("concurrent.static", [testFiles6, testCommon, gtestMainObj])
+#shard.static = staticBuildEnv.Program("shard.static", [testFiles7, testCommon, gtestMainObj])
+debug.static = staticBuildEnv.Program("debug.static", [testFiles8, testCommon, gtestMainObj])
+cbson.static = staticBuildEnv.Program("cbson.static", [testFiles9, testCommon, gtestMainObj])
+domain.static = staticBuildEnv.Program("domain.static", [testFiles10, testCommon, gtestMainObj])
+lob.static = staticBuildEnv.Program("lob.static", [testFiles11, testCommon, gtestMainObj])
+selector.static = staticBuildEnv.Program("selector.static", [testFiles12, testCommon, gtestMainObj])
+rg.static = staticBuildEnv.Program("rg.static", [testFiles13, testCommon, gtestMainObj])
+mutex.static = staticBuildEnv.Program("mutex.static", [testFiles14, testCommon, gtestMainObj])
+dc.static = staticBuildEnv.Program("dc.static", [testFiles15, testCommon, gtestMainObj])
+bson_test.static = staticBuildEnv.Program("bson_test.static", [testFiles16, testCommon, gtestMainObj])
+jira.static = staticBuildEnv.Program("jira.static", [testFiles17, testCommon, gtestMainObj])
+
+
+## dll compile
+#env.Install( '#/build_test', [collection,collectionspace,cursor,sdb,snapshot,concurrent,
+#                              shard, debug, cbson, domain, lob, selector, rg, mutex, dc,
+#                              bson_test] )
+## static compile
+#env.Install( '#/build_test', [collection.static, collectionspace.static, cursor.static,
+#                              sdb.static, snapshot.static, concurrent.static,
+#                              shard.static, debug.static, cbson.static, domain.static, lob.static,
+#                              selector.static, rg.static, mutex.static, dc.static,
+#                              bson_test.static] )
+
+# dll compile
+# we don't run "rg, mutex, dc, shard" in ci
+env.Install( '#/build_test', [collection,collectionspace,cursor,sdb,snapshot,concurrent,
+                              debug, cbson, domain, lob, selector,
+                              bson_test, jira] )
+# static compile
+# we don't run "rg, mutex, dc, shard" in ci
+env.Install( '#/build_test', [collection.static, collectionspace.static, cursor.static,
+                              sdb.static, snapshot.static, concurrent.static,
+                              debug.static, cbson.static, domain.static, lob.static,
+                              selector.static,
+                              bson_test.static, jira.static] )
+

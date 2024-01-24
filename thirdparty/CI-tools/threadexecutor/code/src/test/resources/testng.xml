@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="First suite" verbose="1">
+    <test name="test">
+        <packages>
+            <package name = "com.sequoiadb.test" />
+        </packages>
+    </test>
+</suite>

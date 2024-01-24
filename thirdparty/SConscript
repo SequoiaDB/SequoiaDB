@@ -1,0 +1,768 @@
+EnsureSConsVersion(1, 1, 0)
+import os
+import time
+import stat
+import subprocess
+import shutil
+from datetime import datetime
+
+Import("thirdpartyEnv")
+Import("guess_os")
+Import("guess_arch")
+Import("release")
+Import("debugBuild")
+Import("boost_lib_dir")
+Import("ssl_lib_dir")
+Import("mdocml_lib_dir")
+Import("zlib_dir")
+Import("zlib_lib_dir")
+Import("lz4_dir")
+Import("lz4_lib_dir")
+Import("snappy_dir")
+Import("snappy_lib_dir")
+Import("sm_lib_dir")
+Import("fuse_lib_dir")
+Import("usemdocml")
+Import("usefuse")
+Import("intel_decimal_lib_dir")
+Import("zstd_dir")
+Import("zstd_lib_dir")
+
+ERROR = 1
+WARNING = 2
+INFO = 3
+DEBUG = 4
+
+def print_msg(level, message):
+    if g_silent and level > WARNING:
+        return
+    if ERROR == level:
+        print('[ERROR] ' + message)
+    elif WARNING == level:
+        print('[WARNING] ' + message)
+    elif INFO == level:
+        print('[INFO] ' + message)
+    elif DEBUG == level:
+        print('[DEBUG] ' + message)
+
+
+class Utils:
+    def __init__(self):
+        self.silent = False
+
+    @staticmethod
+    def is_program_installed(program_name):
+        for cmdpath in os.environ['PATH'].split(':'):
+            if os.path.isdir(cmdpath) and program_name in os.listdir(cmdpath):
+                return True
+        return False
+
+    @classmethod
+    def timestamp_to_datetime(cls, timestamp):
+        local_dt_time = datetime.fromtimestamp(timestamp / 1000000.0)
+        return local_dt_time
+
+    @classmethod
+    def datetime_to_timestamp(cls, datetime_obj):
+        local_timestamp = long(time.mktime(
+            datetime_obj.timetuple()) * 1000000.0 + datetime_obj.microsecond)
+        return local_timestamp
+
+    @classmethod
+    def datetime_to_strtime(cls, datetime_obj, date_format):
+        local_str_time = datetime_obj.strftime(date_format)
+        return local_str_time
+
+    @classmethod
+    def strtime_to_datetime(cls, timestr, date_format):
+        local_datetime = datetime.strptime(timestr, date_format)
+        return local_datetime
+
+    @classmethod
+    def timestamp_to_strtime(cls, timestamp, date_format):
+        return cls.datetime_to_strtime(cls.timestamp_to_datetime(timestamp),
+                                       date_format)
+
+    @classmethod
+    def strtime_to_timestamp(cls, timestr, date_format):
+        try:
+            local_str_time = cls.datetime_to_timestamp(
+                cls.strtime_to_datetime(timestr, date_format))
+            return local_str_time
+        except Exception:
+            return 0
+
+    @classmethod
+    def get_file_mtime_timestamp(cls, f):
+        return cls.datetime_to_timestamp(
+            datetime.fromtimestamp(os.path.getmtime(f)))
+
+
+class DependencyChecker:
+    def __init__(self):
+        self.programs = []
+        self.libs = []
+
+    @staticmethod
+    def _print_check_result(name, version, is_lib, succeed):
+        msg = "Checking"
+        if is_lib:
+            msg += " library "
+        else:
+            msg += " program "
+        msg += name + " of version " + version
+        dot_num = 64 - len(msg)
+        for i in range(dot_num):
+            msg += '.'
+        if succeed:
+            msg += "PASS!"
+            print_msg(INFO, msg)
+        else:
+            msg += "FAILED!"
+            print_msg(ERROR, msg)
+
+
+    def add_program(self, program_name, version = None):
+        self.programs.append((program_name, version))
+
+    def add_library(self, library_name, version = None):
+        self.libs.append((library_name, version))
+
+    def check(self):
+        for name, version in self.programs:
+            if version is None:
+                version = 'any'
+            if Utils.is_program_installed(name):
+                self._print_check_result(name, version, False, True)
+            else:
+                self._print_check_result(name, version, False, False)
+                return False
+        for name, version in self.libs:
+            full_name = name
+            if version is not None:
+                full_name = name + ".so." + version
+            else:
+                version = "any"
+            p1 = subprocess.Popen(["ldconfig", "-p"], stdout=subprocess.PIPE)
+            p2 = subprocess.Popen(["grep", full_name], stdin=p1.stdout,
+                                  stdout=subprocess.PIPE)
+            p1.stdout.close()
+            out, error = p2.communicate()
+            if '' == out:
+                self._print_check_result(name, version, True, False)
+                return False
+            else:
+                self._print_check_result(name, version, True, True)
+
+
+class CompilerBase:
+    def __init__(self, name, src_root):
+        self.name = name
+        self.src_root = os.path.abspath(os.path.join('./', src_root))
+        self.platform = ""
+        self.arch = ""
+        self.build_type = None
+        self.cmds = []
+
+    def _get_stage_lib_dir(self):
+        return os.path.join(self.src_root, 'stage/lib')
+
+    def _get_lib_archive_dir(self):
+        return None
+
+    def _get_lib_list(self):
+        return None
+
+    def _init_win32_cmds(self, arch):
+        return 0
+
+    def _init_linux_cmds(self, arch):
+        return 0
+
+    def _prepare_build(self):
+        return 0
+
+    def get_name(self):
+        return self.name
+
+    def get_src_root(self):
+        return self.src_root
+
+    def init(self, platform, arch, build_type):
+        self.platform = platform
+        self.arch = arch
+        self.build_type = build_type
+        rc = 0
+        if "win32" == platform:
+            rc = self._init_win32_cmds(arch)
+        elif "linux" == platform:
+            rc = self._init_linux_cmds(arch)
+        if 0 != rc:
+            return rc
+        return 0
+
+    def need_recompile(self):
+        arch_dir = os.path.abspath(self._get_lib_archive_dir())
+        libs = self._get_lib_list()
+        if libs is None:
+            return True
+        # If any expected library of the component is missing, recompile it.
+        for item in libs:
+            lib_path = os.path.join(arch_dir, item)
+            if not os.path.exists(lib_path):
+                print_msg(INFO, "Library {} does not exist".format(lib_path))
+                return True
+
+        libs = sorted(libs,
+                      key=lambda x: os.path.getmtime(os.path.join(arch_dir, x)),
+                      reverse=True)
+        latest_lib_mtime = \
+            Utils.get_file_mtime_timestamp(os.path.join(arch_dir, libs[0]))
+        root_dir_mtime = Utils.get_file_mtime_timestamp(self.src_root)
+        if root_dir_mtime > latest_lib_mtime:
+            print_msg(INFO, "Modification time of directory {} is newer than "
+                      "libs. Rebuild the compoment {}".format(self.src_root,
+                                                              self.get_name()))
+            return True
+
+        # If modification time of any file in the path, recompile the component.
+        for root, dirs, files in os.walk(self.src_root):
+            for file in files:
+                mtime = Utils.get_file_mtime_timestamp(os.path.join(root, file))
+                if mtime > latest_lib_mtime:
+                    print_msg(INFO, "Modification time of file {} is newer than"
+                              " libs. Rebuild the component {}".format(
+                                os.path.join(root, file), self.get_name()))
+                    return True
+        print_msg(INFO, "All libraries of {} are up to date. No need to "
+                  "compile.".format(self.get_name()))
+        return False
+
+    def append_cmd(self, cmd, args=''):
+        # Append the command into the command list as a tuple.
+        self.cmds.append((cmd, args))
+
+    def run(self):
+        rc = 0
+        stage_dir = self._get_stage_lib_dir()
+        if os.path.exists(stage_dir):
+            shutil.rmtree(stage_dir)
+        if not os.path.exists(stage_dir):
+            try:
+                os.makedirs(stage_dir)
+            except IOError, e:
+                print_msg(ERROR, 'Create lib stage directory failed: ' +
+                          stage_dir + ". Error: " + e.message())
+                return 1
+
+        # Check target library path. Create it if not exists.
+        lib_path = os.path.abspath(self._get_lib_archive_dir())
+        if not os.path.exists(lib_path):
+            try:
+                os.makedirs(lib_path)
+            except IOError, e:
+                print_msg(ERROR, 'Create lib archive directory failed: ' +
+                          lib_path + ". Error: " + e.message())
+                return 1
+
+        rc = self._prepare_build()
+        if 0 != rc:
+            print_msg(ERROR, "Prepare build failed")
+            return rc
+
+        print_msg(INFO, "Begin to compile " + self.name + "...")
+        for cmd in self.cmds:
+            command = cmd[0] + ' ' + cmd[1]
+            rc = os.system(command)
+            if 0 != rc:
+                print_msg(ERROR, "Run command failed: " + command)
+                break
+        return rc
+
+    def archive(self):
+        print_msg(INFO, 'Archive libraries...')
+        source_dir = self._get_stage_lib_dir()
+        libs = os.listdir(source_dir)
+        for lib in libs:
+            shutil.copy(os.path.join(source_dir, lib),
+                        self._get_lib_archive_dir())
+        print_msg(INFO, "Compile " + self.name + " done!")
+
+
+class BoostCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "boost", src_root)
+
+    def _get_lib_archive_dir(self):
+        return boost_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        # Add executable permission to the building scripts.
+        bootstrap_file = os.path.join(self.src_root, 'bootstrap.sh')
+        build_file = os.path.join(self.src_root,
+                                  'tools/build/src/engine/build.sh')
+        os.chmod(bootstrap_file, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
+        os.chmod(build_file, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
+        if "ia32" == self.arch:
+            address_mode = 32
+        else:
+            address_mode = 64
+
+        # Only compile the necessary libraries. Commands are the same for
+        # 64-bit linux, Power Linux, and Powser LE Linux. For 32-bit Linux, only
+        # the address mode is different.
+        self.append_cmd('./bootstrap.sh',
+                        '--with-libraries=system,filesystem,thread,'
+                        'program_options,chrono --prefix=./')
+        config_args = '-d0 link=static threading=multi variant=' + \
+                      self.build_type + ' address-model=' + str(address_mode) +\
+                      ' toolset=gcc runtime-link=static'
+        if "arm64" == self.arch:
+            config_args += ' architecture=arm'
+        if "alpha64" == self.arch:
+            config_args += ' cxxflags="-fPIC -mieee"'
+        else:
+            config_args += ' cxxflags="-fPIC"'
+        self.append_cmd('./b2', config_args)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['libboost_chrono.a', 'libboost_filesystem.a',
+                    'libboost_program_options.a', 'libboost_system.a',
+                    'libboost_thread.a']
+        return libs
+
+class SpiderMonkeyCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "spidermonkey", src_root)
+        self.build_dir = ''
+
+    def _get_stage_lib_dir(self):
+        return os.path.join(self.src_root, self.build_dir, 'dist/lib')
+
+    def _get_lib_archive_dir(self):
+        return sm_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        self.build_dir = os.path.abspath(os.path.join(self.src_root,
+                                         'src/build_OPT.OBJ'))
+        self.append_cmd('cd src && rm -rf ' + self.build_dir +
+                        ' && mkdir ' + self.build_dir)
+        self.append_cmd('cd src && autoconf2.13')
+        config_args = ''
+        if 'linux' == self.platform:
+            if 'ia32' == self.arch or 'ia64' == self.arch or 'arm64' == self.arch:
+                config_args = '--disable-methodjit'
+            elif 'ppc64le' == self.arch:
+                config_args = 'ppc64le'
+            elif 'arm64' == self.arch:
+                config_args += ' --host=aarch64'
+            if debugBuild:
+                config_args += ' --enable-debug --disable-optimize'
+        self.append_cmd('cd ' + self.build_dir + ' && ../configure ' +
+                        comm_config_opt, config_args)
+        self.append_cmd('cd ' + self.build_dir + '&& make -j ' +
+                        str(comm_job_num) + ' ' + comm_build_opt)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['libjs_static.a', 'libmozjs185.so']
+        elif 'win32' == self.platform:
+            libs = ['js_static.lib', 'mozjs185-1.0.dll', 'mozjs185-1.0.lib']
+        return libs
+
+    def archive(self):
+        shutil.copy(os.path.join(self.build_dir, 'libjs_static.a'),
+                    self._get_lib_archive_dir())
+        shutil.copy(os.path.join(self.build_dir, 'libmozjs185.so'),
+                    self._get_lib_archive_dir())
+        include_path = os.path.join(self._get_lib_archive_dir(), './../include')
+        if os.path.exists(include_path):
+            shutil.rmtree(include_path)
+        shutil.copytree(os.path.join(self.build_dir, 'dist/include'),
+                        include_path, symlinks=False)
+
+
+class SslCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "ssl", src_root)
+
+    def _get_lib_archive_dir(self):
+        return ssl_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        config_file = ''
+        config_args = ''
+        if "linux" == self.platform:
+            config_file = './config'
+            config_args = "-fPIC"
+        elif "ppc64" == self.arch:
+            config_file = './Configure'
+            config_args = 'linux-ppc64'
+        elif "ppc64le" == self.arch:
+            config_file = './config'
+            config_args = '-fPIC'
+        elif "aix" == self.platform:
+            config_file = './Configure'
+            config_args = 'aix64-gcc -fPIC threads'
+
+        if debugBuild:
+            config_args += ' -d'
+        config_exec = os.path.join(self.src_root, config_file)
+        os.chmod(config_exec, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
+        self.append_cmd(config_exec, config_args)
+        self.append_cmd('make ' + comm_build_opt)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['libcrypto.a', 'libssl.a']
+        elif 'win32' == self.platform:
+            libs = ['libeay32.lib',  'ssleay32.lib']
+        return libs
+
+    def _post_action(self):
+        directories = [os.path.join(self.src_root, 'include/openssl'),
+                       os.path.join(self.src_root, 'test'),
+                       os.path.join(self.src_root, 'apps')]
+        for directory in directories:
+            files = os.listdir(directory)
+            for file in files:
+                file_path = os.path.join(directory, file)
+                if os.path.isfile(file_path) and os.path.islink(file_path):
+                    orig_file_path = os.path.join(directory,
+                                                  os.readlink(file_path))
+                    # Remove the symbol link and copy the real file.
+                    os.unlink(file_path)
+                    shutil.copyfile(orig_file_path, file_path)
+
+    def archive(self):
+        self._post_action()
+        shutil.copy(os.path.join(self.src_root, 'libcrypto.a'),
+                    self._get_lib_archive_dir())
+        shutil.copy(os.path.join(self.src_root, 'libssl.a'),
+                    self._get_lib_archive_dir())
+
+
+class MdocmlCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "mdocml", src_root)
+
+    def _get_lib_archive_dir(self):
+        return mdocml_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        if debugBuild:
+            args += ' --dd'
+        self.append_cmd('scons', args)
+        return 0
+
+    def _init_win32_cmds(self, arch):
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        if debugBuild:
+            args += ' --dd'
+        self.append_cmd('scons', args)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['libmdocml.a']
+        elif 'win32' == self.platform:
+            libs = ['libmdocml.lib']
+        return libs
+
+
+class SnappyCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "snappy", src_root)
+
+    def _get_lib_archive_dir(self):
+        return snappy_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        if debugBuild:
+            args += ' --dd'
+        self.append_cmd('scons', args)
+        return 0
+
+    def _init_win32_cmds(self, arch):
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        if debugBuild:
+            args += ' --dd'
+        self.append_cmd('scons', args)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['libsnappy.a']
+        elif 'win32' == self.platform:
+            libs = ['libsnappy.lib']
+        return libs
+
+class LZ4Compiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "lz4", src_root)
+
+    def _get_lib_archive_dir(self):
+        return lz4_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        if debugBuild:
+            args += ' --dd'
+        self.append_cmd('scons', args)
+        return 0
+
+    def _init_win32_cmds(self, arch):
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        if debugBuild:
+            args += ' --dd'
+        self.append_cmd('scons', args)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['liblz4.a']
+        elif 'win32' == self.platform:
+            libs = ['liblz4.lib']
+        return libs
+
+class ZlibCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "zlib", src_root)
+
+    def _get_lib_archive_dir(self):
+        return zlib_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        if debugBuild:
+            args += ' --dd'
+        self.append_cmd('scons', args)
+        return 0
+
+    def _init_win32_cmds(self, arch):
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        if debugBuild:
+            args += ' --dd'
+        self.append_cmd('scons', args)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['libzlib.a']
+        elif 'win32' == self.platform:
+            libs = ['libzlib.lib']
+        return libs
+
+class FuseCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "fuse", src_root)
+        self.config_exec = os.path.join(self.src_root, 'configure')
+
+    def _get_lib_archive_dir(self):
+        return fuse_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        config_args = ''
+        self.append_cmd(self.config_exec, config_args)
+        args = comm_build_opt + ' -j ' + str(comm_job_num)
+        self.append_cmd('make ' + args)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['libfuse.a']
+        return libs
+
+    def _prepare_build(self):
+        makeconf_file = 'makeconf.sh'
+        makeconf_exec = os.path.join(self.src_root, makeconf_file)
+        os.chmod(makeconf_exec, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
+        # let's generate the configure file first.
+        os.system(makeconf_exec)
+        # and then grant execution permission for configure file
+        os.chmod(self.config_exec, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
+        return 0
+
+    def archive(self):
+        shutil.copy(os.path.join(self.src_root, 'lib/.libs/libfuse.a'),
+                    self._get_lib_archive_dir())
+
+class IntelDecimalLibCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "intelDecimal", src_root)
+
+    def _get_lib_archive_dir(self):
+        return intel_decimal_lib_dir
+        
+    def _init_linux_cmds(self, arch):
+        if 'ia32' == self.arch or 'ia64' == self.arch:
+           if debugBuild:
+              linux_debug_compile_args = "CC=gcc CFLAGS='-fPIC -g' CALL_BY_REF=0 GLOBAL_RND=0 GLOBAL_FLAGS=0 UNCHANGED_BINARY_FLAGS=0"
+              self.append_cmd('cd LIBRARY && make ' + linux_debug_compile_args) 
+           else:
+              linux_release_compile_args = "CC=gcc CFLAGS=-fPIC CALL_BY_REF=0 GLOBAL_RND=0 GLOBAL_FLAGS=0 UNCHANGED_BINARY_FLAGS=0"
+              self.append_cmd('cd LIBRARY && make ' + linux_release_compile_args) 
+        return 0
+
+    def _init_win32_cmds(self, arch):
+        if 'ia32' == self.arch or 'ia64' == self.arch:
+           if debugBuild:
+              win32_debug_compile_args = "-fmakefile.mak CC=cl DBG=1 CALL_BY_REF=0 GLOBAL_RND=0 GLOBAL_FLAGS=0 UNCHANGED_BINARY_FLAGS=0"
+              self.append_cmd('cd LIBRARY && nmake ' + win32_debug_compile_args)
+           else:
+              win32_release_compile_args = "-fmakefile.mak CC=cl CALL_BY_REF=0 GLOBAL_RND=0 GLOBAL_FLAGS=0 UNCHANGED_BINARY_FLAGS=0"
+              self.append_cmd('cd LIBRARY && nmake ' + win32_release_compile_args)
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+            libs = ['libbid.a']
+        elif 'win32' == self.platform:
+            libs = ['libbid.lib']
+        return libs
+
+    def archive(self):
+        if 'ia32' == self.arch or 'ia64' == self.arch:
+           if 'linux' == self.platform:
+              shutil.copy(os.path.join(self.src_root, 'LIBRARY/libbid.a'),
+                          self._get_lib_archive_dir())
+           elif 'win32' == self.platform:
+              shutil.copy(os.path.join(self.src_root, 'LIBRARY/libbid.lib'),
+                          self._get_lib_archive_dir())
+
+class zstdCompiler(CompilerBase):
+    def __init__(self, src_root):
+        CompilerBase.__init__(self, "zstd", src_root)
+
+    def _get_lib_archive_dir(self):
+        return zstd_lib_dir
+
+    def _init_linux_cmds(self, arch):
+        mkCmd = ' CPPFLAGS=-DZSTD_MULTITHREAD make '
+        if g_silent == True:
+            mkCmd += ' --silent'
+        self.append_cmd( mkCmd )
+
+        return 0
+
+    def _get_lib_list(self):
+        libs = []
+        if 'linux' == self.platform:
+           libs = ['libzstd.a']
+        elif 'win32' == self.platform:
+           libs = ['libzstd.lib']
+        return libs
+
+    def archive(self):
+        if 'linux' == self.platform:
+            shutil.copy(os.path.join(self.src_root, 'lib', 'libzstd.a'),
+                        self._get_lib_archive_dir())
+        elif 'win32' == self.platform:
+            shutil.copy(os.path.join(self.src_root, 'lib', 'libzstd.lib'),
+                        self._get_lib_archive_dir())
+
+components = []
+
+snappy_compiler = SnappyCompiler('snappy')
+lz4_compiler = LZ4Compiler('lz4')
+zlib_compiler = ZlibCompiler('zlib')
+intelDecimal_compiler = IntelDecimalLibCompiler('intelDecimal')
+zstd_compiler = zstdCompiler( 'zstd' )
+
+components.append(snappy_compiler)
+components.append(lz4_compiler)
+components.append(zlib_compiler)
+components.append(intelDecimal_compiler)
+components.append(zstd_compiler)
+
+if usemdocml:
+    mdocml_compiler = MdocmlCompiler('mdocml')
+    components.append(mdocml_compiler)
+
+if "win32" != guess_os:
+    # Auto compilation of boost, spider monkey and ssl is not supported on
+    # windows for now.
+    boost_compiler = BoostCompiler('boost')
+
+    # on x86, some hosts can not build sm lib for lacking some dependencies,
+    # so, we are not going to build sm lib on x86, and we use the pre-build 
+    # sm lib and include files.
+    # on arm, we can not build sm lib on uos(jira-5452), so we also use the 
+    # pre-build sm lib and include files.
+    # spidermonkey_compiler = SpiderMonkeyCompiler('parser/sm/js')
+    ssl_compiler = SslCompiler('crypto/openssl-1.1.1o')
+    components.append(boost_compiler)
+    # components.append(spidermonkey_compiler)
+
+    # alpha64(sw_64) dose not supported SSL source compile
+    # we need to use the SSL library that comes with it
+    if "alpha64" != guess_arch:
+        components.append(ssl_compiler)
+
+    if "arm64" == guess_arch or "ia64" == guess_arch:
+        # in arm64, we are going to build the lib when there have no
+        # pre-build libs for using
+        if usefuse:
+            fuse_compiler = FuseCompiler('fuse')
+            components.append(fuse_compiler)
+
+    if "ppc64le" == guess_arch:
+        # in ppc64le, we are going to build the lib when there have no
+        # pre-build libs for using
+        spidermonkey_compiler = SpiderMonkeyCompiler('parser/sm/js')
+        components.append(spidermonkey_compiler)
+
+if release:
+    build_type = 'release'
+else:
+    build_type = 'debug'
+
+comm_config_opt = ''
+comm_build_opt = ''
+if "arm64" == guess_arch or "ia64" == guess_arch:
+    comm_job_num = int(GetOption('num_jobs'))
+else:
+    comm_job_num = 1
+
+g_silent = False
+if GetOption("silent"):
+    comm_config_opt += ' --silent'
+    comm_build_opt += ' --silent'
+    g_silent = True
+
+if "win32" != guess_os:
+    depend_checker = DependencyChecker()
+    depend_checker.add_program('gcc')
+    depend_checker.add_program('g++')
+    depend_checker.add_program('make')
+    if False == depend_checker.check():
+        print_msg(ERROR, "Dependency check failed")
+        exit(1)
+
+print_msg(INFO, 'Begin to build third party components...')
+for component in components:
+    os.chdir(component.get_src_root())
+    rc = component.init(guess_os, guess_arch, build_type)
+    if 0 == rc and component.need_recompile():
+        rc = component.run()
+        if 0 == rc:
+            component.archive()
+        else:
+            exit(rc)
+    elif rc > 0:
+        exit(rc)

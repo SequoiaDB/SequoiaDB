@@ -1,0 +1,195 @@
+<html>
+<head>
+  <title>BEAM: Interprocedural Analysis (IPA)</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Interprocedural Analysis (IPA)</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Introduction</h1>
+
+Interprocedural analysis (IPA) allows BEAM to extend its
+analysis "across functions". It contains two major ingredients:
+a suite of algorithms to determine properties of functions
+and an infrastructure (repository) to store them.
+Examples of those properties include restrictions on parameter
+values, whether a function may return to its caller, what
+variables a function modifies etc.
+Keep in mind that IPA is both a bottomless pit and an active
+research area. In other words, you're never done with it.
+We will be adding more analyses as time progresses,
+focusing on those that bring the most bang for the buck.
+</p>
+<p>
+Adding IPA has two advantages:
+<ol>
+<li>Possibly find more code problems
+<li>Better suppression of invalid complaints
+</ol>
+</p>
+<p>
+To demonstrate these advantages consider the following example:
+</p>
+<pre class="example">
+void foo(int *p)
+{
+  if (p == NULL) {
+    bar(p);
+    die();
+  }
+
+  *p = 10;
+}
+</pre>
+<p>
+
+Without IPA, BEAM would issue a complaint
+about a possible NULL-pointer dereference at <span class="code">*p = 10;</span>.
+But that complaint is invalid because, as its name suggests,
+the function <span class="function">die</span> does not return.
+In addition, BEAM fails to complain about passing 
+<span class="code">NULL</span> to <span class="function">bar</span>
+because it does not know that <span class="function">bar</span> cannot handle a
+<span class="code">NULL</span> argument. 
+</p>
+<p>
+<h1>How IPA works</h1>
+
+From a user's perspective IPA can be viewed as a two-step process.
+In the first step function properties are determined and stored
+in a repository which is located somewhere underneath the directory
+that you specify with <a href="parms.html#beam::data">beam::data</a>.
+In the second step those properties will be used when analyzing
+the functions.
+So, ideally you would run BEAM twice on your code. Once to
+determine the properties and once to do the analysis. 
+This would roughly double the runtime which 
+might not be acceptable. And most likely it would mean that you
+would have to modify your build process.
+Therefore, BEAM does both property computation and analysis at the
+same time. The cost of doing so is some loss of precision. 
+For the example above, when analyzing <span class="function">foo</span> the properties
+for <span class="function">bar</span> and <span class="function">die</span> may or may not be available
+depending on whether the files containing those functions have already
+been analyzed.
+But this imprecision only exists for the very first IPA run.
+For all following runs function properties are readily available.
+</p>
+<p>
+<a name="enable"></a><h1>Enabling IPA</h1>
+
+
+Did you read the previous chapters?
+Ok then.
+There are 4 variables that are relevant to IPA:
+<dl>
+<dt><span class="var">beam::ipa</span>
+<dd>This variable specifies the IPA mode. Currently, only one value is
+supported: <span class="val">all</span>. This mode means: interleave property computation
+and analysis. As a side effect setting this variable enables IPA.
+</p>
+<p>
+<dt><span class="var">beam::data</span>
+<dd>The value of <a href="parms.html#beam::data">beam::data</a> is a
+directory. BEAM will use a subdirectory underneath <span class="var">beam::data</span>
+as the IPA repository. Function properties will be stored there.
+That way they do not interfere with 
+<a href="innocent.html">innocent files</a> in case you're using those.
+The BEAM process must have "write privileges" in this directory.
+This variable is mandatory for IPA.
+</p>
+<p>
+<span class="strong">Important:</span> Do not use one <span class="var">beam::data</span> for several,
+independent software components. The reason is that a function with a 
+specific name might be defined more than once and that would completely
+confuse BEAM when it searches for function properties.
+</p>
+<p>
+<dt><span class="var">beam::base_data</span>
+<dd>The value of <a href="parms.html#beam::data">beam::base_data</a>
+is a list of directories that BEAM should search for function
+properties. Those directories will only be read, not written to. 
+Note, that it is not necessary to add the <span class="var">beam::data</span> directory
+to <span class="var">beam::base_data</span> as <span class="var">beam::data</span> will always be
+searched.
+The BEAM process must have "read privileges" in this directory.
+This variable is optional for IPA.
+</p>
+<p>
+<dt><span class="var">beam::build_root</span>
+<dd>The value of <span class="var">beam::build_root</span> is a directory that identifies
+the root of a build tree. A source file that is analyzed must be
+located in the directory tree rooted in <span class="var">beam::build_root</span>.
+This variable is mandatory for IPA.
+</dl>
+</p>
+<p>
+As usual those variables can be either defined in a parameter
+file or specified on the command line.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+﻿<div ng-controller="Monitor.SdbNode.Log.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div class="active" ng-click="GotoNodeList()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div>{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Index">{{autoLanguage("节点信息")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Session">{{autoLanguage("会话")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Context">{{autoLanguage("上下文")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+            <li class="active">
+               <a href="#/Monitor/SDB-Nodes/Node/Log">{{autoLanguage("日志")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div style="color:#606060;font-size:90%;height:30px;margin:10px 0;">
+         <button class="btn btn-default" ng-click="Refresh()">{{autoLanguage("刷新")}}</button>
+      </div>
+
+      <div ng-container="{offsetY:-110}" class="well" style="overflow-y:auto;" scroll-Bottom>
+         <pre style="padding:10px;margin:0;white-space:pre-wrap;">{{LogContext}}</pre>
+      </div>
+
+   </div>
+</div>

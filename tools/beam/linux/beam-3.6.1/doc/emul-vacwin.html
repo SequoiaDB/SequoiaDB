@@ -1,0 +1,179 @@
+<html>
+<head>
+  <title>BEAM: IBM VisualAge for Windows</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Details of IBM VisualAge C/C++ Emulation</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Status</h1>
+
+Emulation for IBM VisualAge C/C++ is in beta mode. We do not have
+sufficient code bases at our disposal to do serious testing.
+</p>
+<p>
+The provided emulation is based on VisualAge C/C++ 3.6. It may
+work for different versions of the VisualAge compiler, but this
+has not been tested.
+</p>
+<p>
+<h1>Compiler Configuration</h1>
+
+The first step is to run <a href="beam_configure.html">beam_configure</a>
+over your compiler. You should do this from within the same environment
+that you compile from, so that environment variables like <span class="env">INCLUDE</span>
+are set appropriately.
+</p>
+<pre class="example">
+perl beam_configure --c icc.exe -o vacwin_c_config.tcl \
+                                --compile_flag=&quot;/C+&quot; \
+                                --preproc_flag=&quot;/Pd+&quot; \
+                                --bin_flag=&quot;/Fe%s&quot;
+                                
+perl beam_configure --cpp icc.exe -o vacwin_cpp_config.tcl \
+                                  --compile_flag=&quot;/C+&quot; \
+                                  --preproc_flag=&quot;/Pd+&quot; \
+                                  --bin_flag=&quot;/Fe%s&quot;
+</pre>
+<p>
+
+Those extra flags are needed because the VisualAge compiler does not
+understand the standard flags used to compile files.
+</p>
+<p>
+Note that you will need Perl installed if you need to run
+<span class="command">beam_configure</span>. Details about obtaining and
+installing Perl are on our <a href="windows.html">Windows page</a>.
+</p>
+<p>
+<h1>Invoking BEAM</h1>
+
+Next, you need to pass this configuration file to BEAM each time BEAM
+is run. Use the <a href="beam_compile.html#beam::compiler">--beam::compiler</a>
+command line option.
+</p>
+<pre class="example">
+beam_compile --beam::compiler=vacwin_c_config.tcl \
+             --beam::compiler=vacwin_cpp_config.tcl \
+             <span class="val">other_beam_options</span> \
+             <span class="val">normal_compiler_options_and_sources</span>
+</pre>
+<p>
+
+<h1>Include Directories</h1>
+
+In order for BEAM to properly emulate your compiler, you will need
+to run it in the same environment in which you run your compiler.
+Specifically, when executing from the command line, VisualAge uses the
+paths listed in the <span class="env">INCLUDE</span> environment variable to
+search for header files. When running with the VisualAge configuration,
+BEAM will do the same. So in order for BEAM to find the same header
+files as your compiler, you will need to set the <span class="env">INCLUDE</span>
+environment variable the same way you do when running the compiler.
+</p>
+<p>
+<h1>Command-line Flags</h1>
+
+Please see the file <span class="file">tcl/beam_map_vacwin_flags.tcl</span>
+in your BEAM installation. 
+</p>
+<p>
+<h1>Predefined Macros</h1>
+
+The list of predefined macros can be found in the compiler
+configuration file that <span class="command">beam_configure</span> generated for you.
+</p>
+<p>
+<h1>Response files</h1>
+
+Response file handling is described on the <a href="atfile.html">@file</a> page.
+</p>
+<p>
+<h1>Limitations and Notes</h1>
+
+<ul>
+<li>The following compiler flags are not fully supported.
+    <ul>
+      <li><span class="strong">/Sd</span> - All source files must end in .c, .cpp, .cxx, etc
+      <li><span class="strong">/Sg</span> - BEAM will see the entire source file
+      <li><span class="strong">/Si</span> - All included headers must exist in source form
+      <li><span class="strong">/Sp</span> - Alignment can not be controlled at this level
+      <li><span class="strong">/Sq</span> - BEAM will see the entire source file
+      <li><span class="strong">/Sr</span> - Type conversion is done according to the standards
+      <li><span class="strong">/Su</span> - The size of enums can not be controlled at this level
+    </ul>
+<li>VisualAge command-line flags only affect the source files that follow them.
+    In BEAM, however, all command-line flags affect all source files given.
+    The exception to this is the <span class="option">/T</span> flags, which only affect the
+    source files that follow them.
+<li>The format of the <span class="env">ICC</span> environment variable is not documented
+    for VisualAge 3.6. In BEAM, we use these <a href="quoting-hell.html">quoting
+    rules</a>.
+</ul>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

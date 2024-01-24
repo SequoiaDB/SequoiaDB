@@ -1,0 +1,760 @@
+<html>
+<head>
+  <title>BEAM: Argument Mapper Configuration</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+    <h1 class="title">Argument Mapper Configuration</h1>
+<hr/>
+
+</p>
+<p>
+    <h1>Contents:</h1>
+
+</p>
+<p>
+    <ul>
+  <li><a href="#overview">Introduction</a></li>
+  <li><a href="#loading">Loading an Argument Mapper</a></li>
+  <li><a href="#supported">Argument Mappers for Supported Compilers</a></li>
+  <li><a href="#custom">Writing your own argument mapper</a></li>
+</ul>
+
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="overview"></a><h1>Introduction</h1>
+
+
+</p>
+<p>
+      An <span class="term">argument mapper file</span> describes 
+      the format of the command-line so that BEAM can
+      process the options and analyze the source files
+      successfully. This file contains Tcl procedures
+      that BEAM will call during execution when it
+      needs to understand what options and source files
+      exist on the command-line for the emulated compiler.
+</p>
+<p>
+      BEAM provides argument mappers for several
+      <a href="#supported">supported compilers</a>. If your
+      compiler isn't listed, you will need to write an argument
+      mapper of your own. The details of this are described
+      <a href="#custom">below</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="loading"></a><h1>Loading an Argument Mapper</h1>
+
+
+</p>
+<p>
+      BEAM needs the argument mapper description file at two
+      different points during its <a href="execution.html">execution</a>.
+</p>
+<p>
+    <ul>
+      <li>
+        The <span class="command">beam_compile</span> driver will use
+        the argument description procedure (set with
+        <span class="function">beam::set_describer</span>) to find the
+        source files in the command-line so it knows
+        how many times to run the <span class="var">beam_<span class="val">lang</span></span>
+        executable.
+      </li>
+      <li>
+        The <span class="command">beam_compile</span> driver will use
+        the argument expanding procedure (set with
+        <span class="function">beam::set_expander</span>) to expand
+        <a href="atfile.html">@file</a> arguments and
+        other things (some compilers add arguments from
+        environment variables at this point).
+      </li>
+      <li>
+        The <span class="command">beam_compile</span> driver will use
+        the argument configuring procedure (set with
+        <span class="function">beam::set_configurer</span>) to expand
+        those arguments that would affect the outcome
+        of <span class="command">beam_configure</span>. This is only
+        needed when the <span class="option">--beam::prefixcc</span>
+        option is used.
+      </li>
+      <li>
+        The <span class="var">beam_<span class="val">lang</span></span> executable
+        will use the mapping procedure (set with
+        <span class="function">beam::set_mapper</span>) to translate
+        the command-line flags into BEAM settings
+        for the <a href="compiler_configuration.html">compiler configuration file</a>.
+      </li>
+    </ul>
+</p>
+<p>
+      In both places, an argument mapper needs to be located
+      and loaded. The following search rules are used:
+</p>
+<p>
+    <ul>
+      <li>
+        If an argument mapper has been loaded with
+        <span class="option">--beam::compiler=<span class="val">file</span></span>,
+        then the loaded file is used. Using
+        <span class="option">--beam::source=</span> for argument
+        mappers is deprecated, and should <span class="strong">not be used
+        any longer</span>.
+      </li>
+      <li>
+        Otherwise, BEAM determines the name of the file containing
+        the argument mapper from the <span class="var">&quot;cc&quot;</span> variable
+        which was set in the
+        <a href="compiler_configuration.html">compiler configuration
+        file</a> that has been loaded. The mapper file will be named
+        <span class="file">beam_map_<span class="val">name</span>_flags.tcl</span>.
+      </li>
+      <li>
+        If <span class="var">name</span> is set to <span class="val">&quot;none&quot;</span>, a special
+        argument mapper will be used (in <span class="file">beam_map_none_flags.tcl</span>)
+        that doesn't do anything to the command line. This is only useful
+        for debugging, and <span class="strong">not recommended</span>.
+      </li>
+      <li>
+        Otherwise, the file name is searched for and loaded from
+        the <a href="search_path.html">search path</a>.
+      </li>
+    </ul>
+</p>
+<p>
+      Examples:
+</p>
+<pre class="example">
+# This will use the default argument mapper from BEAM,
+# defined in 'tcl/beam_map_default_flags.tcl'.
+
+beam_compile test.c
+
+# This will use the GCC argument mapper, defined
+# in 'tcl/beam_map_gcc_flags.tcl', because the given
+# gcc.tcl compiler configuration file was generated
+# from the GCC compiler
+
+beam_compile --beam::compiler=gcc.tcl test.c
+
+# This will use the argument mapper defined in
+# 'map_flags.tcl'
+
+beam_compile --beam::compiler=map_flags.tcl test.c
+</pre>
+<p>
+
+      In most cases, your compiler configuration file will be
+      for one of the <a href="#supported">supported compilers
+      below</a>, meaning that BEAM will automatically load a
+      built-in argument mapper and everything will work automatically.
+</p>
+<p>
+      If you are using a compiler configuration file for
+      a compiler that we don't support, you will have to
+      <a href="#custom">write your own mapper</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="supported"></a><h1>Argument Mappers for Supported Compilers</h1>
+
+
+</p>
+<p>
+      BEAM comes with the following argument mappers:
+</p>
+<p>
+    <table>
+      <tr>
+        <th width="10%">Compiler</th>
+        <th width="25%">Mapper</th>
+       	<th width="65%">Description</th>
+      </tr>
+</p>
+<p>
+<!-- beam_map_default_flags -->
+      <tr>
+        <td>default</td>
+      	<td>beam_map_default_flags.tcl</td>
+      	<td>
+          This mapper filters only allows through the most basic
+          flags. It allows <span class="option">-E, -I, -D, -U, -o,</span> and source
+          files through. It also allows <span class="option">--edg=...</span>  through
+          (see below). For Java, the standard Java options are
+          recognized (<span class="option">-source, -target, -classpath</span>, etc).
+          Anything else is skipped.
+       	</td>
+      </tr>
+</p>
+<p>
+<!-- beam_map_gcc_flags -->
+      <tr>
+        <td>gcc</td>
+        <td>beam_map_gcc_flags.tcl</td>
+      	<td>
+       	  This procedure handles many of the flags that 
+          <a href="emul-gcc.html">gcc</a> handles, including
+          cross-compilers.
+      	</td>
+      </tr>
+</p>
+<p>
+<!-- beam_map_icc_flags -->
+      <tr>
+        <td>icc</td>
+      	<td>beam_map_icc_flags.tcl</td>
+        <td>
+      	  This procedure handles many of the flags that 
+          <a href="emul-icc.html">Intel's ICC</a> handles.
+        </td>
+      </tr>
+</p>
+<p>
+<!-- beam_map_xlc_flags -->
+<!-- beam_map_vac_flags -->
+      <tr>
+        <td>xlc</td>
+      	<td>
+          beam_map_xlc_flags.tcl<br>
+          beam_map_vac_flags.tcl
+        </td>
+      	<td>
+      	  This procedure handles many of the flags that
+          <a href="emul-xlc.html">IBM's xlc</a> handles.
+      	</td>
+      </tr>
+</p>
+<p>
+<!-- beam_map_vacwin_flags -->
+      <tr>
+        <td>vacwin</td>
+      	<td>beam_map_vacwin_flags.tcl</td>
+        <td>
+      	  This procedure handles many of the flags that
+          <a href="emul-vacwin.html">IBM's VisualAge for Windows compiler</a>
+          handles.
+        </td>
+      </tr>
+</p>
+<p>
+<!-- beam_map_msvc_flags -->
+      <tr>
+        <td>msvc</td>
+        <td>beam_map_msvc_flags.tcl</td>
+        <td>
+       	  This procedure handles many of the flags that
+          <a href="emul-msvc.html">Microsoft's VisualStudio compiler</a>
+          handles.
+        </td>
+      </tr>
+</p>
+<p>
+<!-- beam_map_javac_flags -->
+      <tr>
+        <td>javac</td>
+      	<td>beam_map_javac_flags.tcl</td>
+       	<td>
+      	  This procedure handles the common flags for most
+          <a href="java_ref.html#options">Java compilers</a>.
+      	</td>
+      </tr>
+</p>
+<p>
+    </table>
+</p>
+<p>
+    <h2>Passing options to EDG directly</h2>
+
+</p>
+<p>
+      These argument mappers usually don't allow any flags
+      through that they don't recognize as flags to their own
+      compilers. This means that if you wish to pass an argument
+      to the EDG parser directly, it will be filtered out as an
+      unrecognized option. The correct way to specify EDG arguments
+      directly is with the flag <span class="option">--edg=<span class="val">option</span></span>.
+      See the <a href="quoting-hell.html">quoting hell</a> document for
+      details.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+    <a name="custom"></a><h1>Writing your own argument mapper</h1>
+
+
+</p>
+<p>
+      <span class="strong">WARNING</span>: Emulating compilers is difficult.
+      Mixing compiler feature with BEAM language parsers is
+      black magic and because of all the platforms and
+      compilers we need to support. Because of this, the
+      format of procedures, arguments, and return values 
+      specified here <span class="strong">may change with new BEAM releases</span>.
+      We will try to minimize these changes, and we will document
+      them all. We don't expect many people to have to write
+      their own mappers, and if they write any for popular
+      compilers, we will consider including them in BEAM proper,
+      so this restriction shouldn't affect many people at all.
+      That being said, pay attention to BEAM's release notes
+      to keep up-to-date with mapper changes if you write you
+      own mapper.
+</p>
+<p>
+      If BEAM does not contain an argument mapper for your
+      compiler, you can write your own. BEAM ships with
+      an example file that you can copy and customize
+      if you would like. The file is in the BEAM installation,
+      and it is named <span class="file">tcl/beam_map_example_flags.tcl</span>.
+</p>
+<p>
+      The argument mapper file is a Tcl file that contains
+      some important Tcl procedures: the <span class="term">argument describer</span>,
+      the <span class="term">argument mapper</span>, the <span class="term">argument expander</span>,
+      and the <span class="term">argument configurer</span>. These procedures take
+      in the command-line at different points in the BEAM run
+      and they return important information to BEAM.
+</p>
+<p>
+      To load a custom argument mapper, either specify
+      <span class="option">--beam::compiler=<span class="val">tcl_file</span></span> on
+      the command-line, or source it from your
+      <a href="compiler_configuration.html">compiler configuration file</a>,
+      which you should already be passing to <span class="option">--beam::compiler=</span>.
+</p>
+<p>
+      The argument mapper Tcl file may be loaded before
+      <span class="var">::beam::lang</span> is set in Tcl, so it
+      should not be used. However, while inside the
+      argument mapper proc (described below), the
+      language is known and <span class="var">::beam::lang</span>
+      can be used.
+</p>
+<p>
+    <h2>The argument describer</h2>
+
+</p>
+<p>
+      This Tcl procedure is used by <span class="command">beam_compile</span>
+      to describe the command-line so that
+      <span class="command">beam_compile</span> can find the source files and
+      languages to analyze.
+</p>
+<p>
+      This procedure can have any name, and it must be
+      registered with BEAM by calling
+      <span class="code">beam::set_describer <span class="val">proc_name</span></span>
+      from within the argument mapper file. The <span class="val">proc_name</span>
+      argument should be the fully-qualified name of the Tcl
+      procedure to use.
+</p>
+<pre class="example">
+beam::set_describer ::my_namespace::my_describe_flags
+
+namespace eval ::my_namespace {
+
+  proc my_describe_flags { flags } {
+    ...
+  }
+
+}
+</pre>
+<p>
+
+      The procedure takes in one argument, which is the
+      a list of command-line flags. The binary name that
+      would appear in <span class="code">argv[0]</span> of a C program
+      will <span class="strong">not</span> appear in this list, so there
+      is no need to skip the first argument.
+</p>
+<p>
+      The procedure should return a list of the same length
+      as the argument list passed in to the parameter. This
+      returned list is called an <span class="term">argument description list</span>,
+      and it contains a description for each item in the
+      incoming argument list, in the same order.
+</p>
+<p>
+      The returned description list must have the same length
+      as the argument list that was passed in. Each item
+      of the argument description list is called an
+      <span class="term">argument description</span>. Each argument description
+      is also a list, and must contain at least one item.
+</p>
+<p>
+      The <span class="command">beam_compile</span> binary looks for two
+      specific things in the description list. These are
+      in Tcl list notation:
+</p>
+<pre class="example">
+{ source <span class="val">language</span> <span class="val">filename</span> }
+{ delete }
+</pre>
+<p>
+
+      The first is an argument description which contains three elements:
+      the keyword <span class="code">source</span>, a language that BEAM understands
+      (c, cpp, java, pl8, etc), and the name of the file to analyze in
+      that language.
+</p>
+<p>
+      The second contains simply the keyword <span class="code">delete</span>. Any
+      flag that is described with this keyword will be removed in
+      the frontend before the language binary is invoked. This can
+      be used to remove flags that would otherwise cause problems
+      in the language binary.
+</p>
+<p>
+      All other items of the description list will be ignored.
+      This is useful because the description proc can now be
+      used to handle all of the command-line logic, and if
+      the argument mapper calls the argument describer, then
+      the logic need not be duplicated. See
+      <span class="file">tcl/beam_map_example_flags.tcl</span> for an
+      example of this in action. More advanced examples
+      can be seen in some of the other BEAM argument mappers
+      that ship with BEAM.
+</p>
+<p>
+      Here is an example. Given this command-line (in Tcl list notation):
+</p>
+<pre class="example">
+{  -c  -g  file.c  -o  file.o  }
+</pre>
+<p>
+
+      The argument describer proc might return a list like so:
+</p>
+<pre class="example">
+{  {ignore}  {delete}  {source c file.c}  {pass}  {pass}  }
+</pre>
+<p>
+
+      This tells <span class="command">beam_compile</span> to analyze the single
+      source file "file.c" (since it is the only argument description
+      that has the <span class="code">source</span> keyword as the first element).
+      The second flag, <span class="option">-g</span>, will be removed from the
+      command-line before the language binary is invoked.
+      The rest of the descriptions are ignored.
+</p>
+<p>
+      Since the argument mapper lives in the same Tcl file and is
+      written by the same author, it can call the argument describer
+      and use other keywords in that list to do its job. Our example
+      argument describer returned <span class="code">pass</span> keywords and 
+      <span class="code">ignore</span> keywords, and our example argument mapper
+      below will use them to decide which flags to keep and which
+      to toss away.
+</p>
+<p>
+    <h2>The argument mapper</h2>
+
+</p>
+<p>
+      This Tcl procedure is used by <span class="code">beam_<span class="val">lang</span></span>
+      to map compiler-specific flags to flags that the BEAM
+      language-specific parser will understand. It also sets up
+      the variables in the 
+      <a href="compiler_configuration.html">compiler configuration</a>
+      namespace.
+</p>
+<p>
+      This procedure can have any name, and it must be
+      registered with BEAM by calling
+      <span class="code">beam::set_mapper <span class="val">proc_name</span></span> from within
+      the argument mapper file. The <span class="val">proc_name</span>
+      argument should be the fully-qualified name of the Tcl
+      procedure to use.
+</p>
+<pre class="example">
+beam::set_mapper ::my_namespace::my_map_flags
+
+namespace eval ::my_namespace {
+
+  proc my_map_flags { flags } {
+    ...
+  }
+
+}
+</pre>
+<p>
+
+      The procedure takes in one argument, which is the
+      a list of command-line flags. The binary name that
+      would appear in <span class="code">argv[0]</span> of a C program
+      will <span class="strong">not</span> appear in this list, so there
+      is no need to skip the first argument.
+</p>
+<p>
+      Since the <span class="code">beam_<span class="val">lang</span></span> executable
+      is only called once for each source file, there
+      will only be one source file in the command-line
+      passed to the argument mapper. The language will
+      also be known (it is set in the <span class="var">::beam::lang</span>
+      variable).
+</p>
+<p>
+      The procedure should return a list of the command-line
+      flags to pass to the BEAM parser that will be used
+      for the current language (EDG is used for C and C++,
+      for example). The source file should probably appear
+      somewhere on this command-line, as well as parser-specific
+      versions of the important native compiler flags that
+      have been translated.
+</p>
+<p>
+      This procedure should also make any needed modifications
+      to the BEAM <a href="compiler_configuration.html">
+      compiler configuration</a> namespace.
+</p>
+<p>
+      To keep the command-line logic in one place, the mapper
+      can simply call the argument describer proc to decide
+      what each command-line argument does, and then modifiy
+      the output list depending on what is seen.
+</p>
+<p>
+      This example assumes that <span class="function">my_describe_flags</span>
+      returns the list shown in the example above, with
+      <span class="code">ignore</span> and <span class="code">pass</span> keywords.
+      Given that, the map_flags proc could be written to
+      include the sources and <span class="code">pass</span> arguments
+      in the returned command-line.
+</p>
+<p>
+      With this argument list (in Tcl notation):
+</p>
+<pre class="example">
+{  -c  -g  file.c  -o  file.o  }
+</pre>
+<p>
+
+      and this argument description list from 
+      your custom <span class="function">my_describe_flags</span>:
+</p>
+<pre class="example">
+{  {ignore}  {ignore}  {source c file.c}  {pass}  {pass}  }
+</pre>
+<p>
+
+      then the argument mapper may decide to return this command-line
+      based on those keywords:
+</p>
+<pre class="example">
+{  file.c  -o  file.o  }
+</pre>
+<p>
+
+    <h2>The argument expander</h2>
+
+</p>
+<p>
+      This Tcl procedure is used by <span class="code">beam_compile</span>
+      to expand and add to the command-line early in the option
+      parsing process of BEAM. This routine is responsible for
+      expanding <a href="atfile.html">@file</a> arguments, adding in
+      arguments based on environment variables, etc. It should
+      return a new command-line that BEAM will continue to parse.
+</p>
+<p>
+      This procedure can have any name, and it must be
+      registered with BEAM by calling
+      <span class="code">beam::set_expander <span class="val">proc_name</span></span> from within
+      the argument mapper file. The <span class="val">proc_name</span>
+      argument should be the fully-qualified name of the Tcl
+      procedure to use.
+</p>
+<pre class="example">
+beam::set_expander ::my_namespace::my_expand_flags
+
+namespace eval ::my_namespace {
+
+  proc my_expand_flags { flags } {
+    ...
+  }
+
+}
+</pre>
+<p>
+
+      The procedure takes in one argument, which is the
+      a list of command-line flags. The binary name that
+      would appear in <span class="code">argv[0]</span> of a C program
+      will <span class="strong">not</span> appear in this list, so there
+      is no need to skip the first argument.
+</p>
+<p>
+      The procedure should return a new command-line with
+      any additional options added in.
+</p>
+<p>
+    <h2>The argument configurer</h2>
+
+</p>
+<p>
+      This Tcl procedure is used by <span class="code">beam_compile</span>
+      to decide which options of those given need to be passed
+      to <span class="command">beam_configure</span>. This only happens when
+      <span class="option">--beam::prefixcc</span> is given on the command-line,
+      which tells BEAM to automatically configure the compiler if
+      it hasn't been run before in this mode. The routine must
+      return a list of those options that will be passed
+      on the end of the <span class="command">beam_configure</span> command-line.
+</p>
+<p>
+      This procedure can have any name, and it must be
+      registered with BEAM by calling
+      <span class="code">beam::set_configurer <span class="val">proc_name</span></span> from within
+      the argument mapper file. The <span class="val">proc_name</span>
+      argument should be the fully-qualified name of the Tcl
+      procedure to use.
+</p>
+<pre class="example">
+beam::set_configurer ::my_namespace::my_config_flags
+
+namespace eval ::my_namespace {
+
+  proc my_config_flags { flags } {
+    ...
+  }
+
+}
+</pre>
+<p>
+
+      The procedure takes in one argument, which is the
+      a list of command-line flags. The binary name that
+      would appear in <span class="code">argv[0]</span> of a C program
+      will <span class="strong">not</span> appear in this list, so there
+      is no need to skip the first argument.
+</p>
+<p>
+      The procedure should return a new command-line with
+      only those options (it may be an empty list) that
+      would affect the outcome of <span class="command">beam_configure</span>.
+      For example, GCC's <span class="option">-m32</span> and <span class="option">-m64</span>
+      options would affect the configuration by changing the
+      size of <span class="code">long</span>, pointers, etc. Those options
+      would be returned if they existed in <span class="code">$argv</span>.
+</p>
+<p>
+    <h2>Setting compiler configuration namespace variables</h2>
+
+</p>
+<p>
+      If you call <span class="function">::beam::compiler::import</span> at the top
+      of your argument mapping proc, you can read and write all
+      of the <a href="compiler_configuration.html#configuration">compiler configuration variables</a> as simple Tcl variables:
+</p>
+<pre class="example">
+::beam::compiler::import
+set language_dialect &quot;c&quot;
+</pre>
+<p>
+
+    <h2>Updating old custom mappers</h2>
+
+</p>
+<p>
+      If you were one of the few brave men who needed to write
+      your own compiler argument mapper, here are some of the
+      changes you can make to "update" it to work with this
+      new framework.
+</p>
+<p>
+    <ul>
+      <li>Add an argument describer and use it</li>
+      <li>Don't call <span class="function">switch_language</span> any more
+          because it is obsoleted by language descriptions
+          and having the correct language from the start</li>
+      <li>Use a custom namespace and import utilities instead
+          of relying on the implicit ones (list_add, unescape_arg)</li>
+      <li>Load it using <span class="option">--beam::compiler=</span> or source
+          it from within your custom compiler configuration file</li>
+      <li>Don't skip the first argument of the args passed in
+          to the mapper any more. The binary name is no longer
+          the first item in the list, so the first element should
+          no longer be blindly copied to the new argv.</li>
+    </ul>
+</p>
+<p>
+      See <span class="file">tcl/beam_map_example_flags.tcl</span> and other
+      BEAM argument mappers for ideas on how to update your
+      routines to use our new framework. If you need help, ask
+      us on our <a href="mailto:beam-user@edamail.fishkill.ibm.com">BEAM user mailing list</a>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

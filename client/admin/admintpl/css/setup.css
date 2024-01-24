@@ -1,0 +1,86 @@
+body { padding-bottom: 70px; }
+
+/* 主框 */
+.parent_box { min-width:1024px;margin-top:10px; }
+
+   /* 左边的步骤框 */
+   .left_box { float:left;width:150px; }
+   
+   	/* 左边的步骤框的标题框 */
+   	.left_box_title_box { width:150px;padding-top:20px;height:220px; }
+      
+      	/* 左边的步骤框的标题框的子框 */
+         .config_title_div { width:140px;margin-left:10px; }
+      
+            /* 步骤数字 */
+            .left_box_title_box_number { font-size:50px;color:#799EB1; }
+            
+            /* 步骤总结 */
+            .left_box_title_box_sumup { font-size:30px;color:#799EB1; }
+            
+            /* 步骤描述 */
+            .left_box_title_box_describe { color:#999; }
+            
+      /* 左边步骤框的标题框的步骤列表框 */
+      .left_box_setup_list_box { width:150px; }
+      
+      	/* 左边步骤框的标题框的步骤列表框的步骤 */
+      	.left_box_setup_list_box_line { height:30px;cursor:pointer; }
+         
+	/* 右边的步骤框 */
+   .right_box { float:left;width:1000px;background-color:#F5FAFE;border:#B5CFD9 solid 1px;padding:30px;overflow:auto; }
+   
+   	/* 右边的步骤框的标题框 */
+   	.right_box_title_box { width:1000px;font-size:16px;height:40px; }
+      
+      /* 右边的步骤框的提示框 */
+      .right_box_hint_box { width:1000px;font-size:14px;height:40px;color:#999; }
+      
+      /* 右边的步骤框的主内容框 */
+      .right_box_context_box { width:1000px;margin-bottom:20px; }
+      
+      	/* 步骤1参数主框 */
+         .right_box_context_box_setup_1 { width:1000px;margin-bottom:10px;height:60px; }
+         
+         	/* 步骤1参数框的标题 */
+         	.right_box_context_box_setup_1_title { float:left;height:60px;width:120px;line-height:35px; }
+            
+            /* 步骤1参数框的输入 */
+            .right_box_context_box_setup_1_input { float:left;height:60px;width:250px; }
+      
+      		/* 步骤1参数框的注释 */
+            .right_box_context_box_setup_1_describe { float:left;height:60px;width:390px;line-height:35px;padding-left:20px; }
+            
+         /* 右边的步骤框的导航框 */
+         .right_box_context_box_navigation_box { width:1000px;margin-bottom:20px; }
+         
+         /* 右边的步骤框的标题框 */
+   		.right_box_context_box_title_box { width:1000px;font-size:14px;height:40px; }
+         
+		/* 表格的外框 */
+		.right_box_table_box_1 { width:1000px;margin-bottom:10px;border:#D2D2D2 solid 1px;max-height:350px;overflow:auto;background:#FFF; }
+      
+      /* 表格的外框 */
+      .right_box_table_box_2 { width:1000px;margin-bottom:10px;border:#D2D2D2 solid 1px;background:#FFF; }
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      

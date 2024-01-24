@@ -1,0 +1,20 @@
+create extension sdb_fdw;
+create server sdb_server foreign data wrapper sdb_fdw options(address 'localhost', service '11810');
+
+create foreign table "CL_SYSTEM_INFO"("HostName" text,"ServiceName" text,"NodeName" text,"GroupName" text,"IsPrimary" boolean,"ServiceStatus" boolean,"BeginLSNOffset" bigint,"BeginLSNVersion" int,"CurrentLSNOffset" bigint,"TransInfoBeginLSN" bigint,"CurrentLSNVersion" int,"CPUUser" double precision,"CPUSys" double precision,"CPUIdle" double precision,"CPUOther" double precision,"MemoryLoadPercent" int,"MemoryTotalRAM" bigint,"MemoryFreeRAM" bigint,"MemoryTotalSwap" bigint,"MemoryFreeSwap" bigint,"MemoryTotalVirtual" bigint,"MemoryFreeVirtual" bigint,"DiskDatabasePath" text,"DiskLoadPercent" int,"DiskTotalSpace" bigint,"DiskFreeSpace" bigint,"TimeStamp" bigint) server sdb_server options(collectionspace 'CS_CMBC_STAT', collection 'CL_SYSTEM_INFO');
+
+create foreign table "CL_DATABASE_INFO"("HostName" text,"ServiceName" text,"NodeName" text,"GroupName" text,"IsPrimary" boolean,"ServiceStatus" boolean,"BeginLSNOffset" bigint,"BeginLSNVersion" int,"CurrentLSNOffset" bigint,"CurrentLSNVersion" int,"TransInfoBeginLSN" bigint,"VersionMajor" int,"VersionMinor" int,"VersionRelease" int,"VersionBuild" text,"CurrentActiveSessions" int,"CurrentIdleSessions" int,"CurrentSystemSessions" int,"CurrentContexts" int,"ReceivedEvents" int,"Role" text,"DiskDatabasePath" text,"DiskLoadPercent" int,"DiskTotalSpace" bigint,"DiskFreeSpace" bigint,"TotalNumConnects" int,"TotalDataRead" bigint,"TotalIndexRead" bigint,"TotalDataWrite" bigint,"TotalIndexWrite" bigint,"TotalUpdate" bigint,"TotalDelete" bigint,"TotalInsert" bigint,"ReplUpdate" bigint,"ReplDelete" bigint,"ReplInsert" bigint,"TotalSelect" bigint,"TotalRead" bigint,"ActivateTimestamp" text,"UserCPU" double precision,"SysCPU" double precision,"freeLogSpace" bigint,"vsize" bigint,"rss" bigint,"fault" bigint,"TotalMapped" bigint,"svcNetIn" bigint,"svcNetOut" bigint,"shardNetIn" bigint,"shardNetOut" bigint,"replNetIn" bigint,"replNetOut" bigint,"TimeStamp" bigint) server sdb_server options(collectionspace 'CS_CMBC_STAT', collection 'CL_DATABASE_INFO');
+
+create foreign table "CL_TASK_INFO"("NodeName" text,"TaskName" text,"TaskID" bigint,"Time" bigint,"TotalContexts" bigint,"TotalDataRead" bigint,"TotalIndexRead" bigint,"TotalDataWrite" bigint,"TotalIndexWrite" bigint,"TotalUpdate" bigint,"TotalDelete" bigint,"TotalInsert" bigint,"TotalSelect" bigint,"TotalRead" bigint,"TotalWrite" bigint,"TimeStamp" bigint) server sdb_server options(collectionspace 'CS_CMBC_STAT', collection 'CL_TASK_INFO');
+
+create foreign table "CL_LOG_INFO"("Operation" int,"OperationType" int,"LogLevel" int,"ErrNodes" text,"ErrNo" int,"TimeStamp" bigint) server sdb_server options(collectionspace 'CS_CMBC_STAT', collection 'CL_LOG_INFO');
+
+create foreign table "CL_CS_LIST_INFO"("Name" text,"TimeStamp" bigint) server sdb_server options(collectionspace 'CS_CMBC_STAT', collection 'CL_CS_LIST_INFO');
+
+create foreign table "CL_CL_LIST_INFO"("Name" text,"TimeStamp" bigint) server sdb_server options(collectionspace 'CS_CMBC_STAT', collection 'CL_CL_LIST_INFO');
+
+create foreign table "CL_GROUP_LIST_INFO"("GroupHostName" text,"Groupdbpath" text,"GroupServiceType" int,"GroupServiceName" text,"GroupNodeID" int,"GroupID" int,"GroupName" text,"PrimaryNode" int,"Role" int,"Status" int,"Version" int,"TimeStamp" bigint) server sdb_server options(collectionspace 'CS_CMBC_STAT', collection 'CL_GROUP_LIST_INFO');
+
+create foreign table "CL_CL_DETAIL_INFO"("Name" text,"DetailsID" int,"DetailsLogicalID" int,"DetailsSequence" int,"DetailsIndexes" int,"DetailsStatus" text,"DetailsTotalRecords" bigint,"DetailsTotalDataPages" int,"DetailsTotalIndexPages" int,"DetailsTotalLobPages" int,"DetailsTotalDataFreeSpace" bigint,"DetailsTotalIndexFreeSpace" bigint,"TimeStamp" bigint) server sdb_server options(collectionspace 'CS_CMBC_STAT', collection 'CL_CL_DETAIL_INFO');
+
+create foreign table "CL_TASK_ATTR"("TaskName" text)  server sdb_server options(collectionspace '$SYS_VCS', collection 'SYS_SESSION_INFO');

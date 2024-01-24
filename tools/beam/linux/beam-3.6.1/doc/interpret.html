@@ -1,0 +1,128 @@
+<html>
+<head>
+  <title>BEAM: How to interpret complaints</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">How to Interpret Complaints</h1>
+<hr/>
+
+</p>
+<p>
+Complaints come in two flavors.
+The simpler ones are of the form 
+</p>
+<pre class="example">
+-- WARNING2     /*not needed*/     &gt;&gt;&gt;WARNING2_foo_5a83512bd36394
+&quot;f3.c&quot;, line 6:  variable `b' is assigned, but never used
+</pre>
+<p>
+
+The complaint consists of two lines.
+The second line provides a location in your source code 
+and a hopefully self explanatory description of the problem.
+If it is not self explanatory then you can look up the explanation
+using the complaint name (here <span class="code">WARNING2</span>) in 
+<a href="builtin.html">the description of built-in checks</a>.
+Everything on the first line following <span class="code">WARNING2</span>
+can be used for <a href="innocent.html">declaring the complaint innocent</a>.
+</p>
+<p>
+The more complicated flavor of complaints contains a path through
+the program and has this form:
+</p>
+<pre class="example">
+-- ERROR2    /*uninitialized*/     &gt;&gt;&gt;5_foo_9269b7a7e84a25
+&quot;f3.c&quot;, line 12:  uninitialized `c'
+ONE POSSIBLE PATH LEADING TO THE ERROR:
+ &quot;f3.c&quot;, line 6: allocating `c'
+ &quot;f3.c&quot;, line 9: the if-condition is false
+ &quot;f3.c&quot;, line 12: getting the value of `c'
+</pre>
+<p>
+
+The first two lines have the same meaning as before.
+What follows is an execution path showing the conditions 
+under which the problem can occur.
+This flavor of complaint is issued only for those problems that 
+occur when a particular execution path is followed, but not otherwise.
+The cause of the problem could be anywhere along the path:
+</p>
+<p>
+<ul>
+<li>maybe `c' should have been initialized on line 6,
+<li>maybe the condition on line 9 is wrong,
+<li>maybe some variable other than `c' should have been used on line 12,
+<li>maybe something is missing along the path.
+</ul>
+</p>
+<p>
+It is up to you to figure out what is wrong.
+BEAM tries to help by listing key decision points along the path.
+We strongly recommend that you use 
+<a href="emacs.html">the emacs interface</a>
+which makes it much easier to isolate the cause.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

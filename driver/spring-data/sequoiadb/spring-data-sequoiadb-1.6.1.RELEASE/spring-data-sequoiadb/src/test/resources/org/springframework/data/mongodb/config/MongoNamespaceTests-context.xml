@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sdb="http://www.springframework.org/schema/data/sdb"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/sdb http://www.springframework.org/schema/data/sdb/spring-sdb.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder
+			location="classpath:/org/springframework/data/sequoiadb/config/sdb.properties"/>
+
+	<sdb:sdb host="${sdb.host}" port="${sdb.port}">
+			<sdb:options
+					connections-per-host="${sdb.connectionsPerHost}"
+					threads-allowed-to-block-for-connection-multiplier="${sdb.threadsAllowedToBlockForConnectionMultiplier}"
+					connect-timeout="${sdb.connectTimeout}"
+					max-wait-time="${sdb.maxWaitTime}"
+					auto-connect-retry="${sdb.autoConnectRetry}"
+					socket-keep-alive="${sdb.socketKeepAlive}"
+					socket-timeout="${sdb.socketTimeout}"
+					slave-ok="${sdb.slaveOk}"
+					write-number="1"
+					write-timeout="0"
+					write-fsync="true"/>
+	</sdb:sdb>
+	
+	<sdb:db-factory dbname="database" sdb-ref="sdb"/>
+
+
+	
+	<sdb:db-factory id="secondSequoiadbFactory"
+					  host="192.168.20.166"
+					  port="11810"
+					  dbname="database"
+					  username="joe"
+					  password="secret"/>
+					  
+		<sdb:db-factory id="thirdSequoiadbFactory"
+					  host="192.168.20.166"
+					  port="11810"
+					  dbname="database"
+					  username="joe"
+					  password="secret"
+					  authentication-dbname="admin"/>
+
+	<sdb:sdb id="defaultSequoiadb" host="localhost" port="11810"/>
+
+	<sdb:sdb id="sequoiadbSsl" host="localhost" port="11810">
+		<sdb:options ssl="true"/>
+	</sdb:sdb>
+
+	<sdb:sdb id="sequoiadbSslWithCustomSslFactory" host="localhost" port="11810">
+		<!-- setting a non-null ssl-socket-factory implicitly sets ssl=true -->
+		<sdb:options ssl-socket-factory-ref="customSslSocketFactory"/>
+	</sdb:sdb>
+
+	<bean id="customSslSocketFactory" class="javax.net.ssl.SSLSocketFactory" factory-method="getDefault" scope="singleton"/>
+
+	<sdb:sdb id="noAttrSequoiadb"/>
+
+	<sdb:mapping-converter>
+		<sdb:custom-converters>
+			<sdb:converter ref="readConverter"/>
+			<sdb:converter>
+				<bean class="org.springframework.data.sequoiadb.core.PersonWriteConverter"/>
+			</sdb:converter>
+		</sdb:custom-converters>
+	</sdb:mapping-converter>
+
+	<bean id="readConverter" class="org.springframework.data.sequoiadb.core.PersonReadConverter"/>
+
+	<sdb:template id="sequoiadbTemplate" db-factory-ref="sequoiadbFactory" converter-ref="mappingConverter"/>
+	<sdb:template id="anotherSequoiadbTemplate" db-factory-ref="sequoiadbFactory" write-concern="SAFE" />
+	
+	<sdb:gridFsTemplate/>
+	<sdb:gridFsTemplate id="secondGridFsTemplate" db-factory-ref="sequoiadbFactory" converter-ref="mappingConverter"/>
+	<sdb:gridFsTemplate id="thirdGridFsTemplate" db-factory-ref="sequoiadbFactory" converter-ref="mappingConverter" bucket="bucketString"/>
+	
+</beans>

@@ -1,0 +1,2460 @@
+<html>
+<head>
+  <title>BEAM: Function Attributes</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Function Attributes</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Contents:</h1>
+
+</p>
+<p>
+<ul>
+  <li><a href="#whatarethey">What are they?</a></li>
+  <li><a href="#quickanddirty">Quick and dirty</a></li>
+  <li><a href="#syntax">Syntax</a></li>
+  <li><a href="#associating">Associating attributes with functions</a></li>
+  <li><a href="#resources">Resources</a></li>
+  <li><a href="#allattributes">List of All Attributes</a></li>
+  <li><a href="#conditions">Conditions</a></li>
+  <li><a href="#properties">Properties</a></li>
+  <li><a href="#propinfo">The propinfo structure</a></li>
+  <li><a href="#alltypes">List of all types</a></li>
+  <li><a href="#requirements">Attribute Requirements</a></li>
+  <li><a href="#examples">All-attribute example</a></li>
+</ul>
+
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="whatarethey"></a><h1>What are they?</h1>
+
+
+</p>
+<p>
+  Function attributes are pieces of additional information that can be
+  specified about a function. This extra information is used by BEAM
+  to understand certain functions better; this allows BEAM to report
+  more errors (or fewer false ones).
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="quickanddirty"></a><h1>Quick and dirty</h1>
+
+
+</p>
+<p>
+  Attributes are specified in Tcl files.  In your installation look at
+  <span class="file">tcl/beam_attributes.tcl</span> for examples of usage.  The syntax
+  is:
+</p>
+<pre class="example">
+beam::function_attribute {
+  <span class="val">attributes</span>
+} <span class="strong">[ -names | -signatures ]</span> <span class="val">function_1 ... function_n</span>
+</pre>
+<p>
+
+  Here is an example:
+</p>
+<pre class="example">
+beam::function_attribute {
+  aligned ( alignment = 4 ),
+  allocator ( size_index = 1, initial_state = uninitialized )
+} -names &quot;malloc&quot; &quot;mymalloc&quot; &quot;xmalloc&quot;
+
+beam::function_attribute {
+  deallocator ( pointer_index = 1 )
+} -signatures &quot;free(void *)&quot; &quot;xfree(void *, int, int)&quot;
+
+beam::function_attribute {
+  assert if ( index = return, type = output, test_type = equal, test_value = 0 )
+} -signatures &quot;myassert&quot;
+</pre>
+<p>
+
+  There could also be Tcl variables with attributes in them:
+</p>
+<pre class="example">
+set printf_like {
+  format ( kind = printf, string_index = 1, first_to_check = 2 )
+}
+</pre>
+<p>
+
+  And of course, one would use that variable in the attribute
+  specification:
+</p>
+<pre class="example">
+beam::function_attribute $printf_like -names &quot;printf&quot; &quot;my_printf&quot;
+</pre>
+<p>
+
+  BEAM defines a preset list of attributes in some Tcl files in the
+  <span class="file">tcl</span> subdirectory of a BEAM installation. For more
+  information, see <a href="extapi.html">External APIs</a>.
+</p>
+<p>
+  Users can write their own attributes in their own Tcl file, and
+  assign them to functions.  That Tcl file can be sourced from the
+  user's own parms file, or supplied via the command line flag <span class="option">--beam::source=</span>.
+</p>
+<p>
+  Read on for the gory details...
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="syntax"></a><h1>Syntax</h1>
+
+
+</p>
+<p>
+  Function attributes have their own syntax, even though they are
+  specified in Tcl files.
+</p>
+<p>
+  A function attribute definition is simply a long string of this
+  form:
+</p>
+<pre class="example">
+{
+  attribute_name ( keyword = value, keyword = value, ... ),
+  attribute_name ( keyword = value, ... ) if ( keyword = value, ... ),
+  attribute_name ( ... ) if ( ... ) and ( ... ) and ( ... ) ...,
+  ...
+}
+</pre>
+<p>
+
+  This <span class="term">attribute definition</span> (we call it a <span class="term">quirk</span>) can contain
+  many <span class="term">attributes</span>, and each attribute can have zero or more
+  <span class="term">keywords</span> associated with it. Also, most <span class="term">chained</span>
+  attributes (see below) can have zero or more <span class="term">conditions</span> after
+  them. The conditions are specified after the <span class="code">if</span> keyword, and
+  additional conditions may follow, separated by <span class="code">and</span> keywords.  Each
+  condition has its own <span class="code">keyword = value</span> pairs.
+</p>
+<p>
+  The different attributes are comma-separated, as well as the
+  different <span class="code">keyword = value</span> pairs within the attribute's
+  keyword list.
+</p>
+<p>
+  The <span class="code">keyword</span> should consist of letters, numbers, and
+  underscores. The <span class="code">value</span> depends on the data type allowed by
+  the keyword, but can be a number or identifier (letters, numbers,
+  underscores, hyphens, and periods), or a quoted string (which can
+  hold basically anything). There is no functional difference between
+  placing the <span class="code">value</span> between double quotes or not except for
+  the extra characters that can be specified inside double quotes
+  (like spaces, colons, etc).
+</p>
+<p>
+  The curly braces are there because this is a Tcl string.
+</p>
+<p>
+  Whitespace in an attribute definition is not important. The
+  following three attributes are all equivalent:
+</p>
+<pre class="example">
+{ attribute_name(keyword=value) }
+</pre>
+<pre class="example">
+{
+  attribute_name ( keyword = value )
+}
+</pre>
+<pre class="example">
+{
+  attribute_name
+  (
+    keyword = value
+  )
+}
+</pre>
+<p>
+
+  In some cases, an attribute may be specified more than once. In
+  these cases, each attribute in the attribute definition with the
+  same name will be <span class="term">chained</span> together, and all of the instances
+  of the attribute will be considered. If an attribute is not a
+  <span class="term">chained attribute</span> and it appears more than once in an
+  attribute definition, then the last one silently wins. This may
+  change in the future (i.e. produce an error). For an example, see
+  below.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h2>Examples</h2>
+
+</p>
+<p>
+  Here is an example of a real attribute definition that contains one
+  attribute:
+</p>
+<pre class="example">
+{
+  allocator ( size_index = 1, return_index = return, initial_state = uninitialized )
+}
+</pre>
+<p>
+
+  This attribute definition contains the single attribute <span class="code">allocator</span>, and that attribute has three keywords associated with
+  it. Each keyword has a value.
+</p>
+<p>
+  Some keywords have no value, and are only meaningful based on
+  whether or not they appear. They are basically boolean "flags".
+</p>
+<p>
+  Some attributes don't have any keywords, and won't even be followed
+  by a parenthesized list of keywords.
+</p>
+<p>
+  Here is another definition, with more than one attribute:
+</p>
+<pre class="example">
+{
+  noreturn,
+  assert ( test_index = 1, min_assert_value = 0, max_assert_value = 0 ),
+  aligned ( alignment = 4 ),
+  allocator ( anchored, initial_state = initialized_to_zero )
+}
+</pre>
+<p>
+
+  As you can see, the attribute <span class="code">noreturn</span> does not have any
+  keywords, and therefore, has no list after it.
+</p>
+<p>
+  Also, in the <span class="code">allocator</span> attribute, the <span class="code">anchored</span>
+  keyword does not take a value, and is only important based on
+  whether or not it appears in the keyword list at all.
+</p>
+<p>
+  Not all of the keywords for a given attribute need to be specified
+  in the keyword list; however, the default values for many of the
+  keywords are probably not what is wanted, and we recommend
+  specifying values for every keyword to ensure you get what
+  you want.
+</p>
+<p>
+  Here is a definition which specifies keywords more than once:
+</p>
+<pre class="example">
+{
+  deallocator ( pointer_index = 1 ),
+  deallocator ( pointer_index = 2 ),
+  aligned ( alignment = 4 ),
+  aligned ( alignment = 8 )
+}
+</pre>
+<p>
+
+  If you look at the table below, you will see that <span class="code">deallocator</span>
+  is a chained attribute, and may appear more than once. All values
+  will be taken, which means that given this attribute definition, the
+  function that this is applied to deallocates memory passed in via
+  both the first and second parameters.
+</p>
+<p>
+  However, note that <span class="code">aligned</span> is <span class="strong">not</span> a chained
+  attribute. This means that the last one will win, and the alignment
+  will be 8. In the future, specifying more than one non-chained
+  attribute in a single definition may produce an error.
+</p>
+<p>
+  Finally, here is an example definition which uses conditions
+</p>
+<pre class="example">
+{
+  assert if ( index = 1, type = input, range_min = 0, range_max = 5 ),
+  assert if ( index = 1, type = input, test_type = less_than, test_value = 0 ),
+  assert if ( index = 1, type = input, test_type = equal, test_value = 0 )
+         and ( index = 2, type = input, test_type = not_equal, test_value = 0 )
+}
+</pre>
+<p>
+
+  Since <span class="code">assert</span> is a chained attribute (see below), it may be
+  followed by conditions. Each set of conditions describes when the
+  attribute is valid. In this example, the function would assert if
+  the value at the first index was between 0 and 5. It would also
+  assert if the value at the first index was less than zero. It would
+  also assert if the value at the first index was zero and the value
+  at the second index was not zero.
+</p>
+<p>
+  Using chains and conditions is a powerful way to express complicated
+  behaviors of functions.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="associating"></a><h1>Associating attributes with functions</h1>
+
+
+</p>
+<p>
+  Now that we can write attribute definitions, there needs to be a way
+  to associate a single attribute definition with one or more
+  functions.
+</p>
+<p>
+  Attributes are associated with functions via this Tcl routine:
+</p>
+<pre class="example">
+beam::function_attribute {
+  <span class="val">attribute_definition</span>
+} <span class="strong">[ -names | -signatures ]</span> <span class="val">function_1 ... function_n</span>
+</pre>
+<p>
+
+  You can specify as many function names as you want, but there can
+  only be one attribute definition, and it must come first.
+</p>
+<p>
+  One of <span class="code">-names</span> or <span class="code">-signatures</span> is required. This tells
+  BEAM how the functions in the following list are to be treated.
+  Read on for the details.
+</p>
+<p>
+<h2>beam::function_attribute -names</h2>
+
+</p>
+<p>
+  When used with <span class="code">-names</span>, <span class="code">beam::function_attribute</span> will
+  apply the attribute definition to each function whose <span class="term">qualified
+  name</span> matches a name in the list that was given to it. A
+  function's <span class="term">qualified name</span> is the function without any return
+  type, storage specification, or parameter list, but including class
+  and namespace scope.
+</p>
+<p>
+<h2>beam::function_attribute -signatures</h2>
+
+</p>
+<p>
+  When used with <span class="code">-signatures</span>, <span class="code">beam::function_attribute</span>
+  will apply the attribute definition to each function whose
+  <span class="term">signature</span> matches a name in the list that was given to it.  A
+  function's <span class="term">signature</span> is enough to ensure that the function is
+  unique. No two independent functions will have the same signature.
+</p>
+<p>
+<h2>Names vs signatures</h2>
+
+</p>
+<p>
+  For information about function names and function signatures, and
+  how to get BEAM to show you what names you should be using for a
+  specific function in your code, visit the 
+  <a href="func_name_sig.html">function names and signatures page</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h2>Examples</h2>
+
+</p>
+<p>
+  Here is an example of associating the attributes <span class="code">pure</span> and
+  <span class="code">const</span> with any function whose qualified name is <span class="code">func</span>:
+</p>
+<pre class="example">
+beam::function_attribute { const, pure } -names &quot;func&quot;
+</pre>
+<p>
+
+  That will only match functions whose name is <span class="code">func</span>. It
+  <span class="strong">won't</span> match a function if the function's name is <span class="code">c1::func</span> or <span class="code">namesp::func</span> or anything other than <span class="code">func</span>.
+</p>
+<p>
+  And here is an example of associating the attributes <span class="code">pure</span>
+  and <span class="code">const</span> with the two functions which are uniquely
+  identified by the two given signatures:
+</p>
+<pre class="example">
+beam::function_attribute { pure, const } -signatures &quot;func&quot; &quot;proc(const char *)&quot;
+</pre>
+<p>
+
+  Don't let the fact that <span class="code">&quot;func&quot;</span> is used as a signature
+  confuse you - the function that it uniquely identifies is the
+  function whose name is <span class="code">func</span> and who has <span class="code">external
+  &quot;C&quot;</span> linkage (or is in a C file). Giving <span class="code">&quot;func&quot;</span> as a
+  signature will <span class="strong">not</span> match any other functions with the same
+  name (that's what <span class="code">-names</span> is for). It <span class="strong">only</span> matches the
+  unique function with that signature.
+</p>
+<p>
+  Because this is Tcl, the attribute definition string is enclosed in
+  curly braces. This is just like double quotes except that everything
+  you write inside of curly braces will remain exactly what you
+  type. (Some things in double quotes are special in Tcl).
+</p>
+<p>
+  So in the above examples, the attribute definition is:
+</p>
+<pre class="example">
+{ pure, const }
+</pre>
+<p>
+
+  If we wanted to associate that attribute definition with all
+  functions named <span class="code">func</span> and <span class="code">proc</span>, we would write:
+</p>
+<pre class="example">
+beam::function_attribute { pure, const } -names &quot;func&quot; &quot;proc&quot;
+</pre>
+<p>
+
+  Or:
+</p>
+<pre class="example">
+beam::function_attribute {
+  pure,
+  const
+} -names &quot;func&quot; &quot;proc&quot;
+</pre>
+<p>
+
+  Remember, whitespace inside the attribute definition (between the
+  curly braces) doesn't matter.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="resources"></a><h1>Resources</h1>
+
+
+</p>
+<p>
+  Examples of resources are files, sockets, or any of your objects
+  that can be created and/or deleted.  There are two built-in
+  resources <span class="code">heap_memory</span> and <span class="code">stack_memory</span>.  Heap
+  memory is obtained by a call to <span class="code">malloc</span> and other similar
+  functions.  Stack memory is obtained when you declare a local
+  variable and it disappears when you exit lexical scope.
+</p>
+<p>
+  Resources are introduced in a Tcl file using <span class="code">beam::resource_create</span>, and then specified for allocators and
+  deallocators.  The purpose is to get more meaningful messages;
+  allocators and deallocators without specified resource are assumed
+  to operate on <span class="code">heap_memory</span>, with a display of "memory".
+</p>
+<p>
+  For example, the file <span class="file">beam_attributes.tcl</span> contains
+  these two resources, among others:
+</p>
+<pre class="example">
+beam::resource_create {               # resource representing heap allocated memory
+  name = &quot;heap_memory&quot;,               # identified as &quot;heap_memory&quot; to attributes
+  display = &quot;memory&quot;,                 # in complaints call it &quot;memory&quot;
+  allocating_verb = &quot;allocating&quot;,     # use these verbs when talking about memory
+  allocated_verb = &quot;allocated&quot;,
+  freeing_verb = &quot;freeing&quot;,
+  freed_verb = &quot;freed&quot;,
+  use_after_free = &quot;error&quot;
+}
+
+beam::resource_create {
+  name = &quot;file&quot;,
+  display = &quot;file&quot;,
+  allocating_verb = &quot;opening&quot;,
+  allocated_verb = &quot;opened&quot;,
+  freeing_verb = &quot;closing&quot;,
+  freed_verb = &quot;closed&quot;,
+  use_after_free = &quot;error&quot;
+}
+</pre>
+<p>
+
+  The function <span class="code">malloc</span> is then declared to be an allocator of
+  <span class="code">heap_memory</span>, while the function <span class="code">fopen</span> is then
+  declared to be an allocator of <span class="code">file</span>.  This tells BEAM that
+  heap_memory is allocated and freed, while a file is opened and
+  closed.
+</p>
+<p>
+  The string given by <span class="code">display</span> is what you want to see in a
+  complaint referring to this resource.  There are no restrictions on
+  this string, in particular, it is OK for different resources to have
+  the same display string.  On the other hand <span class="code">name</span> must be
+  unique and is used in other attributes (e.g. for allocators) to
+  identify the resource.
+</p>
+<p>
+  The string given by <span class="code">use_after_free</span> is either "ok" or
+  "error".  It says whether any use of the resource after freeing it
+  is an error or not.  For example, the setting in the file resource
+  will cause a complaint to be issued any time you manipulate a closed
+  file.
+</p>
+<p>
+  Any resource whose name contains the string "memory" is affected by
+  the Tcl variable <a href="parms.html#beam::allocation_may_return_null">beam::allocation_may_return_null</a>.  It allows you to control
+  whether you want to consider possibility of running out of memory.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="allattributes"></a><h1>List of All Attributes</h1>
+
+
+</p>
+<p>
+  Here are all the attributes that are currently recognized, along
+  with the available keywords and value types. The values that are
+  allowed for the different types are listed in <a href="#alltypes">all types table</a> below.
+</p>
+<p>
+  Some keywords will not accept all values that can be specified for
+  their specific types. For example, a keyword that expects an
+  <span class="term">index</span> may not allow the index to be <span class="code">return</span>, because it
+  only accepts indices that correspond to parameters and not the
+  return value. These exceptions are listed in the 
+  <a href="#requirements">requirements table</a> below.
+</p>
+<p>
+  Where specified, an attribute that is chained may appear multiple
+  times in a definition, and all values will be used.  Conditions may
+  only appear on chained attributes, and some chained attributes
+  currently ignore them.
+</p>
+<p>
+  Note: The <span class="term">base</span> entry in the table applies to all non-trivial
+  attributes. This includes every attribute below the entry for
+  <span class="term">base</span>.
+</p>
+<p>
+  <table>
+  	<tr>
+  	  <th>Attribute</th>
+  	  <th>Keywords</th>
+  	  <th>Type</th>
+  	  <th>Description</th>
+  	</tr>
+</p>
+<p>
+    <!-- base -->
+    <tr>
+      <td><span class="term">base</span></td>
+      <td>fate</td>
+      <td>fate</td>
+      <td>
+        This entry is not an attribute, but it describes keywords that
+        are valid for every attribute below this point in the table.
+</p>
+<p>
+        The <span class="var">fate</span> keyword describes whether an
+        attribute may happen, or must happen. There is also a <span class="var">wont</span> setting that describes that an event does NOT
+        happen. This <span class="var">wont</span> setting is only valid for the <span class="var">anchor</span> chain at the moment.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- pure -->
+  	<tr>
+  	  <td>pure</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+  	    This function has no effects except the return value, and
+  	    the return value is only based on the parameters and/or
+  	    global variables. (Example: "strlen()" or "memcmp()")
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- const -->
+  	<tr>
+  	  <td>const</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+  	    This function has no effects except the return value, and
+  	    the return value is only based on the parameters. This
+  	    function does not read global memory, dereference pointer
+  	    arguments, or call non-const functions. (Example: "cos()"
+  	    or "pow()")
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- thread_safe -->
+  	<tr>
+  	  <td>thread_safe</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+  	    This function may access static memory shared by several threads,
+            but all those accesses are properly protected by locks.
+            However, no lock protection is applied to accesses of parameters,
+            or any data pointed at by parameters.
+            This function may be invoked in parallel with 
+            itself or any other function, provided it is passed arguments
+            pointing at thread-local data only.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- unused -->
+  	<tr>
+  	  <td>unused</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+  	    This function is probably never called.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- no_other_side_effects -->
+  	<tr>
+  	  <td>no_other_side_effects</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+  	    This function has no other side effects (changing global
+  	    variables, keeping internal state, etc.) other than the
+  	    attributes that have been given.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- no_other_anchoring -->
+  	<tr>
+  	  <td>no_other_anchoring</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+  	    This function may have all kinds of unspecified side-effects
+            (changing global variables, keeping internal state, etc.),
+            but it does not do any unspecified anchoring, i.e.,
+            saving in static memory any pointers made available to it.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- no_stats -->
+  	<tr>
+  	  <td>no_stats</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+        This function should be ignored when printing stats. It won't
+        even be included in the total number of seen functions.  This
+        is useful because newer C libraries include function bodies in
+        the standard headers which we'd like to ignore.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- no_inherited_attribute -->
+  	<tr>
+  	  <td>no_inherited_attribute</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+        This function has no inherited attribute from the overridden
+        functions in the base class.  Without this attribute, a member
+        function of a class automatically inherits attributes given to
+        the overridden functions in the base class by defaults.  If the
+        function is static, private, constructor or non-member, this
+        attribute has no meaning.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- noreturn -->
+  	<tr>
+  	  <td>noreturn</td>
+  	  <td>(none)</td>
+  	  <td>(none)</td>
+  	  <td>
+  	    This function does not return. (Example: "exit()")
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- format (long) -->
+  	<tr>
+  	  <td rowspan="3">format</td>
+  	  <td>kind</td>
+  	  <td>format (default: printf)</td>
+  	  <td rowspan="3">
+  	    This function takes in a formatted string in the
+  	    <span class="var">string_index</span> parameter position of type
+  	    <span class="var">kind</span>, and the parameters that start at
+  	    <span class="var">first_to_check</span> should match the formatted string.
+  	    (Example: "printf()" or "scanf()")
+  	  </td>
+  	</tr>
+  	<tr>
+  	  <td>string_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>first_to_check</td>
+  	  <td>index</td>
+  	</tr>
+</p>
+<p>
+<!-- aligned
+  	<tr>
+  	  <td>aligned</td>
+  	  <td>alignment</td>
+  	  <td>number (default: 4)</td>
+  	  <td>
+  	    Does this make sense?
+  	  </td>
+  	</tr>
+-->
+</p>
+<p>
+    <!-- return_overlap -->
+  	<tr>
+  	  <td rowspan="2">return_overlap</td>
+  	  <td>return_index</td>
+  	  <td>index</td>
+  	  <td rowspan="2">
+  	    This function returns a pointer via <span class="var">return_index</span> that points
+  	    into memory that was passed in via <span class="var">points_into_index</span>.
+  	  </td>
+    </tr>
+</p>
+<p>
+    <tr>
+      <td>points_into_index</td>
+      <td>index</td>
+  	</tr>
+</p>
+<p>
+    <!-- anchor -->
+    <tr>
+      <td>anchor (chained)</td>
+      <td>index</td>
+      <td>index</td>
+      <td>
+        This function anchors the memory at the parameter given.
+        Anchored memory given as a parameter is assumed to be
+        consumed correctly by the function being called. If, for
+        example, newly allocated memory was passed to the anchor
+        parameter of a function, then that memory won't leak
+        since the function took ownership of it, and BEAM won't
+        complain.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- assert -->
+  	<tr>
+  	  <td>assert (chained)</td>
+      <td>(none, use conditions instead)</td>
+      <td>(none)</td>
+  	  <td>
+  	    This function asserts (meaning it is an error condition that
+  	    should be reported) if the conditions are true. Not listing
+  	    conditions for this attribute means it asserts
+  	    unconditionally.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- allocator -->
+    <tr>
+      <td rowspan="9">allocator (chained)</td>
+      <td>size_index</td>
+      <td>index</td>
+      <td rowspan="9">
+  	    This function returns allocated memory in the
+  	    <span class="var">return_index</span> parameter. The size of the returned memory
+  	    is the value passed in via the <span class="var">size_index</span> parameter
+  	    multiplied by the value of the <span class="var">multiplier_index</span>
+  	    parameter (like calloc). If multiplier_index is not set then
+  	    it defaults to 1.  If size_index is not set, it indicates
+  	    unknown size.  The returned memory has been initialized
+  	    according to <span class="var">initial_state</span>. Note that this does not
+  	    refer to the pointer that is returned, but instead to the
+  	    memory that pointer points to.
+</p>
+<p>
+        If the <span class="var">anchored</span> keyword is given, then this memory is
+  	    "tracked" somehow, and will not leak if the returned pointer
+  	    goes out of scope before it is freed.
+</p>
+<p>
+  	    <span class="var">resource</span> tells BEAM what verbs to use in complaints.
+</p>
+<p>
+        If the size requested is zero, the <span class="var">if_size_is_0</span> keyword
+  	    tells BEAM whether that situation is an error, whether the
+  	    allocator returns null, or whether it is ok (the memory
+  	    returned will be valid, of size 0). Similar keywords exist for
+  	    <span class="var">if_size_is_negative</span> and <span class="var">if_out_of_memory</span> (which
+  	    either returns null, or BEAM doesn't need to do anything
+  	    ("ok")). For resources other than <span class="code">heap_memory</span>,
+  	    <span class="var">if_out_of_memory</span> just says whether null could be
+  	    returned for any reason, not just running out of memory.
+      </td>
+    </tr>
+    <tr>
+      <td>multiplier_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>return_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>anchored</td>
+  	  <td>(none)</td>
+  	</tr>
+  	<tr>
+  	  <td>initial_state</td>
+  	  <td>alloc_init (default: uninitialized)</td>
+  	</tr>
+  	<tr>
+  	  <td>if_size_is_0</td>
+  	  <td>alloc_error (default: return_null)</td>
+  	</tr>
+  	<tr>
+  	  <td>if_size_is_negative</td>
+  	  <td>alloc_error (default: error)</td>
+  	</tr>
+  	<tr>
+  	  <td>if_out_of_memory</td>
+  	  <td>alloc_error (default: return_null)</td>
+  	</tr>
+  	<tr>
+  	  <td>resource</td>
+  	  <td>resource</td>
+  	</tr>
+</p>
+<p>
+    <!-- deallocator -->
+  	<tr>
+  	  <td rowspan="3">deallocator (chained)</td>
+  	  <td>pointer_index</td>
+  	  <td>index</td>
+  	  <td rowspan="3">
+  	    This function takes in previously allocated memory via its
+  	    <span class="var">pointer_index</span> parameter (dereferenced
+  	    <span class="var">num_dereference</span> times), and frees it. <span class="var">resource</span>
+  	    tells BEAM what verbs to use in complaints.
+  	  </td>
+  	</tr>
+  	<tr>
+  	  <td>num_dereference</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>resource</td>
+  	  <td>resource</td>
+  	</tr>
+</p>
+<p>
+    <!-- forbid_overlap -->
+<!-- ### Uncomment me when forbid_overlap works
+    <tr>
+  	  <td rowspan="2">forbid_overlap</td>
+	    <td>index1</td>
+  	  <td>index</td>
+  	  <td rowspan="2">
+  	    This function will produce undefined results if the memory pointed
+  	    to by <span class="var">index1</span> and <span class="var">index2</span> overlap.
+  	  </td>
+    </tr>
+</p>
+<p>
+    <tr>
+      <td>index2</td>
+      <td>index</td>
+    </tr>
+-->
+</p>
+<p>
+    <!-- buffer -->
+    <tr>
+  	  <td rowspan="19">buffer (chained)</td>
+  	  <td>buffer_index</td>
+  	  <td>index</td>
+  	  <td rowspan="17">
+  	    This attribute is chained, and may appear more than once. Each
+  	    time this attribute is specified, it describes a "buffer" or
+  	    piece of memory that the function is going to use. The buffer is
+  	    passed to the function in the <span class="var">buffer_index</span> parameter
+  	    (dereferenced <span class="var">num_dereference</span> times).
+</p>
+<p>
+  	    When a buffer is passed into a function, the function usually
+  	    either reads or writes a certain number of bytes to or from the
+  	    buffer. The <span class="var">type</span> specifies which, and is currently used
+  	    to determine the complaint message.  The rest of the keywords
+  	    for this attribute describe how the maximum size can be
+  	    calculated.
+</p>
+<p>
+        It is considered a bug to pass the NULL pointer as the buffer,
+        unless the number of bytes accessed is 0, or the
+        <span class="var">allow_null</span> flag is given.  The number of bytes accessed
+        is determined from the various size and string index parameters.
+        If none is provided then some unknown number of bytes is assumed.
+        Again it is considered a bug to pass the NULL pointer as an
+        argument for any of the string index parameters (unless the
+        <span class="var">allow_null</span> flag is given).
+</p>
+<p>
+  	    Each <span class="var">string_index</span> is optional, and up to three can be
+  	    specified. Each one corresponds to a parameter that is a string,
+  	    and the string length of the parameter (without the trailing
+  	    zero) should be included in the calculation of the maximum size.
+</p>
+<p>
+  	    The <span class="var">size_index</span> keyword is optional, and means that a
+  	    parameter is passed an explicit size that should be included in
+  	    the final calculation.
+</p>
+<p>
+  	    The <span class="var">multiplier_index</span> keyword is optional, and means that
+  	    the <span class="var">size_index</span> parameter should be multiplied by this
+  	    parameter's value first.
+</p>
+<p>
+  	    The <span class="var">padding</span> keyword is an explicit value that should
+  	    always be added to the size calculation. This implies that
+            terminating zero characters are appended to the buffer and is
+            useful for functions like strcpy() that implicitly add a
+            terminating zero.
+</p>
+<p>
+            The <span class="var">size</span> keyword is also an explicit value that should
+            always be added to the size calculation, but it doesn't imply
+            anything about what values are written to the buffer.
+</p>
+<p>
+  	    The <span class="var">bound_</span> versions of the keywords above work like this:
+  	    <span class="var">bound_size_index</span> and <span class="var">bound_multiplier_index</span> are
+  	    multiplied together to get a <span class="term">limit</span> or <span class="term">bound</span>. The other
+  	    <span class="var">bound_</span> values are added together, and the smaller of the two
+  	    sums is added to the overall total. This is mostly useful for
+  	    functions that take in a string in one index, and a size in a
+  	    different index, and only read size elements from the string. If
+  	    the string is smaller than the size, then the string length is
+  	    used; otherwise, the size is used. For an example, see the
+  	    definition of the attribute for "strncat" in
+  	    tcl/beam_c_attributes.tcl.
+</p>
+<p>
+        All of the information given is used to come up with a size for
+        the buffer. The size is in <span class="val">bytes</span> by default, but the
+        <span class="val">units</span> keyword be used to specify that the size should be
+        in elements of the buffer instead.
+</p>
+<p>
+  	    Once BEAM can calculate the size that is going to be needed in a
+  	    buffer, it can complain if the buffer may not be large enough to
+  	    satisfy the request, avoiding common buffer overflow/over-read
+  	    mistakes.
+  	  </td>
+  	</tr>
+  	<tr>
+  	  <td>num_dereference</td>
+	    <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>allow_null</td>
+  	  <td>(none)</td>
+  	</tr>
+  	<tr>
+  	  <td>type</td>
+  	  <td>buffer_type (default: write)</td>
+  	</tr>
+  	<tr>
+  	  <td>units</td>
+  	  <td>units (default: bytes)</td>
+  	</tr>
+  	<tr>
+  	  <td>string_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>string2_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>string3_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>size_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>multiplier_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>padding</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>size</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>bound_string_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>bound_string2_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>bound_string3_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>bound_size_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>bound_multiplier_index</td>
+  	  <td>index</td>
+  	</tr>
+  	<tr>
+  	  <td>bound_padding</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>bound_size</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+</p>
+<p>
+<!-- memmod -->
+<!-- left out on purpose? -->
+<!-- Note: currently ignores conditions -->
+</p>
+<p>
+    <!-- force_test -->
+  	<tr>
+  	  <td rowspan="6">force_test (chained)</td>
+  	  <td>test_index</td>
+  	  <td>index</td>
+  	  <td rowspan="6">
+  	    Some functions may return exceptional values (e.g., NULL) and
+        an error could occur if the result of the function were used
+        without ensuring that it is not an exceptional value.  For
+        example, many programmers do not check <span class="code">strstr(string,
+        substring)</span> for being NULL if they are confident that <span class="code">substring</span> does occur inside <span class="code">string</span>.  By default
+        BEAM does not challenge such confidence.  However, your coding
+        guidelines may require that the returned value should be
+        always checked.
+</p>
+<p>
+        To support such coding guidelines BEAM provides the
+        <span class="code">force_test</span> attribute.  This attribute specifies that a
+        return value from the parameter in <span class="var">test_index</span>
+        (dereferenced, if at all, <span class="var">num_dereference</span> times), could
+        satisfy the predicate given by the ranges
+        <span class="var">min_test_value</span>, <span class="var">max_test_value</span>, together with
+        <span class="var">test_type</span> and <span class="var">value</span>.  (If both pairs are
+        specified then the two ranges are ORed.)  And BEAM is not
+        required to provide any further evidence for this possibility
+        before issuing a complaint that a value satisfying the
+        predicate would lead to an error.
+</p>
+<p>
+        In our example of <span class="code">strstr(string, substring)</span>
+        the attribute would have
+</p>
+<pre class="example">
+test_index      = return, # represents the return value
+num_dereference = 0,      # the value itself without dereferencing
+test_type       = equal,  # predicate is ==
+value           = 0       # NULL
+</pre>
+<p>
+
+        Or equivalently
+</p>
+<pre class="example">
+test_index      = return, # represents the return value
+num_dereference = 0,      # the value itself without dereferencing
+min_test_value  = 0,      # range [0,0]
+max_test_value  = 0
+</pre>
+<p>
+
+        Then BEAM would issue a complaint if the result of <span class="code">strstr(string, substring)</span> were dereferenced without first
+        ensuring that it is non-NULL.
+</p>
+<p>
+        Please note that there is a symmetry between testing <span class="code">(x
+        == NULL)</span> and <span class="code">(x != NULL)</span>, or between <span class="code">(y &gt;
+        0)</span> and <span class="code">(y &lt;= 0)</span>.  The above attribute for <span class="code">strstr</span> could also be written with <span class="code">test_type =
+        not_equal</span> yielding an identical complaint.  However, the
+        wording of the complaint would be different.  The predicate in
+        the attribute is assumed to specify the <span class="strong">unusual</span>
+        possibility and if the unusual possibility leads to an error
+        then the complaint will include a reminder of it. (<span class="code">strstr</span> could return NULL.)  On the other hand, if an error
+        occurs when the given predicate is false, it is assumed that
+        the user does not need any reminder.  (<span class="code">strstr</span> could
+        return non-NULL).
+</p>
+<p>
+        The force_test attribute can be conditional, and if so it will
+        be in effect unless the condition is "obviously" false.
+        If it is not clear to BEAM whether the condition can or cannot
+        be satisfied then the force_test attribute will be in effect.
+</p>
+<p>
+  	  </td>
+    </tr>
+  	<tr>
+  	  <td>num_dereference</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>min_test_value</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>max_test_value</td>
+  	  <td>number (default: -1)</td>
+  	</tr>
+  	<tr>
+  	  <td>test_type</td>
+  	  <td>test_type</td>
+  	</tr>
+  	<tr>
+  	  <td>value</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+</p>
+<p>
+    <!-- property -->
+    <tr>
+<!-- change rowspan to 12 for violation_type -->
+  	  <td rowspan="11">property (chained)</td>
+      <td>index</td>
+      <td>index</td>
+<!-- change rowspan to 12 for violation_type -->          
+  	  <td rowspan="11">
+        A property is basically a <a href="#conditions">condition</a>
+        with the additional keyword <span class="var">property_type</span>.
+        It is a condition that the function requires its caller to 
+        satisfy before calling it,
+        or one that the function provides to the caller upon return.
+        See <a href="#conditions">conditions</a> for the meaning of 
+        each keyword listed here.
+</p>
+<p>
+<!-- uncomment for violation_type
+        In addition to the condition keywords, property has a <span class="var">violation</span> keyword. This can be set to let BEAM know
+  	    that a violation of this property has a specific effect. For
+  	    example, if a property specifies that parameter 2 may not be
+  	    null, a violation of <span class="code">dereference</span> tells BEAM to issue a
+  	    more specific complaint (like ERROR6) instead of the generic
+  	    one for property violations (ERROR26).
+-->
+</p>
+<p>
+        For an example of textual properties, consider this: If a
+        function like <span class="code">sort()</span> provides the "array" property
+        "sorted" to its return value, and the function <span class="code">binary_search</span> requires the same property on its first
+        argument, BEAM would complain if a value was passed in to the
+        <span class="code">binary_search</span> function had a property on it with the
+        same name ("array") but a different value (like "unsorted").
+</p>
+<p>
+        A property with a <span class="var">property_name</span> may have additional
+  	    information associated with it, such as which actions
+  	    invalidate the property. This information is associated with a
+  	    property name via the <span class="code">beam::propinfo_create</span>
+  	    procedure. More information is below, under 
+        <a href="#propinfo">the propinfo structure</a>.
+      </td>
+    </tr>
+<!-- uncomment for violation_type
+  	<tr>
+  	  <td>violation</td>
+  	  <td>violation_type</td>
+  	</tr>
+-->
+  	<tr>
+  	  <td>num_dereference</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>type</td>
+  	  <td>direction_type</td>
+  	</tr>
+  	<tr>
+  	  <td>property_type</td>
+  	  <td>property_type</td>
+  	</tr>
+  	<tr>
+  	  <td>range_min</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>range_max</td>
+  	  <td>number (default: -1)</td>
+  	</tr>
+  	<tr>
+  	  <td>test_type</td>
+  	  <td>test_type</td>
+  	</tr>
+  	<tr>
+  	  <td>test_value</td>
+  	  <td>number (default: 0)</td>
+    </tr>
+  	<tr>
+  	  <td>increment</td>
+  	  <td>number (default: INT_MIN)</td>
+    </tr>
+    <tr>
+  	  <td>property_name</td>
+  	  <td><span class="val">string</span></td>
+  	</tr>
+  	<tr>
+  	  <td>property_value</td>
+  	  <td><span class="val">string</span></td>
+  	</tr>
+</p>
+<p>
+    <!-- advisory -->
+  	<tr>
+  	  <td rowspan="2">advisory (chained)</td>
+  	  <td>explanation</td>
+  	  <td><i>string</i></td>
+  	  <td rowspan="2">
+  	    Whenever this function is called, the explanation text
+  	    should be displayed to the user
+            (see <a href="builtin.html#MISTAKE21">MISTAKE21</a>). The
+  	    category is used to filter out unwanted advisory messages.
+</p>
+<p>
+            Note: Conditions placed on an advisory are <span class="strong">ignored</span>.
+  	  </td>
+  	</tr>
+  	<tr>
+  	  <td>category</td>
+  	  <td><span class="val">string</span></td>
+  	</tr>
+</p>
+<p>
+    <!-- vararg -->
+   	<tr>
+  	  <td rowspan="4">vararg (chained)</td>
+  	  <td>count_index</td>
+  	  <td>index</td>
+  	  <td rowspan="4">
+        This function is a variadic function that takes in a required
+        number of arguments.
+</p>
+<p>
+        The total number of arguments is calculated as follows:
+</p>
+<p>
+        <ul>
+          <li>If <span class="var">count_index</span> is given, then the
+              parameter passed in as that argument will be
+              multiplied by <span class="var">count_multiplier</span>,
+              and the result will be added to the total</li>
+          <li>If <span class="var">count_always</span> is given, then
+              the given number will be added to the total
+              unconditionally</li>
+        </ul>
+</p>
+<p>
+        Then, BEAM checks to see if the total number of required
+        arguments has actually been given, starting at argument <span class="var">first_to_check</span>.
+</p>
+<p>
+        For example, given this function:
+</p>
+<pre class="example">
+int func(int num_of_pairs, ...);
+      
+func(2, pair1a, pair1b,
+        pair2a, pair2b);
+</pre>
+<p>
+
+        This would be an appropriate quirk:
+</p>
+<pre class="example">
+vararg ( count_index = 1,
+         count_multiplier = 2,
+         first_to_check = 2 )
+</pre>
+<p>
+
+	    </td>
+    </tr>
+  	<tr>
+  	  <td>count_multiplier</td>
+  	  <td>number (default: 1)</td>
+  	</tr>
+  	<tr>
+  	  <td>count_always</td>
+  	  <td>number (default: 0)</td>
+  	</tr>
+  	<tr>
+  	  <td>first_to_check</td>
+  	  <td>index</td>
+  	</tr>
+  </table>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="conditions"></a><h1>Conditions</h1>
+
+
+</p>
+<p>
+  Conditions can appear after any chained attribute, and they specify
+  when the attribute is valid. A chained attribute with no listed
+  conditions is always applied. A chained attribute with a condition
+  list is only applied if the entire condition list is true.
+</p>
+<p>
+  A condition describes an argument index or global variable plus its
+  dereference level, which yield the target value to be tested.  There
+  are a few ways to test the target value, including testing whether
+  it is within a range, or relative to a number (greater than, less
+  than, etc).
+</p>
+<p>
+  Conditions may also contain a <span class="var">property_name</span>.  You can think
+  of it as a name of some abstract function.  When provided, the test
+  is not applied to the target value directly, but rather to the
+  result of applying the abstract function to the target value.
+</p>
+<p>
+  If a <span class="var">property_name</span> is provided, then it is possible to
+  specify a <span class="var">property_value</span> instead of any numeric range.  These
+  textual properties values are thought of as "mutually exclusive"
+  symbols returned by that abstract function named by
+  <span class="var">property_name</span>.  If a property value is required to exist on a
+  parameter value, and a property with the same <span class="var">property_name</span>
+  but a different <span class="var">property_value</span> has already been provided
+  (applied) to the argument, then BEAM will report a conflict. When
+  used in conditions, they simply test whether the property exists on
+  the target or not.  Both <span class="var">property_name</span> and
+  <span class="var">property_value</span> can be arbitrary strings, with the exception
+  that any <span class="var">property_name</span> starting with <span class="var">_</span> is built-in and
+  reserved.
+</p>
+<p>
+  Conditions have a set of keyword/value pairs, much like regular
+  attributes. Here are the keyword/value pairs that a condition may
+  contain:
+</p>
+<p>
+  <table>
+    <tr>
+      <th>Keyword</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+</p>
+<p>
+    <!-- index -->
+    <tr>
+      <td>index</td>
+      <td>index</td>
+      <td>
+        The index that this condition applies to.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- num_dereference -->
+    <tr>
+      <td>num_dereference</td>
+      <td>number (default: 0)</td>
+      <td>
+        How many times the value at <span class="var">index</span>
+        is dereferenced before it is tested.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- type -->
+    <tr>
+      <td>type</td>
+      <td>direction_type</td>
+      <td>
+         Whether the target value is tested as an input
+         parameter or an output parameter.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- range_min -->
+    <tr>
+      <td>range_min</td>
+      <td>number (default: 0)</td>
+      <td>
+        The target value must be in a range, and this value is the
+        minimum valid value for the range.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- range_max -->
+    <tr>
+      <td>range_max</td>
+      <td>number (default: -1)</td>
+      <td>
+        The target value must be in a range, and this value is the
+        maximum valid value for the range.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- test_type -->
+    <tr>
+      <td>test_type</td>
+      <td>test_type</td>
+      <td>
+        The target value must satisfy this test, when
+        compared to <span class="var">test_value</span>.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- test_value -->
+    <tr>
+      <td>test_value</td>
+      <td>number (default: 0)</td>
+      <td>
+        The target value must satisfy the test <span class="var">test_type</span>
+        against this value.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- increment -->
+    <tr>
+      <td>increment</td>
+      <td>number (default: INT_MIN)</td>
+      <td>
+        Can be specified only for output conditions. 
+        The target value after the call minus the target value before the call 
+        must equal the <span class="var">increment</span>.
+        An <span class="var">increment</span> value of INT_MIN (i.e., -2147483648) is ignored,
+        which is equivalent to not specifying any increment.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- property_name -->
+    <tr>
+      <td>property_name</td>
+      <td><span class="val">string</span></td>
+      <td>
+        The target value must have a property with this name.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- property_value -->
+    <tr>
+      <td>property_value</td>
+      <td><span class="val">string</span></td>
+      <td>
+        The target value must satisfy a property with
+        <span class="var">property_name</span> and this value.
+        See <a href="#propinfo">the propinfo structure</a>
+        for details on how to associate additional information
+        to properties.
+      </td>
+    </tr>
+</p>
+<p>
+  </table>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="properties"></a><h1>Properties</h1>
+
+
+</p>
+<p>
+A property is a condition which a function requires, or 
+provides to its caller.
+We will consider four representative examples.
+</p>
+<p>
+1) The first parameter of a function must be non-0.
+BEAM should issue a complaint about any caller that would pass 0
+to the function.
+</p>
+<pre class="example">
+property ( index           = 1,
+           num_dereference = 0,
+           type            = input,
+           property_type   = requires,
+           test_type       = not_equal,
+           test_value      = 0)
+</pre>
+<p>
+
+2) A function first checks its parameters for some consistency
+before it does its job.
+If the check failed the function returns non-0.
+Although the function handles inconsistent input parameters 
+without crashing, user wants BEAM to issue a complaint about a caller
+that passed an inconsistent input.
+Consistency of the input is expressed by saying that the function
+must return 0.
+</p>
+<pre class="example">
+property ( index           = return,
+           num_dereference = 0,
+           type            = output,
+           property_type   = requires,
+           test_type       = equal,
+           test_value      = 0)
+</pre>
+<p>
+
+3) If <span class="code">f(p)</span> returns zero then the function assigned 
+a properly formed data structure into its parameter <span class="code">p</span>.
+</p>
+<pre class="example">
+property ( index           = 1,
+           num_dereference = 1,
+           type            = output,
+           property_type   = provides,
+           property_name   = &quot;data structure consistency&quot;,
+           property_value  = &quot;good&quot;
+           )
+    if ( index           = return,
+         num_dereference = 0,
+         type            = output,
+         test_type       = equal,
+         test_value      = 0)
+</pre>
+<p>
+
+4) A function call <span class="code">f(p)</span> checks its parameter to see if it was passed
+a well formed data structure. If so, it later returns 0.
+(After checking the parameter input value, the contents of the parameter may or may not
+be modified.)
+In contrast to example 2) it is not an error to pass in an ill formed input;
+the function is used merely to provide information to the caller.
+</p>
+<pre class="example">
+property ( index           = 1,
+           num_dereference = 1,
+           type            = input,
+           property_type   = provides,
+           property_name   = &quot;data structure consistency&quot;,
+           property_value  = &quot;good&quot;
+           )
+    if ( index           = return,
+         num_dereference = 0,
+         type            = output,
+         test_type       = equal,
+         test_value      = 0)
+</pre>
+<p>
+
+At one point in time the format of the property attribute changed.
+For the sake of backward compatibility we allow the following:
+<ul>
+   <li><span class="code">type = requires</span> means <span class="code">type = input</span>
+   <li><span class="code">type = provides</span> means <span class="code">type = output</span>
+   <li>If no <span class="code">property_type</span> is given then
+   <span class="code">type = input</span> implies <span class="code">property_type = requires</span>.
+   <li>If no <span class="code">property_type</span> is given then
+   <span class="code">type = output</span> implies <span class="code">property_type = provides</span>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="propinfo"></a><h1>The propinfo structure</h1>
+
+
+</p>
+<p>
+  Properties with <span class="var">property_name</span> can have additional
+  information associated with them.  This is done via <span class="code">beam::propinfo_create</span>.  This procedure must be called before the
+  property is referred to via the <span class="var">property_name</span> field of the
+  <span class="term">property</span> chain or a <span class="term">condition</span>, if the information
+  here is to take effect. Otherwise, if no <span class="term">propinfo</span> is
+  available at the time the <span class="var">property_name</span> is referred to, the
+  property will simply be a textual property with no additional
+  information - it will assume the default values of no invariance, no
+  dependence, and no resource will be associated with it.
+</p>
+<p>
+  Here are some examples:
+</p>
+<pre class="example">
+beam::propinfo_create {
+  name = &quot;file&quot;,                # state of a file (open, closed)
+  invariance = &quot;none&quot;,          # only the file handler has the property
+  dependence = &quot;calls&quot;,         # state of a file can change only by calls
+  resource = &quot;file&quot;
+}
+
+beam::propinfo_create {
+  name = &quot;sortedness&quot;,          # sorted_up, sorted_down or unsorted
+  invariance = &quot;address&quot;,       # if an array a is sorted then so is a+1
+  dependence = &quot;any_element&quot;    # assignment to any element can change sortedness
+}
+
+beam::propinfo_create {
+  name = &quot;file name&quot;,           # full, relative, or without any directories
+  invariance = &quot;none&quot;,          # only the given beginning-of-string has the property
+  dependence = &quot;string_element&quot; # any assignment upto terminating null can change the property
+}
+
+beam::propinfo_create {
+  name = &quot;num items&quot;,           # count of &quot;items&quot; without defining an &quot;item&quot;
+  invariance = &quot;none&quot;,          # only the given address of the data structure has the property
+  dependence = &quot;calls&quot;,         # number of items can change only by procedure calls
+  domain     = &quot;int&quot;            # the value of &quot;num items&quot; is an integer, not a symbol
+}
+</pre>
+<p>
+
+  Here are the available keywords and values:
+</p>
+<p>
+  <table>
+    <tr>
+      <th>Keyword</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+</p>
+<p>
+    <!-- name -->
+    <tr>
+      <td>name</td>
+      <td>string</td>
+      <td>
+        The name of the property to which this information is
+        attached. This will be the same string that is used
+        for <span class="var">property_name</span> when specifying a
+        <span class="term">property</span> or <span class="term">condition</span>.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- invariance -->
+    <tr>
+      <td>invariance</td>
+      <td>invariance (default: none)</td>
+      <td>
+        What additional memory satisfies the given property.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- dependence -->
+    <tr>
+      <td>dependence</td>
+      <td>dependence (default: none)</td>
+      <td>
+        What changes to the state of the program may invalidate
+        the given property.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- domain -->
+    <tr>
+      <td>domain</td>
+      <td>domain (default: symbol)</td>
+      <td>
+        From what set does the property takes its values (integers, or symbols).
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- resource -->
+    <tr>
+      <td>resource</td>
+      <td>resource</td>
+      <td>
+        If a resource is given, and the <span class="var">property_value</span>
+        given to this property matches the <span class="var">allocated_verb</span>
+        of the resource, then the property will be tracked for
+        resource leaks. The <span class="var">property_value</span> can be set
+        to the <span class="var">freed_verb</span> as well, which takes the
+        property back out of the allocated state, where no leaks
+        will be reported.
+      </td>
+    </tr>
+</p>
+<p>
+  </table>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="alltypes"></a><h1>List of all types</h1>
+
+
+</p>
+<p>
+  <table>
+  	<tr>
+  	  <th>Type</th>
+  	  <th width="20%">Values</th>
+  	  <th>Description</th>
+  	</tr>
+</p>
+<p>
+    <!-- fate -->
+    <tr>
+      <td>fate</td>
+      <td>
+        <ul>
+          <li>must</li>
+          <li>may</li>
+          <li>wont</li>
+        </ul>
+      </td>
+      <td>
+        This describes whether an attribute may or must happen.
+        Must is always the default. Note that <span class="val">wont</span>
+        is only currently understood for the <span class="code">anchor</span>
+        chain for the moment.
+      </td>
+    </tr>
+</p>
+<p>
+    <!-- index -->
+  	<tr>
+  	  <td>index</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="val">number</span></li>
+  	      <li>return</li>
+  	      <li>this</li>
+  	      <li>unset</li>
+  	    </ul>
+  	  </td>
+  	  <td>
+  	    This type describes an index of a function. Aside from the
+  	    regular numbers for the function's basic parameters
+  	    (counted from 1), there are also special types that
+  	    correspond to the special indices (the return value, or
+  	    the implicit <span class="val">this</span> pointer). <span class="val">unset</span> means that there
+  	    is no index. <span class="val">unset</span> is always the default if nothing
+  	    was specified.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- format -->
+  	<tr>
+  	  <td>format</td>
+  	  <td>
+  	    <ul>
+  	      <li>printf</li>
+  	      <li>scanf</li>
+  	    </ul>
+  	  </td> <!-- ### strftime and strfmon -->
+  	  <td>
+  	    This type describes different format patterns.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- buffer_type -->
+  	<tr>
+  	  <td>buffer_type</td>
+  	  <td>
+  	    <ul>
+  	      <li>read</li>
+  	      <li>write</li>
+        </ul>
+  	  </td>
+  	  <td>
+  	    This type describes whether a buffer attribute expresses
+        that the specified buffer is read from or written to.
+        A function can have both a read and write attribute for 
+        the same buffer parameter; reading is always interpreted as
+        happening before any writing, therefore any buffer to be read must 
+        be initialized.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- units -->
+  	<tr>
+  	  <td>units</td>
+  	  <td>
+  	    <ul>
+  	      <li>bytes</li>
+  	      <li>elements</li>
+        </ul>
+  	  </td>
+  	  <td>
+  	    This type describes whether something being counted should
+        be counted by bytes or by elements. Counting by bytes means
+        that the number "3", for example, specifies 3 bytes. Counting
+        by elements means that "3" would specify how many elements to
+        count. If the object being counted was an array of integers
+        of 4 bytes each, for example, then counting 3 elements would
+        be the same as counting 12 bytes.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- alloc_init -->
+  	<tr>
+  	  <td>alloc_init</td>
+  	  <td>
+  	    <ul>
+  	      <li>uninitialized</li>
+  	      <li>initialized_to_zero</li>
+  	      <li>initialized_to_unknown</li>
+  	    </ul>
+  	  </td>
+  	  <td>
+  	    This type describes the initial state of something -
+  	    whether it is initialized at all, and if so, is it zero or
+  	    something else unknown
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- alloc_error -->
+  	<tr>
+  	  <td>alloc_error</td>
+  	  <td>
+  	    <ul>
+  	      <li>ok</li>
+  	      <li>return_null</li>
+  	      <li>error</li>
+  	    </ul>
+  	  </td>
+  	  <td>
+  	    This type describes what the allocator does in certain
+  	    situations - whether it returns null, errors out, or the
+  	    situation is ok and nothing happens.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- test_type -->
+  	<tr>
+  	  <td>test_type</td>
+  	  <td>
+  	    <ul>
+  	      <li>equal</li>
+  	      <li>not_equal</li>
+  	      <li>greater_than</li>
+  	      <li>greater_than_or_equal</li>
+  	      <li>less_than</li>
+  	      <li>less_than_or_equal</li>
+  	      <li>unset</li>
+  	    </ul>
+  	  </td>
+  	  <td>
+  	    This type describes a test that can be performed. Usually
+  	    it is accompanied by a value keyword that is used as the
+  	    value to test against. <span class="val">unset</span> is always the default.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- resource -->
+  	<tr>
+  	  <td>resource</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="val">string</span></li>
+  	    </ul>
+  	  </td>
+  	  <td>
+  	    This type describes a resource by name. The resource must
+  	    have been previously declared with
+  	    <span class="code">beam::resource_create</span>.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- property_type -->
+  	<tr>
+  	  <td>property_type</td>
+  	  <td>
+  	    <ul>
+  	      <li>requires</li>
+  	      <li>provides</li>
+        </ul>
+  	  </td>
+  	  <td>
+  	    This describes whether a property is required to 
+            be satisfied by the caller before the function call, 
+            or whether it is a property provided by the function
+            to the caller.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- type -->
+  	<tr>
+  	  <td>type</td>
+  	  <td>
+  	    <ul>
+  	      <li>input</li>
+  	      <li>output</li>
+        </ul>
+  	  </td>
+  	  <td>
+  	    This appears in a condition or property of a parameter.
+            It say whether the condition or property refers to the 
+            value of the parameter before the call, or to its value
+            resulting from the call.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- violation_type -->
+<!-- uncomment when support in backend is ready
+  	<tr>
+  	  <td>violation_type</td>
+  	  <td>
+  	    <ul>
+  	      <li>unset</li>
+          <li>mistake</li>
+          <li>dereference</li>
+          <li>array_index</li>
+          <li>divisor</li>
+        </ul>
+  	  </td>
+  	  <td>
+        This type describes specific effects of properties.
+        When a property is violated, this field describes
+        what specific problem will occur. If left <span class="val">unset</span>
+        (the default), a generic complaint about properties
+        will be issued. If set to one of the more specific
+        types, a more specific complaint will be issued that
+        reflects the violation.
+  	  </td>
+  	</tr>
+-->
+</p>
+<p>
+  <!-- invariance -->
+  	<tr>
+  	  <td>invariance</td>
+  	  <td>
+  	    <ul>
+  	      <li>none</li>
+  	      <li>address</li>
+        </ul>
+  	  </td>
+  	  <td>
+        If <span class="val">none</span>, then this property holds only for the
+        location it was assigned to.
+</p>
+<p>
+        If <span class="val">address</span>, then this property also holds for
+        any address reachable by a constant offset from the location
+        it was assigned to.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- dependence -->
+  	<tr>
+  	  <td>dependence</td>
+  	  <td>
+  	    <ul>
+  	      <li>none</li>
+  	      <li>locks</li>
+  	      <li>calls</li>
+  	      <li>first_element</li>
+  	      <li>string_element</li>
+  	      <li>any_element</li>
+  	      <li>reachable_memory</li>
+  	      <li>any_memory</li>
+        </ul>
+  	  </td>
+  	  <td>
+        If <span class="val">none</span>, then this property is not invalidated
+        by anything.
+</p>
+<p>
+        If <span class="val">locks</span>, then this property may be invalidated
+        by acquiring or releasing of a lock.
+</p>
+<p>
+        If <span class="val">calls</span>, then this property may be invalidated
+        by function calls.
+</p>
+<p>
+        If <span class="val">first_element</span>, then this property may be
+        invalidated by an assignment to the first element of the
+        location, if it was treated as an array.
+</p>
+<p>
+        If <span class="val">string_element</span>, then this property may be
+        invalidated by an assignment to any element up to and including
+        the first terminating zero.
+</p>
+<p>
+        If <span class="val">any_element</span>, then this property may be
+        invalidated by an assignment to any element in the allocated
+        space for the location.
+</p>
+<p>
+        If <span class="val">reachable_memory</span>, then this property may be
+        invalidated by an assignment to any memory that is reachable
+        from the location.
+</p>
+<p>
+        If <span class="val">any_memory</span>, then this property may be invalidated
+        by an assignment to any memory.
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- domain -->
+  	<tr>
+  	  <td>domain</td>
+  	  <td>
+  	    <ul>
+  	      <li>int</li>
+  	      <li>symbol</li>
+        </ul>
+  	  </td>
+  	  <td>  
+        Domain of <span class="val">int</span> means that the property has integer
+        values given by <span class="var">test_type</span>/<span class="var">test_value</span>, or by
+        <span class="var">range_min</span>/<span class="var">range_max</span>, or by <span class="var">range</span>,
+        or by <span class="var">increment</span>.  Domain of <span class="val">symbol</span> means that
+        the property has symbolic values given by <span class="var">property_value</span>.
+  	  </td>
+  	</tr>
+  </table>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="requirements"></a><h1>Attribute Requirements</h1>
+
+
+</p>
+<p>
+  Some keywords are required. Others may not appear in certain
+  contexts. For example, it makes no sense to talk about an "input"
+  condition on the "return" index - the return index can only have a 
+  value after the call.
+</p>
+<p>
+  This table lists the requirements for the different attributes.  An
+  attribute definition that falls outside of these requirements is an
+  error, and BEAM will report it.
+</p>
+<p>
+  <table>
+  	<tr>
+  	  <th>Attribute</th>
+  	  <th>Requirements</th>
+  	</tr>
+</p>
+<p>
+    <!-- format -->
+  	<tr>
+  	  <td>format</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="var">string_index</span> may not be <span class="val">unset</span>, <span class="val">return</span>, or <span class="val">this</span> 
+          <li><span class="var">first_to_check</span> may not be <span class="val">return</span> or <span class="val">this</span>
+  	    </ul>
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- allocator -->
+  	<tr>
+  	  <td>allocator</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="var">return_index</span> may not be <span class="val">unset</span>
+          <li><span class="var">if_size_is_negative</span> may not be <span class="val">ok</span>
+          <li><span class="var">if_out_of_memory</span> may not be <span class="val">error</span>
+          <li>No two <span class="code">allocator</span> attributes
+              on the same function may refer to the
+              same <span class="var">return_index</span> and have
+              the same conditions
+  	    </ul>
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- deallocator -->
+  	<tr>
+  	  <td>deallocator</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="var">pointer_index</span> may not be <span class="val">unset</span> or <span class="val">return</span>
+          <li>No two <span class="code">deallocator</span> attributes on
+              the same function may refer to the same
+              <span class="var">pointer_index</span> with the same
+              <span class="var">num_dereference</span> and have the same
+              conditions
+  	    </ul>
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- buffer -->
+  	<tr>
+  	  <td>buffer</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="var">buffer_index</span> may not be <span class="val">unset</span>
+          <li><span class="var">*_index</span> may not be <span class="val">return</span>
+          <li>No two <span class="code">buffer</span> attributes on the
+              same function may refer to the same <span class="var">buffer_index</span>
+              with the same <span class="var">num_dereference</span> and
+              the same <span class="var">type</span> and have the same conditions
+          <li>If the <span class="var">type</span> is <span class="val">read</span> and there
+              is no size specified using any of the available keywords,
+              the attribute is ignored and a warning is printed.
+  	    </ul>
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- memmod -->
+<!--
+  	<tr>
+  	  <td>memmod</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="var">index</span> may not be <span class="val">return</span>
+  	    </ul>
+  	  </td>
+  	</tr>
+ -->
+</p>
+<p>
+  <!-- force_test -->
+  	<tr>
+  	  <td>force_test</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="var">test_index</span> may not be <span class="val">unset</span> or <span class="val">this</span>
+  	    </ul>
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- advisory -->
+  	<tr>
+  	  <td>advisory</td>
+  	  <td>
+  	    <ul>
+  	      <li><span class="var">explanation</span> must be given
+          <li><span class="var">category</span> must be given
+  	    </ul>
+  	  </td>
+  	</tr>
+</p>
+<p>
+    <!-- property/conditions -->
+  	<tr>
+  	  <td>property/condition</td>
+  	  <td>
+  	    <ul>
+  	      <li>Both of <span class="var">test_type</span> and <span class="var">test_value</span> must be given if either is given.
+  	      <li>Both of <span class="var">range_min</span> and <span class="var">range_max</span> must be given if either is given.
+  	      <li>A <span class="var">property_name</span> must be given if	<span class="var">property_value</span> is given.
+  	      <li><span class="var">index</span> must not be <span class="val">unset</span>
+  	      <li><span class="var">type</span> must be given.
+  	      <li>If <span class="var">type</span> is <span class="val">input</span>,	<span class="var">index</span> may not be <span class="val">return</span>.
+  	      <li>If <span class="var">property_name</span> is provided and its
+              propinfo specifies a domain of <span class="val">symbol</span>,
+              then <span class="var">property_value</span> must also be provided.
+              Any of <span class="var">test_value</span>, <span class="var">range_max</span>, 
+              <span class="var">range</span>, <span class="var">increment</span> is disallowed.
+  	      <li>If <span class="var">property_name</span> is provided and its
+              propinfo specifies a domain of <span class="val">int</span>,
+              then <span class="var">property_value</span> must not be provided,
+              and instead one of <span class="var">test_value</span>, 
+              <span class="var">range_max</span>, <span class="var">range</span>, <span class="var">increment</span> must be given.
+  	      <li>At least one of <span class="var">property_value</span>,
+              <span class="var">test_value</span>, <span class="var">range_max</span>, 
+              <span class="var">range</span>, <span class="var">increment</span> must appear.
+          <li>If <span class="var">increment</span> is specified then none of 
+              <span class="var">property_value</span>, <span class="var">test_value</span>, <span class="var">range_max</span>, 
+              <span class="var">range</span> may be specified.
+          <li> A value for <span class="var">increment</span> may be specified only if
+               <span class="var">type</span> is <span class="val">output</span>.
+          <li> A value of INT_MIN (i.e., -2147483648) may not be specified for <span class="var">increment</span>.
+  	    </ul>
+  	  </td>
+  	</tr>
+  </table>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="examples"></a><h1>All-attribute example</h1>
+
+
+</p>
+<p>
+  Here is an example that uses most of the attributes, so that you can
+  see just how they are specified. This example applies this attribute
+  definition containing almost all of the attributes above to any
+  function named "callme".
+</p>
+<pre class="example">
+beam::function_attribute {
+  noreturn,
+  pure,
+  const,
+  thread_safe,
+  unused,
+  format (
+    kind = printf,
+    string_index = 1,
+    first_to_check = 2
+  ),
+  allocator (
+    size_index = 1,
+    multiplier_index = unset,
+    return_index = return,
+    anchored,
+    initial_state = uninitialized,
+    if_size_is_0 = return_null,
+    if_size_is_negative = error,
+    if_out_of_memory = ok
+  ),
+  return_overlap,     <!-- ### next line: forbid_overlap ( index1 = 2, index2 = 3 ), -->
+  no_other_side_effects,
+  no_other_anchoring,
+  assert if ( index = 1, type = input, range_min = 0, range_max = 0 ),
+  deallocator ( pointer_index = 1 ),
+  deallocator ( pointer_index = 2 ),
+  buffer ( buffer_index = 1, size_index = 3 ),
+  buffer ( buffer_index = 2, size_index = 4 ),
+  force_test ( test_index = return, test_type = equal, value = 0 ),
+  property (
+    index = 2,
+    num_dereference = 1,
+    type = input,
+    property_type = requires,
+    property_name = alloc_source,
+    property_value = from_malloc
+  ),
+  property (
+    index = return,
+    type = output,
+    property_type = provides,
+    test_type = equal,
+    value = 0
+  ) if (
+    index = 1,
+    type = input,
+    test_type = not_equal,
+    value = 0 ),
+  advisory (
+    explanation = &quot;This function is not safe. Use callme2 instead.&quot;,
+    category = unsafe
+  ) if (
+    index = 2,
+    type = input,
+    property_name = &quot;array&quot;,
+    property_value = &quot;unsorted&quot;
+  ),
+} -names &quot;callme&quot;
+</pre>
+<p>
+
+  Obviously, no function will have that attribute definition as an
+  attribute, but this shows the syntax of most of the items. Also,
+  notice the chained attributes (<span class="code">deallocator, buffer, property</span>)
+  that appear twice, and notice the conditions on <span class="code">assert</span>,
+  <span class="code">property</span>, and <span class="code">advisory</span>.
+</p>
+<p>
+<h2>More examples</h2>
+
+</p>
+<p>
+  All functions named "exit" don't return
+</p>
+<pre class="example">
+beam::function_attribute { noreturn } -names &quot;exit&quot;
+</pre>
+<p>
+
+  The C++ function <span class="code">void assert( int value, const char* message	)</span> 
+  raises an error when <span class="code">value</span> is zero:
+</p>
+<pre class="example">
+beam::function_attribute {
+  assert if ( index = 1, type = input, test_type = equal, test_value = 0 )
+} -signatures &quot;assert(int, const char *)&quot;
+</pre>
+<p>
+
+  The C function <span class="code">xmalloc</span> allocates memory like
+  <span class="code">malloc</span>, but initializes it to some non-zero value
+  (maybe a bit pattern):
+</p>
+<pre class="example">
+beam::function_attribute {
+  allocator ( size_index = 1, return_index = return, initial_state = initialized_to_unknown )
+} -signatures &quot;xmalloc&quot;
+</pre>
+<p>
+
+<!-- ###
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Attributes defined by BEAM</h1>
+
+</p>
+<p>
+  BEAM provides attributes for many system functions so that BEAM
+  can catch improper use of them. BEAM also provides common
+  attribute definitions in Tcl variables that can be used when
+  defining custom attributes.
+</p>
+<p>
+  TODO
+</p>
+<p>
+    - How to specify your own (command line)
+</p>
+<p>
+    If you want to ...
+</p>
+<p>
+    BEAM pre-defines a few convenient attribute definitions, like
+    printf_like, etc. These are all defined when the parms Tcl file is
+    read in. When writing your own attributes, you can use these
+    pre-defined attributes, or create your own.
+</p>
+<p>
+    example on using $beam::attribute::printf_like...
+</p>
+<p>
+-->
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

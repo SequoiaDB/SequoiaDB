@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   <title>SequoiaDB监控</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <link href="dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="css/dtree.css" rel="stylesheet" media="screen">
+	<link href="css/style.css" rel="stylesheet" media="screen">
+   <script src="js/jquery.js"></script>
+   <script src="dist/js/bootstrap.min.js"></script>
+	<script src="js/dtree.js"></script>
+	<script src="js/ajax.js"></script>
+	<script src="js/tool.js"></script>
+	<script src="js/flotr2.js"></script>
+	<script src="js/public.js"></script>
+	{{if $headerlist eq "setup"}}
+   	<link href="css/setup.css" rel="stylesheet" media="screen">
+   	<script src="js/setup.js"></script>
+	{{elseif $headerlist eq "group"}}
+		<script src="js/group.js"></script>
+      <script src="js/monitor.js"></script>
+	{{elseif $headerlist eq "data"}}
+		<script src="js/data.js"></script>
+	{{/if}}
+  </head>
+  <body>
+  	<div>
+		<div class="navbar-default" role="banner" style="border-bottom:#D2D2D2 solid 1px;">
+			<div class="navbar-header">
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="#" class="navbar-brand" style="padding:0px;padding-top:2px;"><img src="images/logo.png" height="45"></a>
+			</div>
+			<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+				<ul class="nav navbar-nav">
+					<li {{if $headerlist eq "setup"}}{{'class="active"'}}{{/if}}>
+						<a href="index.php?p=setup">部署</a>
+					</li>
+					<li {{if $headerlist eq "data"}}{{'class="active"'}}{{/if}}>
+						<a href="index.php?p=data">数据操作</a>
+					</li>
+					<li {{if $headerlist eq "group"}}{{'class="active"'}}{{/if}}>
+						<a href="index.php?p=group">集群管理</a>
+					</li>
+                    <li>
+						<a href="http://doc.sequoiadb.com" target="new">信息中心</a>
+					</li>
+               {{if $headerlist neq "setup"}}
+					<li>
+						<a href="#" onClick="showtool('toolbutton','tool');"><div id="toolbutton">隐藏工具栏</div></a>
+					</li>
+               {{/if}}
+               <li>
+						<a href="#">关于监控</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		
+		<div class="modal fade" id="Modal_connect" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">连接管理</h4>
+					</div>
+					<div class="modal-body">
+               	<div id="connect_list_r_load" style="display:none;"><img src="images/loading.gif" /> 载入中...</div>
+						<div id="connect_list_r" style="display:none;overflow:auto;max-height:200px;width:530px;word-break:break-all;border:#D2D2D2 solid 0px;margin-bottom:20px;">
+                  	<table id="connect_list_table" class="table table-striped" style="margin:0px;">
+                     	<thead>
+                        	<tr>
+                              <th>连接地址</th>
+                              <th>描述</th>
+                              <th>用户名</th>
+                              <th>密码</th>
+                              <th>操作</th>
+                           </tr>
+                        </thead>
+                     </table>
+                  </div>
+						<div style="padding-right:5px;margin-top:10px;">
+							<form class="form-horizontal" role="form">
+								<div class="form-group">
+									<label for="connect_address" class="col-sm-2 control-label">连接地址</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="connect_address" placeholder="必填">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="connect_represent" class="col-sm-2 control-label">描述</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="connect_represent" placeholder="可选">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="connect_user" class="col-sm-2 control-label">用户名</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="connect_user" placeholder="可选">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="connect_password" class="col-sm-2 control-label">密码</label>
+									<div class="col-sm-10">
+										<input type="password" class="form-control" id="connect_password" placeholder="可选">
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-2 col-sm-10">
+										<div class="checkbox">
+											<label>
+												<input id="keeppassword" type="checkbox"> 保存密码
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-2 col-sm-10">
+										<button type="button" class="btn btn-default" onClick="sessionconnect();">连接</button>
+										<button type="button" class="btn btn-default" onClick="testconnect();">连接测试</button>
+										<button type="button" class="btn btn-default" onClick="updateconnect();">保存到列表</button>
+									</div>
+								</div>
+							</form>
+						</div>
+                  <div id="connect_return_load" style="padding-right:5px;margin-top:10px;display:none;"><img src="images/loading.gif" /> 载入中...</div>
+						<div id="connect_return" style="padding-right:5px;margin-top:10px;"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="Modal_sql" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">执行SQL</h4>
+					</div>
+					<div class="modal-body">
+						<div>
+							<textarea id="sqlinput" class="form-control" rows="4"></textarea>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" onClick="sqlexecute('sqlinput','context')">确认</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="Modal_tips" tabindex="-1" role="dialog" aria-labelledby="ModalLabeltips" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">提示！</h4>
+					</div>
+					<div class="modal-body">
+						<div id="header_tips_1" style="display:none;" class="alert alert-warning"><strong>提示!</strong> 推荐您使用1280像素或以上的分辨率。</div>
+						<div id="header_tips_2" style="display:none;" class="alert alert-danger"><strong>警告!</strong> 您的系统分辨率过低，最低支持的分辨率是1024*768，推荐您使用1280像素或以上的分辨率。</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal" onClick='{{if $headerlist neq "setup"}}showconnectmanager(){{/if}}'>OK</button>
+					</div>
+				</div>
+			</div>
+		</div>

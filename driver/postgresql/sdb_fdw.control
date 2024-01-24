@@ -1,0 +1,5 @@
+# sdb_fdw extension
+comment = 'foreign data wrapper for SequoiaDB access'
+default_version = '1.0'
+module_pathname = '$libdir/sdb_fdw'
+relocatable = true

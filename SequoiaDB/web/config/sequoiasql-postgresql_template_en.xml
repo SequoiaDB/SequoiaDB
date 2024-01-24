@@ -1,0 +1,8 @@
+<DeployModList type="array">
+	<FILLER>
+		<DeployMod></DeployMod>
+		<WebName>SequoiaSQL-PostgreSQL</WebName>
+		<BusinessType>sequoiasql-postgresql</BusinessType>
+		<Property type="array"></Property>
+ 	</FILLER>
+</DeployModList>

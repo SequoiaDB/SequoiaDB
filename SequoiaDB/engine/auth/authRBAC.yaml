@@ -1,0 +1,1473 @@
+enums:
+  ACTION_TYPE_ENUM:
+    type: string
+    values:
+      _invalid: "_invalid"
+      # SdbCollection Begin
+      alterCL: "alterCL"
+      attachCL: "attachCL"
+      copyIndex: "copyIndex"
+      find: "find"
+      insert: "insert"
+      update: "update"
+      remove: "remove"
+      getDetail: "getDetail"
+      createIndex: "createIndex"
+      dropIndex: "dropIndex"
+      detachCL: "detachCL"
+      truncate: "truncate"
+      split: "split"
+      # SdbCollection End
+      # SdbCS Begin
+      alterCS: "alterCS"
+      createCL: "createCL"
+      dropCL: "dropCL"
+      renameCL: "renameCL"
+      listCollections: "listCollections"
+      testCL: "testCL"
+      # SdbCS End
+      # SdbRecycleBin Begin
+      alterBin: "alterBin"
+      countBin: "countBin"
+      dropAllBin: "dropAllBin"
+      dropItemBin: "dropItemBin"
+      getDetailBin: "getDetailBin"
+      listBin: "listBin"
+      returnItemBin: "returnItemBin"
+      snapshotBin: "snapshotBin"
+      # SdbRecycleBin End
+      # Sdb Begin
+      analyze: "analyze"
+      backup: "backup"
+      createCS: "createCS"
+      dropCS: "dropCS"
+      loadCS: "loadCS"
+      unloadCS: "unloadCS"
+      cancelTask: "cancelTask"
+      createRole: "createRole"
+      dropRole: "dropRole"
+      getRole: "getRole"
+      listRoles: "listRoles"
+      updateRole: "updateRole"
+      grantPrivilegesToRole: "grantPrivilegesToRole"
+      revokePrivilegesFromRole: "revokePrivilegesFromRole"
+      grantRolesToRole: "grantRolesToRole"
+      revokeRolesFromRole: "revokeRolesFromRole"
+      createUsr: "createUsr"
+      dropUsr: "dropUsr"
+      getUser: "getUser"
+      grantRolesToUser: "grantRolesToUser"
+      revokeRolesFromUser: "revokeRolesFromUser"
+      createDataSource: "createDataSource"
+      createDomain: "createDomain"
+      createProcedure: "createProcedure"
+      createRG: "createRG"
+      createSequence: "createSequence"
+      dropDataSource: "dropDataSource"
+      dropDomain: "dropDomain"
+      dropSequence: "dropSequence"
+      eval: "eval"
+      flushConfigure: "flushConfigure"
+      forceSession: "forceSession"
+      forceStepUp: "forceStepUp"
+      getDataSource: "getDataSource"
+      getDomain: "getDomain"
+      getRG: "getRG"
+      getSequence: "getSequence"
+      getTask: "getTask"
+      invalidateCache: "invalidateCache"
+      invalidateUserCache: "invalidateUserCache"
+      list: "list"
+      listCollectionSpaces: "listCollectionSpaces"
+      removeBackup: "removeBackup"
+      removeRG: "removeRG"
+      removeProcedure: "removeProcedure"
+      renameCS: "renameCS"
+      resetSnapshot: "resetSnapshot"
+      reloadConf: "reloadConf"
+      deleteConf: "deleteConf"
+      snapshot: "snapshot"
+      sync: "sync"
+      setPDLevel: "setPDLevel"
+      trace: "trace"
+      traceStatus : "traceStatus"
+      trans: "trans"
+      updateConf: "updateConf"
+      testCS: "testCS"
+      waitTasks: "waitTasks"
+      listProcedures: "listProcedures"
+      alterUser: "alterUser"
+      listBackup: "listBackup"
+      # Sdb End
+      # SdbDataSource Begin
+      alterDataSource: "alterDataSource"
+      # SdbDataSource End
+      # SdbReplicaGroup Begin
+      createNode: "createNode"
+      getNode: "getNode"
+      reelect: "reelect"
+      removeNode: "removeNode"
+      startRG: "startRG"
+      stopRG: "stopRG"
+      alterRG: "alterRG"
+      # SdbReplicaGroup End
+      # SdbNode Begin
+      startNode: "startNode"
+      stopNode: "stopNode"
+      alterNode: "alterNode"
+      # SdbNode End
+      # SdbSequence Begin
+      fetchSequence: "fetchSequence"
+      getSequenceCurrentValue: "getSequenceCurrentValue"
+      alterSequence: "alterSequence"
+      # SdbSequence End
+      # SdbDomain Begin
+      alterDomain: "alterDomain"
+      # SdbDomain End
+      # SdbDataCenter Begin
+      getDCInfo: "getDCInfo"
+      alterDC: "alterDC"
+      # SdbDataCenter End
+
+  RESOURCE_TYPE_ENUM:
+    type: string
+    values:
+      _INVALID:
+        value: "_Invalid"
+        extra_data: []
+
+      # resource: { Cluster: true }
+      CLUSTER:
+        value: "Cluster"
+        extra_data: &actionsOnCluster
+          - listCollectionSpaces
+          - updateConf
+          - backup
+          - createCS
+          - createSequence
+          - dropSequence
+          - alterSequence
+          - getSequenceCurrentValue
+          - cancelTask
+          - dropCS
+          - loadCS
+          - unloadCS
+          - getDCInfo
+          - list
+          - snapshot
+          - listBin
+          - renameCS
+          - removeBackup
+          - createRG
+          - removeRG
+          - startRG
+          - stopRG
+          - createNode
+          - removeNode
+          - startNode
+          - stopNode
+          - setPDLevel
+          - waitTasks
+          - trace
+          - traceStatus
+          - createDomain
+          - dropDomain
+          - createProcedure
+          - forceStepUp
+          - removeProcedure
+          - listProcedures
+          - eval
+          - invalidateCache
+          - invalidateUserCache
+          - forceSession
+          - alterDC
+          - alterUser
+          - reelect
+          - sync
+          - reloadConf
+          - deleteConf
+          - createDataSource
+          - dropDataSource
+          - alterDataSource
+          - alterBin
+          - countBin
+          - dropAllBin
+          - dropItemBin
+          - getDetailBin
+          - listBin
+          - returnItemBin
+          - snapshotBin
+          - alterDomain
+          - createRole
+          - dropRole
+          - getRole
+          - listRoles
+          - updateRole
+          - grantPrivilegesToRole
+          - revokePrivilegesFromRole
+          - grantRolesToRole
+          - revokeRolesFromRole
+          - createUsr
+          - dropUsr
+          - getUser
+          - grantRolesToUser
+          - revokeRolesFromUser
+          - fetchSequence
+          - flushConfigure
+          - forceSession
+          - getDataSource
+          - getDomain
+          - getRG
+          - getSequence
+          - trans
+          - getTask
+          - getNode
+          - resetSnapshot
+          - listBackup
+          - alterNode
+          - alterRG
+
+
+      # resource: { cs:"", cl: "exact" }
+      COLLECTION_NAME:
+        value: "CollectionName"
+        extra_data: &actionsOnCollection
+          - find
+          - insert
+          - update
+          - remove
+          - getDetail
+          - createIndex
+          - dropIndex
+          - copyIndex
+          - split
+          - attachCL
+          - detachCL
+          - truncate
+          - alterCL
+          - testCL
+          - analyze
+
+      # resource: { cs:"exact", cl: "" }
+      COLLECTION_SPACE:
+        value: "ExactCollectionSpace"
+        extra_data: &actionsOnCS
+          # Actions common to collection
+          # YAML doesn't support extending nested list aliases, but flattening nested list will work in building phase
+          # Make changes to alias actionsOnCollection will affect here
+          - *actionsOnCollection
+
+          # Actions specfic to the COLLECTION_SPACE type
+          - alterCS
+          - createCL
+          - dropCL
+          - renameCL
+          - listCollections
+          - testCS
+
+      # resource: { cs:"exact", cl: "exact" }
+      EXACT_COLLECTION:
+        value: "ExactCollection"
+        extra_data: *actionsOnCollection
+
+      # resource: { cs:"", cl: "" }
+      NON_SYSTEM:
+        value: "NonSystem"
+        extra_data: *actionsOnCS
+
+      # resource: { AnyResource: true }
+      ANY:
+        value: "AnyResource"
+        extra_data: __all__ # '__all__' will be converted to all actions in building phase
+
+BUILTIN_ROLES:
+  _cs_read:
+    privileges:
+      - resource:
+          type: COLLECTION_SPACE
+        actions: &readRoleActions
+          - find
+          - getDetail
+
+  _cs_readWrite:
+    privileges:
+      - resource:
+          type: COLLECTION_SPACE
+        actions: &readWriteRoleActions
+          - *readRoleActions
+          - update
+          - insert
+          - remove
+
+  _cs_admin:
+    privileges:
+      - resource:
+          type: COLLECTION_SPACE
+        actions: &adminRoleActions
+          - *actionsOnCS
+
+  _clusterAdmin:
+    privileges:
+      - resource:
+          type: CLUSTER
+        actions:
+          - createRG
+          - removeRG
+          - startRG
+          - stopRG
+          - getRG
+          - list
+          - snapshot
+          - createNode
+          - removeNode
+          - startNode
+          - stopNode
+          - forceStepUp
+
+  _clusterMonitor:
+    privileges:
+      - resource:
+          type: CLUSTER
+        actions:
+          - list
+          - snapshot
+          - resetSnapshot
+          - getSequenceCurrentValue
+          - getDCInfo
+          - getDetailBin
+          - getRole
+          - getUser
+          - countBin
+          - listCollections
+          - listBin
+          - listRoles
+          - listCollectionSpaces
+          - listProcedures
+          - traceStatus
+          - eval
+      - resource:
+          type: NON_SYSTEM
+        actions:
+          - testCS
+          - testCL
+          - getDetail
+
+  _backup:
+    privileges:
+      - resource:
+          type: CLUSTER
+        actions:
+          - backup
+          - listBackup
+          - removeBackup
+
+  _dbAdmin:
+    privileges:
+      - resource:
+          type: NON_SYSTEM
+        actions: *adminRoleActions
+
+  _userAdmin:
+    privileges:
+      - resource:
+          type: CLUSTER
+        actions: &userAdminRoleActions
+          - createRole
+          - dropRole
+          - getRole
+          - listRoles
+          - updateRole
+          - grantPrivilegesToRole
+          - revokePrivilegesFromRole
+          - grantRolesToRole
+          - revokeRolesFromRole
+          - createUsr
+          - dropUsr
+          - getUser
+          - grantRolesToUser
+          - revokeRolesFromUser
+          - invalidateUserCache
+
+  _root:
+    privileges:
+      - resource:
+          type: ANY
+        actions: __all__ # '__all__' will be converted to all actions in building phase
+
+CMD_PRIVILEGE_MAP:
+  values:
+    CMD_NAME_BACKUP_OFFLINE:
+      - resource: CLUSTER
+        actionSets:
+          - [backup]
+
+    CMD_NAME_CREATE_COLLECTION:
+      - resource:
+          type: COLLECTION_SPACE
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [createCL]
+
+    CMD_NAME_CREATE_COLLECTIONSPACE:
+      - resource: CLUSTER
+        actionSets:
+          - [createCS]
+
+    CMD_NAME_CREATE_SEQUENCE:
+      - resource: CLUSTER
+        actionSets:
+          - [createSequence]
+
+    CMD_NAME_DROP_SEQUENCE:
+      - resource: CLUSTER
+        actionSets:
+          - [dropSequence]
+
+    CMD_NAME_ALTER_SEQUENCE:
+      - resource: CLUSTER
+        actionSets:
+          - [alterSequence]
+
+    CMD_NAME_GET_SEQ_CURR_VAL:
+      - resource: CLUSTER
+        actionSets:
+          - [getSequenceCurrentValue]
+
+    CMD_NAME_CREATE_INDEX:
+      - resource: 
+          type: EXACT_COLLECTION
+          from: 
+            obj: query
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [createIndex]
+
+    CMD_NAME_CANCEL_TASK:
+      - resource: CLUSTER
+        actionSets:
+          - [cancelTask]
+
+    CMD_NAME_DROP_COLLECTION:
+      - resource: 
+          type: COLLECTION_SPACE
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [dropCL]
+
+    CMD_NAME_DROP_COLLECTIONSPACE:
+      - resource: CLUSTER
+        actionSets:
+          - [dropCS]
+
+    CMD_NAME_LOAD_COLLECTIONSPACE:
+      - resource: CLUSTER
+        actionSets:
+          - [loadCS]
+
+    CMD_NAME_UNLOAD_COLLECTIONSPACE:
+      - resource: CLUSTER
+        actionSets:
+          - [unloadCS]
+
+    CMD_NAME_DROP_INDEX:
+      - resource:
+          type: EXACT_COLLECTION
+          from:
+            obj: query
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [dropIndex]
+
+    CMD_NAME_COPY_INDEX:
+      - resource:
+          type: EXACT_COLLECTION
+          tag: "maincl"
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [copyIndex]
+
+    # CMD_NAME_REPORT_TASK_PROGRESS
+
+    CMD_NAME_GET_COUNT:
+      - resource:
+          type: EXACT_COLLECTION
+          from:
+            obj: hint
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [find]
+          - [getDetail]
+
+    CMD_NAME_GET_INDEXES:
+      - resource: 
+          type: EXACT_COLLECTION
+          from: 
+            obj: hint
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [find]
+          - [getDetail]
+
+    # CMD_NAME_GET_DATABLOCKS:
+
+    CMD_NAME_GET_QUERYMETA:
+      - resource: 
+          type: EXACT_COLLECTION
+          from:
+            obj: hint
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [find]
+          - [getDetail]
+
+    # CMD_NAME_GET_CONFIG
+
+    CMD_NAME_GET_DCINFO:
+      - resource: CLUSTER
+        actionSets:
+          - [getDCInfo]
+
+    # CMD_NAME_GET_DOMAIN_NAME 
+    # SdbCollection::getDomainName invoke exec("select Domain from $LIST_CS where Name = '$csName'")
+
+    # CMD_NAME_LIST_COLLECTIONS require special handling
+
+    CMD_NAME_LIST_COLLECTIONSPACES:
+      - resource: CLUSTER
+        actionSets:
+          - [listCollectionSpaces]
+          - [list]
+
+    CMD_NAME_LIST_CONTEXTS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_CONTEXTS_CURRENT:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_SESSIONS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_SESSIONS_CURRENT:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_STORAGEUNITS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_GROUPS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [getRG]
+          - [getNode]
+
+    CMD_NAME_LIST_DOMAINS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [getDomain]
+
+    CMD_NAME_LIST_CS_IN_DOMAIN:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [listCollectionSpaces]
+
+    CMD_NAME_LIST_CL_IN_DOMAIN:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    # CMD_NAME_LIST_CL_IN_COLLECTIONSPACE require special handling
+
+    CMD_NAME_LIST_USERS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_BACKUPS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [listBackup]
+
+    CMD_NAME_LIST_TASKS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [getTask]
+
+    # CMD_NAME_LIST_INDEXES equal to CMD_NAME_GET_INDEXES
+
+    CMD_NAME_LIST_TRANSACTIONS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_TRANSACTIONS_CUR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_SVCTASKS:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_SEQUENCES:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [getSequence]
+
+    CMD_NAME_LIST_DATASOURCES:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [getDataSource]
+
+    CMD_NAME_LIST_RECYCLEBIN:
+      - resource: CLUSTER
+        actionSets:
+          - [listBin]
+          - [list]
+
+    CMD_NAME_RENAME_COLLECTION:
+      - resource:
+          type: COLLECTION_SPACE
+          from:
+            obj: query
+            key: FIELD_NAME_COLLECTIONSPACE
+        actionSets:
+          - [renameCL]
+
+    CMD_NAME_RENAME_COLLECTIONSPACE:
+      - resource: CLUSTER
+        actionSets:
+          - [renameCS]
+
+    # CMD_NAME_REORG_OFFLINE
+
+    # CMD_NAME_REORG_ONLINE
+
+    # CMD_NAME_SHUTDOWN
+
+    CMD_NAME_SNAPSHOT_CONTEXTS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_CONTEXTS_CURRENT:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_DATABASE:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_RESET:
+      - resource: CLUSTER
+        actionSets:
+          - [resetSnapshot]
+
+    CMD_NAME_SNAPSHOT_SESSIONS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SESSIONS_CURRENT:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SYSTEM:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_COLLECTIONS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_COLLECTIONSPACES:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_CATA:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TRANSACTIONS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TRANSACTIONS_CUR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_ACCESSPLANS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_HEALTH:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_CONFIGS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SVCTASKS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SEQUENCES:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_QUERIES:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_LATCHWAITS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_LOCKWAITS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_INDEXSTATS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TASKS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_INDEXES:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TRANSWAITS:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TRANSDEADLOCK:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_RECYCLEBIN:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+          - [snapshotBin]
+
+    CMD_NAME_TEST_COLLECTION:
+      - resource: 
+          type: EXACT_COLLECTION
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [testCL]
+          - [find]
+          - [getDetail]
+
+    CMD_NAME_TEST_COLLECTIONSPACE:
+      - resource: 
+          type: COLLECTION_SPACE
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [testCS]
+          - [find]
+          - [getDetail]
+
+    CMD_NAME_CREATE_GROUP:
+      - resource: CLUSTER
+        actionSets:
+          - [createRG]
+
+    CMD_NAME_REMOVE_GROUP:
+      - resource: CLUSTER
+        actionSets:
+          - [removeRG]
+
+    CMD_NAME_CREATE_NODE:
+      - resource: CLUSTER
+        actionSets:
+          - [createNode]
+
+    CMD_NAME_REMOVE_NODE:
+      - resource: CLUSTER
+        actionSets:
+          - [removeNode]
+
+    CMD_NAME_REMOVE_BACKUP:
+      - resource: CLUSTER
+        actionSets:
+          - [removeBackup]
+
+    # CMD_NAME_UPDATE_NODE
+
+    CMD_NAME_ACTIVE_GROUP:
+      - resource: CLUSTER
+        actionSets:
+          - [startRG]
+
+    CMD_NAME_STARTUP_NODE:
+      - resource: CLUSTER
+        actionSets:
+          - [startNode]
+
+    CMD_NAME_SHUTDOWN_NODE:
+      - resource: CLUSTER
+        actionSets:
+          - [stopNode]
+
+    CMD_NAME_SHUTDOWN_GROUP:
+      - resource: CLUSTER
+        actionSets:
+          - [stopRG]
+
+    CMD_NAME_SET_PDLEVEL:
+      - resource: CLUSTER
+        actionSets:
+          - [setPDLevel]
+
+    CMD_NAME_SPLIT:
+      - resource: 
+          type: EXACT_COLLECTION
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [split]
+
+    CMD_NAME_WAITTASK:
+      - resource: CLUSTER
+        actionSets:
+          - [waitTasks]
+
+    CMD_NAME_CREATE_CATA_GROUP:
+      - resource: CLUSTER
+        actionSets:
+          - [createRG]
+
+    CMD_NAME_TRACE_START:
+      - resource: CLUSTER
+        actionSets:
+          - [trace]
+
+    CMD_NAME_TRACE_RESUME:
+      - resource: CLUSTER
+        actionSets:
+          - [trace]
+
+    CMD_NAME_TRACE_STOP:
+      - resource: CLUSTER
+        actionSets:
+          - [trace]
+
+    CMD_NAME_TRACE_STATUS:
+      - resource: CLUSTER
+        actionSets:
+          - [traceStatus]
+
+    CMD_NAME_CREATE_DOMAIN:
+      - resource: CLUSTER
+        actionSets:
+          - [createDomain]
+
+    CMD_NAME_DROP_DOMAIN:
+      - resource: CLUSTER
+        actionSets:
+          - [dropDomain]
+
+    # CMD_NAME_ADD_DOMAIN_GROUP  alter domain
+
+    # CMD_NAME_REMOVE_DOMAIN_GROUP  alter domain
+
+    CMD_NAME_EXPORT_CONFIG:
+      - resource: CLUSTER
+        actionSets:
+          - [flushConfigure]
+
+    CMD_NAME_CRT_PROCEDURE:
+      - resource: CLUSTER
+        actionSets:
+          - [createProcedure]
+
+    CMD_NAME_RM_PROCEDURE:
+      - resource: CLUSTER
+        actionSets:
+          - [removeProcedure]
+
+    CMD_NAME_LIST_PROCEDURES:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [listProcedures]
+
+    CMD_NAME_EVAL:
+      - resource: CLUSTER
+        actionSets:
+          - [eval]
+
+    CMD_NAME_LINK_CL: # require special handling
+      - resource:
+          type: EXACT_COLLECTION
+          tag: "maincl"
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [attachCL, find]
+      - resource:
+          type: EXACT_COLLECTION
+          tag: "subcl"
+          from:
+            obj: query
+            key: FIELD_NAME_SUBCLNAME
+        actionSets:
+          - [find, insert, update, remove]
+
+    CMD_NAME_UNLINK_CL:
+      - resource:
+          type: EXACT_COLLECTION
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [detachCL]
+
+    CMD_NAME_INVALIDATE_CACHE:
+      - resource: CLUSTER
+        actionSets:
+          - [invalidateCache]
+
+    CMD_NAME_INVALIDATE_SEQUENCE_CACHE:
+      - resource: CLUSTER
+        actionSets:
+          - [invalidateCache]
+
+    CMD_NAME_INVALIDATE_DATASOURCE_CACHE:
+      - resource: CLUSTER
+        actionSets:
+          - [invalidateCache]
+
+    CMD_NAME_FORCE_SESSION:
+      - resource: CLUSTER
+        actionSets:
+          - [forceSession]
+
+    CMD_NAME_LIST_LOBS:
+      - resource:
+          type: EXACT_COLLECTION
+          from:
+            obj: hint
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [find]
+          - [getDetail]
+
+    CMD_NAME_ALTER_DC:
+      - resource: CLUSTER
+        actionSets:
+          - [alterDC]
+
+    CMD_NAME_ALTER_USR:
+      - resource: CLUSTER
+        actionSets:
+          - [alterUser]
+
+    CMD_NAME_REELECT:
+      - resource: CLUSTER
+        actionSets:
+          - [reelect]
+
+    CMD_NAME_FORCE_STEP_UP:
+      - resource: CLUSTER
+        actionSets:
+          - [forceStepUp]
+
+    # CMD_NAME_JSON_LOAD
+
+    CMD_NAME_TRUNCATE:
+      - resource: 
+          type: EXACT_COLLECTION
+          from:
+            obj: query
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [truncate]
+
+    CMD_NAME_SYNC_DB:
+      - resource: CLUSTER
+        actionSets:
+          - [sync]
+
+    CMD_NAME_POP:
+      - resource: 
+          type: EXACT_COLLECTION
+          from:
+            obj: query
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [remove]
+
+    CMD_NAME_RELOAD_CONFIG:
+      - resource: CLUSTER
+        actionSets:
+          - [reloadConf]
+
+    CMD_NAME_UPDATE_CONFIG:
+      - resource: CLUSTER
+        actionSets:
+          - [updateConf]
+
+    CMD_NAME_DELETE_CONFIG:
+      - resource: CLUSTER
+        actionSets:
+          - [deleteConf]
+
+    # CMD_NAME_ANALYZE require special handling in coordCMDAnalyze and rtnAnalyze
+
+    CMD_NAME_GET_CL_DETAIL:
+      - resource:
+          type: EXACT_COLLECTION
+          from:
+            obj: hint
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [find]
+          - [getDetail]
+
+    CMD_NAME_GET_CL_STAT:
+      - resource: 
+          type: EXACT_COLLECTION
+          from:
+            obj: hint
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [find]
+          - [getDetail]
+
+    CMD_NAME_GET_INDEX_STAT:
+      - resource:
+          type: EXACT_COLLECTION
+          from:
+            obj: hint
+            key: FIELD_NAME_COLLECTION
+        actionSets:
+          - [find]
+          - [getDetail]
+
+    CMD_NAME_CREATE_DATASOURCE:
+      - resource: CLUSTER
+        actionSets:
+          - [createDataSource]
+
+    CMD_NAME_DROP_DATASOURCE:
+      - resource: CLUSTER
+        actionSets:
+          - [dropDataSource]
+
+    CMD_NAME_ALTER_DATASOURCE:
+      - resource: CLUSTER
+        actionSets:
+          - [alterDataSource]
+
+    CMD_NAME_GET_RECYCLEBIN_DETAIL:
+      - resource: CLUSTER
+        actionSets:
+          - [getDetailBin]
+
+    CMD_NAME_GET_RECYCLEBIN_COUNT:
+      - resource: CLUSTER
+        actionSets:
+          - [countBin]
+
+    CMD_NAME_ALTER_RECYCLEBIN:
+      - resource: CLUSTER
+        actionSets:
+          - [alterBin]
+
+    CMD_NAME_DROP_RECYCLEBIN_ITEM:
+      - resource: CLUSTER
+        actionSets:
+          - [dropItemBin]
+
+    CMD_NAME_DROP_RECYCLEBIN_ALL:
+      - resource: CLUSTER
+        actionSets:
+          - [dropAllBin]
+
+    CMD_NAME_RETURN_RECYCLEBIN_ITEM:
+      - resource: CLUSTER
+        actionSets:
+          - [returnItemBin]
+
+    CMD_NAME_RETURN_RECYCLEBIN_ITEM_TO_NAME:
+      - resource: CLUSTER
+        actionSets:
+          - [returnItemBin]
+
+    CMD_NAME_SNAPSHOT_DATABASE_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SYSTEM_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_COLLECTION_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SPACE_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_CONTEXT_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_CONTEXTCUR_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SESSION_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SESSIONCUR_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_CATA_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TRANS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TRANSCUR_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_ACCESSPLANS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_HEALTH_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_CONFIGS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SVCTASKS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_SEQUENCES_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_QUERIES_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_LATCHWAITS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_LOCKWAITS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_INDEXSTATS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TASKS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_INDEXES_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TRANSWAITS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_TRANSDEADLOCK_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_SNAPSHOT_RECYCLEBIN_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [snapshot]
+
+    CMD_NAME_LIST_COLLECTION_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+
+    CMD_NAME_LIST_SPACE_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [listCollectionSpaces]
+          - [list]
+              
+    CMD_NAME_LIST_CONTEXT_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_CONTEXTCUR_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_SESSION_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_SESSIONCUR_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_STORAGEUNIT_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_BACKUP_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_TRANS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_TRANSCUR_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_GROUP_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_USER_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_TASK_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_INDEXES_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_DOMAIN_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [getDomain]
+              
+    CMD_NAME_LIST_SVCTASKS_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+              
+    CMD_NAME_LIST_SEQUENCES_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [getSequence]
+              
+    CMD_NAME_LIST_DATASOURCE_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+          - [getDataSource]
+              
+    CMD_NAME_LIST_RECYCLEBIN_INTR:
+      - resource: CLUSTER
+        actionSets:
+          - [list]
+    
+    CMD_NAME_ALTER_COLLECTION:
+      - resource:
+          type: EXACT_COLLECTION
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [alterCL]
+
+    CMD_NAME_ALTER_COLLECTION_SPACE:
+      - resource:
+          type: COLLECTION_SPACE
+          from:
+            obj: query
+            key: FIELD_NAME_NAME
+        actionSets:
+          - [alterCS]
+
+    CMD_NAME_ALTER_DOMAIN:
+      - resource: CLUSTER
+        actionSets:
+          - [alterDomain]
+
+    CMD_NAME_ALTER_NODE:
+      - resource: CLUSTER
+        actionSets:
+          - [alterNode]
+
+    CMD_NAME_ALTER_GROUP:
+      - resource: CLUSTER
+        actionSets:
+          - [alterRG]
+
+    CMD_NAME_CREATE_ROLE:
+      - resource: CLUSTER
+        actionSets:
+          - [createRole]
+
+    CMD_NAME_DROP_ROLE:
+      - resource: CLUSTER
+        actionSets:
+          - [dropRole]
+    
+    CMD_NAME_GET_ROLE:
+      - resource: CLUSTER
+        actionSets:
+          - [getRole]
+
+    CMD_NAME_LIST_ROLES:
+      - resource: CLUSTER
+        actionSets:
+          - [listRoles]
+
+    CMD_NAME_UPDATE_ROLE:
+      - resource: CLUSTER
+        actionSets:
+          - [updateRole]
+    
+    CMD_NAME_GRANT_PRIVILEGES:
+      - resource: CLUSTER
+        actionSets:
+          - [grantPrivilegesToRole]
+
+    CMD_NAME_REVOKE_PRIVILEGES:
+      - resource: CLUSTER
+        actionSets:
+          - [revokePrivilegesFromRole]
+
+    CMD_NAME_GRANT_ROLES_TO_ROLE:
+      - resource: CLUSTER
+        actionSets:
+          - [grantRolesToRole]
+
+    CMD_NAME_REVOKE_ROLES_FROM_ROLE:
+      - resource: CLUSTER
+        actionSets:
+          - [revokeRolesFromRole]
+
+    CMD_NAME_GET_USER:
+      - resource: CLUSTER
+        actionSets:
+          - [getUser]
+
+    CMD_NAME_GRANT_ROLES_TO_USER:
+      - resource: CLUSTER
+        actionSets:
+          - [grantRolesToUser]
+
+    CMD_NAME_REVOKE_ROLES_FROM_USER:
+      - resource: CLUSTER
+        actionSets:
+          - [revokeRolesFromUser]
+
+    CMD_NAME_INVALIDATE_USER_CACHE:
+      - resource: CLUSTER
+        actionSets:
+          - [invalidateUserCache]

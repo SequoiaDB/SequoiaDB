@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:sdb="http://www.springframework.org/schema/data/sdb"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/sdb http://www.springframework.org/schema/data/sdb/spring-sdb.xsd
+			 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<sdb:mapping-converter id="mappingConverterWithCustomFieldNamingStrategy" field-naming-strategy-ref="customFieldNamingStrategy" />
+
+	<!-- Should work as well as long ass abbreviation is explicitly disabled -->
+	<sdb:mapping-converter id="mappingConverterWithCustomFieldNamingStrategyAndAbbreviationDisabled" field-naming-strategy-ref="customFieldNamingStrategy" abbreviate-field-names="false" />
+
+	<bean id="customFieldNamingStrategy" class="org.mockito.Mockito" factory-method="mock">
+	    <property name="type" value="org.springframework.data.sequoiadb.core.mapping.FieldNamingStrategy" />
+	</bean>
+</beans>

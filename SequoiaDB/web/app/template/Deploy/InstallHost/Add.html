@@ -1,0 +1,17 @@
+<div ng-controller="Deploy.AddHost.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList"></div>
+   <div style="padding:10px 15px;" ng-container="{offsetY:-70}">
+      <div ng-container="{offsetY:-45}">
+         <!--主机列表-->
+         <div class="pull-left" ng-container="{width:400}" ng-controller="Deploy.AddHost.HostList.Ctrl" ng-include="'./app/template/Deploy/InstallHost/AddHost.HostList.html'"></div>
+         <!--主机配置-->
+         <div class="pull-left" ng-container="{offsetX:-410,marginLeft:10}" ng-controller="Deploy.AddHost.HostInfo.Ctrl" ng-include="'./app/template/Deploy/InstallHost/AddHost.HostInfo.html'"></div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-click="GotoScanHost()"><i class="fa fa-chevron-left"></i> {{autoLanguage("上一步")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn" ng-class="{'true':'btn-primary','false':'btn-danger'}[CheckedHostNum>0]" ng-click="GotoInstall()">{{autoLanguage("下一步")}} <i class="fa fa-chevron-right"></i></button>
+      </div>
+   </div>
+</div>

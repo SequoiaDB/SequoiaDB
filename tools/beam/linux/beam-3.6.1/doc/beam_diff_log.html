@@ -1,0 +1,181 @@
+<html>
+<head>
+  <title>BEAM: beam_diff_log Command</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">The beam_diff_log Command</h1>
+<hr/>
+
+</p>
+<p>
+The script <span class="command">beam_diff_log</span> compares the contents of
+two files containing complaints.
+</p>
+<p>
+This is useful when you run BEAM on a code base at two different points
+in time and want to see what has changed. For instance, you might be
+interested to see 
+</p>
+<p>
+<ul>
+<li>whether there are new complaints
+<li>which complaints are no longer present (have been fixed)
+<li>which complaints are still present (have not been fixed)
+</ul>
+</p>
+<p>
+Note, that these comparisons only make sense if the same code base
+was analyzed.  If your runs are such that you only analyze the
+code that has changed (incremental runs) then this script is not useful.
+</p>
+<p>
+The script is written in a way that you can post-process its output
+easily and use it to craft custom reports of your liking. 
+</p>
+<p>
+<h1>Invocation</h1>
+
+</p>
+<p>
+The script is invoked like so:
+</p>
+<pre class="example">
+beam_diff_log <span class="val">options old-file new-file</span>
+</pre>
+<p>
+
+The script's function is controlled via its command line options.
+</p>
+<p>
+<table>
+<tr>
+ <th>Option</th>
+ <th>Meaning</th>
+<tr>
+<tr>
+ <td><span class="option">--old</span></td>
+ <td>Write out complaints that are in <span class="val">old-file</span> but not 
+     in <span class="val">new-file</span></td>
+</tr>
+<tr>
+ <td><span class="option">--new</span></td>
+ <td>Write out complaints that are in <span class="val">new-file</span> but not 
+     in <span class="val">old-file</span></td>
+</tr>
+<tr>
+ <td><span class="option">--common</span></td>
+ <td>Write out complaints that are both in <span class="val">old-file</span> and
+     in <span class="val">new-file</span></td>
+</tr>
+<tr>
+ <td><span class="option">--version</span></td>
+ <td>Write version number to STDOUT and exit</td>
+</tr>
+</table>
+</p>
+<p>
+Only one of the options can be given at a time.
+</p>
+<p>
+<h1>Output Format</h1>
+
+</p>
+<p>
+By default the format of the output is just another list of complaints.
+I.e. the format is the same as that of a complaint file.
+</p>
+<p>
+However, if <span class="option">--brief</span> is specified the output format is condensed
+to omit details (such as paths and explanations) of the complaint.
+With <span class="option">--brief</span> the output is line oriented. Each line contains 
+several fields that are
+separated by a single blank. The fields are in this order from left to
+right:
+</p>
+<p>
+<ol>
+<li>the innocence code of the complaint
+<li>the name of the complaint, eg. ERROR1
+<li>the source line number for which the complaint was reported
+<li>the source file name for which the complaint was reported
+</ol>
+</p>
+<p>
+<h1>The Comparison Algorithm</h1>
+
+</p>
+<p>
+When <span class="command">beam_diff_log</span> processes two complaint files it builds
+for each file a hash table of the complaints found in the respective file.
+The search key for those tables is the innocence code of a complaint (the
+innocence code is that funny string that begins with <span class="code">&gt;&gt;&gt;</span>).
+The innocence code is used because it is meant to be a unique identifier
+of a complaint -- somewhat independent of line numbers. That is important
+in practice. As code changes, a given complaint can suddenly be reported
+on a different line -- but it's still the same complaint and only the
+innocence code reflects that.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

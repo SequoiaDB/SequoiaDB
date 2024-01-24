@@ -1,0 +1,178 @@
+<div ng-controller="Host.Performance.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div class="active" ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div style="margin-top:5px;" class="well Ellipsis">
+         <i class="fa fa-circle" ng-style="{true:{'color':'#00CC66'},false:{'color':'#D9534F'},'null':{'color':'#000'}}[HostStatus]"></i>&nbsp;
+         <span style="font-weight:bold;color:#006699;">&nbsp;{{hostInfo['HostName']}}</span>
+      </div>
+
+      <div class="underlineTab" ng-container="{height:34,marginTop:10}">
+         <ul class="left">
+            <li class="active">
+               <a href="#/Monitor/SDB-Host/Info/Index">{{autoLanguage("主机信息")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/CPU">CPU</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Memory">{{autoLanguage("内存")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Disk">{{autoLanguage("磁盘")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Network">{{autoLanguage("网卡")}}</a>
+            </li>
+            <!--<li>
+               <a href="#/Monitor/Host-Info/Config">{{autoLanguage("系统配置")}}</a>
+            </li>-->
+            <li>
+               <a href="#/Monitor/SDB-Host/Info/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div class="content" ng-container="{offsetY:-115,marginTop:10}">
+         <div class="leftTable" style="float:left;" ng-container="{width:300}">
+            <div style="font-size:90%;" ng-container={height:'60%'}>
+               <div style="font-size:110%;font-weight:bold;height:26px;">{{autoLanguage("主机信息")}}</div>
+               <div style="border:1px solid #DDD;color:#666;padding:10px;overflow-y:auto;overflow-x:hidden;" ng-container={offsetY:-26}>
+                  <table class="table loosen" style="width:278px;word-wrap:normal;">
+                     <colgroup>
+                        <col style="width:40%;" />
+                        <col style="width:60%;" />
+                     </colgroup>
+                     <tr>
+                        <td style="font-weight:bold;">{{autoLanguage("主机名")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{hostInfo['HostName']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">{{autoLanguage("IP地址")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{hostInfo['IP']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">{{autoLanguage("操作系统")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{hostInfo['OS']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">{{autoLanguage("代理端口")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{hostInfo['AgentService']}}</div>
+                        </td>
+                     </tr>
+                  </table>
+
+                  <div style="margin:10px 0 5px 0;border-top:1px solid #ddd;"></div>
+
+                  <table class="table loosen" style="width:278px;word-wrap:normal;">
+                     <colgroup>
+                        <col style="width:40%;" />
+                        <col style="width:60%;" />
+                     </colgroup>
+                     <tr>
+                        <td style="font-weight:bold;">CPU</td>
+                        <td>
+                           <div class="Ellipsis">{{hostInfo['CPU']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">{{autoLanguage("进程数")}}</td>
+                        <td class="Ellipsis">
+                           <div class="Ellipsis">{{hostInfo['Processes']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">{{autoLanguage("内存")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{hostInfo['Memory']}}</div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">{{autoLanguage("磁盘容量")}}</td>
+                        <td>
+                           <div class="Ellipsis">{{hostInfo['Disk']}}</div>
+                        </td>
+                     </tr>
+                  </table>
+               </div>
+
+            </div>
+            <div style="font-size:90%;" ng-container="{height:'40%'}">
+               <div style="font-size:110%;font-weight:bold;height:27px;padding-top:10px;">{{autoLanguage("服务信息")}}</div>
+               <div style="border:1px solid #DDD;padding:10px;overflow-y:auto;overflow-x:hidden;position:relative;" ng-container={offsetY:-36}>
+                  <div ng-if="NodeList['coord'].length > 0">
+                     <div ng-repeat="nodeInfo in NodeList['coord']">
+                        <div style="float:left;margin-top:5px;width:90px;">{{autoLanguage("协调节点")}}</div>
+                        <div style="float:left;margin-top:5px;width:170px;" class="Ellipsis">
+                           <span class="linkButton" ng-click="GotoNode(nodeInfo['serviceName'])">{{nodeInfo['hostName']}}:{{nodeInfo['serviceName']}}</span>
+                        </div>
+                        <div class="clear-float"></div>
+                     </div>
+                     <div style="margin:10px 0 5px 0;border-bottom:1px solid #ddd;"></div>
+                  </div>
+
+                  <div ng-if="NodeList['catalog'].length > 0">
+                     <div ng-repeat="nodeInfo in NodeList['catalog']">
+                        <div style="float:left;margin-top:5px;width:90px;">{{autoLanguage("编目节点")}}</div>
+                        <div style="float:left;margin-top:5px;width:170px;" class="Ellipsis">
+                           <span class="linkButton" ng-click="GotoNode(nodeInfo['serviceName'])">{{nodeInfo['hostName']}}:{{nodeInfo['serviceName']}}</span>
+                        </div>
+                        <div class="clear-float"></div>
+                     </div>
+                     <div style="margin:10px 0 5px 0;border-bottom:1px solid #ddd;"></div>
+                  </div>
+
+                  <div ng-if="NodeList['data'].length > 0">
+                     <div ng-repeat="nodeInfo in NodeList['data']">
+                        <div style="float:left;margin-top:5px;width:90px;">{{autoLanguage("数据节点")}}</div>
+                        <div style="float:left;margin-top:5px;width:170px;" class="Ellipsis">
+                           <span class="linkButton" ng-click="GotoNode(nodeInfo['serviceName'])">{{nodeInfo['hostName']}}:{{nodeInfo['serviceName']}}</span>
+                        </div>
+                        <div class="clear-float"></div>
+                     </div>
+                  </div>
+
+                  <div ng-if="NodeList['standalone'].length > 0">
+                     <div ng-repeat="nodeInfo in NodeList['standalone']">
+                        <div style="float:left;margin-top:5px;width:90px;">{{autoLanguage("节点")}}</div>
+                        <div style="float:left;margin-top:5px;width:170px;" class="Ellipsis">
+                           <span class="linkButton" ng-click="GotoNode(nodeInfo['serviceName'])">{{nodeInfo['hostName']}}:{{nodeInfo['serviceName']}}</span>
+                        </div>
+                        <div class="clear-float"></div>
+                     </div>
+                  </div>
+
+               </div>
+
+            </div>
+         </div>
+         <div style="float:left;" ng-container="{offsetX:-310,marginLeft:10}">
+            <div style="font-size:110%;font-weight:bold;height:26px;" create-response="{max:620,min:200,len:2}">{{autoLanguage("图表")}}</div>
+            <div style="overflow-y:auto;border:1px solid #ddd;padding-top:10px;position:relative;" ng-container="{offsetY:-26}">
+               <!--CPU-->
+               <div style="min-width:325px;min-height:210px;float:left;" ng-container="{height:'50%',width:'50%',offsetX:-20}" create-chart="charts.Cpu"></div>
+               <!--内存-->
+               <div style="min-width:325px;min-height:210px;float:left;" ng-container="{height:'50%',width:'50%',offsetX:-20}" create-chart="charts.memory"></div>
+               <!--网络-->
+               <div style="min-width:325px;min-height:210px;float:left;" ng-container="{height:'50%',width:'50%',offsetX:-20}" create-chart="charts.network"></div>
+               <!--硬盘-->
+               <div style="min-width:325px;min-height:210px;float:left;" ng-container="{height:'50%',width:'50%',offsetX:-20}" create-chart="charts.Storage"></div>
+               <div class="clear-float"></div>
+            </div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+</div>

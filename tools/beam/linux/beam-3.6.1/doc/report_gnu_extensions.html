@@ -1,0 +1,111 @@
+<html>
+<head>
+  <title>BEAM: Finding GNU Extensions</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Finding GNU Extensions</h1>
+<hr/>
+
+</p>
+<p>
+The EDG C and C++ parser can print warnings about the use
+of certain GNU extensions, including the following:
+</p>
+<p>
+<ul>
+ <li>variable-length arrays</li>
+ <li>designated initializers</li>
+ <li>compound literals</li>
+ <li>statement expressions</li>
+ <li>GNU attributes</li>
+ <li>extended uses of the <span class="code">asm</span> keyword</li>
+ <li>restricted pointers</li>
+ <li>typeof</li>
+ <li>integer sign and size specifiers on typedefs</li>
+ <li>zero-length arrays</li>
+ <li>flexible array members</li>
+</ul>
+</p>
+<p>
+This feature may be useful to those who develop code using a GNU
+compiler and wish to port that code to a system where the compiler may not 
+support GNU extensions.
+</p>
+<p>
+To enable this feature, the following option can be used:
+</p>
+<pre class="example">
+$ beam_compile --edg=--report_gnu_extensions <span class="val">other options</span>
+</pre>
+<p>
+
+Note that this option only works if your <a href="compiler_configuration.html">compiler configuration
+file</a> has <span class="var">gnu_mode</span> enabled
+(i.e., you are emulating a GNU compiler). As a side effect
+this option also enables other EDG warnings, which are disabled by
+default.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

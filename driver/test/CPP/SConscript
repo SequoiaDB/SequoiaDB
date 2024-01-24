@@ -1,0 +1,144 @@
+import os
+
+Import("env")
+Import("dllBuildEnv")
+Import("staticBuildEnv")
+
+gtestFiles = [
+      "../../../../../SequoiaDB/engine/gtest/src/gtest-all.cc"
+      ]
+
+gtestMainFile = [
+      "../../../../../SequoiaDB/engine/gtest/src/gtest_main.cc"
+      ]
+
+testCommonFiles = [
+        "testWorker.cpp",
+        "testcommon.cpp"
+      ]
+
+testFiles1 = [
+        "collection.cpp",
+        "insert.cpp"
+      ]
+testFiles2 = [
+        "collectionspace.cpp"
+      ]
+testFiles3 = [
+        "cursor.cpp"
+      ]
+testFiles4 = [
+        "sdb.cpp"
+      ]
+testFiles5 = [
+        "cppbson.cpp"
+      ]
+#testFiles6 = [
+#        "shard.cpp"
+#      ]
+testFiles7 = [
+        "debug.cpp"
+      ]
+testFiles8 = [
+        "domain.cpp"
+      ]
+testFiles9 = [
+        "lob.cpp"
+      ]
+testFiles10 = [
+        "query.cpp"
+      ]
+testFiles11 = [
+        "select_query.cpp"
+      ]
+
+testFiles12 = [
+        "procedure.cpp"
+]
+
+testFiles13 = [
+        "rg.cpp"
+      ]
+
+testFiles14 = [
+         "datasource.cpp"
+]
+
+testFiles15 = [
+         "clVerCheck.cpp"
+]
+
+testFiles16 = [
+         "indexCover.cpp"
+]
+
+testFiles17 = [
+         "connectionPool.cpp"
+]
+testFiles18 = [
+         "jira.cpp"
+]
+
+# compile common lib
+gtestall = env.StaticLibrary('gtest', gtestFiles)
+gtestMainObj = env.Object('gtestMainObj', gtestMainFile)
+
+# dll compile
+collection = dllBuildEnv.Program("collection", [testFiles1, gtestMainObj, testCommonFiles])
+collectionspace = dllBuildEnv.Program("collectionspace", [testFiles2, gtestMainObj, testCommonFiles])
+cursor = dllBuildEnv.Program("cursor", [testFiles3, gtestMainObj, testCommonFiles])
+sdb = dllBuildEnv.Program("sdb", [testFiles4, gtestMainObj, testCommonFiles])
+cppbson = dllBuildEnv.Program("cppbson", [testFiles5, gtestMainObj, testCommonFiles])
+#shard = dllBuildEnv.Program("shard", [testFiles6, gtestMainObj, testCommonFiles])
+debug = dllBuildEnv.Program("debug", [testFiles7, gtestMainObj, testCommonFiles])
+domain = dllBuildEnv.Program("domain", [testFiles8, gtestMainObj, testCommonFiles])
+lob = dllBuildEnv.Program("lob", [testFiles9, gtestMainObj, testCommonFiles])
+query = dllBuildEnv.Program("query", [testFiles10, gtestMainObj, testCommonFiles])
+selectQuery = dllBuildEnv.Program("selectQuery", [testFiles11, gtestMainObj, testCommonFiles])
+procedure = dllBuildEnv.Program("procedure", [testFiles12, gtestMainObj, testCommonFiles])
+rg = dllBuildEnv.Program("rg", [testFiles13, gtestMainObj, testCommonFiles])
+datasource = dllBuildEnv.Program("datasource", [testFiles14, gtestMainObj, testCommonFiles])
+clVerCheck = dllBuildEnv.Program("clVerCheck", [testFiles15, gtestMainObj, testCommonFiles])
+indexCover = dllBuildEnv.Program("indexCover", [testFiles16, gtestMainObj, testCommonFiles])
+connectionPool = dllBuildEnv.Program("connectionPool", [testFiles17, gtestMainObj, testCommonFiles])
+jira = dllBuildEnv.Program("jira", [testFiles18, gtestMainObj, testCommonFiles])
+
+# static compile
+# dll compile
+collection.static = staticBuildEnv.Program("collection.static", [testFiles1, gtestMainObj, testCommonFiles])
+collectionspace.static = staticBuildEnv.Program("collectionspace.static", [testFiles2, gtestMainObj, testCommonFiles])
+cursor.static = staticBuildEnv.Program("cursor.static", [testFiles3, gtestMainObj, testCommonFiles])
+sdb.static = staticBuildEnv.Program("sdb.static", [testFiles4, gtestMainObj, testCommonFiles])
+cppbson.static = staticBuildEnv.Program("cppbson.static", [testFiles5, gtestMainObj, testCommonFiles])
+#shard.static = staticBuildEnv.Program("shard.static", [testFiles6, gtestMainObj, testCommonFiles])
+debug.static = staticBuildEnv.Program("debug.static", [testFiles7, gtestMainObj, testCommonFiles])
+domain.static = staticBuildEnv.Program("domain.static", [testFiles8, gtestMainObj, testCommonFiles])
+lob.static = staticBuildEnv.Program("lob.static", [testFiles9, gtestMainObj, testCommonFiles])
+query.static = staticBuildEnv.Program("query.static", [testFiles10, gtestMainObj, testCommonFiles])
+selectQuery.static = staticBuildEnv.Program("selectQuery.static", [testFiles11, gtestMainObj, testCommonFiles])
+procedure.static = staticBuildEnv.Program("procedure.static", [testFiles12, gtestMainObj, testCommonFiles])
+rg.static = staticBuildEnv.Program("rg.static", [testFiles13, gtestMainObj, testCommonFiles])
+datasource.static = staticBuildEnv.Program("datasource.static", [testFiles14, gtestMainObj, testCommonFiles])
+clVerCheck.static = staticBuildEnv.Program("clVerCheck.static", [testFiles15, gtestMainObj, testCommonFiles])
+indexCover.static = staticBuildEnv.Program("indexCover.static", [testFiles16, gtestMainObj, testCommonFiles])
+connectionPool.static = staticBuildEnv.Program("connectionPool.static", [testFiles17, gtestMainObj, testCommonFiles])
+jira.static = staticBuildEnv.Program("jira.static", [testFiles18, gtestMainObj, testCommonFiles])
+
+#env.Install( '#/build_test',[collection,collectionspace,cursor,query,
+#                             sdb,cppbson, debug, domain, lob, selectQuery, procedure, rg, dc ] )
+#
+#env.Install( '#/build_test',[collection.static, collectionspace.static, cursor.static, query.static,
+#                             sdb.static, cppbson.static, debug.static, domain.static, lob.static,
+#                             selectQuery.static, procedure.static, rg.static, dc.static] )
+
+# dll compile, "rg, dc" don't run in ci
+env.Install( '#/build_test',[collection,collectionspace,cursor,query,
+                             sdb,cppbson, debug, domain, lob, selectQuery, procedure, datasource,
+                             clVerCheck, indexCover, connectionPool, jira ] )
+
+# static compile, "rg, dc" don't run in ci
+env.Install( '#/build_test',[collection.static, collectionspace.static, cursor.static, query.static,
+                             sdb.static, cppbson.static, debug.static, domain.static, lob.static,
+                             selectQuery.static, procedure.static, datasource.static, clVerCheck.static,
+                             indexCover.static, connectionPool.static, jira.static ] )
+

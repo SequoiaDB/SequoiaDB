@@ -1,0 +1,27 @@
+2022-05-27-15.46.56.185894               Level:DEBUG
+PID:1226039                              TID:1232045
+Function:advance                         Line:472
+File:SequoiaDB/engine/rtn/rtnDiskIXScanner.cpp
+Message:
+Hit end with last obj(SDBSECURE0000(hfIcCqbohfIcQO2uMJC1CJC+SqraBNGzFsQqFXF5SmLqTNVmMqLzBNEcCP/ogV==))
+
+2022-05-27-15.24.39.302269               Level:DEBUG
+PID:1226039                              TID:1232046
+Function:advance                         Line:472
+File:SequoiaDB/engine/rtn/rtnDiskIXScanner.cpp
+Message:
+Hit end with last obj(SDBSECURE0000(hfIcCqbohfIcQO2uMJC1CJC+SqraT+TcTmKpT+QsTNKrMNzzMNQqSsHcCP/ogV==))
+
+2022-05-27-15.24.40.178051               Level:DEBUG
+PID:1226039                              TID:1228333
+Function:advance                         Line:472
+File:SequoiaDB/engine/rtn/rtnDiskIXScanner.cpp
+Message:
+Hit end with last obj(SDBSECURE0000(hfIcCqboCsylF+GwY5KpjsGgBNr+TNE+Y+x3kOzeY+M4kz2rMYMgSqDgF5TgSXC3TmTgScCwCJCcBcIckO2qFAygjOGfFL89BXF/TXMgF+ygSXC3TmScZJIcCqboCcDuMJCogV==))
+
+2022-05-27-16.20.06.287307               Level:ERROR
+PID:29283                                TID:32380
+Function:_rtnInsertRecord                Line:156
+File:SequoiaDB/engine/rtn/rtnInsert.cpp
+Message:
+Failed to insert record SDBSECURE0000(hfIcY+zrCqbohfIcQO2uMJC1CJC+SqraBOHyBALcSmTpTXIaSqS4BACmMqIcCP/wCJQpCqboSWaoCsCcBcIcFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpFAGpZc9eCP/=) into collection: newcs.newcl, rc: -38

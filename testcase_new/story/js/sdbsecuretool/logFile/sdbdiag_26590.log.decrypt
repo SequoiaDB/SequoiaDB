@@ -1,0 +1,27 @@
+2022-05-27-15.46.56.185894               Level:DEBUG
+PID:1226039                              TID:1232045
+Function:advance                         Line:472
+File:SequoiaDB/engine/rtn/rtnDiskIXScanner.cpp
+Message:
+Hit end with last obj({ "": { "$oid": "629081ebbca6735c443f5e85" } })
+
+2022-05-27-15.24.39.302269               Level:DEBUG
+PID:1226039                              TID:1232046
+Function:advance                         Line:472
+File:SequoiaDB/engine/rtn/rtnDiskIXScanner.cpp
+Message:
+Hit end with last obj({ "": { "$oid": "62907cb70a7bf40dd9ed2c2a" } })
+
+2022-05-27-15.24.40.178051               Level:DEBUG
+PID:1226039                              TID:1228333
+Function:advance                         Line:472
+File:SequoiaDB/engine/rtn/rtnDiskIXScanner.cpp
+Message:
+Hit end with last obj({ "": "local_para_896456_kylin_fun_dev_24_cs_12973_2", "": "local_para_896456_cl_12973", "": "$id" })
+
+2022-05-27-16.20.06.287307               Level:ERROR
+PID:29283                                TID:32380
+Function:_rtnInsertRecord                Line:156
+File:SequoiaDB/engine/rtn/rtnInsert.cpp
+Message:
+Failed to insert record { "_id": { "$oid": "62908a19eb33a5002359b3f0" }, "a": 1, "b": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa... } into collection: newcs.newcl, rc: -38

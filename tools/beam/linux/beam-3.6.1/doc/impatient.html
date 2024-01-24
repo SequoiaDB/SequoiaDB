@@ -1,0 +1,180 @@
+<html>
+<head>
+  <title>BEAM for the Impatient</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM for the Impatient</h1>
+<hr/>
+
+</p>
+<p>
+So, you want to get going in a hurry, eh? To illustrate BEAM
+copy the following program into a file, say <span class="file">bug.c</span>.
+</p>
+<pre class="example">
+int *p, b;
+
+void
+foo(int a)
+{
+  int c;
+
+  b = 0;
+  if(!p) 
+    c = 1;
+
+  if(c &gt; a)
+    c += p[1];
+}
+</pre>
+<p>
+If you have access to AFS then issue this command:
+</p>
+<pre class="example">
+/afs/eda.fishkill.ibm.com/ship/beam/2.0/demo/bin/beam_compile -c bug.c
+</pre>
+<p>
+If you do not have AFS access you need to <a href="install.html">install BEAM</a> before trying it.
+</p>
+<p>
+For the code above, BEAM will issue messages like these:
+</p>
+<pre class="example">
+BEAM_VERSION=3.1.1
+BEAM_ROOT=/tmp/flo
+BEAM_BUILD_ROOT=/tmp/flo
+BEAM_DIRECTORY_WRITE_INNOCENTS=
+BEAM_DIRECTORY_WRITE_ERRORS=
+
+-- ERROR1     /*uninitialized*/     &gt;&gt;&gt;ERROR1_foo_9269b7a63
+&quot;bug.c&quot;, line 12: uninitialized `c'
+ONE POSSIBLE PATH LEADING TO THE ERROR:
+ &quot;bug.c&quot;, line 6: allocating `c'
+ &quot;bug.c&quot;, line 9: the if-condition is false
+ &quot;bug.c&quot;, line 12: getting the value of `c'
+
+ VALUES AT THE END OF THE PATH:
+  p != 0 
+
+
+
+-- ERROR2     /*dereferencing NULL*/     &gt;&gt;&gt;ERROR2_foo_c8d0e0a70
+&quot;bug.c&quot;, line 13: invalid operation involving NULL pointer
+ONE POSSIBLE PATH LEADING TO THE ERROR:
+ &quot;bug.c&quot;, line 9: the if-condition is true (used as evidence that error is possible)
+ &quot;bug.c&quot;, line 12: the if-condition is true
+ &quot;bug.c&quot;, line 13: using operation `[]' to dereference NULL pointer `p'
+
+ VALUES AT THE END OF THE PATH:
+  c = 1 
+  p = 0 
+  a &lt;= 0
+</pre>
+<p>
+BEAM issued two complaints starting with <span class="code">--</span>.
+The first five lines starting with <span class="code">BEAM_</span> are for integration with 
+emacs, and you can ignore them for now. Each complaint has a <span class="term">name</span>, like ERROR1.
+Detailed explanation about each complaint can be found 
+<a href="builtin.html">in this document</a> under its name.
+</p>
+<p>
+Following the complaint name is a C comment. Add that comment to the 
+source file on the line of the complaint and BEAM will no longer issue 
+that complaint. Go ahead and add <span class="code">/*uninitialized*/</span> on line 12 and
+rerun BEAM. You'll see that ERROR1 is no longer reported.
+</p>
+<p>
+But what if changing the source code (and adding that comment) is not an
+option? You could still mark the complaint innocent, by adding that weird looking
+character string (the one beginning with <span class="code">&gt;&gt;&gt;</span>) to a so called 
+<span class="term">innocent file</span> which is kept in some persistent location.
+Next time you invoke BEAM you tell it about that location and it will no longer
+issue the complaint. This method of declaring a complaint innocent is quite useful
+but it requires maintaining persistent storage between BEAM runs. It is meant for
+people who run BEAM regularly. The details of how to set up that persistent storage
+area correctly are explained in the <a href="build.html">build integration guide</a>.
+</p>
+<p>
+OK, now back to the messages. The meat of the complaint is the lines that look like 
+<span class="code">&quot;bug.c&quot;, line 12: ....</span>. Some complaints  have just one line, while others
+list a whole path. The symptom of the problem materializes on the last line of the path.
+BEAM says that there is something wrong along that path. It certainly does not mean
+to say that there is something wrong on every line listed. It is even possible that
+every line along the path is correct, there is just something missing. It is up to you
+to find the cause, but there is help. We highly recommend trying the emacs macro
+package that comes with the BEAM distribution. It allows browsing the complaints,
+while looking at the source code (possibly with a highlighted path). A complaint can
+be marked innocent with just one keystroke. <a href="emacs.html">Sound interesting?</a>
+</p>
+<p>
+<h2>Now what?</h2>
+
+</p>
+<p>
+Check out our <a href="quick.html">quick start guide</a> which will help you install
+BEAM, configure it for your compiler, and get it running on your project.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,253 @@
+define my_malloc_stats
+  set $in_use = mp_.mmapped_mem
+  set $system = mp_.mmapped_mem
+  set $arena = &main_arena
+
+  set $arena_n = 0
+
+  # mALLINFo
+  while $arena
+    set $system = $system + $arena->system_mem
+
+    set $avail = (($arena->top)->size & ~(0x1 | 0x2 | 0x4))
+
+    set $fastavail = 0
+    set $i = 0
+
+    # traverse fastbins
+    while $i < 10
+      set $p = (($arena)->fastbinsY[$i])
+      while $p
+        set $fastavail = $fastavail + (($p)->size & ~(0x1 | 0x2 | 0x4))
+        set $p = $p->fd
+      end
+      set $i = $i + 1
+    end
+
+    set $avail = $avail + $fastavail
+
+    # traverse regular bins
+    set $i = 1
+    while $i < 128
+      set $b = (mbinptr) (((char *) &(($arena)->bins[(($i) - 1) * 2])) - 16)
+      set $p = $b->bk
+      while $p != $b
+        set $avail = $avail + (($p)->size & ~(0x1 | 0x2 | 0x4))
+        set $p = $p->bk
+      end
+      set $i = $i + 1
+    end
+
+    printf "Arena: %u\nsystem bytes     = %10lu\nin use bytes     = %10lu\n", $arena_n, $arena->system_mem, ($arena->system_mem - $avail)
+
+    set $in_use = $in_use + ($arena->system_mem - $avail)
+
+    set $arena = $arena->next
+    if $arena == &main_arena
+      loop_break
+    end
+    set $arena_n = $arena_n + 1
+  end
+
+  printf "Total:\nsystem bytes     = %10lu\nin use bytes     = %10lu\n", $system, $in_use
+end
+
+
+
+define print_bin_index
+  set $n = 0
+  set $last_n = 0
+  set $n_max = 262144
+  set $last_idx = 0
+  set $idx = 0
+
+  # mALLINFo
+  while $n<=$n_max
+    set $idx = bin_index($n)
+    if $idx != $last_idx
+      printf "bin_index(%lu): %3lu %lu\n", $n, $idx, $n - $last_n
+      set $last_idx = $idx
+      set $last_n = $n
+    end
+    set $n = $n + 1
+  end
+end
+
+
+define print_fastbin_index
+  set $n = 32
+  set $last_n = 32
+  set $n_max = 200
+  set $last_idx = 0
+  set $idx = 0
+
+  # mALLINFo
+  while $n<=$n_max
+    set $idx = fastbin_index($n)
+    if $idx != $last_idx
+      printf "fastbin_index(%lu): %3lu %lu\n", $n, $idx, $n - $last_n
+      set $last_idx = $idx
+      set $last_n = $n
+    end
+    set $n = $n + 1
+  end
+end
+
+define print_fastbin_info
+  set $n = 0
+  while $n < 10
+    printf "main_arena fastbinY[%d]:\n", $n
+    set $bin = (mfastbinptr)main_arena->fastbinsY[$n]
+    set $chunk = $bin
+    while $chunk
+      printf "{prev_size = %017llu, size = %9llu, fd = 0x%012llx, bk = 0x%015llx, fd_nextsize = 0x%015llx, bk_nextsize = 0x%015llx}\n" ,$chunk->prev_size, $chunk->size, $chunk->fd, $chunk->bk, $chunk->fd_nextsize, $chunk->bk_nextsize
+      set $chunk = (mfastbinptr)$chunk->fd
+    end
+    set $n = $n + 1
+  end
+end
+
+define print_bins_info
+  set $n = 0
+  while $n < 254
+    printf "main_arena bins[%d]:\n", $n
+    set $b = (mfastbinptr)main_arena->bins[$n]
+    set $p = $b->bk
+    while $p != $b
+      set $chunk = $p
+      printf "{prev_size = %017llu, size = %9llu, fd = 0x%012llx, bk = 0x%015llx, fd_nextsize = 0x%015llx, bk_nextsize = 0x%015llx}\n" ,$chunk->prev_size, $chunk->size, $chunk->fd, $chunk->bk, $chunk->fd_nextsize, $chunk->bk_nextsize
+      if $chunk->fd == $first_chunk
+        loop_break
+      end
+      set $p = $p->bk
+    end
+    set $n = $n + 1
+  end
+end
+
+define my_malloc_bins_chunks_fold
+  set $in_use = mp_.mmapped_mem
+  set $system = mp_.mmapped_mem
+  set $arena = &main_arena
+
+  set $arena_n = 0
+
+  # mALLINFo
+  while $arena
+    set $system = $system + $arena->system_mem
+
+    set $avail = (($arena->top)->size & ~(0x1 | 0x2 | 0x4))
+    set $chunk = $arena->top
+    printf "arena: %-2d top chunk info:\n", $arena_n
+    printf "chunk addr:0x%-15llx , {prev_size = %-20llu, size = %-9llu, fd = 0x%015llx, bk = 0x%-15llx, fd_nextsize = 0x%-20llx, bk_nextsize = 0x%-20llx}\n" ,$chunk, $chunk->prev_size, $chunk->size, $chunk->fd, $chunk->bk, $chunk->fd_nextsize, $chunk->bk_nextsize
+    
+    set $fastavail = 0
+    set $i = 0
+
+    # traverse fastbins
+    while $i < 10
+      set $p = (($arena)->fastbinsY[$i])
+      printf "arena: %-2d fastbinY[%-3d] chunks info:\n", $arena_n, $i
+      while $p
+        set $chunk = $p
+        printf "chunk addr:0x%-15llx , {prev_size = %-20llu, size = %-9llu, fd = 0x%015llx, bk = 0x%-15llx, fd_nextsize = 0x%-20llx, bk_nextsize = 0x%-20llx}\n" ,$chunk, $chunk->prev_size, $chunk->size, $chunk->fd, $chunk->bk, $chunk->fd_nextsize, $chunk->bk_nextsize
+        set $fastavail = $fastavail + (($p)->size & ~(0x1 | 0x2 | 0x4))
+        set $p = $p->fd
+      end
+      set $i = $i + 1
+    end
+
+    set $avail = $avail + $fastavail
+    
+    # traverse regular bins
+    set $i = 1
+    while $i < 128
+      set $b = (mbinptr) (((char *) &(($arena)->bins[(($i) - 1) * 2])) - 16)
+      set $p = $b->bk
+      printf "arena: %-2d bins[%-3d] chunks info:\n", $arena_n, $i
+      while $p != $b
+        set $chunk = $p
+        printf "chunk addr:0x%-15llx , {prev_size = %-20llu, size = %-9llu, fd = 0x%-15llx, bk = 0x%-15llx, fd_nextsize = 0x%-20llx, bk_nextsize = 0x%-20llx}\n" ,$chunk, $chunk->prev_size, $chunk->size, $chunk->fd, $chunk->bk, $chunk->fd_nextsize, $chunk->bk_nextsize
+        set $avail = $avail + (($p)->size & ~(0x1 | 0x2 | 0x4))
+        set $p = $p->bk
+      end
+      set $i = $i + 1
+    end
+
+    printf "Arena: %u\nsystem bytes     = %-10lu\nin use bytes     = %-10lu\n", $arena_n, $arena->system_mem, ($arena->system_mem - $avail)
+
+    set $in_use = $in_use + ($arena->system_mem - $avail)
+
+    set $arena = $arena->next
+    if $arena == &main_arena
+      loop_break
+    end
+    set $arena_n = $arena_n + 1
+  end
+
+  printf "Total:\nsystem bytes     = %-10lu\nin use bytes     = %-10lu\n", $system, $in_use
+end
+
+define my_malloc_bins_chunks_unfold
+  set $in_use = mp_.mmapped_mem
+  set $system = mp_.mmapped_mem
+  set $arena = &main_arena
+
+  set $arena_n = 0
+
+  # mALLINFo
+  while $arena
+    set $system = $system + $arena->system_mem
+
+    set $avail = (($arena->top)->size & ~(0x1 | 0x2 | 0x4))
+    set $chunk = $arena->top
+    #printf "arena: %-2d top           chunks info:\n", $arena_n
+    printf "arena: %-2d top       chunks info: chunk addr:0x%-15llx , {prev_size = %-20llu, size = %-9llu, fd = 0x%015llx, bk = 0x%-15llx, fd_nextsize = 0x%-20llx, bk_nextsize = 0x%-20llx}\n" ,$arena_n, $chunk, $chunk->prev_size, $chunk->size, $chunk->fd, $chunk->bk, $chunk->fd_nextsize, $chunk->bk_nextsize
+    
+    set $fastavail = 0
+    set $i = 0
+
+    # traverse fastbins
+    while $i < 10
+      set $p = (($arena)->fastbinsY[$i])
+      #printf "arena: %-2d fastbinY[%-3d] chunks info:\n", $arena_n, $i
+      while $p
+        set $chunk = $p
+        printf "arena: %-2d fast[%-3d] chunks info: chunk addr:0x%-15llx , {prev_size = %-20llu, size = %-9llu, fd = 0x%015llx, bk = 0x%-15llx, fd_nextsize = 0x%-20llx, bk_nextsize = 0x%-20llx}\n" ,$arena_n, $i, $chunk, $chunk->prev_size, $chunk->size, $chunk->fd, $chunk->bk, $chunk->fd_nextsize, $chunk->bk_nextsize
+        set $fastavail = $fastavail + (($p)->size & ~(0x1 | 0x2 | 0x4))
+        set $p = $p->fd
+      end
+      set $i = $i + 1
+    end
+
+    set $avail = $avail + $fastavail
+    
+    # traverse regular bins
+    set $i = 1
+    while $i < 128
+      set $b = (mbinptr) (((char *) &(($arena)->bins[(($i) - 1) * 2])) - 16)
+      set $p = $b->bk
+      #printf "arena: %-2d bins[%-3d] chunks info:\n", $arena_n, $i
+      while $p != $b
+        set $chunk = $p
+        printf "arena: %-2d bins[%-3d] chunks info: chunk addr:0x%-15llx , {prev_size = %-20llu, size = %-9llu, fd = 0x%-15llx, bk = 0x%-15llx, fd_nextsize = 0x%-20llx, bk_nextsize = 0x%-20llx}\n" ,$arena_n, $i, $chunk, $chunk->prev_size, $chunk->size, $chunk->fd, $chunk->bk, $chunk->fd_nextsize, $chunk->bk_nextsize
+        set $avail = $avail + (($p)->size & ~(0x1 | 0x2 | 0x4))
+        set $p = $p->bk
+      end
+      set $i = $i + 1
+    end
+
+    printf "Arena: %u\nsystem bytes     = %-10lu\nin use bytes     = %-10lu\n", $arena_n, $arena->system_mem, ($arena->system_mem - $avail)
+
+    set $in_use = $in_use + ($arena->system_mem - $avail)
+
+    set $arena = $arena->next
+    if $arena == &main_arena
+      loop_break
+    end
+    set $arena_n = $arena_n + 1
+  end
+
+  printf "Total:\nsystem bytes     = %-10lu\nin use bytes     = %-10lu\n", $system, $in_use
+end
+

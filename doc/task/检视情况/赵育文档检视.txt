@@ -1,0 +1,26 @@
+1. db.waitTasks 返回值是游标对象？  ----------已修改
+2. 返回值描述中”getLastErrMsg()“之前不留空格（所有文档）  ----------已修改
+3. 下面的count之后应有返回的count值	   ----------已修改
+   ```lang-javascript
+	> db.transCommit()
+	> cl.count()
+	Return 1 row(s)
+	```
+4. db.traceOn( <bufferSize>, [strComp], [strBreakPoint] )  ----------已修改
+    bufferSize单位是？
+5. db.traceOff( <dumpFile> )   ----------已修改
+   dumpFile是必填项？试一试
+6. db.startRG( <name> )  ----------已修改
+   返回游标对象？
+7. db.traceResume()  ----------已修改
+   返回游标对象？
+8. db.snapshot( <snapType>, [cond], [sel], [sort] ) ----------已修改
+   Note中写为listType
+9. db.removeProcedure( <function name> ) ----------已修改
+   listProcedures()前不留空格
+10. db.removeCoordRG() ----------已修改
+   返回游标对象？
+11. db.listCollections() ----------已修改
+   语法里面不需要说明错误了，返回值处已经说明
+12. db.list( <listType>, [cond], [sel], [sort] )  ----------已修改
+    超链接"列表类型"之前不必留空格。

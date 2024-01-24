@@ -1,0 +1,46 @@
+{{if $connectlist_model eq "list"}}
+	<table class="table table-striped">
+		<tr>
+			<td width="20%">连接地址</td>
+			<td width="20%">描述</td>
+			<td width="20%">用户名</td>
+			<td width="40%">操作</td>
+		</tr>
+	{{foreach $connectlist_return as $child}}
+	<tr>
+		<td>{{htmlspecialchars($child[0])}}</td>
+		<td>{{htmlspecialchars($child[3])}}</td>
+		<td>{{htmlspecialchars($child[1])}}</td>
+		<td>
+			<button type="button" class="btn btn-primary btn-sm" onclick='sessionconnect2("{{$child[0]}}","{{$child[1]}}","{{$child[2]}}")'>连接</button>
+			<button type="button" class="btn btn-primary btn-sm" onclick='loadconnection("{{$child[0]}}","{{$child[3]}}","{{$child[1]}}","{{$child[2]}}");'>载入</button>
+			<button type="button" class="btn btn-primary btn-sm" onclick='deleteconnect("{{$child[0]}}")'>删除</button>
+		</td>
+	</tr>
+	{{/foreach}}
+	</table>
+{{elseif $connectlist_model eq "testlink"}}
+	{{if $link_errno eq 0}}
+		<div class="alert alert-success alert-dismissable">
+		  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		  {{$link_result}}
+		</div>
+	{{else}}
+		<div class="alert alert-danger alert-dismissable">
+		  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		  {{$link_result}}
+		</div>
+	{{/if}}
+{{elseif $connectlist_model eq "connect"}}
+	{{if $link_errno eq 0}}
+		<div class="alert alert-success alert-dismissable">
+		  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		  {{$link_result}}
+		</div>
+	{{else}}
+		<div class="alert alert-danger alert-dismissable">
+		  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		  {{$link_result}}
+		</div>
+	{{/if}}
+{{/if}}

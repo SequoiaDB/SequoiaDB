@@ -1,0 +1,341 @@
+/*
+ * Copyright 2011-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.data.sequoiadb.repository.query;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.bson.BSONObject;
+import org.bson.BasicBSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+
+import org.springframework.data.sequoiadb.core.DBObjectTestUtils;
+import org.springframework.data.sequoiadb.core.SequoiadbOperations;
+import org.springframework.data.sequoiadb.core.convert.DbRefResolver;
+import org.springframework.data.sequoiadb.core.convert.DefaultSequoiadbTypeMapper;
+import org.springframework.data.sequoiadb.core.convert.MappingSequoiadbConverter;
+import org.springframework.data.sequoiadb.core.convert.SequoiadbConverter;
+import org.springframework.data.sequoiadb.core.mapping.SequoiadbMappingContext;
+import org.springframework.data.sequoiadb.core.query.BasicQuery;
+import org.springframework.data.sequoiadb.repository.Address;
+import org.springframework.data.sequoiadb.repository.Person;
+import org.springframework.data.sequoiadb.repository.Query;
+import org.springframework.data.repository.core.RepositoryMetadata;
+
+import org.springframework.data.sequoiadb.assist.BasicBSONObjectBuilder;
+import org.springframework.data.sequoiadb.assist.DBRef;
+
+/**
+ * Unit tests for {@link StringBasedSequoiadbQuery}.
+ * 
+
+
+
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class StringBasedSdbQueryUnitTests {
+
+	@Mock
+    SequoiadbOperations operations;
+	@Mock RepositoryMetadata metadata;
+	@Mock DbRefResolver factory;
+
+	SequoiadbConverter converter;
+
+	@Before
+	public void setUp() {
+
+		when(operations.getConverter()).thenReturn(converter);
+
+		this.converter = new MappingSequoiadbConverter(factory, new SequoiadbMappingContext());
+	}
+
+	@Test
+	public void bindsSimplePropertyCorrectly() throws Exception {
+
+		Method method = SampleRepository.class.getMethod("findByLastname", String.class);
+		SequoiadbQueryMethod queryMethod = new SequoiadbQueryMethod(method, metadata, converter.getMappingContext());
+		StringBasedSequoiadbQuery sequoiadbQuery = new StringBasedSequoiadbQuery(queryMethod, operations);
+		ConvertingParameterAccessor accesor = StubParameterAccessor.getAccessor(converter, "Matthews");
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accesor);
+		org.springframework.data.sequoiadb.core.query.Query reference = new BasicQuery("{'lastname' : 'Matthews'}");
+
+		assertThat(query.getQueryObject(), is(reference.getQueryObject()));
+	}
+
+	@Test
+	public void bindsComplexPropertyCorrectly() throws Exception {
+
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByAddress", Address.class);
+
+		Address address = new Address("Foo", "0123", "Bar");
+		ConvertingParameterAccessor accesor = StubParameterAccessor.getAccessor(converter, address);
+
+		BSONObject dbObject = new BasicBSONObject();
+		converter.write(address, dbObject);
+		dbObject.removeField(DefaultSequoiadbTypeMapper.DEFAULT_TYPE_KEY);
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accesor);
+		BasicBSONObject queryObject = new BasicBSONObject("address", dbObject);
+		org.springframework.data.sequoiadb.core.query.Query reference = new BasicQuery(queryObject);
+
+		assertThat(query.getQueryObject(), is(reference.getQueryObject()));
+	}
+
+	@Test
+	public void bindsMultipleParametersCorrectly() throws Exception {
+
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByLastnameAndAddress", String.class, Address.class);
+
+		Address address = new Address("Foo", "0123", "Bar");
+		ConvertingParameterAccessor accesor = StubParameterAccessor.getAccessor(converter, "Matthews", address);
+
+		BSONObject addressDbObject = new BasicBSONObject();
+		converter.write(address, addressDbObject);
+		addressDbObject.removeField(DefaultSequoiadbTypeMapper.DEFAULT_TYPE_KEY);
+
+		BSONObject reference = new BasicBSONObject("address", addressDbObject);
+		reference.put("lastname", "Matthews");
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accesor);
+		assertThat(query.getQueryObject(), is(reference));
+	}
+
+	@Test
+	public void bindsNullParametersCorrectly() throws Exception {
+
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByAddress", Address.class);
+		ConvertingParameterAccessor accessor = StubParameterAccessor.getAccessor(converter, new Object[] { null });
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accessor);
+		assertThat(query.getQueryObject().containsField("address"), is(true));
+		assertThat(query.getQueryObject().get("address"), is(nullValue()));
+	}
+
+	/**
+	 * @see DATA_JIRA-821
+	 */
+	@Test
+	public void bindsDbrefCorrectly() throws Exception {
+
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByHavingSizeFansNotZero");
+		ConvertingParameterAccessor accessor = StubParameterAccessor.getAccessor(converter, new Object[] {});
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accessor);
+		assertThat(query.getQueryObject(), is(new BasicQuery("{ fans : { $not : { $size : 0 } } }").getQueryObject()));
+	}
+
+	/**
+	 * @see DATA_JIRA-566
+	 */
+	@Test
+	public void constructsDeleteQueryCorrectly() throws Exception {
+
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("removeByLastname", String.class);
+		assertThat(sequoiadbQuery.isDeleteQuery(), is(true));
+	}
+
+	/**
+	 * @see DATA_JIRA-566
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void preventsDeleteAndCountFlagAtTheSameTime() throws Exception {
+		createQueryForMethod("invalidMethod", String.class);
+	}
+
+	/**
+	 * @see DATA_JIRA-420
+	 */
+	@Test
+	public void shouldSupportFindByParameterizedCriteriaAndFields() throws Exception {
+
+		ConvertingParameterAccessor accessor = StubParameterAccessor.getAccessor(converter, new Object[] {
+				new BasicBSONObject("firstname", "first").append("lastname", "last"), Collections.singletonMap("lastname", 1) });
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByParameterizedCriteriaAndFields", BSONObject.class,
+				Map.class);
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accessor);
+
+		assertThat(query.getQueryObject(),
+				is(new BasicQuery("{ \"firstname\": \"first\", \"lastname\": \"last\"}").getQueryObject()));
+		assertThat(query.getFieldsObject(), is(new BasicQuery(null, "{ \"lastname\": 1}").getFieldsObject()));
+	}
+
+	/**
+	 * @see DATA_JIRA-420
+	 */
+	@Test
+	public void shouldSupportRespectExistingQuotingInFindByTitleBeginsWithExplicitQuoting() throws Exception {
+
+		ConvertingParameterAccessor accessor = StubParameterAccessor.getAccessor(converter, new Object[] { "fun" });
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByTitleBeginsWithExplicitQuoting", String.class);
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accessor);
+
+		assertThat(query.getQueryObject(), is(new BasicQuery("{title: {$regex: '^fun', $options: 'i'}}").getQueryObject()));
+	}
+
+	/**
+	 * @see DATA_JIRA-995, DATA_JIRA-420
+	 */
+	@Test
+	public void shouldParseQueryWithParametersInExpression() throws Exception {
+
+		ConvertingParameterAccessor accessor = StubParameterAccessor.getAccessor(converter, new Object[] { 1, 2, 3, 4 });
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByQueryWithParametersInExpression", int.class,
+				int.class, int.class, int.class);
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accessor);
+
+		assertThat(query.getQueryObject(), is(new BasicQuery(
+				"{$where: 'return this.date.getUTCMonth() == 3 && this.date.getUTCDay() == 4;'}").getQueryObject()));
+	}
+
+	/**
+	 * @see DATA_JIRA-995, DATA_JIRA-420
+	 */
+	@Test
+	public void bindsSimplePropertyAlreadyQuotedCorrectly() throws Exception {
+
+		ConvertingParameterAccessor accesor = StubParameterAccessor.getAccessor(converter, "Matthews");
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByLastnameQuoted", String.class);
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accesor);
+		org.springframework.data.sequoiadb.core.query.Query reference = new BasicQuery("{'lastname' : 'Matthews'}");
+
+		assertThat(query.getQueryObject(), is(reference.getQueryObject()));
+	}
+
+	/**
+	 * @see DATA_JIRA-995, DATA_JIRA-420
+	 */
+	@Test
+	public void bindsSimplePropertyAlreadyQuotedWithRegexCorrectly() throws Exception {
+
+		ConvertingParameterAccessor accesor = StubParameterAccessor.getAccessor(converter, "^Mat.*");
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByLastnameQuoted", String.class);
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accesor);
+		org.springframework.data.sequoiadb.core.query.Query reference = new BasicQuery("{'lastname' : '^Mat.*'}");
+
+		assertThat(query.getQueryObject(), is(reference.getQueryObject()));
+	}
+
+	/**
+	 * @see DATA_JIRA-995, DATA_JIRA-420
+	 */
+	@Test
+	public void bindsSimplePropertyWithRegexCorrectly() throws Exception {
+
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("findByLastname", String.class);
+		ConvertingParameterAccessor accesor = StubParameterAccessor.getAccessor(converter, "^Mat.*");
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(accesor);
+		org.springframework.data.sequoiadb.core.query.Query reference = new BasicQuery("{'lastname' : '^Mat.*'}");
+
+		assertThat(query.getQueryObject(), is(reference.getQueryObject()));
+	}
+
+	/**
+	 * @see DATA_JIRA-1070
+	 */
+	@Test
+	public void parsesDbRefDeclarationsCorrectly() throws Exception {
+
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("methodWithManuallyDefinedDbRef", String.class);
+		ConvertingParameterAccessor parameterAccessor = StubParameterAccessor.getAccessor(converter, "myid");
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(parameterAccessor);
+
+		DBRef dbRef = DBObjectTestUtils.getTypedValue(query.getQueryObject(), "reference", DBRef.class);
+		assertThat(dbRef.getId(), is((Object) "myid"));
+		assertThat(dbRef.getRef(), is("reference"));
+	}
+
+	/**
+	 * @see DATA_JIRA-1072
+	 */
+	@Test
+	public void shouldParseJsonKeyReplacementCorrectly() throws Exception {
+
+		StringBasedSequoiadbQuery sequoiadbQuery = createQueryForMethod("methodWithPlaceholderInKeyOfJsonStructure", String.class,
+				String.class);
+		ConvertingParameterAccessor parameterAccessor = StubParameterAccessor.getAccessor(converter, "key", "value");
+
+		org.springframework.data.sequoiadb.core.query.Query query = sequoiadbQuery.createQuery(parameterAccessor);
+
+		assertThat(query.getQueryObject(), is(new BasicBSONObjectBuilder().add("key", "value").get()));
+	}
+
+	private StringBasedSequoiadbQuery createQueryForMethod(String name, Class<?>... parameters) throws Exception {
+
+		Method method = SampleRepository.class.getMethod(name, parameters);
+		SequoiadbQueryMethod queryMethod = new SequoiadbQueryMethod(method, metadata, converter.getMappingContext());
+		return new StringBasedSequoiadbQuery(queryMethod, operations);
+	}
+
+	private interface SampleRepository {
+
+		@Query("{ 'lastname' : ?0 }")
+		Person findByLastname(String lastname);
+
+		@Query("{ 'lastname' : '?0' }")
+		Person findByLastnameQuoted(String lastname);
+
+		@Query("{ 'address' : ?0 }")
+		Person findByAddress(Address address);
+
+		@Query("{ 'lastname' : ?0, 'address' : ?1 }")
+		Person findByLastnameAndAddress(String lastname, Address address);
+
+		@Query("{ fans : { $not : { $size : 0 } } }")
+		Person findByHavingSizeFansNotZero();
+
+		@Query(value = "{ 'lastname' : ?0 }", delete = true)
+		void removeByLastname(String lastname);
+
+		@Query(value = "{ 'lastname' : ?0 }", delete = true, count = true)
+		void invalidMethod(String lastname);
+
+		@Query(value = "?0", fields = "?1")
+        BSONObject findByParameterizedCriteriaAndFields(BSONObject criteria, Map<String, Integer> fields);
+
+		@Query("{'title': { $regex : '^?0', $options : 'i'}}")
+		List<BSONObject> findByTitleBeginsWithExplicitQuoting(String title);
+
+		@Query("{$where: 'return this.date.getUTCMonth() == ?2 && this.date.getUTCDay() == ?3;'}")
+		List<BSONObject> findByQueryWithParametersInExpression(int param1, int param2, int param3, int param4);
+
+		@Query("{ 'reference' : { $ref : 'reference', $id : ?0 }}")
+		Object methodWithManuallyDefinedDbRef(String id);
+
+		@Query("{ ?0 : ?1}")
+		Object methodWithPlaceholderInKeyOfJsonStructure(String keyReplacement, String valueReplacement);
+
+	}
+}

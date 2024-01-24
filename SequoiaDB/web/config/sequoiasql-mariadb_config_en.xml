@@ -1,0 +1,30 @@
+<Property type="array">
+   <FILLER>
+      <Name>dbpath</Name>
+      <WebName>dbpath</WebName>
+      <Type>path</Type>
+      <Default>/opt/sequoiasql/mariadb/data/</Default>
+      <Valid></Valid>
+      <Display>text box</Display>
+      <Edit>true</Edit>
+      <Desc>Data storing path</Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+   <FILLER>
+      <Name>port</Name>
+      <WebName>port</WebName>
+      <Type>port</Type>
+      <Default>3306</Default>
+      <Valid></Valid>
+      <Display>edit box</Display>
+      <Edit>true</Edit>
+      <Desc>Local service port</Desc>
+      <Level>0</Level>
+      <DynamicEdit>false</DynamicEdit>
+      <BatchEdit>false</BatchEdit>
+      <ConfType>NORMAL</ConfType>
+   </FILLER>
+</Property>

@@ -1,0 +1,34 @@
+{Search: true}
+{Search: false}
+{Search: true, Estimate: false}
+{Search: false, Estimate: false}
+{Search: true, Expand: false}
+{Search: false, Expand: false}
+{Evaluate: true}
+{Evaluate: false}
+{Evaluate: true, Estimate: false}
+{Evaluate: false, Estimate: false}
+{Expand: false}
+{Expand: true}
+{Expand: true, Estimate: false}
+{Expand: false, Estimate: false}
+{Expand: true, Detail: false}
+{Expand: false, Detail: false}
+{Filter: "None"}
+{Filter: "Output"}
+{Filter: "Input"}
+{Filter: "Filter"}
+{Filter: "All"}
+{Detail: true}
+{Detail: false}
+{Detail: true, Estimate: false}
+{Run: true, Detail: true}
+{Run: true, Search: true}
+{Run: true, Evaluate: true}
+{Run: true, Expand: true}
+{Run: true, Filter: "ALL"}
+{Run: true, Detail: true}
+{Run: true, Flatten: true}
+{Flatten: true}
+{Flatten: false}
+{Flatten: true, Estimate: false}

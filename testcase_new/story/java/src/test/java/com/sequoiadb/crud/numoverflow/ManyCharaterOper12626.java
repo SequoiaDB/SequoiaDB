@@ -1,0 +1,95 @@
+package com.sequoiadb.crud.numoverflow;
+
+import java.util.Date;
+
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import com.sequoiadb.base.CollectionSpace;
+import com.sequoiadb.base.DBCollection;
+import com.sequoiadb.base.Sequoiadb;
+import com.sequoiadb.exception.BaseException;
+import com.sequoiadb.testcommon.SdbTestBase;
+
+/**
+ * FileName: ManyCharaterOper12626.java test content:Numeric value overflow for
+ * many character using operators, and these operators are used as a matcher.
+ * testlink case:seqDB-12626
+ * 
+ * @author luweikang
+ * @Date 2017.9.14
+ * @version 1.00
+ */
+
+public class ManyCharaterOper12626 extends SdbTestBase {
+
+    private String clName = "many_matcher12626";
+    private Sequoiadb sdb = null;
+    private CollectionSpace cs = null;
+    private static DBCollection cl = null;
+
+    @BeforeClass
+    public void setUp() {
+        try {
+            sdb = new Sequoiadb( SdbTestBase.coordUrl, "", "" );
+        } catch ( BaseException e ) {
+            Assert.assertTrue( false,
+                    "connect %s failed," + coordUrl + e.getMessage() );
+        }
+
+        cs = sdb.getCollectionSpace( SdbTestBase.csName );
+        cl = NumOverflowUtils.createCL( cs, clName );
+        String[] records = {
+                "{'a':-2147483648,'b':{'$numberLong':'-9223372036854775808'},"
+                        + "'c':[-2147483648,{'$numberLong':'9223372036854775807'}],"
+                        + "d:{a:{b:{'$numberLong':'-9223372036854775808'}}}}",
+                "{'a':-21473648,'b':{'$numberLong':'-92233724775808'},"
+                        + "'c':[-214743648,{'$numberLong':'-9223336854775808'}],"
+                        + "d:{a:{b:{'$numberLong':'-92233754775808'}}}}" };
+
+        NumOverflowUtils.insert( cl, records );
+    }
+
+    @Test
+    public void testManyOper() {
+        String matcher = "{'a':{'$add':-1,'$et':{'$numberLong':'-2147483649'}},"
+                + "'b':{'$divide':-1,'$et':{'$decimal':'9223372036854775808'}},"
+                + "'c.0':{'$multiply':-1,'$et':{'$numberLong':'2147483648'}},"
+                + "'c.1':{'$subtract':-1,'$et':{'$decimal':'9223372036854775808'}},"
+                + "'d.a.b':{'$abs':1,'$et':{'$decimal':'9223372036854775808'}}}";
+
+        String[] expRecords = {
+                "{'a':-2147483648,'b':{'$numberLong':'-9223372036854775808'},"
+                        + "'c':[-2147483648,{'$numberLong':'9223372036854775807'}],"
+                        + "d:{a:{b:{'$numberLong':'-9223372036854775808'}}}}" };
+
+        String indexKey = "{int32:-1,long:1,arr:1,obj:-1}";
+        try {
+            NumOverflowUtils.multiFieldOperAsMatcher( cl, matcher, expRecords,
+                    indexKey );
+
+        } catch ( BaseException e ) {
+            Assert.assertTrue( false,
+                    "many operators data are used as matcher oper failed,"
+                            + e.getMessage() );
+        }
+    }
+
+    @AfterClass
+    public void tearDown() {
+        try {
+            CollectionSpace cs = sdb.getCollectionSpace( SdbTestBase.csName );
+            if ( cs.isCollectionExist( clName ) ) {
+                cs.dropCollection( clName );
+            }
+        } catch ( BaseException e ) {
+            Assert.fail( "clear env failed, errMsg:" + e.getMessage() );
+        } finally {
+            if ( sdb != null ) {
+                sdb.close();
+            }
+        }
+    }
+}

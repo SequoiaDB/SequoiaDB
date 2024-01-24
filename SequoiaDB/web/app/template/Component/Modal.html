@@ -1,0 +1,20 @@
+<div class="modal2" ng-if="data.isShow" ng-style="Setting.Style">
+   <div class="header">
+      <table>
+         <tbody>
+            <tr>
+               <td class="icon"><i class="fa fa-lg" ng-class="data.icon"></i></td>
+               <td class="title" ng-dblclick="switchModalSize()" ng-mousedown="startMove($event)">{{data.title}}</td>
+               <td class="tool">
+                  <div class="maximize" ng-if="Setting.Status == 1" ng-click="maximumModal()"></div><div class="restore" ng-if="Setting.Status == 2" ng-click="recoveryModal()"></div><div class="close" ng-click="closeModal()"></div>
+               </td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
+   <div class="body" style="+zoom:1;" ng-style="Setting.BodyStyle">{{Setting.Context}}</div>
+   <div class="foot">
+      <button class="btn btn-primary" ng-if="data.noOK != true" ng-click="ok()">{{Setting.Text.OK}}</button>&nbsp;&nbsp;<button class="btn btn-default" ng-click="close()">{{Setting.Text.Close}}</button>
+   </div>
+   <div class="sizeBtn" ng-mousedown="startSetSize()"></div>
+</div>

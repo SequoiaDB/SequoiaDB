@@ -1,0 +1,42 @@
+/* CSS Document */
+/*公共样式*/
+*:focus{outline:none;}
+html{ overflow-x:auto;}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,blockquote,p{padding:0; margin:0;}   
+table,td,tr,th{ font-size:12px;}
+li{list-style-type:none;}
+img{vertical-align:top;border:0;}
+ol,ul {list-style:none; margin:0; padding:0;}
+h1,h2,h3,h4,h5,h6 { font-size:12px;}
+a {text-decoration:none;}
+em,i{font-style:normal;}
+.clear{ clear:both;}
+input[type="submit"],input[type="button"]{ cursor:pointer;} 
+
+body{ padding:10px; font-family:Helvetica, 'Helvetica Neue', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', STHeiti, 'WenQuanYi Micro Hei', sans-serif,"sans serif",tahoma,verdana,helvetica; font-style:normal; font-variant:normal; font-weight:normal; word-wrap:break-word; font-size:14px; }
+p { font-size: 1.063em; margin:4px 0; line-height:2em; padding:8px 0; letter-spacing:-.003em; }
+h1{ display:block; font-size:2em; -webkit-margin-before: 0.67em; -webkit-margin-after: 0.67em; -webkit-margin-start: 0px; -webkit-margin-end: 0px; font-weight: bold; }
+h2 { font-size:1.4em; margin:6px 0; }
+h3 { font-size:1.2em; margin:6px 0; }
+div{ font-size: 1.063em; }
+a{ font-size: 1.063em; }
+a:link { color: #1492FA; }
+a:visited { color: #1492FA; }
+a:hover { color: #1492FA; }
+a:active { color: #1492FA; }
+hr{ display: block; -webkit-margin-before: 0.5em; -webkit-margin-after: 0.5em; -webkit-margin-start: auto; -webkit-margin-end: auto; border-style: inset; border-width: 1px; }
+
+em{ font-style:italic; }
+
+dd{ margin:0 0 0 30px; }
+
+/* 表格 */
+table{ width:100%; border-collapse:collapse; border:#ddd solid 1px; font-size: 1.063em; }
+table th { word-wrap:break-word; /* word-break: break-word; */ padding:5px; border:1px solid #ddd; white-space: nowrap; font-size: 1.063em; }
+table td { word-wrap:break-word; /* word-break: break-word; */ padding:5px; border:1px solid #ddd; font-size: 1.063em; }
+
+ul { padding-left:20px; }
+ul > li { list-style-type:disc; margin:5px 0 0 0; line-height:22px; }
+
+ol{ display:block; list-style-type:decimal; -webkit-margin-before:1em; -webkit-margin-after:1em; -webkit-margin-start:0px; -webkit-margin-end:0px;-webkit-padding-start:30px; }
+ol > li{ display:list-item; text-align: -webkit-match-parent; list-style-type:decimal; }

@@ -1,0 +1,3409 @@
+<!-- Configuration List                                                                     -->
+<!-- name: (required) the macro name that going to be generated in source code              -->
+<!-- long: (required) configure option ( long version )                                     -->
+<!-- short: (optional) configure option ( short version, one character )                    -->
+<!-- description: (optional) description for configure option                               -->
+<!--   en: English description                                                              -->
+<!--   cn: Chinese description                                                              -->
+<!-- reloadable: (optional) whether this configuration is reloadable                        -->
+<!-- reloadstrategy: (optional) the reload strategy of this configuration                  -->
+<!--   en: English reload strategy                                                              -->
+<!--   cn: Chinese reload strategy                                                              -->
+<!-- type: (optional) expected user input type, must be C++ type or none, string by default -->
+<!-- default: (optional) default value (if rest of dft doesn not specified)                 -->
+<!-- catalogdft: (optional) default value for catalog node                                  -->
+<!-- coorddft: (optional) default value for coord node                                      -->
+<!-- datadft: (optional) default value for data node                                        -->
+<!-- hidden: (optional) whether a configure option is hidden, by default false               -->
+<?xml version="1.0" encoding="utf-8"?>
+<optlist>
+   <opt>
+      <name>PMD_OPTION_HELP</name>
+      <long>help</long>
+      <short>h</short>
+      <description>
+         <en>help</en>
+         <cn>帮助</cn>
+      </description>
+      <type>none</type>
+      <detail>
+         <en>Print help information</en>
+         <cn>打印帮助信息</cn>
+      </detail>
+      <typeofweb>--</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_VERSION</name>
+      <long>version</long>
+      <type>none</type>
+      <description>
+         <en>Database version</en>
+         <cn>数据库版本</cn>
+      </description>
+      <detail>
+         <en>Print version information</en>
+         <cn>打印版本信息</cn>
+      </detail>
+      <typeofweb>--</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DBPATH</name>
+      <long>dbpath</long>
+      <short>d</short>
+      <description>
+         <en>Database path</en>
+         <cn>数据库路径</cn>
+      </description>
+      <catalogdft>/opt/sequoiadb/database/cata</catalogdft>
+      <coorddft>/opt/sequoiadb/database/coord</coorddft>
+      <datadft>/opt/sequoiadb/database/data</datadft>
+      <standdft>/opt/sequoiadb/database/standalone</standdft>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. It specifies the path of data file.<fig></fig>
+             2. If it is not specified, the default path is current path.</en>
+         <cn>1. 指定数据文件存放路径。<fig></fig>2. 如果不指定，则默认为当前路径。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_IDXPATH</name>
+      <long>indexpath</long>
+      <short>i</short>
+      <description>
+         <en>Index path</en>
+         <cn>索引路径</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. It specifies the path of index file<fig></fig>
+             2. If it is not specified, the default path is the same with 'dbpath'.</en>
+         <cn>1. 指定索引文件存放路径。<fig></fig>2. 如果不指定，则默认与'dbpath'相同。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_CONFPATH</name>
+      <long>confpath</long>
+      <short>c</short>
+      <description>
+         <en>Configure file path</en>
+         <cn>配置文件路径</cn>
+      </description>
+      <detail>
+         <en>1. Specified configuration file path (doesn't contain fiel name). The system will find <i>sdb.conf </i>under confpath.<fig></fig>
+             2. <i>sdb.conf</i>contains necessary configuration items. The format of a configuration item is "parameter name=value" like "svcname=11810" and "diaglevel=3".<fig></fig>
+             3. If this parameter is not specified, system will automatically search for sdb.conf in current path.<fig></fig>
+             4. There may not be sdb.conf.</en>
+         <cn>1. 指定配置文件路径（不包含文件名），系统会在confpath下寻找sdb.conf。<fig></fig>
+             2. sdb.conf中填入需要的配置项，配制方法为：参数名 = 参数值。如 svcname=11810；diaglevel=3<fig></fig>
+             3. 如果不指定此参数，系统默认在当前路径寻找sdb.conf。<fig></fig>
+             4. sdb.conf可以不存在。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_LOGPATH</name>
+      <long>logpath</long>
+      <short>l</short>
+      <description>
+         <en>Log file path</en>
+         <cn>日志文件路径</cn>
+      </description>
+      <detail>
+         <en>1. Synchronous log files will be created when replication node does full sync. This parameter is used to specified the path of  synchronous log file.<fig></fig>
+             2. If it is not specified, the default path is "Data file path/replicalog".</en>
+         <cn>1. 副本节点在进行数据同步时会生成同步日志。此参数用来指定同步日志的路径。<fig></fig>
+             2. 如果不指定，则默认路径为：数据文件路径/replicalog</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DIAGLOGPATH</name>
+      <long>diagpath</long>
+      <description>
+         <en>Diagnostic log file path</en>
+         <cn>诊断日志文件路径</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. It specifies the catalog of diagnostic log. <fig></fig>
+             2. If it is not specified, the default path is "Data file path/diaglog".</en>
+         <cn>1. 指定诊断日志存放目录。<fig></fig>
+             2. 如果不指定，则默认为：数据文件路径/diaglog</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_AUDITLOGPATH</name>
+      <long>auditpath</long>
+      <description>
+         <en>Audit log file path</en>
+         <cn>审计日志文件路径</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. It specifies the catalog of audit log. <fig></fig>
+             2. If it is not specified, the default path is "Data file path/diaglog".</en>
+         <cn>1. 指定审计日志存放目录。<fig></fig>
+             2. 如果不指定，则默认为：数据文件路径/diaglog</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DIAGLOG_NUM</name>
+      <long>diagnum</long>
+      <type>int</type>
+      <description>
+         <en>The max number of diagnostic log files, default:20, -1:unlimited</en>
+         <cn>诊断日志文件最大数量,默认值:20, -1表示不限制, 取值范围[-1, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+            <en>takes effect when current file reaches write limit</en>
+            <cn>当前文件写满时生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>1. It specifies the number of diagnostic log file. <fig></fig>
+             2. If it is not specified, the default 20; -1 means unlimited.</en>
+         <cn>1. 指定诊断日志文件最大数量。<fig></fig>
+             2. 如果不指定，则默认为：20，-1表示不限制，取值范围[-1, 2^31 - 1]。</cn>
+      </detail>
+      <default>20</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_AUDIT_NUM</name>
+      <long>auditnum</long>
+      <type>int</type>
+      <description>
+         <en>The max number of audit log files, default:20, -1:unlimited</en>
+         <cn>审计日志文件最大数量,默认值:20, -1表示不限制, 取值范围[-1, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+            <en>takes effect when current file reaches write limit</en>
+            <cn>当前文件写满时生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>1. It specifies the number of audit log file. <fig></fig>
+             2. If it is not specified, the default 20; -1 means unlimited.</en>
+         <cn>1. 指定审计日志文件最大数量。<fig></fig>
+             2. 如果不指定，则默认为：20，-1表示不限制，取值范围[-1, 2^31 - 1]。</cn>
+      </detail>
+      <default>20</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_BKUPPATH</name>
+      <long>bkuppath</long>
+      <description>
+         <en>Backup path</en>
+         <cn>备份路径</cn>
+      </description>
+      <detail>
+          <en>1. It specifies the catalog of backup file.<fig></fig>
+              2. If it is not specified, the default path is "Data file path/bakfile".</en>
+          <cn>1. 指定备份文件生成目录。<fig></fig>
+              2. 如果不指定，则默认为：数据文件路径/bakfile</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WWWPATH</name>
+      <long>wwwpath</long>
+      <description>
+         <en>Web service root path</en>
+         <cn>WEB服务根路径</cn>
+      </description>
+      <detail>
+          <en>1. It specifies the root catalog of web service.<fig></fig>
+              2. If it is not specified, the default path is "Data file path/www".<fig></fig>
+           3. Only for om.</en>
+          <cn>1. 指定WEB服务根目录。<fig></fig>
+              2. 如果不指定，则默认为：数据文件路径/www。<fig></fig>
+           3. 仅对OM生效。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAXPOOL</name>
+      <long>maxpool</long>
+      <description>
+         <en>The maximum number of pooled agent,defalut:50, value range:[0,10000]</en>
+         <cn>最大代理线程池,默认值为50,取值范围:[0,10000]</cn>
+      </description>
+      <type>int</type>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. It specifies the amount of thread in thread pool.<fig></fig>
+             2. If it is not specified, the default value is 50, value range is [0,10000].</en>
+         <cn>1. 指定线程池内线程数量。<fig></fig>
+             2. 如果不指定，则默认为50，取值范围是[0,10000]。</cn>
+      </detail>
+      <default>50</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SVCNAME</name>
+      <long>svcname</long>
+      <short>p</short>
+      <description>
+         <en>Local service port</en>
+         <cn>本地服务端口</cn>
+      </description>
+      <catalogdft>11800</catalogdft>
+      <coorddft>11810</coorddft>
+      <datadft>11820</datadft>
+      <standdft>11810</standdft>
+      <detail>
+         <en>1. Specify the local service port, which used to provide services to the client.<fig></fig>
+             2. The default port of the coord node is 11810,while the catalog node is 11800 and the data node is 11820.</en>
+         <cn>1. 指定本地服务端口，用于对客户端提供服务。<fig></fig>
+             2. 协调节点默认端口为 11810，编目节点默认端口为 11800，数据节点默认端口为 11820。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_REPLNAME</name>
+      <long>replname</long>
+      <short>r</short>
+      <description>
+         <en>The replication service port is svcname+1 by default.</en>
+         <cn>数据复制服务端口，默认端口为 svcname+1</cn>
+      </description>
+      <catalogdft>11801</catalogdft>
+      <coorddft>11811</coorddft>
+      <datadft>11821</datadft>
+      <standdft>11811</standdft>
+      <detail>
+         <en>1. Specify the replication service port,which is svcname+1 by default.<fig></fig>
+             2. The parameter is only valid for catalog nodes and data nodes.</en>
+         <cn>1. 指定数据复制服务端口，默认端口为 svcname+1。<fig></fig>
+             2. 该参数只对编目节点和数据节点有效。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SHARDNAME</name>
+      <long>shardname</long>
+      <short>a</short>
+      <description>
+         <en>The shard service port, default: 'svcname'+2</en>
+         <cn>数据分区服务端口，默认端口为 svcname+2</cn>
+      </description>
+      <catalogdft>11802</catalogdft>
+      <coorddft>11812</coorddft>
+      <datadft>11822</datadft>
+      <standdft>11812</standdft>
+      <detail>
+         <en>Specify the shard service port, which is svcname+2 by default.</en>
+         <cn>指定数据分区服务端口，默认端口为 svcname+2</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_CATANAME</name>
+      <long>catalogname</long>
+      <short>x</short>
+      <description>
+         <en>The catalog service port is svcname+3 by default.</en>
+         <cn>编目服务端口，默认端口为 svcname+3</cn>
+      </description>
+      <catalogdft>11803</catalogdft>
+      <coorddft>11813</coorddft>
+      <datadft>11823</datadft>
+      <standdft>11813</standdft>
+      <detail>
+         <en>1. Specify the catalog service port, which is svcname+3 by default.<fig></fig>
+             2. The parameter is only valid for catalog nodes.</en>
+         <cn>1. 指定编目服务端口，默认端口为 svcname+3。<fig></fig>
+             2. 该参数只对编目节点有效。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_RESTNAME</name>
+      <long>httpname</long>
+      <short>s</short>
+      <description>
+         <en>The REST service port is svcname+4 by default.</en>
+         <cn>REST 服务端口，默认端口为 svcname+4</cn>
+      </description>
+      <catalogdft>11804</catalogdft>
+      <coorddft>11814</coorddft>
+      <datadft>11824</datadft>
+      <standdft>11814</standdft>
+      <detail>
+         <en>Specify the REST service port, which is svcname+4 by default.</en>
+         <cn>指定 REST 服务端口，默认端口为 svcname+4</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_OMNAME</name>
+      <long>omname</long>
+      <description>
+         <en>OM service name or port, default: 'svcname'+5</en>
+         <cn>OM服务名或端口, 默认:'svcname'+5</cn>
+      </description>
+      <detail>
+         <en>1. It specifies om port.<fig></fig>
+             2. If it is not specified, the default value is "svcname+5".</en>
+         <cn>1. 指定OM端口。<fig></fig>
+             2. 如果不指定则默认为svcname+5。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+     <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DIAGLEVEL</name>
+      <long>diaglevel</long>
+      <short>v</short>
+      <description>
+         <en>Diagnostic level,default:3,value range:[0-5]</en>
+         <cn>诊断级别,默认值:3,取值范围:[0,5]</cn>
+      </description>
+      <type>int</type>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <default>3</default>
+      <detail>
+         <en>1. It specifies the print level of diagnostic log. Diagnostic log in sequoiaDB, 0-5 respectively represent: SEVERE, ERROR, EVENT,WARNING, INFO, DEBUG.<fig></fig>
+             2. If it is not specified, the default value is "WARNING".</en>
+         <cn>1. 指定诊断日志打印级别。SequoiaDB中诊断日志从0-5分别代表：SEVERE, ERROR, EVENT, WARNING, INFO, DEBUG。<fig></fig>
+             2. 如果不指定，则默认为WARNING。</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_AUDIT_MASK</name>
+      <long>auditmask</long>
+      <description>
+         <en>Audit mask,default:SYSTEM|DDL|DCL,value list: ACCESS,CLUSTER,SYSTEM,DML,DDL,DCL,DQL,INSERT,DELETE,UPDATE,OTHER, use '|' join multiple values, ALL enable all mask, NONE disable all mask</en>
+         <cn>审计掩码,默认值:SYSTEM|DDL|DCL,取值列表为: ACCESS,CLUSTER,SYSTEM,DML,DDL,DCL,DQL,INSERT,DELETE,UPDATE,OTHER, 使用'|'连接多个取值, ALL取值表示开启所有, NONE关闭全部</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>1. It specifies the mask of audit log. Audit type in sequoiaDB as follow: ACCESS,CLUSTER,SYSTEM,DML,DDL,DCL,DQL,INSERT,DELETE,UPDATE,OTHER.<fig></fig>
+             2. If it is not specified, the default value is "SYSTEM|DDL|DCL". ALL enable all mask, NONE disable all mask</en>
+         <cn>1. 指定审计日志打印掩码。SequoiaDB中审计日志类型有：ACCESS,CLUSTER,SYSTEM,DML,DDL,DCL,DQL,INSERT,DELETE,UPDATE,OTHER。<fig></fig>
+             2. 如果不指定，则默认为"SYSTEM|DDL|DCL", ALL取值表示开启所有,NONE关闭全部。<fig></fig>
+             3. 更详细的内容可参考[审计日志](manual/Distributed_Engine/Maintainance/DiagLog/auditlog.md)</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_ROLE</name>
+      <long>role</long>
+      <short>o</short>
+      <description>
+         <en>Role of the node (data/coord/catalog/standalone)</en>
+         <cn>节点角色(data/coord/catalog/standalone)</cn>
+      </description>
+      <default>standalone</default>
+      <catalogdft>catalog</catalogdft>
+      <coorddft>coord</coorddft>
+      <datadft>data</datadft>
+      <standdft>standalone</standdft>
+      <detail>
+         <en>1. It specifies serving role. In sequoiaDB, "data/coord/catalog/standalone" represents "data node/coord node/catalog node/stand-alone machine".<fig></fig>
+             2. If it is not specified, the default value is "standalone".</en>
+         <cn>1. 指定服务角色。SequoiaDB分别以data/coord/catalog/standalone代表：数据节点/协调节点/编目节点/单机。<fig></fig>
+             2. 如果不指定则默认为单机。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_CATALOG_ADDR</name>
+      <long>catalogaddr</long>
+      <short>t</short>
+      <description>
+         <en>Catalog addr (hostname1:servicename1,hostname2:servicename2,...)</en>
+         <cn>编目节点地址(hostname1:servicename1,hostname2:servicename2,...)</cn>
+      </description>
+      <catalogdft>localhost:11803</catalogdft>
+      <!--coorddft>localhost:11803</coorddft-->
+      <datadft>localhost:11803</datadft>
+      <detail>
+         <en>1. It specifies the address of catalog node. The format is "hostname1:catalogname1,hostname2:catalogname2,...".<fig></fig>
+             2. It should specify address of at least one catalog.</en>
+         <cn>1. 指定编目节点的地址。配置形式为"hostname1:catalogname1,hostname2:catalogname2,..."。<fig></fig>
+             2. 需要至少指定一个编目节点的地址。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_LOGFILESZ</name>
+      <long>logfilesz</long>
+      <short>f</short>
+      <description>
+         <en>Log file size ( in MB ),default:64,value range:[64,2048]</en>
+         <cn>同步日志文件的大小(MB),默认值:64,取值范围:[64,2048]</cn>
+      </description>
+      <type>int</type>
+      <default>64</default>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. It specifies the size of sync log file. It is between 64(MB) and 2048(MB).<fig></fig>
+             2. If it is not specified, the default value is 64 (MB).<fig></fig>
+             3. The total size of synch log (logfilesz * logfilenum)determines the fault tolerance in the process of sync. If log is bigger, the possiblity of full sync is lower.</en>
+         <cn>1. 指定同步日志文件的大小。合法输入为64（MB）- 2048（MB）。<fig></fig>
+             2. 如果不指定，则默认为64（MB）。<fig></fig>
+             3. 同步日志的总大小（logfilesz * logfilenum）决定了在同步过程中的容错能力，日志越大则触发全量同步的可能性越小。</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_LOGFILENUM</name>
+      <long>logfilenum</long>
+      <short>n</short>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <description>
+         <en>Number of log files,default:20, value range:[1,11800]</en>
+         <cn>日志文件数量,默认值:20,取值范围:[1,11800]</cn>
+      </description>
+      <type>int</type>
+      <default>20</default>
+      <detail>
+          <en>1. It specifies the amount of synchronous log file.<fig></fig>
+              2. If it is not specified, the default value is 20.</en>
+          <cn>1. 指定同步日志文件的数量。<fig></fig>
+              2. 如果不指定，则默认为20。</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANSACTIONON</name>
+      <long>transactionon</long>
+      <short>e</short>
+      <description>
+         <en>Turn on transaction, default:true</en>
+         <cn>是否打开事务功能,默认为:true</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <default>true</default>
+      <detail>
+         <en>1. It specifies whether transaction turns on or not. Default is true.<fig></fig>
+             2. When transaction turns on, 'logfilenum' must grater than 1.</en>
+         <cn>1. 是否开启事务功能。默认为true<fig></fig>
+             2. 当开启事务功能，'logfilenum' 必须大于1。</cn>
+      </detail>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANSTIMEOUT</name>
+      <long>transactiontimeout</long>
+      <description>
+         <en>Timeout of waiting the transaction-lock(in second), default:60, value range:[0,3600]</en>
+         <cn>事务锁等待超时时间（单位：秒）,默认为:60,取值范围[0,3600]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <type>int</type>
+      <default>60</default>
+      <detail>
+         <en>Timeout of waiting the transaction-lock(in second), default:60, value range:[0,3600]</en>
+         <cn>1. 事务锁等待超时时间（单位：秒）,默认为:60,取值范围[0,3600]</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_NUMPRELOAD</name>
+      <long>numpreload</long>
+      <description>
+         <en>The number of pre-loaders, default:0,value range:[0,100]</en>
+         <cn>页面预加载代理数量,默认值:0,取值范围:[0,100]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <type>int</type>
+      <detail>
+         <en>The number of pre-loaders, default:0, value range:[0,100]</en>
+         <cn>页面预加载代理数据，默认值为0，取值范围：[0,100]</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAX_PREF_POOL</name>
+      <long>maxprefpool</long>
+      <description>
+         <en>The maximum number of prefetchers, default:0, value range:[0,1000]</en>
+         <cn>数据预取代理池最大数量,默认值:0,取值范围:[0,1000]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <type>int</type>
+      <detail>
+         <en>The maximum number of prefetchers, default:0, value range:[0,1000]</en>
+         <cn>数据预取代理池最大数量,默认值:0,取值范围:[0,1000]</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAX_SUB_QUERY</name>
+      <long>maxsubquery</long>
+      <description>
+         <en>The maximum number of sub-query for each SQL request, default:10, min value is 0, max value can't more than param 'maxprefpool'</en>
+         <cn>查询任务的最大分解子查询数量,默认值:10,最小值为0,最大值不能超过参数maxprefpool的值</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <type>int</type>
+      <detail>
+         <en>The maximum number of sub-query for each SQL request, default:10, min value is 0, max value can't more than param 'maxprefpool'</en>
+         <cn>查询任务的最大分解子查询数量,默认值:10,最小值为0,最大值不能超过参数maxprefpool的值</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAX_REPL_SYNC</name>
+      <long>maxreplsync</long>
+      <description>
+         <en>The maximum number of repl-sync threads, default:10, value range:[0, 200], 0:disable concurrent repl-sync</en>
+         <cn>日志同步最大并发数量，默认值:10,取值范围:[0,200], 0表示不启用日志并发同步</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <type>int</type>
+      <detail>
+         <en>The maximum number of repl-sync threads, default:10, value range:[0, 200], 0:disable concurrent repl-sync</en>
+         <cn>日志同步最大并发数量，默认值:10,取值范围:[0,200], 0表示不启用日志并发同步</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_LOGBUFFSIZE</name>
+      <long>logbuffsize</long>
+      <description>
+         <en>The number of pages ( in 64KB ) for replica log memory ( default:1024, value range:[512,1024000] ), the size should be smaller than log space</en>
+         <cn>复制日志内存页面数,默认值:1024,取值范围:[512,1024000],但日志总内存大小不能超过日志总文件大小;每个页面大小为64KB</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <type>int</type>
+      <detail>
+         <en>The number of pages ( in 64KB ) for replica log memory ( default:1024, value range:[512,1024000] ), the size should be smaller than log space</en>
+         <cn>复制日志内存页面数,默认值:1024,取值范围:[512,1024000],但日志总内存大小不能超过日志总文件大小;每个页面大小为64KB</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DMS_TMPBLKPATH</name>
+      <long>tmppath</long>
+      <description>
+         <en>The path of the temp files</en>
+         <cn>临时文件路径</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>The path of temp files, default is 'dbpath'+'/tmp'</en>
+         <cn>数据库临时文件目录，默认为'数据库路径'+'/tmp'</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SORTBUF_SIZE</name>
+      <long>sortbuf</long>
+      <description>
+         <en>Size of the sorting buf(MB), default:256, min value:128, value range[128, 2^31 - 1]</en>
+         <cn>排序缓存大小(MB),默认值256,最小值128,取值范围[128, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next query</en>
+         <cn>下次查询生效</cn>
+      </reloadstrategy>
+      <type>int</type>
+      <detail>
+         <en>Size of the sorting buf(MB), default:256, min value:128, value range[128, 2^31 - 1]</en>
+         <cn>排序缓存大小(MB),默认值256,最小值128,取值范围[128, 2^31 - 1]</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_HJ_BUFSZ</name>
+      <long>hjbuf</long>
+      <description>
+         <en>Size of the hash join buf(MB), default:128, min value:64, value range[64, 2^31 - 1]</en>
+         <cn>哈希连接缓存大小(MB),默认值128,最小值64,取值范围[64, 2^31 - 1]</cn>
+      </description>
+      <type>int</type>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next query</en>
+         <cn>下次查询生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Size of the hash join buf(MB), default:128, min value:64, value range[64, 2^31 - 1]</en>
+         <cn>哈希连接缓存大小(MB),默认值128,最小值64,取值范围[64, 2^31 - 1]</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SYNC_STRATEGY</name>
+      <long>syncstrategy</long>
+      <description>
+         <en>The control strategy of data sync in ReplGroup, value enumeration: none,keepnormal,keepall, default:keepnormal.</en>
+         <cn>副本组之间数据同步控制策略,取值:none,keepnormal,keepall,默认为keepnormal。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. The control strategy of data sync in repl group.<fig></fig>
+               2. value enumeration:<fig></fig>
+               ● none--no sync strategy. if the processing ability is much higher in master node than syncing ability in slave node, then slave node is susceptible to full sync under write-heavy workload.<fig></fig>
+               ● keepnormal--actively lower the master node's processing speed relative to normal nodes's to avoid full sync(might affect performance).<fig></fig>
+               ● keepall--actively lower the master node's processing speed relative to all nodes's to avoid full sync(might affect performance).<fig></fig>
+               3. the difference between keepnormal and keepall is that, the existence of abnormal nodes will lower master node's processing speed in keepall while will not in keepnormal.<fig></fig>
+               4. if not specified, default value is keepnormal.</en>
+         <cn>1. 副本组之间数据同步控制策略。<fig></fig>
+             2. 取值列表：<fig></fig>
+             ● none: 不开启同步控制策略。若主节点处理数据的能力远超备节点同步数据的能力，则在写操作繁忙的场景下易导致备节点发生全量同步。<fig></fig>
+             ● keepnormal: 主动降低主节点相对于正常节点的处理速度（可能会造成性能影响），以避免全量同步的发生。<fig></fig>
+             ● keepall: 主动降低主节点相对于所有节点的处理速度（可能会造成性能影响），以避免全量同步的发生。<fig></fig>
+             3. keepnormal和keepall的区别在于，当有节点异常时keepall会降低主节点的处理速度，而keepnormal不受异常节点的影响。<fig></fig>
+             4. 如果不指定，默认为keepnormal。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_REPL_BUCKET_SIZE</name>
+      <long>replbucketsize</long>
+      <description>
+         <en>Repl bucket size ( must be the power of 2 ), default is 32, value range:[1,4096]</en>
+         <cn>日志并发同步桶大小,必须为2的幂,默认值为32,取值范围:[1,4096]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <type>int</type>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEMDEBUG</name>
+      <long>memdebug</long>
+      <description>
+         <en>Enable memory debug, default:false</en>
+         <cn>打开内存调试,默认为false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEMDEBUGVERIFY</name>
+      <long>memdebugverify</long>
+      <description>
+         <en>Enable memory debug verify when dump memory, default:false</en>
+         <cn>打开内存调试校验,默认为false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEMDEBUGMASK</name>
+      <long>memdebugmask</long>
+      <description>
+         <en>Memory debug mask,value list:OSS,POOL,TC or ALL. Use '|' join multiple values, ALL enable all mask. Default:OSS|POOL</en>
+         <cn>内存调试掩码，取值 OSS,POOL,TC 或 ALL, 可以使用'|'连接多个值，ALL表示开启所有，默认:OSS|POOL</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEMDEBUGDETAIL</name>
+      <long>memdebugdetail</long>
+      <description>
+         <en>Enable memory debugging details, default:false</en>
+         <cn>打开内存详细项的调试校验，默认为false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEMDEBUGSIZE</name>
+      <long>memdebugsize</long>
+      <description>
+         <en>Memory debug segment size,default:0, if not zero, the value range:[8,4194304]</en>
+         <cn>内存调试段大小,默认为0,当为不0时,取值范围:[8,4194304]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <type>int</type>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_CATALIST</name>
+      <long>cataloglist</long>
+      <description>
+         <en>Catalog node list(json)</en>
+         <cn>编目节点列表(json)</cn>
+      </description>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DPSLOCAL</name>
+      <long>dpslocal</long>
+      <description>
+         <en>Log the operation from local port, default:false</en>
+         <cn>是否记录来自本地端口的操作,默认为false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRACEON</name>
+      <long>traceon</long>
+      <description>
+         <en>Turn on trace when starting, default:false</en>
+         <cn>是否启动时开启跟踪,默认为false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRACEBUFSZ</name>
+      <long>tracebufsz</long>
+      <description>
+         <en>Trace buffer size(MB), default:256, value range:[1,1024]</en>
+         <cn>启动时开启跟踪的缓冲区大小(MB),默认值:256,取值范围:[1,1024]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <type>int</type>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SHARINGBRK</name>
+      <long>sharingbreak</long>
+      <description>
+         <en>The timeout period for heartbeat in each replica group ( in ms ), default:7000, value range:[5000,300000] </en>
+         <cn>判定心跳中断的时间(ms),默认值:7000,取值范围:[5000,300000]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <type>int</type>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_INDEX_SCAN_STEP</name>
+      <long>indexscanstep</long>
+      <description>
+         <en>Index scan step, default is 100, range:[1, 10000]</en>
+         <cn>索引扫描步长,默认值为100,取值范围:[1,10000]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+     <type>int</type>
+     <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_START_SHIFT_TIME</name>
+      <long>startshifttime</long>
+      <description>
+         <en>Nodes starting shift time(sec), default:600, value range:[0,7200]</en>
+         <cn>节点起动漂移时间(sec),默认值:600,取值范围:[0,7200]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+       <type>int</type>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFERREDINST</name>
+      <long>preferredinstance</long>
+      <description>
+         <en>Preferred instance for read request, default: 'M'. Could be single value in 'M', 'm', 'S', 's', 'A', 'a', 1-255. Or use ',' to join multiple values. Maximum lenght of option string is 256.</en>
+         <cn>读请求优先选择的实例,默认值为 'M'，取值列表：'M'、'm'、'S'、's'、'A'、'a'、1-255。可以使用 ',' 连接多个值。连接多值时字符串最大长度为 256。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Specify the preferred instance when executing a read request. For more details can refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md).<fig></fig>
+             In v3.4.5 and above, this parameter has been renamed. The users of lower versions should use preferedinstance</en>
+         <cn>指定执行读请求时优先选择的实例，更多内容可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。<fig></fig>
+             该参数在 v3.4.5 及以上版本中已更名，低版本的用户仍需使用原参数 preferedinstance。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+      <default>M</default>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFINST</name>
+      <long>preferedinstance</long>
+      <description>
+         <en>Prefered instance for read request, default: 'M'. Could be single value in 'M', 'm', 'S', 's', 'A', 'a', 1-255. Or use ',' to join multiple values. Maximum lenght of option string is 256.</en>
+         <cn>读请求优先选择的实例,默认值为 'M'，取值列表：'M'、'm'、'S'、's'、'A'、'a'、1-255。可以使用 ',' 连接多个值。连接多值时字符串最大长度为 256。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Specify the prefered instance when executing a read request. For more details can refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md).</en>
+         <cn>指定执行读请求时优先选择的实例，更多内容可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+      <default>M</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFERREDINST_MODE</name>
+      <long>preferredinstancemode</long>
+      <description>
+         <en>The mode to choose query instance when multiple preferred instances are found. Could be 'random' or 'ordered'. Default is 'random'.</en>
+         <cn>指定当多个实例符合 preferredinstance 的条件时的选择模式。可选值有 'random' 和 'ordered'。默认值是 'random'。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Specify the selection mode when multiple instance meet the conditions of preferredinstance. For more details can refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md).<fig></fig>
+             In v3.4.5 and above, this parameter has been renamed. The users of lower versions should use preferedinstancemode</en>
+         <cn>指定当多个实例符合 preferredinstance 的条件时的选择模式，更多内容可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。<fig></fig>
+             该参数在 v3.4.5 及以上版本中已更名，低版本的用户仍需使用原参数 preferedinstancemode。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+      <default>random</default>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFINST_MODE</name>
+      <long>preferedinstancemode</long>
+      <description>
+         <en>The mode to choose query instance when multiple prefered instances are found. Could be 'random' or 'ordered'. Default is 'random'.</en>
+         <cn>指定当多个实例符合 preferedinstance 的条件时的选择模式。可选值有 'random' 和 'ordered'。默认值是 'random'。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Specify the selection mode when multiple instance meet the conditions of preferedinstance. For more details can refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md).</en>
+         <cn>指定当多个实例符合 preferedinstance 的条件时的选择模式，更多内容可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+      <default>random</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFERREDINST_STRICT</name>
+      <long>preferredstrict</long>
+      <description>
+         <en>Specify whether the node selection is a strict mode, and when it is a strict mode, the node can only be selected from the specified IDs by preferredinstance.Default is false.</en>
+         <cn>指定节点选择是否为严格模式，当为严格模式时，节点只能从 preferredinstance 指定的ID中选取，默认为false。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Specify whether the node selection is a strict mode, and when it is a strict mode, the node can only be selected from the specified IDs by preferredinstance.Default is false.<fig></fig>
+             In v3.4.5 and above, this parameter has been renamed. The users of lower versions should use preferedstrict</en>
+         <cn>指定节点选择是否为严格模式，当为严格模式时，节点只能从 preferredinstance 指定的ID中选取，默认为false。<fig></fig>
+             该参数在 v3.4.5 及以上版本中已更名，低版本的用户仍需使用原参数 preferedstrict。</cn>
+      </detail>
+      <typeofweb>boolean</typeofweb>
+      <default>false</default>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFINST_STRICT</name>
+      <long>preferedstrict</long>
+      <description>
+         <en>Specify whether the node selection is a strict mode, and when it is a strict mode, the node can only be selected from the specified IDs by preferedinstance.Default is false.</en>
+         <cn>指定节点选择是否为严格模式，当为严格模式时，节点只能从 preferedinstance 指定的ID中选取，默认为false。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Specify whether the node selection is a strict mode, and when it is a strict mode, the node can only be selected from the specified IDs by preferedinstance.Default is false.</en>
+         <cn>指定节点选择是否为严格模式，当为严格模式时，节点只能从 preferedinstance 指定的ID中选取，默认为false。</cn>
+      </detail>
+      <typeofweb>boolean</typeofweb>
+      <default>false</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFERREDINST_PERIOD</name>
+      <long>preferredperiod</long>
+      <description>
+         <en>Specify the timeout period (in seconds) of last node chosen for requests. During this timeout period, SequoiaDB will reuse the last node for read quest. Default is 60 seconds, range is [-1, 2^31 - 1], -1 means the last chosen node will not be re-chosen for read request, 0 means always re-choose for read request.</en>
+         <cn>优先实例的有效周期，单位为秒。如果上一次选择进行请求的节点在有效周期内，读请求仍使用该节点进行查询，周期之后，将根据 preferredinstance 重新选择。默认值为 60 秒，取值范围为 [-1, 2^31 - 1]，-1 表示不失效，0 表示本次查询不使用上次选择的实例，根据 preferredinstance 进行重新选择。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>The effective period of the priority instance, in seconds, for more details can refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md).<fig></fig>
+             In v3.4.5 and above, this parameter has been renamed. The users of lower versions should use preferedperiod</en>
+         <cn>优先实例的有效周期，单位为秒，更多内容可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。<fig></fig>
+             该参数在 v3.4.5 及以上版本中已更名，低版本的用户仍需使用原参数 preferedperiod。</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+      <type>int</type>
+      <default>60</default>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFINST_PERIOD</name>
+      <long>preferedperiod</long>
+      <description>
+         <en>Specify the timeout period (in seconds) of last node chosen for requests. During this timeout period, SequoiaDB will reuse the last node for read quest. Default is 60 seconds, range is [-1, 2^31 - 1], -1 means the last chosen node will not be re-chosen for read request, 0 means always re-choose for read request.</en>
+         <cn>优先实例的有效周期，单位为秒。如果上一次选择进行请求的节点在有效周期内，读请求仍使用该节点进行查询，周期之后，将根据 preferedinstance 重新选择。默认值为 60 秒，取值范围为 [-1, 2^31 - 1]，-1 表示不失效，0 表示本次查询不使用上次选择的实例，根据 preferedinstance 进行重新选择。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>The effective period of the priority instance, in seconds, for more details can refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md).</en>
+         <cn>优先实例的有效周期，单位为秒，更多内容可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+      <type>int</type>
+      <default>60</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PREFERRED_CONSTRAINT</name>
+      <long>preferredconstraint</long>
+      <description>
+         <en>The constraint of the preferred instance. Value enumeration: 'primaryonly', 'secondaryonly', ''. Default: ''. For more details can refer to setSessionAttr()</en>
+         <cn>优先实例的约束条件，默认值为“”，取值包括“primaryonly”、“secondaryonly”、“”。取值说明可参考 setSessionAttr()。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>The constraint of the preferred instance. Value enumeration: 'primaryonly', 'secondaryonly', ''. Default: ''. For more details can refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr_en.md)</en>
+         <cn>优先实例的约束条件，默认值为""，取值包括"primaryonly"、"secondaryonly"、""。取值说明可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+      <default></default>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_INSTANCE_ID</name>
+      <long>instanceid</long>
+      <description>
+         <en>Instance ID of node. Default is 0, which means the instance ID is the position of node in the replica group. Valid value could be [1, 255].</en>
+         <cn>节点的实例 ID。默认值是 0，表示使用节点在数据组中的位置。有效的取值包括 [1, 255]。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. Instance ID of node, used by preferredinstance to choose query instance.<fig></fig>
+             2. Valid value could be [1, 255].<fig></fig>
+             3. If not given or give out-of-range value, will use the order in CATALOG meta-data.<fig></fig>
+             4. Different nodes could use the same instance ID.<fig></fig>
+             5. After restarting, users need to use [invalidateCache()](manual/Manual/Sequoiadb_Command/Sdb/invalidateCache.md) to clear the cache information of the node.</en>
+         <cn>1. 节点的实例 ID，用于 preferredinstance 进行实例选择。<fig></fig>
+             2. 有效的取值包括 [1, 255]。<fig></fig>
+             3. 如不指定，或者指定超出有效范围，则按照节点在编目信息中的下标进行自动分配。<fig></fig>
+             4. 多个节点可以指定相同的实例 ID。<fig></fig>
+             5. 重启后需要使用 [invalidateCache()](manual/Manual/Sequoiadb_Command/Sdb/invalidateCache.md) 清除节点的缓存信息</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+      <type>int</type>
+      <default>0</default>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_LOBPATH</name>
+      <long>lobpath</long>
+      <description>
+         <en>Large object file path</en>
+         <cn>大对象文件路径</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. It specifies the path of lob. <fig></fig>
+             2. If it is not specified, the default path is "Data file path".</en>
+         <cn>1. 指定大对象存放路径。<fig></fig>
+             2. 如果不指定，则默认为：数据文件路径</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_LOBMETAPATH</name>
+      <long>lobmetapath</long>
+      <description>
+         <en>Large object meta file path</en>
+         <cn>大对象元数据文件路径</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. It specifies the path of lob. <fig></fig>
+             2. If it is not specified, the default path is the same with 'lobpath'.</en>
+         <cn>1. 指定大对象元数据存放路径。<fig></fig>
+             2. 如果不指定，则默认与'lobpath'保持一致</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DIRECT_IO_IN_LOB</name>
+      <long>directioinlob</long>
+      <description>
+         <en>Open direct io in large object, if it is not specified, the default value is 'false'</en>
+         <cn>在大对象功能中关闭文件系统缓存，如果不指定，默认值为'false'</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon newly created CS</en>
+         <cn>新建集合空间生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Open direct io in large object, if it is not specified, the default value is "false"</en>
+         <cn>在大对象功能中关闭文件系统缓存，如果不指定，默认值为"false"</cn>
+      </detail>
+      <default>false</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SPARSE_FILE</name>
+      <long>sparsefile</long>
+      <description>
+         <en>Extend the file as a sparse file, if it is not specified, the default value is 'true'</en>
+         <cn>当扩展文件时，使用稀疏文件功能，如果不指定，默认值为'true'</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Extend the file as a sparse file, if it is not specified, the default value is "true"</en>
+         <cn>当扩展文件时，使用稀疏文件功能，如果不指定，默认值为"true"</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_CLUSTER_NAME</name>
+      <long>clustername</long>
+      <description>
+         <en>Cluster name which belonging to</en>
+         <cn>所属集群名称</cn>
+      </description>
+     <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_BUSINESS_NAME</name>
+      <long>businessname</long>
+      <description>
+         <en>Business name which belonging to</en>
+         <cn>所属业务名称</cn>
+      </description>
+     <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_USERTAG</name>
+      <long>usertag</long>
+      <description>
+         <en>User defined tag</en>
+         <cn>用户自定义标签</cn>
+      </description>
+     <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WEIGHT</name>
+      <long>weight</long>
+      <default>10</default>
+      <type>int</type>
+      <description>
+         <en>The weight of election, default is 10, range [1, 100]</en>
+         <cn>节点选举权重, 默认值为10, 取值范围[1, 100]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The weight of election, default is 10, range [1, 100]</en>
+         <cn>节点选举权重, 默认值为10, 取值范围[1, 100]</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_USESSL</name>
+      <long>usessl</long>
+      <default>false</default>
+      <description>
+         <en>Allow client to connect with SSL (enterprise edition only), default false</en>
+         <cn>允许客户端使用SSL连接（仅限企业版），默认为false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new connection</en>
+         <cn>新连接生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Allow client to connect with SSL (enterprise edition only), default false</en>
+         <cn>允许客户端使用SSL连接（仅限企业版），默认为false</cn>
+      </detail>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_AUTH</name>
+      <long>auth</long>
+      <default>true</default>
+      <description>
+         <en>Enable authentication. default is true</en>
+         <cn>开启鉴权功能.默认为true</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Enable authentication. default is true</en>
+         <cn>开启鉴权功能.默认为true</cn>
+      </detail>
+      <typeofweb>boolean</typeofweb>
+  </opt>
+
+  <opt>
+      <name>FAP_OPTION_NAME</name>
+      <long>fap</long>
+      <description>
+         <en>Enable foreign access protocol.Module name 'fapmongo2','fapmongo3' and 'fapmongo4' is supportted</en>
+         <cn>开启第三方驱动接入.支持'fapmongo2'、'fapmongo3'和'fapmongo4'选项</cn>
+      </description>
+     <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PLAN_BUCKETS</name>
+      <long>planbuckets</long>
+      <default>500</default>
+      <type>int</type>
+      <description>
+         <en>The buckets of access plan cache. Sdb will not cache any access plan if it is 0. Default is 500, maximum is 4096. SequoiadDB will round up the value to 0, 128, 256, 512, 1024, 2048, 4096.</en>
+         <cn>访问计划缓存内桶的个数。当其为0时数据库将不会缓存任何访问计划；默认为500，最大值为4096。SequoiaDB 内部自动向上取整为 0, 128, 256, 512, 1024, 2048, 4096。</cn>
+      </description>
+      <detail>
+         <en>1. The buckets of access plan cache. <fig></fig>
+             2. Sdb will not cache any access plan if it is 0. <fig></fig>
+             3. Default is 500, maximum is 4096. <fig></fig>
+             4. Please visit [Access Plan Cache](manual/Distributed_Engine/Maintainance/Access_Plan/cache.md) for more details.</en>
+         <cn>1. 访问计划缓存内桶的个数。<fig></fig>
+             2. 当其为0时数据库将不会缓存任何访问计划。<fig></fig>
+             3. 默认为500，最大值为4096。<fig></fig>
+             4. 更详细的内容可参考 [访问计划缓存](manual/Distributed_Engine/Maintainance/Access_Plan/cache.md)。</cn>
+      </detail>
+      <typeofweb>num</typeofweb>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next query</en>
+         <cn>下次查询生效</cn>
+      </reloadstrategy>
+  </opt>
+
+   <opt>
+      <name>PMD_OPTION_OPERATOR_TIMEOUT</name>
+      <long>optimeout</long>
+      <description>
+         <en>The timeout period for heartbeat in each operation ( in ms ), default:60000, 0 for no-timeout, value range[0, 2^31 - 1] </en>
+         <cn>判定操作中断的时间(ms),默认值:60000, 0表示不超时，取值范围[0, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The timeout period for heartbeat in each operation ( in ms ), default:60000, 0 for no-timeout, value range[0, 2^31 - 1]</en>
+         <cn>判定操作中断的时间(ms),默认值:60000, 0表示不超时，取值范围[0, 2^31 - 1]</cn>
+      </detail>
+      <type>int</type>
+      <default>60000</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_OVER_FLOW_RATIO</name>
+      <long>overflowratio</long>
+      <description>
+         <en>The overflow ratio(%) of record when inserting, default is 12, value range:[0,10000]</en>
+         <cn>记录大小预留空间扩展比(%),默认为12,取值范围:[0,10000]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The overflow ratio(%) of record when inserting, default is 12, value range:[0,10000]</en>
+         <cn>记录大小预留空间扩展比(%),默认为12,取值范围:[0,10000]</cn>
+      </detail>
+      <type>int</type>
+      <default>12</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_EXTEND_THRESHOLD</name>
+      <long>extendthreshold</long>
+      <description>
+         <en>The threshold size( in MB, must be power of 2 or 0 ) of pre extended segment, default is 32, 0 means disable pre-extend, value range:[0, 128]</en>
+         <cn>预扩展数据段的阈值(单位:MB, 取值必须是2的幂或者0), 默认为32, 0表示不开启预扩展, 取值范围:[0, 128]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The threshold size( in MB, must be power of 2 or 0 ) of pre extended segment, default is 32, 0 means disable pre-extend, value range:[0, 128]</en>
+         <cn>预扩展数据段的阈值(单位:MB, 取值必须是2的幂或者0), 默认为32, 0表示不开启预扩展, 取值范围:[0, 128]</cn>
+      </detail>
+      <type>int</type>
+      <hidden>true</hidden>
+      <default>32</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SIGNAL_INTERVAL</name>
+      <long>signalinterval</long>
+      <description>
+         <en>Signal test interval(second), default:0, 0 or less value means disable signal test, value range[0, 2^31 - 1]</en>
+         <cn>信号测试周期(秒),默认值0.小于等于0表示关闭信号测试功能,取值范围[0, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <type>int</type>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_OM_ADDR</name>
+      <long>omaddr</long>
+      <description>
+         <en>Om addr (hostname:omservicename)</en>
+         <cn>om节点地址(hostname:omservicename)</cn>
+      </description>
+      <detail>
+         <en>1. It specifies the address of om node. The format is "hostname:omservicename".</en>
+         <cn>1. 指定om节点的地址。配置形式为"hostname:omservicename"。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAX_CACHE_SIZE</name>
+      <long>maxcachesize</long>
+      <description>
+         <en>The node's max cache size, default:0, unit:MB, value range[0, 2^31 - 1](currently only applicable for Lob feature)</en>
+         <cn>节点缓存最大值，默认为0，单位为MB，取值范围[0, 2^31 - 1]（注意：该配置目前仅对Lob功能生效）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The node's max cache size, unit is MB, default is 0, value range[0, 2^31 - 1](currently only applicable for Lob feature)</en>
+         <cn>节点缓存最大值，单位为MB，默认值为0，取值范围[0, 2^31 - 1]（注意：该配置目前仅对Lob功能生效）</cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAX_CACHE_JOB</name>
+      <long>maxcachejob</long>
+      <description>
+         <en>The maximum number of cache threads, default:10, value range:[2, 200]</en>
+         <cn>后台缓存任务线程的最大数量，默认值为10，取值范围为[2, 200]（注意：该配置目前仅对Lob功能生效）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. The maximum number of cache threads, default:10, value range:[2, 200].<fig></fig>
+             2. Cache threads will synchronize the dirty pages to file, and drop the invalid pages.<fig></fig>
+             3. Cache threads auto start and exit according to the cache workload.<fig></fig>
+             4. Currently only applicable for Lob feature.</en>
+         <cn>1. 后台缓存任务线程的最大数量，默认值为10，取值范围为[2, 200]。<fig></fig>
+             2. 后台缓存任务线程主要执行同步脏页至文件，回收和释放空闲内存页。<fig></fig>
+             3. 后台缓存任务线程根据缓存的负载情况自动启动和退出。<fig></fig>
+             4. 该配置目前仅对Lob功能生效。</cn>
+      </detail>
+      <type>int</type>
+      <default>10</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_CACHE_MERGE_SIZE</name>
+      <long>cachemergesz</long>
+      <description>
+         <en>The merge block size of collectionspace when use cache, default:0, value range:[0,64], unit:MB(currently only applicable for Lob feature)</en>
+         <cn>每一个集合空间用于合并页的缓存大小，默认为0，取值范围:[0,64],单位为MB（注意：该配置目前仅对Lob功能生效）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The merge block size of collectionspace when use cache, default:0, value range:[0,64], unit:MB(currently only applicable for Lob feature)</en>
+         <cn>每一个集合空间用于合并页的缓存大小，默认为0，取值范围:[0,64],单位为MB（注意：该配置目前仅对Lob功能生效）</cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PAGE_ALLOC_TIMEOUT</name>
+      <long>pagealloctimeout</long>
+      <description>
+         <en>The timeout value for allocating page from cache, default:0, value range:[0,3600000], unit:ms</en>
+         <cn>申请缓存页的超时时间，默认为0，取值范围:[0,3600000],单位为毫秒</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The timeout value for allocating page from cache, default:0, value range:[0,3600000], unit:ms</en>
+         <cn>申请缓存页的超时时间，默认为0，取值范围:[0,3600000],单位为毫秒</cn>
+      </detail>
+      <type>int</type>
+      <hidden>false</hidden>
+      <default>0</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAX_SYNC_JOB</name>
+      <long>maxsyncjob</long>
+      <description>
+         <en>The maximum number of data-sync threads, default:10, value range:[2, 200]</en>
+         <cn>后台数据同步任务线程的最大数量，默认值为10，取值范围为[2, 200]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. The maximum number of data-sync threads, default:10, value range:[2, 200].<fig></fig>
+             2. Data-sync threads will synchronize the dirty data to file.<fig></fig>
+             3. Data-sync threads auto start and exit according to the workload.</en>
+         <cn>1. 后台数据同步任务线程的最大数量，默认值为10，取值范围为[2, 200]。<fig></fig>
+             2. 后台数据同步任务线程主要执行同步脏数据和日志至文件。<fig></fig>
+             3. 后台数据同步任务线程根据负载情况自动启动和退出。</cn>
+      </detail>
+      <type>int</type>
+      <default>10</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SYNC_INTERVAL</name>
+      <long>syncinterval</long>
+      <description>
+         <en>The interval time(unit:ms) of data-sync, default:10000, 0 means disable data-sync by time, value range[0, 2^31 - 1]</en>
+         <cn>后台数据同步周期，单位毫秒，默认值为10000，0表示不按周期触发数据同步，取值范围[0, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. The interval time(unit:ms) of data-sync.<fig></fig>
+             2. The catalog node and om node, default:10000, value range(0, 60000].<fig></fig>
+             3. The other nodes, default:10000, 0 means disable data-sync by time, value range[0, 2^31 - 1].</en>
+         <cn>1. 后台数据同步周期，单位毫秒。<fig></fig>
+             2. 对于编目节点和om节点，默认值为10000，取值范围(0, 60000]<fig></fig>
+             3. 对于其它类型的节点，默认值为10000，0表示不按周期触发数据同步，取值范围[0, 2^31 - 1]</cn>
+      </detail>
+      <type>int</type>
+      <default>10000</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SYNC_RECORDNUM</name>
+      <long>syncrecordnum</long>
+      <description>
+         <en>The trigger condition of record number of data-sync, default:0, 0 means disable data-sync by record, value range[0, 2^31 - 1]</en>
+         <cn>后台数据同步触发记录数，默认值为0，0表示不按记录数触发数据同步，取值范围[0, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. The trigger condition of record number of data-sync.<fig></fig>
+             2. The catalog node and om node, default:10, value range(0, 1000].<fig></fig>
+             3. The other nodes, default:0, 0 means disable data-sync by record, value range[0, 2^31 - 1].</en>
+         <cn>1. 后台数据同步触发记录数。<fig></fig>
+             2. 对于编目节点和om节点，默认值为10，取值范围(0, 1000]<fig></fig>
+             3. 对于其它类型的节点，默认值为0，0表示不按记录数触发数据同步，取值范围[0, 2^31 - 1]</cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SYNC_DEEP</name>
+      <long>syncdeep</long>
+      <description>
+         <en>Turn on deep mode in data-sync, default:false</en>
+         <cn>数据同步是否开启深度刷盘,默认为:false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <default>false</default>
+      <detail>
+         <en>1. It specifies whether deep mode turns on or not in data-sync.<fig></fig>
+             2. If it is not specifed, the default value is false.</en>
+         <cn>1. 数据同步是否开启深度刷盘。<fig></fig>
+             2. 如果不指定，则默认为false。</cn>
+      </detail>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_ARCHIVE_ON</name>
+      <long>archiveon</long>
+      <description>
+         <en>Turn on replica log archive, default false.</en>
+         <cn>开启复制日志归档功能，默认值为false。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>Turn on replica log archive, default false.</en>
+         <cn>开启复制日志归档功能，默认值为false。</cn>
+      </detail>
+      <default>false</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_ARCHIVE_COMPRESS_ON</name>
+      <long>archivecompresson</long>
+      <description>
+         <en>Turn on replica log archive compression, default true.</en>
+         <cn>开启复制日志归档压缩功能，默认值为true。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon new archive file</en>
+         <cn>新归档文件生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Turn on replica log archive compression, default true.</en>
+         <cn>开启复制日志归档压缩功能，默认值为true。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_ARCHIVE_PATH</name>
+      <long>archivepath</long>
+      <description>
+         <en>Archive log file path</en>
+         <cn>归档日志文件路径</cn>
+      </description>
+      <detail>
+         <en>1. This parameter is used to specified the path of archive log file.<fig></fig>
+             2. If it is not specified, the default path is "Data file path/archivelog".</en>
+         <cn>1. 此参数用来指定归档日志的路径。<fig></fig>
+             2. 如果不指定，则默认路径为：数据文件路径/archivelog。</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_ARCHIVE_TIMEOUT</name>
+      <long>archivetimeout</long>
+      <description>
+         <en>The timeout interval for archiving( in seconds ), default:600, 0 for no-timeout, value range[0, 2^31 - 1]</en>
+         <cn>判定未归档的超时时间(秒)，默认值：600，0表示不超时, 取值范围[0, 2^31 - 1]。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The timeout interval for archiving( in seconds ), default:600, 0 for no-timeout, value range[0, 2^31 - 1]</en>
+         <cn>判定未归档的超时时间(秒)，默认值：600，0表示不超时, 取值范围[0, 2^31 - 1]。</cn>
+      </detail>
+      <type>int</type>
+      <default>600</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_ARCHIVE_EXPIRED</name>
+      <long>archiveexpired</long>
+      <description>
+         <en>The expired time for archive log file ( in hours ), default:240, 0 for no-expired, value range[0, 11930464].</en>
+         <cn>归档日志文件的过期时间(小时)，默认值:240，0表示不过期, 取值范围[0, 11930464]。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The expired time for archive log file ( in hours ), default:240, 0 for no-expired, value range[0, 11930464].</en>
+         <cn>归档日志文件的过期时间(小时)，默认值:240，0表示不过期, 取值范围[0, 11930464]。</cn>
+      </detail>
+      <type>int</type>
+      <default>240</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_ARCHIVE_QUOTA</name>
+      <long>archivequota</long>
+      <description>
+         <en>The disk quota for archive log directory ( in GB ), default:10, 0 for no limit, value range[0, 2^31 - 1].</en>
+         <cn>归档日志目录的磁盘配额(GB)，默认值：10，0表示没有限制，取值范围[0, 2^31 - 1]。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The disk quota for archive log directory ( in GB ), default:10, 0 for no limit, value range[0, 2^31 - 1].</en>
+         <cn>归档日志目录的磁盘配额(GB)，默认值：10，0表示没有限制，取值范围[0, 2^31 - 1]。</cn>
+      </detail>
+      <type>int</type>
+      <default>10</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DATAERROR_OP</name>
+      <long>dataerrorop</long>
+      <description>
+         <en>The node's operation when incremental synchronization can not be done. Value is 0/1/2. 0 for none, 1 for fullsync, 2 for shutdown. Default is 1.</en>
+         <cn>节点在无法继续正常增量同步而可能触发全量同步时的处理操作，取值为 0/1/2。 0表示不作处理，1表示全量同步，2表示停止运行。缺省为1。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. The node's operation when incremental synchronization can not be done. Value is 0/1/2. Default is 1.<fig></fig>
+           2. Value enumeration:<fig></fig>
+             ● 0: do nothing, run with error.<fig></fig>
+             ● 1: auto sync full data from other nodes. <fig></fig>
+             ● 2: shutdown the node.</en>
+         <cn>1. 节点在无法继续正常增量同步而可能触发全量同步时的处理操作，取值为 0/1/2。 缺省为1。<fig></fig>
+           2. 取值列表：<fig></fig>
+             ● 0: 不作任何处理，保持节点运行。<fig></fig>
+             ● 1: 自动从该数据组的其它节点进行全量同步。<fig></fig>
+             ● 2: 该节点停止运行。</cn>
+      </detail>
+      <type>int</type>
+      <default>1</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DMS_CHK_INTERVAL</name>
+      <long>dmschkinterval</long>
+      <description>
+         <en>The interval(hour) for Cluster to check data storage files ( in hour ), default:0, 0 means disable checking, value range:[0, 240]</en>
+         <cn>检查数据文件一致性的间隔(小时),默认值: 0, 0 表示不进行检查，取值范围:[0, 240]</cn>
+      </description>
+      <type>int</type>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PERF_STAT</name>
+      <long>perfstat</long>
+      <description>
+         <en>Whether enable performance statistics or not</en>
+         <cn>是否开启性能统计</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <default>false</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_OPT_COST_THRESHOLD</name>
+      <long>optcostthreshold</long>
+      <description>
+         <en>The optimizer estimates a number of data pages are in memory, and ignore their IO cost when estimating access plans, default: 20, 0 means to estimate IO cost always, -1 means never to estimate cost, value range[-1, 2^31 - 1].</en>
+         <cn>查询优化器忽略IO影响的最小的页数，数据页数大于阈值时，估算查询计划代价时需要计算IO的代价，默认值：20，0表示一直需要计算IO代价，-1表示从不计算代价，取值范围[-1, 2^31 - 1]</cn>
+      </description>
+      <type>int</type>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next query</en>
+         <cn>下次查询生效</cn>
+      </reloadstrategy>
+      <default>20</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PLAN_CACHE_MAINCL_THRESHOLD</name>
+      <long>plancachemainclthreshold</long>
+      <description>
+         <en>The collection has a number of data pages larger than threshold can use main-collection plan, default: 20, 0 means to use main-collection plan always, -1 means never to use main-collection plan, value range[-1, 2^31 - 1].</en>
+         <cn>集合的查询计划复用主表查询计划的最小的页数，数据页数小于阈值时，将不使用主表查询计划，默认值：20，0表示一直使用主表查询计划，-1表示从不使用主表查询计划，取值范围[-1, 2^31 - 1]</cn>
+      </description>
+      <type>int</type>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next query</en>
+         <cn>下次查询生效</cn>
+      </reloadstrategy>
+      <default>20</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAX_CONN</name>
+      <long>maxconn</long>
+      <description>
+         <en>Restrict the max number of clients connecting to the engine, range is [0,30000], default:0, 0:disable restriction</en>
+         <cn>指定允许连接到引擎的客户端的最大数量，取值范围为[0,30000], 默认值是0，0表示不限制</cn>
+      </description>
+      <detail>
+         <en>Restrict the max number of clients connecting to the engine, range is [0,30000], default:0, 0:disable restriction</en>
+         <cn>指定允许连接到引擎的客户端的最大数量，取值范围为[0,30000], 默认值是0，0表示不限制</cn>
+      </detail>
+      <type>int</type>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <default>0</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_ENABLE_MIX_CMP</name>
+      <long>enablemixcmp</long>
+      <description>
+         <en>Specify the compare mode of query matcher. Enabled means query could match with different BSON canonical types. Otherwise, it means query could only match with the same BSON canonical type. Default is false</en>
+         <cn>指定查询的匹配模式，如果是true，则可以对不同比较优先级的数据进行匹配，否则只匹配与参数有相同比较优先级的数据。默认是 false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next query</en>
+         <cn>下次查询生效</cn>
+      </reloadstrategy>
+      <default>false</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_PLAN_CACHE_LEVEL</name>
+      <long>plancachelevel</long>
+      <description>
+         <en>Specify the cache level of query plans, 0 for no cache, 1 for caching original query, 2 for caching normalized query, 3 for caching parameterized query, 4 for caching parameterized query with fuzzy-matched operators. Default is 3</en>
+         <cn>指定查询计划的缓存级别，0为不缓存，1为缓存原查询计划，2为缓存泛化后的查询计划，3为缓存参数化的查询计划，4为缓存参数化并带操作符模糊匹配的查询计划。默认是 3。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next query</en>
+         <cn>下次查询生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>1. Specify the cache level of query plans. Value is 0/1/2/3/4. Default is 3.<fig></fig>
+           2. Value enumeration:<fig></fig>
+             ● 0: No cache.<fig></fig>
+             ● 1: Caching plan with original query.<fig></fig>
+             ● 2: Caching plan with normalized query.<fig></fig>
+             ● 3: Caching plan with parameterized query.<fig></fig>
+             ● 4: Caching plan with parameterized query and fuzzy-matched operators.
+         </en>
+         <cn>1. 指定查询计划的缓存级别，默认是 3。<fig></fig>
+           2. 取值列表：<fig></fig>
+             ● 0: 不缓存查询计划。<fig></fig>
+             ● 1: 缓存原查询计划。<fig></fig>
+             ● 2: 缓存泛化后的查询计划。<fig></fig>
+             ● 3: 缓存参数化的查询计划。<fig></fig>
+             ● 4: 缓存参数化并带操作符模糊匹配的查询计划。
+         </cn>
+      </detail>
+      <type>int</type>
+      <default>3</default>
+      <hidden>false</hidden>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SVCSCHEDULER</name>
+      <long>svcscheduler</long>
+      <description>
+         <en>Specify the task scheduler type, 0 for None, 1 for FIFO, 2 for Priority, 3 for Container. Default is 0</en>
+         <cn>指定任务调度器类型，0表示不开启，1表示先入先出，2表示基于优先级调度，3表示基于容器调度。默认是0。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>1. Specify the task scheduler type. Value is 0/1/2/3. Default is 0.<fig></fig>
+           2. Value enumeration:<fig></fig>
+             ● 0: None.<fig></fig>
+             ● 1: First in first out.<fig></fig>
+             ● 2: Based Priority.<fig></fig>
+             ● 3: Based Container.
+         </en>
+         <cn>1. 指定任务调度器类型，默认是0。<fig></fig>
+           2. 取值列表：<fig></fig>
+             ● 0: 不开启。<fig></fig>
+             ● 1: 先入先出。<fig></fig>
+             ● 2: 基于优先级调度。<fig></fig>
+             ● 3: 基于容器调度。
+         </cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <hidden>false</hidden>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SVC_MAX_CONCURRENCY</name>
+      <long>svcmaxconcurrency</long>
+      <description>
+         <en>Specify the maximun concurrency number in scheduler. 0 for unlimited. default is 100, value range[0, 2^31 - 1]. </en>
+         <cn>指定任务执行的最大并发数，0表示不限制。默认值为500，取值范围[0, 2^31 - 1]。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>1.Specify the maximun concurrency number in scheduler. 0 for unlimited. default is 100, value range[0, 2^31 - 1].<fig></fig>
+             2.It does not take effect when 'svcscheduler' is 0.
+         </en>
+         <cn>1. 指定任务执行的最大并发数，0表示不限制。默认值为100，取值范围[0, 2^31 - 1]。<fig></fig>
+             2. 当'svcscheduler'取值为0时，该参数不生效。
+         </cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANS_ISOLATION</name>
+      <long>transisolation</long>
+      <description>
+         <en>Specify the isolation level of transaction, 0 for RU, 1 for RC, 2 for RS. Default is 0</en>
+         <cn>指定事务的隔离级别，0为RU级别，1为RC级别，2为RS级别。默认为0。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>1. Specify the isolation level of transaction. Value is 0(RU), 1(RC), 2(RS). Default is 0.<fig></fig>
+           2. Value enumeration:<fig></fig>
+             ● 0: RU, read uncommited<fig></fig>
+             ● 1: RC, read commited.<fig></fig>
+             ● 2: RS, read stability.<fig></fig>
+         </en>
+         <cn>1. 指定事务隔离级别，默认是0。<fig></fig>
+           2. 取值列表：<fig></fig>
+             ● 0: RU，读未提交。<fig></fig>
+             ● 1: RC, 读已提交。<fig></fig>
+             ● 2: RS，读稳定性。<fig></fig>
+         </cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <hidden>false</hidden>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANS_LOCKWAIT</name>
+      <long>translockwait</long>
+      <description>
+         <en>Specify the lock wait behavior within transaction under RC isolation level. false for no lock wait, true for lock wait. Default is false</en>
+         <cn>事务在RC隔离级别下是否需要等锁，false为不等锁，true为等锁。默认为false。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>1. Specify the record lock wait behavior within transaction under RC isolation level. Value is true/false. Default is false. Should be used in conjunction with transisolation<fig></fig>
+           2. Value enumeration:<fig></fig>
+             ● false: no lock wait, retrieve last committed version of record from system directly.<fig></fig>
+             ● true: wait for the lock to be released and get the newly committed version.<fig></fig>
+          </en>
+          <cn>1. 指定事务在RC隔离级别下记录锁的等待行为，默认是false。需要与transisolation配合使用<fig></fig>
+              2. 取值列表：<fig></fig>
+              ● false: 不等待记录锁，直接从系统读取最后一次提交的版本。<fig></fig>
+              ● true: 等待记录锁，读取最新提交版本的数据<fig></fig>
+        </cn>
+      </detail>
+      <default>false</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANS_AUTOCOMMIT</name>
+      <long>transautocommit</long>
+      <description>
+         <en>Whether enable automatic transaction or not. Default is false</en>
+         <cn>是否开启自动事务提交。默认为false。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Whether enable automatic transaction or not. Default is false. Take effect when transaction is on.</en>
+         <cn>是否开启自动事务提交，默认是false。只有当 transaction 开启时取值才会生效。</cn>
+      </detail>
+      <default>false</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANS_AUTOROLLBACK</name>
+      <long>transautorollback</long>
+      <description>
+         <en>Whether enable automatically rollback when transaction operation failed or not. Default is true.</en>
+         <cn>事务操作失败是否自动回滚该事务。默认为true。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>1. Whether enable automatically rollback when transaction operation failed or not. Default is true. Take effect when transaction is on.</en>
+         <cn>1.事务操作失败是否自动回滚该事务。默认为true。只有当 transaction 开启时取值才会生效。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANS_USE_RBS</name>
+      <long>transuserbs</long>
+      <description>
+         <en>Whether use rollback segment or not in transaction. Default is true.</en>
+         <cn>事务操作是否使用回滚段。默认为true。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Whether use rollback segment or not in transaction. Default is true. Take effect when transaction is on.</en>
+         <cn>事务操作是否使用回滚段。默认为true。只有当 transaction 开启时取值才会有效。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANS_REPLSIZE</name>
+      <long>transreplsize</long>
+      <description>
+        <en>The written replica number when transaction commit. Value:[-1,0,1~7], Default:2</en>
+        <cn>事务提交的写副本数，取值[-1,0,1~7]，默认为2</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The written replica number when transaction commit. Value:[-1,0,1~7], Default:2.</en>
+        <cn>事务提交的写副本数，取值[-1,0,1~7]，默认为2。</cn>
+      </detail>
+      <type>int</type>
+      <default>-1</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANS_RCCOUNT</name>
+      <long>transrccount</long>
+      <description>
+         <en>Whether to use RC count for count() query during transaction. Default is true.</en>
+         <cn>是否使用读已提交来处理 count() 查询。默认为 true。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Whether to use RC count for count() query during transaction. Default is true. Take effect when transaction is on, and transaction isolation is RC or RS.</en>
+         <cn>是否使用读已提交来处理 count() 查询。默认为 true。只有当 transaction 开启时，且隔离级别为读已提交 RC 或者读稳定性 RS，取值才会有效。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_LOGWRITEMOD</name>
+      <long>logwritemod</long>
+      <description>
+        <en>Replica log write mod, value enumeration:increment,full, default:increment.</en>
+        <cn>复制日志写模式，取值：increment,full,默认为increment。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+        <en>Replica log write mod, value enumeration:increment,full, default:increment.</en>
+        <cn>复制日志写模式，取值：increment,full,默认为increment。为increment时，复制日志只保存更新记录的增量信息；为full时，复制日志将保存更新记录的完整信息。</cn>
+      </detail>
+      <default>increment</default>
+      <hidden>false</hidden>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_LOG_TIME_ON</name>
+      <long>logtimeon</long>
+      <description>
+        <en>Turn on replica log save timestamp info, default false.</en>
+        <cn>开启复制日志保存时间信息功能，默认为false。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+        <en>Turn on replica log save timestamp info, default false.</en>
+        <cn>开启复制日志保存时间信息功能，默认为false。</cn>
+      </detail>
+      <default>false</default>
+      <hidden>false</hidden>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SLEEP</name>
+      <long>enablesleep</long>
+      <description>
+        <en>Specify whether sleep engine function is on</en>
+        <cn>指定引擎休眠功能是否开启</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>Specify the behviour when sending particular sleep signal to engine. When the switch is on, the engine will be freeze for debug.
+            When it turns off, nothing will happen. The DEFAULT value is false, as it is only fo the purpose of debug, it is not supposed to be
+            exposed in customer environment.<fig></fig>
+        </en>
+        <cn>指定发送特定睡眠信号给数据库引擎时，引擎的反应。当睡眠开关开启，引擎会进入冻结状态，所有的线程停滞供调试用。
+            当开关关闭，不会发生任何行为。初始值为false，因为这个开关只是为了调试使用的，不应该暴露在实际客户生产环境中。<fig></fig>
+        </cn>
+      </detail>
+      <default>false</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_RECYCLE_RECORD</name>
+      <long>recyclerecord</long>
+      <description>
+        <en>Specify whether recycle deleting record asynchronous</en>
+        <cn>指定是否异步回收待删除的记录</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>Specify whether recycle deleting record asynchronous.</en>
+        <cn>指定是否异步回收待删除的记录。</cn>
+      </detail>
+      <default>false</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAXSOCKET_PER_NODE</name>
+      <long>maxsocketpernode</long>
+      <description>
+        <en>The max number of socket between two nodes. Value range:[1,100], default is 5</en>
+        <cn>两个节点之间的最大连接数，取值范围：[1,100]，默认为5</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The max number of socket between two nodes. Value range:[1,100], default is 5.</en>
+        <cn>两个节点之间的最大连接数，取值范围：[1,100]，默认为5。</cn>
+      </detail>
+      <type>int</type>
+      <typeofweb>num</typeofweb>
+      <default>5</default>
+      <hidden>false</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAXSOCKET_PER_THREAD</name>
+      <long>maxsocketperthread</long>
+      <description>
+        <en>The max number of socket drived by a thread. 0 for unlimited, default is 1</en>
+        <cn>一个线程驱动最大连接数，0表示不限制，默认为1</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The max number of socket drived by a thread. 0 for unlimited, default is 1.</en>
+        <cn>一个线程驱动最大连接数，0表示不限制，默认为1。</cn>
+      </detail>
+      <type>int</type>
+      <typeofweb>num</typeofweb>
+      <default>1</default>
+      <hidden>false</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAX_SOCKET_THREAD</name>
+      <long>maxsocketthread</long>
+      <description>
+        <en>The max number of the socket drive threads. Value range:[1,100], default is 10</en>
+        <cn>通信最大驱动线程数，取值范围[1,100]，默认10</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The max number of the socket drive threads. Value range:[1,100], default is 10.</en>
+        <cn>通信最大驱动线程数，取值范围[1,100]，默认10。</cn>
+      </detail>
+      <type>int</type>
+      <typeofweb>num</typeofweb>
+      <default>10</default>
+      <hidden>false</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TC_MAX_SIZE</name>
+      <long>tcmaxsize</long>
+      <description>
+        <en>The max cache size(KB) for each thread allocator. Value range:[0,65536], default is 2048.</en>
+        <cn>线程分配器的最大缓存大小，单位：KB。取值范围：[0,65536]，默认为2048</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The max cache size(KB) for each thread allocator. Value range:[0,65536], default is 2048.</en>
+        <cn>线程分配器的最大缓存大小，单位：KB。取值范围：[0,65536]，默认为2048。</cn>
+      </detail>
+      <type>int</type>
+      <default>2048</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEMPOOL_SIZE</name>
+      <long>mempoolsize</long>
+      <description>
+        <en>The max size(MB) for memory pool. Default is 8192.</en>
+        <cn>全局内存池大小，单位：MB。默认为8192</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The max size(MB) for memory pool. Default is 8192.</en>
+        <cn>全局内存池大小，单位：MB。默认为8192。</cn>
+      </detail>
+      <type>int</type>
+      <default>8192</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEMPOOL_THRESHOLD</name>
+      <long>mempoolthreshold</long>
+      <description>
+        <en>The threshold size(Byte) that more than the value allocation can't from mempool. 0 form unlimited. Default is 0.</en>
+        <cn>内存池分配域值，单位：字节。大于该值的内存不从内存池分配，0表示不限制。默认为0</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The threshold size(Byte) that more than the value allocation can't from mempool. 0 form unlimited. Default is 0.</en>
+        <cn>内存池分配域值，单位：字节。大于该值的内存不从内存池分配，0表示不限制。默认为0。</cn>
+      </detail>
+      <type>int</type>
+      <default>0</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEM_MXFAST</name>
+      <long>memmxfast</long>
+      <description>
+        <en>The max chunk size(Byte) of fast bin in GLIBC. Value range:[-1,160], 0:disables fast bin, -1:not modify the system value, Default:-1.</en>
+        <cn>GLIBC中Fast Bin的最大内存块大小，单位：字节，取值：[-1,160]，0表示禁用Fast Bin，-1表示不修改系统值，默认为-1。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The max chunk size(Byte) of fast bin in GLIBC. Value range:[-1,160], 0:disables fast bin, -1:not modify the system value, Default:-1.</en>
+        <cn>GLIBC中Fast Bin的最大内存块大小，单位：字节，取值：[-1,160]，0表示禁用Fast Bin，-1表示不修改系统值，默认为-1。</cn>
+      </detail>
+      <type>int</type>
+      <default>-1</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEM_TRIM_THRESHOLD</name>
+      <long>memtrimthreshold</long>
+      <description>
+        <en>The threshold size(KB) for memory trimming in GLIBC. Value range:[-1,65536], -1:not modify the system value, Default:256.</en>
+        <cn>GLIBC中内存收缩的域值，单位：KB，取值：[-1,65536]，-1表示不修改系统值，默认为256。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The threshold size(KB) for memory trimming in GLIBC. Value range:[-1,65536], -1:not modify the system value, Default:256.</en>
+        <cn>GLIBC中内存收缩的域值，单位：KB，取值：[-1,65536]，-1表示不修改系统值，默认为256。</cn>
+      </detail>
+      <type>int</type>
+      <default>256</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEM_MMAP_THRESHOLD</name>
+      <long>memmmapthreshold</long>
+      <description>
+        <en>The threshold size(KB) that more than the value allocation will use mmap() instead of sbrt() in GLIBC. Value range:[-1,65536], 0:disables mmap, -1:not modify the system value, Default:1024.</en>
+        <cn>GLIBC中内存分配使用MMAP的域值，单位：KB，取值：[-1,65536]，0表示禁用MMAP，-1表示不修改系统值，默认为1024。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The threshold size(KB) that more than the value allocation will use mmap() instead of sbrt() in GLIBC. Value range:[-1,65536], 0:disables mmap, -1:not modify the system value, Default:1024.</en>
+        <cn>GLIBC中内存分配使用MMAP的域值，单位：KB，取值：[-1,65536]，0表示禁用MMAP，-1表示不修改系统值，默认为1024。</cn>
+      </detail>
+      <type>int</type>
+      <default>1024</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEM_MMAP_MAX</name>
+      <long>memmmapmax</long>
+      <description>
+        <en>The max value of MMAP in GLIC. Value range:[-1,100000000], 0:disables mmap, -1:not modify the system value, Default:4194304.</en>
+        <cn>GLIBC中MMAP内存的最大个数，取值：[-1,100000000]，0表示禁用MMAP，-1表示不修改系统值，默认为4194304。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The max value of MMAP in GLIC. Value range:[-1,100000000], 0:disables mmap, -1:not modify the system value, Default:4194304.</en>
+        <cn>GLIBC中MMAP内存的最大个数，取值：[-1,100000000]，0表示禁用MMAP，-1表示不修改系统值，默认为4194304。</cn>
+      </detail>
+      <type>int</type>
+      <default>4194304</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MEM_TOP_PAD</name>
+      <long>memtoppad</long>
+      <description>
+        <en>The amount(Byte) of extra padding space to allocate or retain whenever sbrk is called in GLIC. Value range:[-1,16777216], -1:not modify the system value, Default:-1.</en>
+        <cn>GLIBC中内存堆顶分配或回收的填充大小，单位：字节，取值：[-1,16777216]，-1表示不修改系统值，默认为-1。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The amount(Byte) of extra padding space to allocate or retain whenever sbrk is called in GLIC. Value range:[-1,16777216], -1:not modify the system value, Default:-1.</en>
+        <cn>GLIBC中内存堆顶分配或回收的填充大小，单位：字节，取值：[-1,16777216]，-1表示不修改系统值，默认为-1。</cn>
+      </detail>
+      <type>int</type>
+      <default>-1</default>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MON_SLOWQUERY_THRESHOLD</name>
+      <long>monslowquerythreshold</long>
+      <description>
+        <en>The threshold for a slow query (ms). Default is 300.</en>
+        <cn>慢查询监控的阈值，单位：毫秒，默认为300。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The threshold for a slow query (ms). Default is 300.</en>
+        <cn>慢查询监控的阈值，单位：毫秒，默认为300。</cn>
+      </detail>
+      <type>int</type>
+      <typeofweb>num</typeofweb>
+      <default>300</default>
+      <hidden>false</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MON_GROUP_MASK</name>
+      <long>mongroupmask</long>
+      <description>
+        <en>Monitor group mask, '|' delimited string in the format of 'groupname':'loglevel'. Valid groupname: slowQuery, all. Valid loglevel: off,basic,detail. Default is all:off. </en>
+        <cn>监控组掩码。格式为'groupname':'loglevel', 多组之间使用'|'作为分隔符。有效组值为“slowQuery”或者“all”。默认为“all:off”</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>This specifies the group of activities to monitor within sequoiaDB, along with the loglevel for each group.<fig></fig>
+            1. Values are specified in the format of 'groupname':'loglevel', delimited by '|' if multiple groups are specified.<fig></fig>
+            2. Valid groups are "slowQuery" and "all", corresponding to monitor slow query or monitor all.<fig></fig>
+            3. loglevel can be "off","basic" or "detail".<fig></fig>
+            4. Valid value list includes: "all:off", "all:basic", "all:detail", "slowQuery:off", "slowQuery:basic" and "slowQuery:detail".<fig></fig>
+            5. Default value is "all:off".
+        </en>
+        <cn>用于设置监控组的详细监控级别的掩码。<fig></fig>
+            1. 格式为'groupname':'loglevel', 多组之间使用'|'作为分隔符。<fig></fig>
+            2. 有效的组值为“slowQuery”或者”all”，分别表示监控慢查询组和所有组。<fig></fig>
+            3. 有效的监控级别可以为“off”，“basic”或者“detail”。<fig></fig>
+            4. 有效取值列表包括："all:off", "all:basic", "all:detail", "slowQuery:off", "slowQuery:basic" 和 "slowQuery:detail"。<fig></fig>
+            5. 默认值为“all:off”。
+        </cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+      <hidden>false</hidden>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_MON_HIST_EVENT</name>
+      <long>monhistevent</long>
+      <description>
+        <en>The number of history events to keep in monitor archive. Default is 1000</en>
+        <cn>默认为1000</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>Specifies the number of history events to keep for a monitor component. Default is 1000</en>
+        <cn>默认为1000。</cn>
+      </detail>
+      <type>int</type>
+      <default>1000</default>
+      <hidden>true</hidden>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_FT_MASK</name>
+      <long>ftmask</long>
+      <description>
+         <en>Fault-tolerant mask,default:NOSPC|DEADSYNC,value list: NOSPC,DEADSYNC,SLOWNODE, use '|' join multiple values, ALL enable all mask, NONE disable all mask</en>
+         <cn>容错掩码,默认值:NOSPC|DEADSYNC,取值列表为: NOSPC,DEADSYNC,SLOWNODE, 使用'|'连接多个取值, ALL取值表示开启所有, NONE关闭全部</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Specify the mask for enabling fault tolerance processing, the default value is "NOSPC|DEADSYNC"，and the values are as follows:<fig></fig>
+             ● "NOSPC": Insufficient disk space<fig></fig>
+             ● "DEADSYNC": Node data is out of sync<fig></fig>
+             ● "SLOWNODE": Node data synchronization is too slow<fig></fig>
+             ● "ALL": Turn on all fault tolerance processing<fig></fig>
+             ● "NONE": Turn off all fault tolerance processing
+         </en>
+         <cn>指定开启容错处理的掩码，默认值为"NOSPC|DEADSYNC"，取值如下：<fig></fig>
+             ● "NOSPC"：磁盘空间不足<fig></fig>
+             ● "DEADSYNC"：节点数据不同步<fig></fig>
+             ● "SLOWNODE"：节点数据同步过慢<fig></fig>
+             ● "ALL"：开启所有容错处理<fig></fig>
+             ● "NONE"：关闭所有容错处理
+         </cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_FT_CONFIRM_PERIOD</name>
+      <long>ftconfirmperiod</long>
+      <description>
+         <en>Time period of fault confirmation, default:60, value range:[1,3600], unit:s</en>
+         <cn>故障确认的时间周期，默认为60，取值范围:[1,3600],单位为秒</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Time period of fault confirmation, default:60, value range:[1,3600], unit:s</en>
+         <cn>故障确认的时间周期，默认为60，取值范围:[1,3600],单位为秒</cn>
+      </detail>
+      <type>int</type>
+      <default>60</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_FT_CONFIRM_RATIO</name>
+      <long>ftconfirmratio</long>
+      <description>
+         <en>Failure ratio threshold of fault confirmation, default:80, value range:[1,100], unit:Percentage</en>
+         <cn>故障确认的故障比阈值，默认为80，取值范围:[1,100],单位为百分比</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Failure ratio threshold of fault confirmation, default:80, value range:[1,100], unit:Percentage</en>
+         <cn>故障确认的故障比阈值，默认为80，取值范围:[1,100],单位为百分比</cn>
+      </detail>
+      <type>int</type>
+      <default>80</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_FT_LEVEL</name>
+      <long>ftlevel</long>
+      <description>
+         <en>Fault tolerance level. 1(Fusing), 2(Semi fault-tolerant), 3(Whole fault-tolerant). Default:2</en>
+         <cn>容错级别，1(熔断), 2(半容错), 3(全容错). 默认为2</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Fault tolerance level. 1(Fusing), 2(Semi fault-tolerant), 3(Whole fault-tolerant). Default:2</en>
+         <cn>容错级别，1(熔断), 2(半容错), 3(全容错). 默认为2</cn>
+      </detail>
+      <type>int</type>
+      <default>2</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_FT_FUSING_TIMEOUT</name>
+      <long>ftfusingtimeout</long>
+      <description>
+         <en>The timeout value for fusing. Default:10, value range:[0,3600], Unit:second</en>
+         <cn>熔断超时时间，默认为10，取值范围：[0,3600]，单位：秒</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The timeout value for fusing. Default:10, value range:[0,3600], Unit:second</en>
+         <cn>熔断超时时间，默认为10，取值范围：[0,3600]，单位：秒</cn>
+      </detail>
+      <type>int</type>
+      <default>10</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_FT_SLOWNODE_THRESHOLD</name>
+      <long>ftslownodethreshold</long>
+      <description>
+         <en>The log difference threshold for slow node detection. Default:256, value range:[1,10000], Unit:MB</en>
+         <cn>慢节点检测的日志差阈值，默认：256，取值范围：[1,10000]，单位：MB</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The log difference threshold for slow node detection. Default:256, value range:[1,10000], Unit:MB</en>
+         <cn>慢节点检测的日志差阈值，默认：256，取值范围：[1,10000]，单位：MB</cn>
+      </detail>
+      <type>int</type>
+      <default>256</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_FT_SLOWNODE_INCREMENT</name>
+      <long>ftslownodeincrement</long>
+      <description>
+         <en>The log difference increment for slow node detection. Default:8, value range:[0,10000], Unit:MB</en>
+         <cn>慢节点检测的日志增量值，默认：8，取值范围：[0,10000]，单位：MB</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The log difference increment for slow node detection. Default:8, value range:[0,10000], Unit:MB</en>
+         <cn>慢节点检测的日志增量值，默认：8，取值范围：[0,10000]，单位：MB</cn>
+      </detail>
+      <type>int</type>
+      <default>8</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_SYNCWAIT_TIMEOUT</name>
+      <long>syncwaittimeout</long>
+      <description>
+         <en>The timeout value for data consistency synchronization. Default:600, value range:[1,3600], Unit:second</en>
+         <cn>数据一致性同步等待超时时间，默认为600，取值范围：[1,3600]，单位：秒</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The timeout value for data consistency synchronization. Default:600, value range:[1,3600], Unit:second</en>
+         <cn>数据一致性同步等待超时时间，默认为600，取值范围：[1,3600]，单位：秒</cn>
+      </detail>
+      <type>int</type>
+      <default>600</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+   <opt>
+      <name>PMD_OPTION_SHUTDOWN_WAITTIMEOUT</name>
+      <long>shutdownwaittimeout</long>
+      <description>
+         <en>The timeout value for data consistency synchronization on primary node shutdown. Default:1200, value range:[0,864000], Unit:second</en>
+         <cn>主数据节点停机时等待备节点数据同步超时时间，默认为1200，取值范围：[0,864000]，单位：秒</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The timeout value for data consistency synchronization on primary node shutdown. Default:1200, value range:[0,864000], Unit:second</en>
+         <cn>主数据节点停机时等待备节点数据同步超时时间，默认为1200，取值范围：[0,864000]，单位：秒</cn>
+      </detail>
+      <type>int</type>
+      <default>1200</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_SERVICE_MASK</name>
+      <long>servicemask</long>
+      <description>
+         <en>Block the mask of service port. The values include LOCAL,REPL,SHARD,CATALOG and REST. Users can use '|' to connect multiple values. The default value is NONE.</en>
+         <cn>屏蔽服务端口的掩码，取值为 LOCAL、REPL、SHARD、CATALOG 和 REST，可以使用'|'连接多个值，默认值为 NONE。</cn>
+      </description>
+      <detail>
+         <en>Block the mask of service port. The values include LOCAL、REPL、SHARD、CATALOG and REST. Users can use ‘|’ to connect multiple values. The default value is NONE.<fig></fig>
+         LOCAL: Disable the local service port. If the local service port of the coordination node is disabled, the database will not be able to provide services to clients.<fig></fig>
+         REPL: Disable the replication service port. If the replication service port of the catalog node or data node is disabled, the data of the primary node and the standby node will be inconsistent. Generally, it should not be disabled.<fig></fig>
+         SHARD: Disable the shard service port. If the shard service port of any node is disabled, data operations will fail. Generally, it should not be disabled.<fig></fig>
+         CATALOG: Disable the catalog service port. If the catalog service port of the catalog node is disabled, the node operation will fail and the data operation will fail. Generally, it should not be disabled.<fig></fig>
+         REST: Disable the REST service port. If the REST service port of a node is disabled, the node cannot provide REST services.<fig></fig></en>
+         <cn>屏蔽服务端口的掩码，取值为 LOCAL、REPL、SHARD、CATALOG 和 REST，可以使用'|'连接多个值，默认值为 NONE。<fig></fig>
+         LOCAL：禁用本地服务端口。如果禁用协调节点的本地服务端口，会导致数据库不能为客户端提供服务。<fig></fig>
+         REPL：禁用数据同步服务端口。如果禁用编目节点或数据节点的数据同步服务端口，会导致主节点和备节点数据不一致，通常不应该禁用。<fig></fig>
+         SHARD：禁用数据分区服务端口。如果禁用任一节点的数据分区服务端口，会导致数据操作失败，通常不应该禁用。<fig></fig>
+         CATALOG：禁用编目服务端口。如果禁用编目节点的编目服务端口，会导致节点操作失败、数据操作失败，通常不应该禁用。<fig></fig>
+         REST：禁用 REST 服务端口。如果禁用节点的 REST 服务端口，会导致该节点不能提供 REST 服务。<fig></fig></cn>
+      </detail>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <hidden>false</hidden>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_INDEXCOVERON</name>
+      <long>indexcoveron</long>
+      <description>
+        <en>Turn on index cover, default true.</en>
+        <cn>开启覆盖索引功能，默认为true。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>Turn on index cover, default true.</en>
+        <cn>开启覆盖索引功能，默认为true。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAXCONTEXTNUM</name>
+      <long>maxcontextnum</long>
+      <description>
+        <en>Maximum number of contexts in a node, default: 100000, range: 0 and [ 1000, 2^31 - 1 ]</en>
+        <cn>节点中最多可以同时开启的上下文个数，默认：100000，取值范围：0 和 [ 1000, 2^31 - 1 ]。</cn>
+      </description>
+      <reloadable>
+        <en>Take effect immediately</en>
+        <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>1. Maximum number of contexts in a node.<fig></fig>
+            2. Default is 100000, range is 0 and [ 1000, 2^31 - 1 ].<fig></fig>
+            3. If the number of contexts exceeds the limit, creating new contexts will fail.<fig></fig>
+            4. 0 means no limit on number of contexts.</en>
+        <cn>1. 节点中最多可以同时开启的上下文个数。<fig></fig>
+            2. 默认是100000，取值范围是 0 和 [ 1000, 2^31 - 1 ]。<fig></fig>
+            3. 如果节点中同时开启的上下文个数达到上限，新开启的上下文将会报错。<fig></fig>
+            4. 取值为0，表示对上下文的个数没有限制。</cn>
+      </detail>
+      <type>int</type>
+      <default>100000</default>
+      <typeofweb>int</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_MAXSESSIONCONTEXTNUM</name>
+      <long>maxsessioncontextnum</long>
+      <description>
+        <en>Maximum number of contexts in a session per node, default: 100, range: 0 and [ 10, 2^31 - 1 ]</en>
+        <cn>会话在每个节点中最多可以同时开启的上下文个数，默认：100，取值范围：0 和 [ 10, 2^31 - 1 ]。</cn>
+      </description>
+      <reloadable>
+        <en>Take effect immediately</en>
+        <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>1. Maximum number of contexts in a session per node.<fig></fig>
+            2. Default is 100, range is 0 and [ 10, 2^31 - 1 ].<fig></fig>
+            3. If the number of contexts in the session exceeds the limit, creating new contexts will fail in the same session.<fig></fig>
+            4. 0 means no limit on number of contexts in the session.</en>
+        <cn>1. 会话在每个节点中最多可以同时开启的上下文个数。<fig></fig>
+            2. 默认是100，取值范围是 0 和 [ 10, 2^31 - 1 ]。<fig></fig>
+            3. 如果会话在节点中同时开启的上下文个数达到上限，会话新开启的上下文将会报错。<fig></fig>
+            4. 取值为0，表示对会话的上下文的个数没有限制。</cn>
+      </detail>
+      <type>int</type>
+      <default>100</default>
+      <typeofweb>int</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_CONTEXTTIMEOUT</name>
+      <long>contexttimeout</long>
+      <description>
+        <en>Timeout of idle context, default: 1440 in minutes, range: [ 0, 2^31 - 1 ]</en>
+        <cn>上下文空闲超时时间，单位是分钟，默认：1440，取值范围：[ 0, 2^31 - 1 ]。</cn>
+      </description>
+      <reloadable>
+        <en>Take effect immediately</en>
+        <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>1. Timeout of idle context.<fig></fig>
+            2. Default is 1440 in minutes, range is [ 0, 2^31 - 1 ].<fig></fig>
+            3. If context is idle without get-more message after timeout, context will be killed.<fig></fig>
+            4. 0 means no limit on idle timeout of contexts.</en>
+        <cn>1. 上下文空闲超时时间，单位是分钟。<fig></fig>
+            2. 默认是1440（即1天），取值范围是 [ 0, 2^31 - 1 ]。<fig></fig>
+            3. 如果上下文超过空闲时间没有接受到新的消息，上下文将会被自动清理。<fig></fig>
+            4. 取值为0，表示对上下文的空闲超时没有限制。</cn>
+      </detail>
+      <type>int</type>
+      <default>1440</default>
+      <typeofweb>int</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANSALLOWLOCKESCALATION</name>
+      <long>transallowlockescalation</long>
+      <description>
+        <en>Whether to allow lock escalation after the number of record locks held by a transaction exceeds the parameter transmaxlocknum. The default value is true, which means lock escalation ia allowed.</en>
+        <cn>事务持有记录锁个数超过 transmaxlocknum 后是否允许锁升级，默认为 true，表示允许锁升级。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+        <en>Whether to allow lock escalation after the number of record locks held by a transaction exceeds the parameter transmaxlocknum. The default value is true, which means lock escalation ia allowed.</en>
+        <cn>事务持有记录锁个数超过 transmaxlocknum 后是否允许锁升级，默认为 true，表示允许锁升级。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANSMAXLOCKNUM</name>
+      <long>transmaxlocknum</long>
+      <description>
+        <en>Maximum number of record locks can be hold by a transaction on a data node, default value is 10000, range is [ -1, 2^31 - 1 ].</en>
+        <cn>事务在一个数据节点上可以持有最大的记录锁个数，默认值为 10000，取值范围为[-1, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+        <en>Maximum number of record locks can be hold by a transaction on a data node, default value is 10000, range is [ -1, 2^31 - 1 ]. For more details, refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md). </en>
+        <cn>事务在一个数据节点上可以持有最大的记录锁个数，默认值为 10000，取值范围为[-1, 2^31 - 1]，详细说明可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。</cn>
+      </detail>
+      <type>int</type>
+      <default>10000</default>
+      <typeofweb>int</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANSMAXLOGSPACERATIO</name>
+      <long>transmaxlogspaceratio</long>
+      <description>
+        <en>Maximum ratio of log space can be used by a transaction on a data node, default value is 50, range is [ 1, 50 ].</en>
+        <cn>事务在一个数据节点上可以使用的最大日志空间比例(%)，默认为 50，取值范围：[1, 50]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next transaction</en>
+         <cn>下一次事务中生效</cn>
+      </reloadstrategy>
+      <detail>
+        <en>Maximum ratio of log space can be used by a transaction on a data node, default value is 50, range is [ 1, 50 ]. For more details, refer to [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md).</en>
+        <cn>事务在一个数据节点上可以使用的最大日志空间比例(%)，默认值为 50，取值范围为[1, 50]，详细说明可参考 [setSessionAttr()](manual/Manual/Sequoiadb_Command/Sdb/setSessionAttr.md)。</cn>
+      </detail>
+      <type>int</type>
+      <default>50</default>
+      <typeofweb>int</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_TRANSCONSISTENCYSTRATEGY</name>
+      <long>transconsistencystrategy</long>
+      <description>
+        <en>The consistency strategy when transaction commit, the default is 3, range is [1, 3].</en>
+        <cn>事务提交的同步一致性策略，默认值为 3，取值范围为 [1, 3]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+        <en>The consistency strategy when transaction commit, the default is 3, and the values are as follows:<fig></fig>
+            ● 1: Node priority strategy<fig></fig>
+            ● 2: Location majority first strategy<fig></fig>
+            ● 3: Main Location majority first strategy<fig></fig>
+        </en>
+        <cn>事务提交的同步一致性策略，默认值为 3，取值说明如下：<fig></fig>
+            ● 1: 节点优先策略<fig></fig>
+            ● 2: 位置多数派优先策略<fig></fig>
+            ● 3: 主位置多数派优先策略<fig></fig>
+        </cn>
+      </detail>
+      <type>int</type>
+      <default>3</default>
+      <typeofweb>int</typeofweb>
+      <hidden>true</hidden>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_DETECT_DISK</name>
+      <long>detectdisk</long>
+      <description>
+         <en>Turn on disk detection. Default is true</en>
+         <cn>开启磁盘检测，默认为true</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Turn on disk detection. Default is true</en>
+         <cn>开启磁盘检测，默认为true</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+      <hidden>true</hidden>
+  </opt>
+
+  <opt>
+      <name>PMD_OPTION_DIAG_SECURE_ON</name>
+      <long>diagsecureon</long>
+      <description>
+         <en>Turn on diaglog secure. Default is true</en>
+         <cn>开启诊断日志数据脱敏，默认为true</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Turn on diaglog secure. Default is true, means turn on.<fig></fig>
+             When it is turned on, user performs data operations, database will encrypt the business data in diaglog to ensure data security</en>
+         <cn>开启[节点诊断日志](manual/Distributed_Engine/Maintainance/DiagLog/diaglog.md)的数据脱敏功能，默认值为 true，表示已开启。<fig></fig>
+             在开启该功能的情况下，当用户对数据进行操作后，数据库将对日志中所涉及的业务数据进行加密，以保证数据安全性。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+      <hidden>false</hidden>
+  </opt>
+
+  <opt>
+      <name>PMD_OPTION_METACACHE_EXPIRED</name>
+      <long>metacacheexpired</long>
+      <description>
+         <en>The expire time for metadata cache ( in minutes ). Expired cache will be cleaned ( current just take effect at coord nodes). Default:30, 0 for never expire, value range[0, 43200].</en>
+         <cn>元数据缓存的过期时间(分钟)。过期的缓存将被清理掉（当前仅对协调节点生效）。默认值:30，0表示不过期，取值范围[0, 43200]。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The expire time for metadata cache ( in minutes ). Expired cache will be cleaned ( current just take effect at coord nodes). Default:30, 0 for never expire, value range[0, 43200].</en>
+         <cn>元数据缓存的过期时间(分钟)。过期的缓存将被清理掉（当前仅对协调节点生效）。默认值:30，0表示不过期，取值范围[0, 43200]。</cn>
+      </detail>
+      <type>int</type>
+      <default>30</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_METACACHE_LWM</name>
+      <long>metacachelwm</long>
+      <description>
+         <en>The low water mark of memory for metadata cache. When the size of the memory taken by the metadata is less than this value ( in MB ), no more metadata cache will be cleaned. Default:512, value range[0, 10240].</en>
+         <cn>元数据缓存占用内存的低水位线。当占用内存低于该值时（单位：MB），缓存的元数据信息不会被后台任务删除。默认值:512，取值范围[0, 10240]。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>The low water mark of memory for metadata cache. When the size of the memory taken by the metadata is less than this value ( in MB ), no more metadata cache will be cleaned. Default:512, value range[0, 10240].</en>
+         <cn>元数据缓存占用内存的低水位线。当占用内存低于该值时（单位：MB），缓存的元数据信息不会被后台任务删除。默认值:512，取值范围[0, 10240]。</cn>
+      </detail>
+      <type>int</type>
+      <default>512</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_STAT_MCV_LIMIT</name>
+      <long>statmcvlimit</long>
+      <description>
+         <en>Limits on the number of MCV sample records, returned by data nodes for coord node aggregation.Default:200000, value range[0, 2000000].</en>
+         <cn>协调节点聚合数据节点返回的 MCV 记录的数量限制，默认值:200000，取值范围[0, 20000000]。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Limits on the number of MCV sample records, returned by data nodes for coord node aggregation.Default:200000, value range[0, 2000000].</en>
+         <cn>>协调节点聚合数据节点返回的 MCV 记录的数量限制，默认值:200000，取值范围[0, 20000000]。</cn>
+      </detail>
+      <type>int</type>
+      <typeofweb>int</typeofweb>
+      <default>200000</default>
+      <hidden>true</hidden>
+  </opt>
+
+   <opt>
+      <name>PMD_OPTION_REMOTE_LOCATION_CONSISTENCY</name>
+      <long>remotelocationconsistency</long>
+      <description>
+         <en>Whether the remote node participates in synchronous consistency calculation. Default is true. This parameter only takes effect if the primary node in ActiveLocation.</en>
+         <cn>异地节点是否参与同步一致性计算。默认为true。该参数只有主节点在ActiveLocation才生效。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next write</en>
+         <cn>下次写操作生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Whether the remote node participates in synchronous consistency calculation. Default is true. This parameter only takes effect if the primary node in ActiveLocation.</en>
+         <cn>异地节点是否参与同步一致性计算。默认为true。该参数只有主节点在ActiveLocation才生效。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+      <hidden>true</hidden>
+  </opt>
+
+  <opt>
+      <name>PMD_OPTION_CONSULT_ROLLBACK_LOG_ON</name>
+      <long>consultrollbacklogon</long>
+      <description>
+         <en>Whether to save the rollback logs after consultation. Default is true. The rollback logs is saved in the path of the temp files.</en>
+         <cn>指定是否保存协商后回滚的日志。默认为true。回滚日志保存在临时文件路径中。</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <reloadstrategy>
+         <en>takes effect upon next log rollback</en>
+         <cn>下次日志回滚生效</cn>
+      </reloadstrategy>
+      <detail>
+         <en>Whether to save the rollback logs after consultation. Default is true. The rollback logs is saved in the path of the temp files.</en>
+         <cn>指定是否保存协商后回滚的日志。默认为true。回滚日志保存在临时文件路径中。</cn>
+      </detail>
+      <default>true</default>
+      <typeofweb>boolean</typeofweb>
+      <hidden>true</hidden>
+  </opt>
+
+   <opt>
+      <name>PMD_OPTION_PRIVILEGE_CHECK</name>
+      <long>privilegecheck</long>
+      <default>false</default>
+      <description>
+         <en>Enable authorization, default is false</en>
+         <cn>开启权限检查，默认为false</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>Enable authorization, default is false</en>
+         <cn>开启权限检查，默认为false</cn>
+      </detail>
+      <typeofweb>boolean</typeofweb>
+  </opt>
+
+  <opt>
+      <name>PMD_OPTION_USER_CACHE_INTERVAL</name>
+      <long>usercacheinterval</long>
+      <description>
+         <en>The interval time(unit:ms) of clearing access control list cache, default:300000, 0 means disable it by time, value range[0, 2^31 - 1]</en>
+         <cn>清除访问控制表缓存的周期，单位毫秒，默认值为300000，0表示不按周期触发清除缓存，取值范围[0, 2^31 - 1]</cn>
+      </description>
+      <reloadable>
+         <en>Take effect after restart</en>
+         <cn>重启生效</cn>
+      </reloadable>
+      <detail>
+         <en>The interval time(unit:ms) of clearing access control list cache, default:300000, 0 means disable it by time, value range[0, 2^31 - 1]</en>
+         <cn>清除访问控制表缓存的周期，单位毫秒，默认值为300000，0表示不按周期触发清除缓存，取值范围[0, 2^31 - 1]</cn>
+      </detail>
+      <type>int</type>
+      <default>3000000</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_STORAGEENGINE</name>
+      <long>storageengine</long>
+      <description>
+         <en>Type of storage engine</en>
+         <cn>存储引擎的类型</cn>
+      </description>
+      <default>wiredtiger</default>
+      <detail>
+         <en>Type of storage engine</en>
+         <cn>存储引擎的类型</cn>
+      </detail>
+      <typeofweb>str</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_CACHE_SIZE</name>
+      <long>wtcachesize</long>
+      <description>
+         <en>Cache size of WiredTiger engine(unit: MB)</en>
+         <cn>WiredTigery引擎的缓存大小（单位：MB）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Cache size of WiredTiger engine(unit: MB)</en>
+         <cn>WiredTiger引擎的缓存大小（单位：MB）</cn>
+      </detail>
+      <type>int</type>
+      <default>2048</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_EVICT_TARGET</name>
+      <long>wtevicttarget</long>
+      <description>
+         <en>Evection target of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的缓存页淘汰目标（单位：%）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Evection target of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的缓存页淘汰目标（单位：%）</cn>
+      </detail>
+      <type>int</type>
+      <default>80</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_EVICT_TRIGGER</name>
+      <long>wtevicttrigger</long>
+      <description>
+         <en>Evection trigger threshold of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的缓存页淘汰触发阈值（单位：%）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Evection trigger threshold of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的缓存页淘汰触发阈值（单位：%）</cn>
+      </detail>
+      <type>int</type>
+      <default>95</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_EVICT_DIRTY_TARGET</name>
+      <long>wtevictdirtytarget</long>
+      <description>
+         <en>Evection dirty target of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的脏页淘汰目标（单位：%）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Evection dirty target of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的脏页淘汰目标（单位：%）</cn>
+      </detail>
+      <type>int</type>
+      <default>5</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_EVICT_DIRTY_TRIGGER</name>
+      <long>wtevictdirtytrigger</long>
+      <description>
+         <en>Evection dirty trigger threshold of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的脏页淘汰触发阈值（单位：%）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Evection dirty trigger threshold of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的脏页淘汰触发阈值（单位：%）</cn>
+      </detail>
+      <type>int</type>
+      <default>20</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_EVICT_UPDATES_TARGET</name>
+      <long>wtevictupdatestarget</long>
+      <description>
+         <en>Evection update target of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的更新页淘汰目标（单位：%）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Evection update target of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的更新页淘汰目标（单位：%）</cn>
+      </detail>
+      <type>int</type>
+      <default>2</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_EVICT_UPDATES_TRIGGER</name>
+      <long>wtevictupdatestrigger</long>
+      <description>
+         <en>Evection update trigger threshold of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的更新页淘汰触发阈值（单位：%）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Evection update trigger threshold of WiredTiger engine(unit: %)</en>
+         <cn>WiredTiger引擎的更新页淘汰触发阈值（单位：%）</cn>
+      </detail>
+      <type>int</type>
+      <default>10</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_EVICT_THREADS_MIN</name>
+      <long>wtevictthreadsmin</long>
+      <description>
+         <en>Minimum number of eviction threads in WiredTiger engine</en>
+         <cn>WiredTiger引擎的缓存页淘汰后台线程最小个数</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Minimum number of eviction threads in WiredTiger engine</en>
+         <cn>WiredTiger引擎的缓存页淘汰后台线程最小个数</cn>
+      </detail>
+      <type>int</type>
+      <default>4</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_EVICT_THREADS_MAX</name>
+      <long>wtevictthreadsmax</long>
+      <description>
+         <en>Maximum number of eviction threads in WiredTiger engine</en>
+         <cn>WiredTiger引擎的缓存页淘汰后台线程最大个数</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Maximum number of eviction threads in WiredTiger engine</en>
+         <cn>WiredTiger引擎的缓存页淘汰后台线程最大个数</cn>
+      </detail>
+      <type>int</type>
+      <default>4</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+   <opt>
+      <name>PMD_OPTION_WT_CHECK_POINT_INTERVAL</name>
+      <long>wtcheckpointinterval</long>
+      <description>
+         <en>Interval of check point in WiredTiger engine(Unit: second)</en>
+         <cn>WiredTiger引擎的生成检查点的间隔（单位：秒）</cn>
+      </description>
+      <reloadable>
+         <en>Take effect immediately</en>
+         <cn>在线生效</cn>
+      </reloadable>
+      <detail>
+         <en>Interval of check point in WiredTiger engine(Unit: second)</en>
+         <cn>WiredTiger引擎的生成检查点的间隔（单位：秒）</cn>
+      </detail>
+      <type>int</type>
+      <default>60</default>
+      <typeofweb>num</typeofweb>
+   </opt>
+
+</optlist>

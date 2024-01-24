@@ -1,0 +1,20 @@
+
+Lob的读写删Task都可以通过LobTask类的静态方法获取得到.
+
+获取一个在指定的cs cl上批量创建lob的Task,lobs2Create是一个线程安全的数组，里面的元素是LobBean。
+private List<LobBean> lobs2Create = new Vector<>();
+Task createLobsTask = LobTask.getCreateLobsTask(lobs2Create)
+                .setCsAndClName(csName, clName);
+
+
+LobBean是lob的java bean对象，构造方法传入的是lob内容，一个lobbean的状态分为已保存到数据库和未保存到数据库
+for (int i = 0; i < 100; i++) {
+   lobs2Delete.add(new LobBean(createRandomBytes(1024 * 200)));
+   lobs2Create.add(new LobBean(createRandomBytes(1024 * 200)));
+}
+
+
+
+
+下面方法检测group1的三个节点的lob的MD5是否和lobs2Delete中的一致。
+assertTrue(MyUtil.isLobMd5InspectInGroup(csName, clName, "group1", lobs2Delete));

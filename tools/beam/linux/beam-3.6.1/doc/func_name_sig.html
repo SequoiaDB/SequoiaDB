@@ -1,0 +1,400 @@
+<html>
+<head>
+  <title>BEAM: Function Names and Signatures</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Function Names and Signautres </h1>
+<hr/>
+
+</p>
+<p>
+<h1>Contents:</h1>
+
+</p>
+<p>
+<ul>
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#names">Function Names</a></li>
+  <li><a href="#signatures">Function Signatures</a></li>
+  <li><a href="#listids">Getting the correct name or signature from BEAM</a></li>
+</ul>
+
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="overview"></a><h1>Overview</h1>
+
+
+</p>
+<p>
+  At some point, you may want to tell BEAM about properties of a
+  specific function, which requires you to refer to that function. You
+  can do so either by name or by signature. This file describes
+  function names and function signatures, and how to ask BEAM for the
+  name or signature of a function.
+</p>
+<p>
+  Different configuration options throughout BEAM take in function
+  names and function signatures. It is important to understand which
+  one the configuration option is expecting, and to not mix and match.
+</p>
+<p>
+  For example, most function patterns in the parms files take in
+  unqualified function names. Specifying signatures in those patterns
+  will not work.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="names"></a><h1>Function Names</h1>
+
+
+</p>
+<p>
+  A <span class="term">function name</span> is the identifier that is written in a
+  function's declaration.  It doesn't include the return type, the
+  parameters (or even the parentheses), the exception specification,
+  or anything else that is related to a function declaration. For Java
+  generics, the function name does not include any type
+  parameters. The name will appear as the name of the raw type.
+</p>
+<p>
+  A function's name can either be <span class="term">qualified</span> or <span class="term">unqualified</span>. <span class="term">Qualified names</span> contain the names of the
+  classes and namespaces in which the function is declared.
+  <span class="term">Unqualified names</span> don't contain any of that information.
+</p>
+<p>
+  Here are examples of function names in C, C++, and Java code. For
+  all of the following, the unqualified name is <span class="code">&quot;func&quot;</span>.  The
+  qualified name is shown in the comments.
+</p>
+<pre class="example">
+/* In C: */
+ 
+int func(const char* msg, ...); /* Name is &quot;func&quot; */
+ 
+/* In C++: */
+ 
+extern &quot;C&quot;
+void func(const char* str);     /* Name is &quot;func&quot; */
+ 
+namespace namesp
+{
+  void func(const char* str);   /* Name is &quot;namesp::func&quot; */
+}
+ 
+class c1
+{
+  static void func(int num);    /* Name is &quot;c1::func&quot; */
+};
+
+/* In Java: */
+ 
+package p;
+ 
+class C
+{
+  public void func(String s) { } /* Name is &quot;p.C.func&quot; */
+  
+  class I
+  {
+    public void func(int n) { }  /* Name is &quot;p.C$I.func&quot; */
+  }
+}
+
+class G&lt;E extends C&gt;
+{
+  /* Name is &quot;p.G.func&quot; */
+  public &lt;T&gt; void func(T arg1, E arg2) { }
+}
+</pre>
+<p>
+
+  Function names may not uniquely identify a function because of
+  overloading, or because unqualified names may be the same if the
+  functions are declared in different namespaces or classes. For
+  identifying functions uniquely, <a href="#signatures">function signatures</a> are used.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="signatures"></a><h1>Function Signatures</h1>
+
+
+</p>
+<p>
+  Function names don't uniquely identify a function, but function
+  signatures do. The signature is made up of:
+</p>
+<p>
+  <ul>
+    <li>the function's <i>qualified name</i> (defined above)</li>
+    <li>the function's parameter list, unless the function was declared
+        to have C language linkage, e.g. using <span class="code">extern &quot;C&quot;</span>.
+        The parameter list does not include parameter names, only their
+        types.</li>
+  </ul>
+</p>
+<p>
+  Here is the above example with function signatures instead of names:
+</p>
+<pre class="example">
+/* In C: */
+ 
+int func(const char* msg, ...); /* Signature is &quot;func&quot; (same as the name) */
+ 
+/* In C++: */
+ 
+extern &quot;C&quot;
+void func(const char* str);     /* Signature is &quot;func&quot; (C linkage) */
+ 
+namespace namesp
+{
+  void func(const char* str);   /* Signature is &quot;namesp::func(const char *)&quot; */
+}
+ 
+class c1
+{
+  static void func(int num);    /* Signature is &quot;c1::func(int)&quot; (external linkage!) */
+};
+
+/* In Java: */
+ 
+package p;
+ 
+class C
+{
+  public void func(String s) { } /* Signature is &quot;p.C.func(java.lang.String)&quot; */
+  
+  class I
+  {
+    public void func(int n) { }  /* Signature is &quot;p.C$I.func(int)&quot; */
+  }
+}
+
+class G&lt;E extends C&gt;
+{
+  /* Signature is &quot;p.G.func(java.lang.Object, p.C)&quot; */
+  public &lt;T&gt; void func(T arg1, E arg2) { }
+}
+</pre>
+<p>
+
+  Notice that for Java generics (class <span class="var">G</span> above uses
+  generics), the type variables <span class="var">T</span> and <span class="var">E</span> are erased
+  to their runtime types when displayed in signatures.
+</p>
+<p>
+  Also note that whitespace within the signature is not important, and
+  will be ignored. The following two signatures refer to the same
+  function when written as Tcl strings:
+</p>
+<pre class="example">
+{ namesp::func(const char*, int&amp;) }
+
+{ namesp::func ( const char *, int  &amp; ) }
+</pre>
+<p>
+
+<hr />
+
+</p>
+<p>
+<h2>Function signatures explained</h2>
+
+</p>
+<p>
+  Function signatures are designed to uniquely identify a function
+  within a group of source files that is compiled together.
+</p>
+<p>
+  For <!-- ### external --> functions with C linkage, it is
+  sufficient to use the function's name - there can't be two functions
+  with the same name that both have C linkage in the same collection
+  of files that are going to be compiled together.  This is why the
+  signature of C functions is simply the unqualified name.
+</p>
+<p>
+  For <!-- ### externally visible --> C++ and Java functions, the
+  entire signature is needed.
+</p>
+<p>
+<!-- ###
+</p>
+<p>
+  For static functions that aren't visible externally, we need to
+  also include the original file name that the function was
+  defined in. This is because the same function with the same
+  signature can exist in multiple files that are compiled together
+  if it is not visible externally, but it can't exist twice in the
+  same file.
+</p>
+<p>
+  <b>Note:</b> This also means that if you move a static
+  function's definition from one source file to another, you
+  <b>must</b> update the attribute definition, or it will not be
+  applied to the new static function (the signatures, which
+  contain the file name, will not match). This only applies to
+  static functions.
+</p>
+<p>
+-->
+</p>
+<p>
+  We <span class="strong">strongly recommend</span> that you write function signatures
+  in Tcl by enclosing them in curly braces like so:
+</p>
+<pre class="example">
+{ operator new [] }
+</pre>
+<p>
+
+  This way you don't need to worry about escaping certain characters
+  that are special to Tcl. E.g. specifying a signature using double
+  quotes like so:
+</p>
+<pre class="example">
+&quot;operator new []&quot;
+</pre>
+<p>
+
+  would <span class="strong">not</span> work.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="listids"></a><h1>Getting the correct name or signature from BEAM</h1>
+
+
+</p>
+<p>
+  Since a specified function signature string has to match the
+  signature string that BEAM is using internally there is an easy way
+  for you to obtain those signature strings.
+</p>
+<p>
+  Run your source file with the function definition in it through
+  <a href="beam_compile.html"><span class="command">beam_compile</span></a>, but also
+  specify the option <span class="option">--beam::list-ids</span> in addition to all
+  other command line flags you're using. This will cause BEAM to read
+  in the source, but instead of analyzing it, BEAM will just print out
+  each function that is defined with both the signature and the
+  name. You must use this exact string when writing function names or
+  signatures in Tcl files. Simply cut and paste and don't forget the
+  curly braces.
+</p>
+<p>
+  For example, let's say I have a C++ file <span class="file">main.C</span> and
+  in it I have a function defined:
+</p>
+<pre class="example">
+/* File: main.C */
+
+#include &lt;string&gt;
+
+int proc( std::string input );
+</pre>
+<p>
+
+  Now, in order to specify that function by signature, I need to know
+  what that type looks like to BEAM. Since <span class="code">std::string</span> is a
+  template, the actual signature is complicated. Let us run it through
+  BEAM and see what the signature is:
+</p>
+<pre class="example">
+beam_compile -c main.C --beam::list-ids
+</pre>
+<p>
+
+  BEAM will output every defined function (including the ones in
+  the standard headers). Fortunately, the last one printed is the
+  one we are looking for:
+</p>
+<pre class="example">
+ID: &quot;proc(class basic_string&lt;char,std::char_traits&lt;char&gt;,std::allocator&lt;char&gt; &gt; )&quot; (&quot;proc&quot;)
+</pre>
+<p>
+
+  The string inside double quotes is the signature, and the string
+  inside the parentheses at the end is the qualified name.
+</p>
+<p>
+  So, using that, here is a Tcl string that we could use to specify
+  that function by signature:
+</p>
+<pre class="example">
+{ proc(class basic_string&lt;char,std::char_traits&lt;char&gt;,std::allocator&lt;char&gt; &gt; ) }
+</pre>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

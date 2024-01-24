@@ -1,0 +1,748 @@
+<html>
+<head>
+  <title>BEAM: Emacs Macros</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Emacs Macros - beam-parse.el</h1>
+<hr/>
+
+</p>
+<p>
+<h1>What is beam-parse.el?</h1>
+
+</p>
+<p>
+      Beam's output can be difficult to work with sometimes. You need to
+      load the right source files, look around for each warning or error,
+      decide if it is a real error or something you want to mark as
+      innocent, and then either write a comment in the source that
+      beam understands or locate the innocents file and write an
+      innocent code there.
+</p>
+<p>
+      <span class="file">beam-parse.el</span> is an emacs package
+      that will make this process easier and quicker. Once loaded, it
+      provides functions to examine the beam output, automatically
+      load the proper source files, and jump straight to the
+      errors. It also allows you to quickly mark errors as innocent by
+      writing the innocent file (with an optional comment) or by
+      writing the magic comment line straight in the source.
+</p>
+<p>
+      <span class="file">beam-parse.el</span> has been tested with GNU Emacs
+      version 20.1 and higher, and XEmacs version 20.2 and higher.
+      It may also work with other configurations.
+</p>
+<p>
+<h1>How do I get started?</h1>
+
+</p>
+<p>
+    <h2>Loading beam-parse.el</h2>
+
+</p>
+<p>
+      In order to define the beam functions that you will use to
+      navigate beam errors, you need to load
+      <span class="file">beam-parse.el</span> into emacs (or xemacs). You
+      can do this one of two ways, depending on whether or not you
+      want to load it every time you start emacs.
+</p>
+<p>
+      If you want <span class="file">beam-parse.el</span> to load with emacs every
+      time you start emacs up, you need to load it in your emacs init
+      file. Normally this is <span class="file">~/.emacs</span> or
+      <span class="file">~/.xemacs/init.el</span>. Add these lines to that
+      file to load <span class="file">beam-parse.el</span> automatically:
+</p>
+<pre class="example">
+; This loads beam-parse.el every time emacs is started.
+; <span class="strong">Make sure</span> to change <span class="val">install_point</span> to the directory where
+; beam-parse.el is located, like <span class="val">/opt/beam/2.1/etc</span>.
+
+(setq load-path (cons &quot;<span class="val">install_point</span>&quot; load-path))
+(require 'beam-parse)
+</pre>
+<p>
+
+      If you don't want <span class="file">beam-parse.el</span> loaded
+      automatically, you can load it manually before you want to use
+      it (it only needs to be loaded again if you exit emacs).
+</p>
+<pre class="example">
+M-x load-file RET <span class="file">/path/to/beam-parse.el</span> RET
+</pre>
+<p>
+
+      Note that it is <span class="strong">not</span> recommended that you load
+      beam-parse.el in this manner. Some functionality, like the
+      ability to display extended help, will not work unless
+      beam-parse.el is loaded via the <span class="code">(require 'beam-parse)</span> above.
+</p>
+<p>
+    <h2>Setting up beam output</h2>
+
+</p>
+<p>
+      Before you can do anything else with this package, you must load
+      some beam output into emacs and tell <span class="file">beam-parse.el</span>
+      which loaded file to look at. Once the beam output is loaded,
+      run <span class="function">beam-parse-buffer</span>. You can do this by either typing
+      it in as a command:
+</p>
+<pre class="example">
+M-x beam-parse-buffer RET
+</pre>
+<p>
+
+      Or, you can use the keystroke that is bound to that command. By
+      default, it's:
+</p>
+<pre class="example">
+C-c b p
+</pre>
+<p>
+
+      Running this command on some beam output I have loaded produces
+      a screen that looks like this:
+</p>
+<p>
+    <center>
+      <img src="images/emacs_parsed.png" />
+    </center>
+</p>
+<p>
+  <h2>Working with colors</h2>
+
+</p>
+<p>
+      After a buffer is parsed by beam, it is colored. Each error that
+      hasn't been visited is shown in red. Errors that have been
+      visited show up in orange. Errors that have been marked
+      'innocent' show up in green. Also, the current error you are on
+      and it's corresponding line in a source file show up in
+      blue.
+</p>
+<p>
+      Some beam errors have path information associated with
+      them. This is the case when the beam output has something like
+      <span class="code">&quot;ONE POSSIBLE PATH LEADING TO THE ERROR&quot;</span> as a part
+      of the error. If an error has this extra information, you can
+      ask <span class="file">beam-parse.el</span> to color the path in question
+      yellow in the source file you are looking at. This might make it
+      easier to understand why beam thinks there is really an error
+      there.
+</p>
+<p>
+      To "color a path", use <span class="function">beam-color-path</span>, or it's
+      associated key-binding.
+</p>
+<p>
+      Here is an emacs session looking at an error, with the path
+      colored in the source file.
+</p>
+<p>
+    <center>
+      <img src="images/emacs_path.png" />
+    </center>
+</p>
+<p>
+      These colors are just the default colors; to change them, read
+      up on customizing beam-parse.el below.
+</p>
+<p>
+  <h2>Moving from one error to another</h2>
+
+</p>
+<p>
+      Now that <span class="file">beam-parse.el</span> has seen all of the errors,
+      you can move between them freely. To go directly to an error,
+      you can <span class="term">middle-click</span> on the line of the error in the beam
+      output buffer (any line with a source file and line number at
+      the  beginning of it). You can also move the cursor on that line 
+      and press <span class="term">RET</span>.
+</p>
+<p>
+      There are also convenience functions that let you move to the
+      next error in sequence. If you are done looking at the current
+      error, you can move to the next with
+      <span class="function">beam-next-error</span>. You can also do more
+      advanced things while moving to the next error, like marking the
+      current one innocent before continuing on. This is explained
+      below.
+</p>
+<p>
+      If you are more interested in moving along the current error's
+      path, rather than going to the next error, you can either
+      middle-click on the line in the path that you want to look at,
+      or you can use <span class="function">beam-next-line-error</span> to
+      move to the next line that's listed in the path for the error.
+</p>
+<p>
+      Once you move past the last error, no errors will be
+      highlighted. Going forward one more error from here will bring
+      you back to the beginning of the list; going backwards will
+      bring you back to the end of the list. This is also the state
+      you are initially in right after a call to
+      <span class="function">beam-parse-buffer</span>.
+</p>
+<p>
+  <h2>Marking errors as innocent</h2>
+
+</p>
+<p>
+      While you are looking at an error, you might decide that in your
+      circumstances that it's not really an error, and you don't want
+      beam to report it anymore. This can be done by marking the error
+      as innocent.
+</p>
+<p>
+      There are a few ways to do this; the easiest is to use
+      <span class="function">beam-mark-innocent-in-source</span>, which will
+      place the magic beam comment (like <span class="code">/*uninitialized*/</span>)
+      right in the source file. If beam sees this next time, it won't
+      report the error.
+</p>
+<p>
+      Once an error is marked innocent, the beam output buffer will
+      show it in green so that you know you have already dealt with
+      it.
+</p>
+<p>
+      There are other ways of marking innocents - for example,
+      <span class="function">beam-mark-innocent</span> will look for the beam
+      data directory (set with <span class="option">--beam::data=</span>) and will
+      write the innocent information there. This is useful if you
+      don't have write access to the source, or if you just don't want
+      to change it.
+</p>
+<p>
+      There are variations on these, too - you can mark an error
+      innocent and go to the next in one command, like
+      <span class="function">beam-mark-innocent-and-next-error</span>, or
+      <span class="function">beam-mark-innocent-in-source-and-next-error</span>. 
+      See below for more.
+</p>
+<p>
+  <h2>Reading the extended help</h2>
+
+</p>
+<p>
+      As you move from one complaint to the next, you may not
+      understand what BEAM is actually complaining about. Perhaps the
+      wording of the complaint is difficult to understand in the
+      current code context, or perhaps the code is written in such a
+      way that BEAM is not accurately pointing out the exact problem
+      or reasons behind the complaint.
+</p>
+<p>
+      Using version <span class="strong">3.2</span> or higher of
+      <span class="file">beam-parse.el</span> will give you access to what we call
+      <span class="term">extended help</span>. This extended help has been available on the
+      beam web page for a while now, under
+      <a href="builtin.html">Built-in Complaints</a>, but is just
+      recently available to <span class="file">beam-parse.el</span> users in a
+      convenient manner.
+</p>
+<p>
+      By enabling the extended help via
+      <span class="code">(beam-extended-help)</span> (<span class="code">C-c b h</span> by
+      default), a new window will appear and contain the same
+      documentation that is available on the web. As you move from one
+      complaint to the next, the extended help window will contain
+      extra descriptions of the complaint you are on, as well as hints
+      and helpful pointers that may help track down the problem.
+</p>
+<p>
+      By running <span class="code">(beam-extended-help)</span> a second time, the
+      window will disappear.
+</p>
+<p>
+      Note that in order for <span class="file">beam-parse.el</span> to find the
+      beam installation (so it can read this extended help
+      information), you must either load <span class="file">beam-parse.el</span>
+      directly from the beam installation via <span class="code">(require
+      'beam-parse)</span>, or you must set the emacs variable
+      <span class="var">beam-install-dir</span> to point to the root of your beam
+      installation, like this:
+</p>
+<pre class="example">
+;; If you do not load beam-parse.el via (require 'beam-parse)
+;; directly from the beam installation, set this variable in
+;; your .emacs file
+
+(setq beam-install-dir &quot;/opt/beam/2.0&quot;)
+</pre>
+<p>
+
+      Obviously, use your <span class="strong">real</span> beam install
+      directory. Remember, if you use <span class="code">require</span> and emacs
+      can find <span class="file">beam-parse.el</span> from right within the
+      install point, this step isn't necessary.
+</p>
+<p>
+      Here is an emacs window with the extended help window
+      open. Please note that the code in the image is not the code
+      that originally created this complaint. Obviously the variable
+      in the screen-shot is initialized.
+</p>
+<p>
+    <center>
+      <img src="images/emacs_ext_help.png" />
+    </center>
+</p>
+<p>
+<h1>Customizing beam-parse.el</h1>
+
+</p>
+<p>
+    Once <span class="file">beam-parse.el</span> is loaded, you can customize a few
+    things about it. There are special variables that
+    <span class="file">beam-parse.el</span> looks at, and there's also the colors
+    it uses and the key-bindings that can be set.
+</p>
+<p>
+  <h2>Variables</h2>
+
+</p>
+<p>
+    <span class="file">beam-parse.el</span> looks at a few variables. Right now,
+    these are the ones that are customizable:
+</p>
+<p>
+  <table width="75%">
+      <tr>
+	<th width="20%">Variable Name</th>
+	<th width="10%">Type</th>
+	<th width="80%">What it does</th>
+      </tr>
+      <tr>
+	<td>
+	  beam-innocent-suffix
+	</td>
+	<td>
+	  string
+	</td>
+	<td>
+	  This suffix will be appended to the innocents filename
+	  before it is opened.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  beam-error-suffix
+	</td>
+	<td>
+	  string
+	</td>
+	<td>
+	  This suffix will be appended to the errors filename before
+	  it is opened.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  beam-install-dir
+	</td>
+	<td>
+	  string
+	</td>
+	<td>
+	    This variable can be used to allow
+	    <span class="file">beam-parse.el</span> to find the beam install point
+	    so that it can read supporting files (like extended help).
+</p>
+<p>
+	    If <span class="file">beam-parse.el</span> is loaded via <span class="code">(require
+            'beam-parse.el)</span> and emacs is finding
+            <span class="file">beam-parse.el</span> in your beam install point, then
+            setting this variable is not necessary.
+	</td>
+      </tr>
+  </table>
+</p>
+<p>
+    To customize these, put something like this in your emacs init file:
+</p>
+<pre class="example">
+(setq beam-error-suffix &quot;.errors&quot;)
+</pre>
+<p>
+
+  <h2>Faces and Colors</h2>
+
+</p>
+<p>
+    The colors that <span class="file">beam-parse.el</span> uses are simple emacs
+    faces. To customize emacs faces, you should use the emacs built-in
+    editor. To activate it, use the menu:
+</p>
+<p>
+  <ul>
+    <li>
+      (In Emacs): "Options -> Customize Emacs -> Specific Face"
+    </li>
+    <li>
+      (In XEmacs): "Options -> Edit Faces..."
+    </li>
+  </ul>
+</p>
+<p>
+    Or, use the command (this works in Emacs and XEmacs):
+</p>
+<pre class="example">
+M-x customize-face RET RET
+</pre>
+<p>
+
+    From this editor, you can change all aspects of the different beam
+    "faces" - their colors, fonts, bold, underline, etc.
+</p>
+<p>
+    Here are the current faces that beam uses:
+</p>
+<p>
+  <table width="75%">
+      <tr>
+	<th width="25%">Face Name</th>
+	<th width="75%">Purpose</th>
+      </tr>
+      <tr>
+	<td>
+	  beam-error-face
+	</td>
+	<td>
+	  Used to highlight errors that have not been visited in the
+	  beam error buffer
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  beam-visited-error-face
+	</td>
+	<td>
+	  Used to highlight errors that have been visited in the beam
+	  error buffer
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  beam-path-face
+	</td>
+	<td>
+	  Used to highlight a path in the source code that the beam
+	  error is valid for
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  beam-innocent-face
+	</td>
+	<td>
+	  Used to highlight errors that have been marked as innocent
+	  in the beam error buffer
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  beam-highlight-face
+	</td>
+	<td>
+	  Used to mark the current beam error in both the beam buffer
+	  and the source file
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  beam-hover-face
+	</td>
+	<td>
+	  Used to highlight an error as the mouse passes over it
+	</td>
+      </tr>
+  </table>
+</p>
+<p>
+  <h2>Key-bindings</h2>
+
+</p>
+<p>
+    <span class="file">beam-parse.el</span> sets up some default
+    key-bindings. They all start with <span class="code">C-c b</span>, for
+    "<span class="strong">B</span>eam". Here is a list of the default ones that are
+    set. Note that if you already have one of these keys bound to
+    something else, <span class="file">beam-parse.el</span> will *not* change it on
+    you. So, this table is only valid of the key-binding is not set
+    when <span class="file">beam-parse.el</span> was loaded.
+</p>
+<p>
+  <table width="75%">
+      <tr>
+	<th width="10%">
+	  Keystroke
+	</th>
+	<th width="40%">
+	  Command
+	</th>
+	<th width="50%">
+	  Action
+	</th>
+      </tr>
+      <tr>
+	<td>
+	  C-c b p
+	</td>
+	<td>
+	  beam-parse-buffer
+	</td>
+	<td>
+	  This prepares some loaded beam output for use with the rest of
+	  the commands. This must be done before most of the other
+	  commands.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b u
+	</td>
+	<td>
+	  beam-unparse-buffer
+	</td>
+	<td>
+	  This undoes what <span class="function">beam-parse-buffer</span> does. After
+	  this command, the colors will be removed, and the beam
+	  buffer will no longer be
+	  "active". <span class="function">beam-parse-buffer</span> must be called
+	  again before other commands can be used.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b c
+	</td>
+	<td>
+	  beam-color-path
+	</td>
+	<td>
+	  This reads the extended path coloring information from the
+	  error file, if it exists, and colors the path in the source
+	  file that beam reports as being one of the possible paths to
+	  the error. Only one path can be active at any time.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b e
+	</td>
+	<td>
+	  beam-erase-path
+	</td>
+	<td>
+	  This undoes <span class="function">beam-color-path</span>, turning the source
+	  lines back to a normal color.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b n
+	</td>
+	<td>
+	  beam-next-error
+	</td>
+	<td>
+	  This moves to the next error in the beam output buffer and
+	  in the source file. With a prefix argument, it moves N
+	  errors.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b l
+	</td>
+	<td>
+	  beam-next-line-error
+	</td>
+	<td>
+	  This moves to the next path line in the beam output buffer and
+	  in the source file. With a prefix argument, it moves N
+	  path lines.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b r
+	</td>
+	<td>
+	  beam-revisit-error
+	</td>
+	<td>
+	  This re-displays the current error, in case you lost your
+	  place. It will bring the beam output buffer and the source
+	  buffer back into view and to the correct lines.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b i
+	</td>
+	<td>
+	  beam-mark-innocent
+	</td>
+	<td>
+	  This marks the current error as innocent by writing the
+	  innocents file in the beam data directory.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b C-i
+	</td>
+	<td>
+	  beam-mark-innocent-and-next-error
+	</td>
+	<td>
+	  Like <span class="function">beam-mark-innocent</span>, but also moves to the
+	  next error automatically. With a prefix argument, moves N
+	  errors.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b k
+	</td>
+	<td>
+	  beam-mark-innocent-in-source
+	</td>
+	<td>
+	  This writes the beam comment into the source code that beam
+	  will recognize as being innocent, like <span class="code">uninitialized</span>.
+          This will not save the change to the source.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b C-k
+	</td>
+	<td>
+	  beam-mark-innocent-in-source-and-next-error
+	</td>
+	<td>
+	  This is like <span class="function">beam-mark-innocent-in-source</span>, but
+	  also moves to the next error automatically. With a prefix
+	  argument, moves N errors.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b s
+	</td>
+	<td>
+	  beam-mark-innocent-and-comment
+	</td>
+	<td>
+	  This is like <span class="function">beam-mark-innocent</span>, but it prompts
+	  the user for an additional comment to also write into the
+	  innocent file. Something along the lines of why it was
+	  marked innocent is usually appropriate.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b C-s
+	</td>
+	<td>
+	  beam-mark-innocent-and-comment-and-next-error
+	</td>
+	<td>
+	  This is like <span class="function">beam-mark-innocent-and-comment</span>,
+	  but it also moves to the next error automatically. With a
+	  prefix argument, it moves N errors.
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  C-c b h
+	</td>
+	<td>
+	  beam-extended-help
+	</td>
+	<td>
+	  This toggles the display of the extended help window, which
+          displays extra information about the complaint that you are
+          currently looking at.
+	</td>
+      </tr>
+  </table>
+</p>
+<p>
+    <span class="file">beam-parse.el</span> also overrides <span class="code">C-x `</span>
+    (Control-X backtick). This is set up by emacs to go to the next
+    compiler error. <span class="file">beam-parse.el</span> overrides this so that
+    if there is a current parsed beam output buffer, it will act just
+    like <span class="function">beam-next-error</span>, and if there isn't a beam
+    parsed buffer, it will act just like it normally does.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

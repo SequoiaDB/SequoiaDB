@@ -1,0 +1,2 @@
+In order to clone SVN build to github build, please run
+./clone.sh <destination path>

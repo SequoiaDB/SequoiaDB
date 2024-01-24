@@ -1,0 +1,75 @@
+.
+├── include
+│   ├── base64c.h
+│   ├── bson
+│   │   ├── bsonassert.h
+│   │   ├── bson_db.h
+│   │   ├── bsonDecimal.h
+│   │   ├── bsonelement.h
+│   │   ├── bson.h
+│   │   ├── bson.hpp
+│   │   ├── bson-inl.h
+│   │   ├── bsonintrusiveptr.h
+│   │   ├── bsonmisc.h
+│   │   ├── bsonnoncopyable.h
+│   │   ├── bsonobjbuilder.h
+│   │   ├── bsonobj.h
+│   │   ├── bsonobjiterator.h
+│   │   ├── bsontypes.h
+│   │   ├── encoding.h
+│   │   ├── inline_decls.h
+│   │   ├── lib
+│   │   │   ├── atomic_int.h
+│   │   │   ├── base64.h
+│   │   │   ├── hex.h
+│   │   │   ├── md5.h
+│   │   │   ├── md5.hpp
+│   │   │   └── nonce.h
+│   │   ├── oid.h
+│   │   ├── ordering.h
+│   │   ├── stringdata.h
+│   │   └── util
+│   │       ├── builder.h
+│   │       ├── embedded_builder.h
+│   │       ├── hex.h
+│   │       ├── misc.h
+│   │       └── optime.h
+│   ├── cJSON_ext.h
+│   ├── cJSON.h
+│   ├── clientDef.h
+│   ├── client.h
+│   ├── client.hpp
+│   ├── common_decimal_fun.h
+│   ├── common_decimal.h
+│   ├── common_decimal_type.h
+│   ├── core.h
+│   ├── core.hpp
+│   ├── fromjson.hpp
+│   ├── json2rawbson.h
+│   ├── jstobs.h
+│   ├── ossAtomicBase.hpp
+│   ├── ossAtomic.hpp
+│   ├── ossErr.h
+│   ├── ossFeat.h
+│   ├── ossFeat.hpp
+│   ├── oss.h
+│   ├── oss.hpp
+│   ├── ossLatch.hpp
+│   ├── ossMem.h
+│   ├── ossMem.hpp
+│   ├── ossTypes.h
+│   ├── ossTypes.hpp
+│   ├── ossVer_Autogen.h
+│   ├── ossVer.h
+│   ├── ossVer.hpp
+│   ├── pdErr.hpp
+│   ├── pd.hpp
+│   ├── sdbConnectionPoolComm.hpp
+│   ├── sdbConnectionPool.hpp
+│   ├── spd.h
+│   └── utilAuthSCRAMSHA.hpp
+└── lib
+    ├── libsdbcpp.so
+    ├── libsdbc.so
+    ├── libstaticsdbc.a
+    └── libstaticsdbcpp.a

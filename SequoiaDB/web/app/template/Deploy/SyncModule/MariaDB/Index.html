@@ -1,0 +1,47 @@
+﻿<div ng-controller="Deploy.MariaDB.Sync.Ctrl" ng-container="{}">
+   <div style="border-bottom:1px solid #eee;" step-chart="stepList" ng-show="SyncConf != null"></div>
+   <div style="padding:10px 15px;" ng-container="{'true':ContainerBox[0],'false':ContainerBox[1]}[SyncConf != null]">
+      <div ng-container="{offsetY:-5}">
+
+         <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("同步信息")}}</div>
+
+         <table class="table loosen border">
+            <tr>
+               <td style="width:120px;">{{autoLanguage("集群")}}</td>
+               <td>{{ClusterName}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("同步的实例")}}</td>
+               <td>{{ModuleName}}</td>
+            </tr>
+            <tr>
+               <td>{{autoLanguage("同步状态")}}</td>
+               <td ng-if="SyncStatus == 0">{{autoLanguage("同步中...")}}</td>
+               <td ng-if="SyncStatus == 1">{{autoLanguage("同步完成")}}</td>
+               <td ng-if="SyncStatus == 2"><b style="color:#D9534F;">{{autoLanguage("同步失败")}}</b></td>
+            </tr>
+            <tr class="alert-warning">
+               <td colspan="2">{{autoLanguage("提示：黄色背景表示配置项有变化，红色字体表示新增配置项，绿色字体表示删除配置项。")}}</td>
+            </tr>
+         </table>
+
+         <div ng-container="{marginTop:10,offsetY:-155}" ng-table="ConfigTable['options']" table-title="ConfigTable['title']" table-content="info in ConfigTable['body']" table-callback="ConfigTable['callback']">
+            <div class="Ellipsis" table-key="key">
+               <span ng-style="{1:{'color':'#00CC66'},2:{'color':'red'}}[info.type]">{{info.key}}</span>
+            </div>
+            <div class="Ellipsis" table-key="value.0" table-style="{true:{'background':'#FFFF96'}}[info.type == 3]">
+               <span ng-style=" {true:{'color':'#00cc66'}}[info.type == 1]">{{info['value'][0]}}</span>
+            </div>
+            <div class="Ellipsis" table-key="value.1" table-style="{true:{'background':'#FFFF96'}}[info.type == 3]">
+               <span ng-style="{true:{'color':'red'}}[info.type == 2]">{{info['value'][1]}}</span>
+            </div>
+         </div>
+      </div>
+
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-primary" ng-click="GotoDeploy()">{{autoLanguage("返回")}}</button>
+      </div>
+
+   </div>
+
+</div>

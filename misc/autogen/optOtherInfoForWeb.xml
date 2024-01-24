@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<optOtherInfoForWeb>
+   <title>
+      <en>Database Runtime Configurtion</en>
+      <cn>数据库配置</cn>
+   </title>
+   <subtitle>
+      <en>Parameter Instruction</en>
+      <cn>参数说明</cn>
+   </subtitle>
+   <sthead>
+      <stentry_name>
+         <en>Parameter Name</en>
+         <cn>参数名</cn>
+      </stentry_name>
+      <stentry_acronym>
+         <en>Acronym</en>
+         <cn>缩写</cn>
+      </stentry_acronym>
+      <stentry_type>
+         <en>Type</en>
+         <cn>类型</cn>
+      </stentry_type>
+      <stentry_reloadable>
+         <en>Reload Type</en>
+         <cn>生效类型</cn>
+      </stentry_reloadable>
+      <stentry_reloadstrategy>
+         <en>Reload Strategy</en>
+         <cn>生效策略</cn>
+      </stentry_reloadstrategy>
+      <stentry_dest>
+         <en>Description</en>
+         <cn>说明</cn>
+      </stentry_dest>
+   </sthead>
+   <note>
+      <first>
+         <en>Take effect immediately type configurations can be modified online.They do not need to be restarted to take effect.</en>
+         <cn>“生效类型”为在线生效的配置能进行在线修改，不需要重启就能生效。</cn>
+      </first>
+      <second>
+         <en>Take effect after restart type configurations can be modified online.But they need to be restarted to take effect.</en>
+         <cn>“生效类型”为重启生效的配置能进行在线修改，需要重启后生效。</cn>
+      </second>
+      <third>
+         <en>Blank reload type configurations cannot be modified online.Synchronization log configurations logfilesz and logfilenum cannot be modified online,although they can be modified in a special way,please refer to [log_synchronization](manual/Distributed_Engine/Maintainance/Database_Configuration/Special_Configuration_Modify/log_synchronization.md).</en>
+         <cn>“生效类型”为空的配置不能进行在线修改。同步日志参数 logfilesz 和 logfilenum 虽然不能在线修改配置，但是可以通过特殊方式进行修改，可参考 [logfilesz/logfilenum](manual/Distributed_Engine/Maintainance/Database_Configuration/Special_Configuration_Modify/log_synchronization.md)。</cn>
+      </third>
+   </note>
+
+</optOtherInfoForWeb>

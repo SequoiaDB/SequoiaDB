@@ -1,0 +1,221 @@
+<html>
+<head>
+  <title>BEAM: The "stats" Files</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">The stats File</h1>
+<hr/>
+
+</p>
+<p>
+When BEAM reads and analyzes a source file it collects statistics that can 
+be written to a file called the <span class="term">stats file</span> in BEAM lingo. 
+This file is not written by default but can be requested by adding 
+<span class="option">--beam::stats_file=</span><span class="val">file</span> 
+to the command line.
+</p>
+<p>
+The format of the file is meant to be easily disectable by Perl or Awk.
+</p>
+<p>
+<h1>File format</h1>
+
+The <span class="term">stats file</span> is a plain text file consisting of a sequence of <span class="term">records</span>.
+There is one record per line. A record is a sequence of <span class="term">fields</span> separated
+by the `<span class="code">#</span>' character. Each field is a name-value pair:
+<span class="var">name</span><span class="code">=</span><span class="val">value</span> where <span class="var">name</span> takes the form of a C
+identifier, immediately followed by the `<span class="code">=</span>' character, immediately 
+followed by the value. 
+It is guaranteed, that neither <span class="var">name</span> nor <span class="val">value</span> contain the
+'<span class="code">#</span>' character. The first field in the record determines the record type.
+</p>
+<p>
+The following table lists all record types and their fields.
+</p>
+<p>
+<table>
+<tr>
+  <th>Record</th>
+  <th>Field</th>
+  <th>Value</th>
+</tr>
+</p>
+<p>
+<!--- FUNC record -->
+<tr>
+  <td rowspan=5><span class="code">FUNC</span></td>
+  <td><span class="code">FUNC</span></td>
+  <td>Qualified function name</td>
+</tr>
+<tr>
+  <td><span class="code">PARSED</span></td>
+  <td>1 if parsed successfully, 0 otherwise</td>
+</tr>
+<tr>
+  <td><span class="code">FUNC_LINES</span></td>
+  <td>Number of lines in the function body, including comments. The number
+      of lines is zero if the function had parse errors.
+  </td>
+</tr>
+<tr>
+  <td><span class="code">SYNTACTIC_TIME</span></td>
+  <td>Time spent on syntactic complaints; does not include parsing.
+      The time is in seconds rounded up.
+      Zero time means that no syntactic analysis was performed.
+      Negative time means that syntactic analysis started, but did not complete;
+      the absolute value is the actual time spent.
+  </td>
+</tr>
+<tr>
+  <td><span class="code">SEMANTIC_TIME</span></td>
+  <td>Time spent on semantic complaints.
+      The time is in seconds rounded up.
+      Zero time means that no semantic analysis was performed.
+      Negative time means that semantic analysis started, but did not complete;
+      the absolute value is the actual time spent.
+  </td>
+</tr>
+</p>
+<p>
+<!--- FILE record -->
+<tr>
+  <td rowspan=6><span class="code">FILE</span></td>
+  <td><span class="code">FILE</span></td>
+  <td>File name relative to <span class="var">beam::root</span></td>
+</tr>
+<tr>
+  <td><span class="code">NUM_FUNC</span></td>
+  <td>Total number of functions</td>
+</tr>
+<tr>
+  <td><span class="code">NUM_PARSED_FUNC</span></td>
+  <td>Number of functions that were successfully parsed</td>
+</tr>
+<tr>
+  <td><span class="code">FILE_LINES</span></td>
+  <td>Total number of lines in the file</td>
+</tr>
+<tr>
+  <td><span class="code">FILE_TIME</span></td>
+  <td>Total number of seconds spent processing the file</td>
+</tr>
+<tr>
+  <td><span class="code">FILE_MEM</span></td>
+  <td>Peak memory in bytes used when processing the file</td>
+</tr>
+</table>
+</p>
+<p>
+Unless otherwise noted, all field values are integer numbers.
+</p>
+<p>
+<h1>File Contents</h1>
+
+For each input file there is a single <span class="code">FILE</span> record.
+There are no <span class="code">FILE</span> records for include files.
+There are also no <span class="code">FILE</span> records for input files that are
+disabled when BEAM is configured not to read disabled input files.
+(See the parameter <a href="parms.html#beam::read_disabled_input_files"><span class="var">beam::read_disabled_input_files</span></a>).
+For each function definition found in an input file read by BEAM (or any 
+of the header
+files it includes) there is a single <span class="code">FUNC</span> record. Note,
+that function prototypes (i.e. function declarations that are not definitions)
+are ignored. Generated functions (like default constructors) are also
+ignored.
+</p>
+<p>
+<span class="strong">Note:</span> The stats file is always appended to. Therefore, functions that
+are defined in header files which are included more than once will cause
+duplicate <span class="code">FUNC</span> entries.
+</p>
+<p>
+<h1>Future File Format Changes</h1>
+
+The stats file format is likely to change in the future. We guarantee that
+<ul>
+<li>no record type will be removed
+<li>no field will be removed from a record
+</ul>
+However, the following changes are likely to occur:
+<ul>
+<li>new records types will be added
+<li>new fields will be added to records
+<li>the order of fields within a record may change (except the first field)
+<li>the order of records within a file may change
+</ul>
+Scripts that analyze stats files should therefore be written in a way that
+they don't break if any of these changes occur.
+</p>
+<p>
+<h1>Example</h1>
+
+</p>
+<pre class="example">
+FUNC=foo::fumble#PARSED=1#FUNC_LINES=62#SYNTACTIC_TIME=1#SEMANTIC_TIME=-2
+FUNC=bar#PARSED=0#FUNC_LINES=0#SYNTACTIC_TIME=0#SEMANTIC_TIME=0
+FILE=quux.c#NUM_FUNC=2#NUM_PARSED_FUNC=1#FILE_LINES=836#FILE_TIME=7#FILE_MEM=4200024
+</pre>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

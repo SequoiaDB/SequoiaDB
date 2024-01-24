@@ -1,0 +1,58 @@
+<!--
+/*
+ * Licensed Materials - Property of IBM - RESTRICTED MATERIALS OF IBM
+ *
+ * IBM Confidential - OCO Source Materials
+ *
+ * Copyright (C) 2006-2010 IBM Corporation. All rights reserved.
+ *
+ * US Government Users Restricted Rights - Use, duplication or disclosure
+ * restricted by GSA ADP Schedule Contract with IBM Corp
+ *
+ * The source code for this program is not published or otherwise divested
+ * of its trade secrets, irrespective of what has been deposited within
+ * the U.S. Copyright Office.
+ */
+    AUTHOR:
+
+        Francis Wallingford
+
+    DESCRIPTION:
+
+        XML DTD for BEAM results.
+
+    MODIFICATIONS:
+
+        See ChangeLog for recent modifications.
+-->
+
+<!-- Version 1.1 -->
+
+<!ELEMENT beam:results      (beam:root-dir+, beam:build-root?, beam:innocent-dir?, beam:error-dir?, beam:complaint*)>
+<!ATTLIST beam:results      version        CDATA #IMPLIED
+                            xmlns:beam     CDATA #REQUIRED>
+
+<!ELEMENT beam:root-dir     (#PCDATA)>
+<!ATTLIST beam:root-dir     n              CDATA #IMPLIED>
+
+<!ELEMENT beam:innocent-dir (#PCDATA)>
+<!ELEMENT beam:error-dir    (#PCDATA)>
+
+<!ELEMENT beam:complaint    (beam:msg, beam:path?, beam:explanation?, beam:source?)>
+<!ATTLIST beam:complaint    type           CDATA #REQUIRED
+                            comment        CDATA #REQUIRED
+                            innocent-code  CDATA #REQUIRED
+                            severity       CDATA #IMPLIED>
+
+<!ELEMENT beam:msg          (#PCDATA | beam:typed | beam:expanded | beam:interpretation)*>
+<!ATTLIST beam:msg          file           CDATA #IMPLIED
+                            line           CDATA #IMPLIED
+                            type           CDATA #IMPLIED>
+
+<!ELEMENT beam:typed          (#PCDATA)>
+<!ELEMENT beam:expanded       (#PCDATA)>
+<!ELEMENT beam:interpretation (#PCDATA)>
+
+<!ELEMENT beam:path         (beam:msg*)>
+<!ELEMENT beam:explanation  (beam:msg*)>
+<!ELEMENT beam:source       (#PCDATA)>
