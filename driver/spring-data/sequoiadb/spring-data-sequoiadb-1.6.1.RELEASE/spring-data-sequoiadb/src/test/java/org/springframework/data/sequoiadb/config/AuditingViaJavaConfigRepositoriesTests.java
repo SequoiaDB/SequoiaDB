@@ -1,0 +1,143 @@
+/*
+ * Copyright 2013-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.data.sequoiadb.config;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.net.UnknownHostException;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.sequoiadb.assist.Sdb;
+import org.springframework.data.sequoiadb.assist.SdbClient;
+import org.springframework.data.sequoiadb.core.AuditablePerson;
+import org.springframework.data.sequoiadb.core.SequoiadbTemplate;
+import org.springframework.data.sequoiadb.core.SimpleSequoiadbFactory;
+import org.springframework.data.sequoiadb.repository.SequoiadbRepository;
+import org.springframework.data.sequoiadb.repository.config.EnableSequoiadbRepositories;
+import org.springframework.stereotype.Repository;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+/**
+ * Integration tests for auditing via Java config.
+ * 
+
+
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration
+public class AuditingViaJavaConfigRepositoriesTests {
+
+	@Autowired AuditablePersonRepository auditablePersonRepository;
+	@Autowired AuditorAware<AuditablePerson> auditorAware;
+	AuditablePerson auditor;
+
+	@Configuration
+	@EnableSequoiadbAuditing(auditorAwareRef = "auditorProvider")
+	@EnableSequoiadbRepositories(basePackageClasses = AuditablePersonRepository.class, considerNestedRepositories = true)
+	static class Config extends AbstractSequoiadbConfiguration {
+
+		@Override
+		protected String getDatabaseName() {
+			return "database";
+		}
+
+		@Override
+		public Sdb sdb() throws Exception {
+			return new SdbClient();
+		}
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		public AuditorAware<AuditablePerson> auditorProvider() {
+			return mock(AuditorAware.class);
+		}
+	}
+
+	@Before
+	public void setup() {
+		auditablePersonRepository.deleteAll();
+		this.auditor = auditablePersonRepository.save(new AuditablePerson("auditor"));
+	}
+
+	/**
+	 * @see DATA_JIRA-792, DATA_JIRA-883
+	 */
+	@Test
+	public void basicAuditing() {
+
+		doReturn(this.auditor).when(this.auditorAware).getCurrentAuditor();
+
+		AuditablePerson savedUser = auditablePersonRepository.save(new AuditablePerson("user"));
+
+		AuditablePerson createdBy = savedUser.getCreatedBy();
+
+		assertThat(createdBy, is(notNullValue()));
+		assertThat(createdBy.getFirstname(), is(this.auditor.getFirstname()));
+		assertThat(savedUser.getCreatedAt(), is(notNullValue()));
+	}
+
+	/**
+	 * @see DATA_JIRA-843
+	 */
+	@Test
+	@SuppressWarnings("resource")
+	public void auditingUsesFallbackMappingContextIfNoneConfiguredWithRepositories() {
+		new AnnotationConfigApplicationContext(SimpleConfigWithRepositories.class);
+	}
+
+	/**
+	 * @see DATA_JIRA-843
+	 */
+	@Test
+	@SuppressWarnings("resource")
+	public void auditingUsesFallbackMappingContextIfNoneConfigured() {
+		new AnnotationConfigApplicationContext(SimpleConfig.class);
+	}
+
+	@Repository
+	static interface AuditablePersonRepository extends SequoiadbRepository<AuditablePerson, String> {}
+
+	@Configuration
+	@EnableSequoiadbRepositories
+	@EnableSequoiadbAuditing
+	static class SimpleConfigWithRepositories {
+
+		@Bean
+		public SequoiadbTemplate sequoiadbTemplate() throws UnknownHostException {
+			return new SequoiadbTemplate(new SimpleSequoiadbFactory(new SdbClient(), "database"));
+		}
+	}
+
+	@Configuration
+	@EnableSequoiadbAuditing
+	static class SimpleConfig {
+
+		@Bean
+		public SequoiadbTemplate sequoiadbTemplate() throws UnknownHostException {
+			return new SequoiadbTemplate(new SimpleSequoiadbFactory(new SdbClient(), "database"));
+		}
+	}
+}

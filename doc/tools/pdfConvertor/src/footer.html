@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+   <script type="text/javascript" charset="utf-8">
+      function subst()
+      {
+         var vars = {} ;
+         var x = window.location.search.substring(1).split('&') ;
+         for ( var i in x )
+         {
+            var z = x[i].split( '=', 2 ) ;
+            vars[z[0]] = decodeURIComponent(z[1]) ;
+         }
+         var x = [ 'frompage', 'topage', 'page', 'webpage', 'section', 'subsection', 'subsubsection' ] ;
+         for ( var i in x )
+         {
+            var y = document.getElementsByClassName( x[i] ) ;
+            for ( var j = 0 ; j < y.length ; ++ j )
+            {
+               y[j].textContent = vars[x[i]] ;
+            }
+         }
+      }
+   </script>
+</head>
+<body style="width:100%; border:0; margin:0;" onload="subst()">
+   <div style="height: 15px;"></div>
+   <div style="height: 30px; padding: 5px; text-align: center; vertical-algin :middle; font-size: 12px;" >
+      <span class="page" style="color: #666;"></span>
+   </div>
+</body>
+</html>

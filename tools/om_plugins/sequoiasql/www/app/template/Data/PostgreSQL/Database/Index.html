@@ -1,0 +1,109 @@
+<div ng-controller="Data.PostgreSQL.Database.Ctrl" style="padding:10px 0;" ng-container="{}">
+   <div class="relativeBox" style="padding-left:15px;" ng-container="{}">
+      <div class="underlineTab" style="" ng-container="{height:50,offsetX:-10}">
+         <ul class="left">
+            <li ng-class="{'userTable':'active'}[BrowseType]">
+               <a ng-click="ChangeTableType('userTable')">{{pAutoLanguage("用户表")}}</a>
+            </li>
+            <li ng-class="{'systemTable':'active'}[BrowseType]">
+               <a ng-click="ChangeTableType('systemTable')">{{pAutoLanguage("系统表")}}</a>
+            </li>
+         </ul>
+      </div>
+      <div class="pull-left" ng-container="{offsetX:-280,offsetY:-50}">
+         <div ng-show="GridTable['body'].length > 0" ng-container="{offsetY:-3,offsetX:-10}" ng-table="GridTable['options']" table-title="GridTable['title']" table-content="info in GridTable['body']" table-callback="GridTable['callback']">
+            <div class="Ellipsis" table-key="Index">{{info.Index}}</div>
+            <div class="Ellipsis" table-key="Name">
+               <a class="linkButton" ng-click="GotoData( info.Name, info.Type )">
+                  {{info.Name}}
+               </a>
+            </div>
+            <div class="Ellipsis" table-key="Operation">
+               <a class="linkButton" ng-click="ShowAlterTable( info.Name )">
+                  <i class="fa fa-edit" ng-attr="{'data-desc':pAutoLanguage('修改表名')}"></i>
+               </a>
+               <a class="linkButton" ng-click="ShowRemoveTable( info.Name, info.Type )">
+                  <i class="fa fa-remove" ng-attr="{'data-desc':pAutoLanguage('删除表')}"></i>
+               </a>
+            </div>
+            <div class="Ellipsis" table-key="Type">{{info.Type}}</div>
+            <div class="Ellipsis" table-key="SCHEMA">{{info.SCHEMA}}</div>
+            <div class="Ellipsis" table-key="Owner">{{info.Owner}}</div>
+            <div class="Ellipsis" table-key="Description">{{info.Description}}</div>
+         </div>
+         <div ng-show="GridTable['body'].length == 0">
+            <div class="data_empty">
+               <div class="title">{{pAutoLanguage("当前数据库没有数据表。")}}</div>
+               <div class="tips">
+                  {{pAutoLanguage("使用")}}
+                  <span class="linkButton" ng-click="ShowCreateTable()">{{pAutoLanguage("\"创建数据表\"")}}</span>
+                  {{pAutoLanguage("操作进行创建数据表。")}}
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="pull-left" ng-controller="Data.PostgreSQL.Database.Window.Ctrl" ng-container="{width:270,offsetY:-50}" style="font-size:90%;">
+         <div ng-windows="form as CreateTableWindow.config" windows-callback="CreateTableWindow.callback">
+            <div form-create para="form['Form1']"></div>
+            <div form-create para="form['Form2']"></div>
+         </div>
+         <div ng-windows="form as CreateDatabaseWindow.config" windows-callback="CreateDatabaseWindow.callback">
+            <div form-create para="form"></div>
+         </div>
+         <div ng-windows="form as RemoveDatabaseWindow.config" windows-callback="RemoveDatabaseWindow.callback">
+            <div form-create para="form"></div>
+         </div>
+         <div ng-windows="form as AlterTableWindow.config" windows-callback="AlterTableWindow.callback">
+            <div form-create para="form"></div>
+         </div>
+         <div ng-windows="form as RemoveTableWindow.config" windows-callback="RemoveTableWindow.callback">
+            <div form-create para="form"></div>
+         </div>
+         <div class="borderBox" style="padding:10px;overflow-y:auto;" ng-container="BoxHeight">
+            <div><b>{{pAutoLanguage("数据库列表")}}：</b></div>
+            <ul style="list-style:none;margin:10px 0 0 0;padding:0;font-size:110%;">
+               <li class="linkButton Ellipsis" style="padding-bottom:5px;" ng-repeat="databaseName in DatabaseList track by $index" ng-click="ShowTableInfo(databaseName.datname)" ng-style="{true:{'font-weight':'bold','color':'#FF7547'} }[CurrentDbName == databaseName.datname]">
+                  <i class="fa fa-database"></i> {{databaseName["datname"]}}
+               </li>
+            </ul>
+         </div>
+         <div ng-container="{marginTop:10,height:115}">
+            <table class="table loosen border">
+               <tbody>
+                  <tr>
+                     <td style="background-color:#F1F4F5; font-weight:bold;">{{pAutoLanguage("操作")}}</td>
+                  </tr>
+                  <tr>
+                     <td>
+                        <a class="linkButton" ng-click="ShowCreateDatabase()">
+                           {{pAutoLanguage("创建数据库")}}
+                        </a>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>
+                        <a class="linkButton" ng-class="{'disabled':DatabaseList.length==0}" ng-click="ShowRemoveDatabase()">
+                           {{pAutoLanguage("删除数据库")}}
+                        </a>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>
+                        <a class="linkButton" ng-class="{'disabled':DatabaseList.length==0}" ng-click="ShowCreateTable()">
+                           {{pAutoLanguage("创建数据表")}}
+                        </a>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>
+                        <a class="linkButton" ng-click="ShowRemoveTable()">
+                           {{pAutoLanguage("删除数据表")}}
+                        </a>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+</div>

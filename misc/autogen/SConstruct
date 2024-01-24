@@ -1,0 +1,213 @@
+EnsureSConsVersion( 1, 1, 0 )
+
+import platform
+import os
+import re
+import shutil
+from os.path import join, dirname, abspath
+
+import SCons.Builder
+import SCons.Node.FS
+import SCons.Util
+
+root_dir = dirname(File('SConstruct').rfile().abspath)
+# --- options ----
+
+options = {}
+
+options_topass = {}
+
+def GuessOS():
+    id = platform.system()
+    if id == 'Linux':
+        return 'linux'
+    elif id == 'Windows' or id == 'Microsoft':
+        return 'win32'
+    elif id == 'AIX':
+        return 'aix'
+    else:
+        return None
+
+
+def GuessArch():
+    id = platform.machine()
+    id = id.lower()
+    if (not id) or (not re.match('(x|i[3-6])86$', id) is None):
+        return 'ia32'
+    elif id == 'i86pc':
+        return 'ia32'
+    elif id == 'x86_64':
+        return 'ia64'
+    elif id == 'amd64':
+        return 'ia64'
+    elif id == 'aarch64':
+        return 'arm64'
+    elif id == 'ppc64':
+        return 'ppc64'
+    elif id == 'ppc64le':
+      return 'ppc64le'
+    else:
+        return None
+
+guess_os = GuessOS()
+guess_arch = GuessArch()
+
+def add_option( name, help , nargs , contibutesToVariantDir , dest=None ):
+
+    if dest is None:
+        dest = name
+
+    AddOption( "--" + name ,
+               dest=dest,
+               type="string",
+               nargs=nargs,
+               action="store",
+               help=help )
+
+    options[name] = { "help" : help ,
+                      "nargs" : nargs ,
+                      "contibutesToVariantDir" : contibutesToVariantDir ,
+                      "dest" : dest }
+
+def get_option( name ):
+    return GetOption( name )
+
+def _has_option( name ):
+    x = get_option( name )
+    if x is None:
+        return False
+
+    if x == False:
+        return False
+
+    if x == "":
+        return False
+
+    return True
+
+def has_option( name ):
+    x = _has_option(name)
+
+    if name not in options_topass:
+        # if someone already set this, don't overwrite
+        options_topass[name] = x
+
+    return x
+
+def get_variant_dir():
+
+    a = []
+
+    for name in options:
+        o = options[name]
+        if not has_option( o["dest"] ):
+            continue
+        if not o["contibutesToVariantDir"]:
+            continue
+
+        if o["nargs"] == 0:
+            a.append( name )
+        else:
+            x = get_option( name )
+            x = re.sub( "[,\\\\/]" , "_" , x )
+            a.append( name + "_" + x )
+
+    s = "#build/${PYSYSPLATFORM}/"
+
+    if len(a) > 0:
+        a.sort()
+        s += "/".join( a ) + "/"
+    else:
+        s += "normal/"
+    return s
+
+def findVersion( root , choices ):
+    if not isinstance(root, list):
+        root = [root]
+    for r in root:
+        for c in choices:
+            if ( os.path.exists( r + c ) ):
+                return r + c
+    raise RuntimeError("can't find a version of [" + repr(root) + "] choices: " + repr(choices))
+
+def copyDir(src, dst):
+    names = os.listdir(src)
+    if not os.path.exists(dst):
+        os.mkdir(dst)
+    # Traverse all files and directories in the source path.
+    for name in names:
+        srcName = os.path.join(src, name)
+        dstName = os.path.join(dst, name)
+        try:
+            if os.path.isdir(srcName):
+                copyDir(srcName, dstName)
+            else:
+                if not os.path.exists(dstName):
+                    print("Copy file " + srcName + " to " + dstName)
+                    shutil.copy2(srcName, dstName)
+        except:
+            print("Exception when copy " + src + " to " + dst)
+            raise
+
+# installation options
+add_option( "language" , "description language" , 1 , False )
+add_option( "64" , "whether to force 64 bit" , 0 , True , "force64" )
+add_option( "32" , "whether to force 32 bit" , 0 , True , "force32" )
+
+if not os.path.exists("bin"):
+    os.mkdir("bin")
+
+Export("has_option")
+Export("get_option")
+Export("GuessOS")
+Export("GuessArch")
+Export("findVersion")
+
+# Generating Versioning information
+# In order to change the file location, we have to modify both win32 and linux
+# ossVer_Autogen.h is NOT in SVN, we have to generate this file by scons before
+# actually compling the project
+# Thus, we should avoid putting ossVer* files to release package
+#
+# In github build, we don't have svn info, so we don't run svn or SubWCRev
+# command. Instead the svn fork tool should already generated the right
+# ossVer_Autogen.h file
+if os.path.isfile ( "../../gitbuild" ):
+    gitVer = os.popen( "git rev-parse HEAD" ).read().replace("\n","")
+    if guess_os == "win32":
+        # For now, it's not easy to get the 'git release' on windows. Keep it as 0.
+        releaseVer = 0
+        ver_file = 'ver_conf.h'
+        shutil.copyfile('ver_conf.h.in', ver_file)
+        with open(ver_file, 'r+') as f:
+            data = ''
+            for line in f.readlines():
+                if line.find('$WCREV$') != -1:
+                    line = '#define SDB_ENGINE_RELEASE_CURRENT 0' + '\n'
+                elif line.find('$GITVER$') != -1:
+                    line = '#define SDB_ENGINE_GIT_VERSION "' +  gitVer + '"' + '\n'
+                data += line
+        with open(ver_file, 'r+') as f:
+            f.write(data)
+    else:
+        releaseVer = os.popen( "git rev-list --all | awk -v git_head=`git show-ref --head --hash HEAD | head -n1` '$0==git_head {i=1;next};i' | wc -l" ).read().replace("\n","")
+        os.system( "sed 's/\$WCREV\$/" + releaseVer + "/g' ver_conf.h.in > ver_conf.h" )
+        os.system( "sed -i 's/\$GITVER\$/" + gitVer + "/g' ver_conf.h" )
+else:
+    # For svn
+   if guess_os == "win32":
+      # In windows platform, we take advantage of SubWCRev
+      os.system ("SubWCRev . ver_conf.h.in ver_conf.h")
+   else:
+      # In NIX platform, we use svn and sed to send to ossVer_Autogen.h
+      svnVer = os.popen( "svn info | grep Revision | awk '{print $2}'" ).read().replace("\n","")
+      os.system( "sed 's/\$WCREV\$/" + svnVer + "/g' ver_conf.h.in > ver_conf.h" )
+
+# Copy sample files into
+src_dir=join(root_dir, "samples")
+parent_dir = os.path.abspath(os.path.join(root_dir, os.path.pardir))
+dst_dir = os.path.abspath(os.path.join(parent_dir, os.path.pardir))
+
+copyDir(src_dir, dst_dir)
+
+SConscript( 'SConscript', variant_dir='bin', duplicate=False )

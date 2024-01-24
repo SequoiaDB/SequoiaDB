@@ -1,0 +1,228 @@
+Import("env")
+Import("path")
+Import("curPath")
+Import("guess_os")
+Import("py3")
+Import("get_version")
+
+import os
+import sys
+import zipfile
+
+PYHOME = curPath
+
+driverFiles = [
+    "pysequoiadb/pysequoiadb.cpp"
+]
+
+decimalFiles = [
+    "bson/pydecimal.cpp"
+]
+
+clientFiles = [
+    path + "SequoiaDB/engine/client/clientcpp.cpp"
+]
+
+clientLibFiles = [
+    path + "SequoiaDB/engine/oss/ossSSLCertificate.c",
+    path + "SequoiaDB/engine/oss/ossSSLWrapper.c",
+    path + "SequoiaDB/engine/oss/ossSSLContext.c",
+    path + "SequoiaDB/engine/oss/oss.c",
+    path + "SequoiaDB/engine/oss/oss.cpp",
+    path + "SequoiaDB/engine/oss/ossUtil.c",
+    path + "SequoiaDB/engine/oss/ossUtil.cpp",
+    path + "SequoiaDB/engine/oss/ossMem.c",
+    path + "SequoiaDB/engine/oss/ossMem.cpp",
+    path + "SequoiaDB/engine/oss/ossVer.c",
+    path + "SequoiaDB/engine/oss/ossVer.cpp",
+    path + "SequoiaDB/engine/oss/ossSocket.cpp",
+    path + "SequoiaDB/engine/oss/ossPrimitiveFileOp.cpp",
+    path + "SequoiaDB/engine/pd/pdErr.cpp",
+    path + "SequoiaDB/engine/pd/pd.cpp",
+    path + "SequoiaDB/engine/client/bson/numbers.c",
+    path + "SequoiaDB/engine/client/bson/bson.c",
+    path + "SequoiaDB/engine/client/bson/common_decimal.c",
+    path + "SequoiaDB/engine/client/bson/encoding.c",
+    path + "SequoiaDB/engine/client/common.c",
+    path + "SequoiaDB/engine/client/cJSON.c",
+    path + "SequoiaDB/engine/client/cJSON_ext.c",
+    path + "SequoiaDB/engine/client/cJSON_iterator.c",
+    path + "SequoiaDB/engine/client/jstobs.c",
+    path + "SequoiaDB/engine/client/base64c.c",
+    path + "SequoiaDB/engine/util/fromjson.cpp",
+    path + "SequoiaDB/engine/util/json2rawbson.c",
+    path + "SequoiaDB/engine/util/utilStr.cpp",
+    path + "SequoiaDB/engine/util/utilTypeCast.c",
+    path + "SequoiaDB/engine/bson/bsonobj.cpp",
+    path + "SequoiaDB/engine/bson/oid.cpp",
+    path + "SequoiaDB/engine/bson/md5.c",
+    path + "SequoiaDB/engine/bson/base64.cpp",
+    path + "SequoiaDB/engine/bson/nonce.cpp",
+    path + "SequoiaDB/engine/bson/bsonDecimal.cpp",
+    path + "SequoiaDB/engine/util/fromjson.hpp",
+    path + "SequoiaDB/engine/util/json2rawbson.h",
+    path + "SequoiaDB/engine/util/utilCipher.c",
+    path + "SequoiaDB/engine/util/utilAuthSCRAMSHA.cpp",
+    path + "SequoiaDB/engine/include/utilStr.hpp",
+    path + "SequoiaDB/engine/include/utilCipher.h",
+    path + "SequoiaDB/engine/client/timestampParse.c",
+    path + "SequoiaDB/engine/client/timestampTm.c",
+    path + "SequoiaDB/engine/client/timestampValid.c",
+]
+
+clientLibFiles2 = [
+    path + "SequoiaDB/engine/client/bson/bson.h",
+    path + "SequoiaDB/engine/client/bson/encoding.h",
+    path + "SequoiaDB/engine/client/bson/numbers.c",
+    path + "SequoiaDB/engine/client/bson/bson.c",
+    path + "SequoiaDB/engine/client/bson/encoding.c",
+    path + "SequoiaDB/engine/client/bson/common_decimal.c",
+]
+
+env.Execute(Mkdir(curPath + "/build/temp"))
+env.Execute(Mkdir(curPath + "/build/temp/bson"))
+
+for file in clientFiles:
+    env.Execute(Copy(curPath + "/build/temp", file))
+for file in clientLibFiles:
+    env.Execute(Copy(curPath + "/build/temp", file))
+for file in clientLibFiles2:
+    env.Execute(Copy(curPath + "/build/temp/bson", file))
+
+curPath += "/build/temp/"
+srcFiles = [
+    curPath + "clientcpp.cpp",
+    curPath + "ossSSLCertificate.c",
+    curPath + "ossSSLWrapper.c",
+    curPath + "ossSSLContext.c",
+    curPath + "oss.c",
+    curPath + "ossUtil.cpp",
+    curPath + "ossMem.cpp",
+    curPath + "ossSocket.cpp",
+    curPath + "ossVer.cpp",
+    curPath + "ossPrimitiveFileOp.cpp",
+    curPath + "pdErr.cpp",
+    curPath + "pd.cpp",
+    curPath + "bson/numbers.c",
+    curPath + "bson/bson.c",
+    curPath + "bson/common_decimal.c",
+    curPath + "bson/encoding.c",
+    curPath + "common.c",
+    curPath + "cJSON.c",
+    curPath + "cJSON_ext.c",
+    curPath + "cJSON_iterator.c",
+    curPath + "jstobs.c",
+    curPath + "base64c.c",
+    curPath + "fromjson.cpp",
+    curPath + "json2rawbson.c",
+    curPath + "utilStr.cpp",
+    curPath + "utilTypeCast.c",
+    curPath + "utilCipher.c",
+    curPath + "utilAuthSCRAMSHA.cpp",
+    curPath + "bsonobj.cpp",
+    curPath + "oid.cpp",
+    curPath + "md5.c",
+    curPath + "base64.cpp",
+    curPath + "nonce.cpp",
+    curPath + "bsonDecimal.cpp",
+    curPath + "timestampParse.c",
+    curPath + "timestampTm.c",
+    curPath + "timestampValid.c",
+]
+
+bsonFiles = [
+    curPath + "bsonobj.cpp",
+    curPath + "oid.cpp",
+    curPath + "base64.cpp",
+    curPath + "nonce.cpp",
+    curPath + "md5.c",
+    curPath + "bsonDecimal.cpp",
+    curPath + "bson/numbers.c",
+    curPath + "bson/bson.c",
+    curPath + "bson/common_decimal.c",
+    curPath + "bson/encoding.c",
+    curPath + "ossMem.cpp",
+    curPath + "base64c.c",
+    curPath + "ossUtil.cpp",
+    curPath + "oss.c",
+    curPath + "pdErr.cpp",
+    curPath + "pd.cpp",
+    curPath + "ossPrimitiveFileOp.cpp",
+    curPath + "utilStr.cpp",
+    curPath + "timestampParse.c",
+    curPath + "timestampTm.c",
+    curPath + "timestampValid.c",
+]
+
+sdb = env.SharedLibrary("sdb", [driverFiles, srcFiles])
+decimal = env.SharedLibrary("decimal", [decimalFiles, bsonFiles])
+
+base = []
+base.append(env.Install("#/pysequoiadb", sdb))
+base.append(env.Install("#/bson", decimal))
+
+if py3:
+    py_version = "py3"
+else:
+    py_version = "py2"
+if guess_os == "win32":
+    suffix = ".zip"
+else:
+    suffix = ".tar.gz"
+
+package_name = "pysequoiadb-" + get_version() + "-" + py_version + suffix
+
+
+def zipPackage(target, source):
+    with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as zfile:
+        for path in source:
+            if os.path.isdir(path):
+                for file in os.listdir(path):
+                    zfile.write(path + os.sep + file)
+            else:
+                zfile.write(path)
+
+
+def zipPackageAction(target=None, source=None, env=env):
+    os.chdir(PYHOME)
+    os.rename("bson/decimal.dll", "bson/bsondecimal.dll")
+    zipPackage(package_name, ['pysequoiadb', 'bson', 'setup.py', 'version.py'])
+
+
+# Check modules before zip package.
+def checkModules():
+    bson_modules = ['binary', 'code', 'dbref', 'decimal', 'errors', 'json_util',
+                    'max_key', 'min_key', 'objectid', 'regex', 'son',
+                    'timestamp', 'tz_util']
+    pysdb_modules = ['client', 'collection', 'collectionspace', 'cursor',
+                     'domain', 'errcode', 'error', 'lob', 'replicagroup',
+                     'replicanode']
+    for item in bson_modules:
+        file_path = os.path.abspath(os.path.join(PYHOME, 'bson', item + '.py'))
+        if not os.path.exists(file_path):
+            print('[ERROR] Module file [' + file_path + '] dose not exist')
+            return 1
+    for item in pysdb_modules:
+        file_path = os.path.abspath(os.path.join(PYHOME, 'pysequoiadb',
+                                                 item + '.py'))
+        if not os.path.exists(file_path):
+            print('[ERROR] Module file [' + file_path + '] dose not exist')
+            return 1
+    return 0
+
+rc = checkModules()
+if 0 != rc:
+    print("[ERROR] Check modules failed: " + str(rc))
+    sys.exit(rc)
+
+if sys.platform == 'win32':
+    run = env.Command(target=None, source=base, action=zipPackageAction)
+else:
+    act = []
+    act.append("mv ./pysequoiadb/libsdb.so ./pysequoiadb/sdb.so")
+    act.append("mv ./bson/libdecimal.so ./bson/bsondecimal.so")
+    act.append("tar --exclude-vcs -zcvf %s \
+               ./bson ./pysequoiadb ./setup.py ./version.py" % package_name)
+    run = env.Command(target=None, source=base, action=act)
+env.Depends(run, base)
+env.AlwaysBuild(run)

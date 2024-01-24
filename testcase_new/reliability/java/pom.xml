@@ -1,0 +1,67 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>com.sequoiadb</groupId>
+      <artifactId>sequoiadb-testcase-base</artifactId>
+      <version>3.4</version>
+      <relativePath>../../testcase-base/pom.xml</relativePath>
+   </parent>
+    
+   <artifactId>sequoiadb-testcase-reliability-java</artifactId>
+   <packaging>jar</packaging>
+  
+   <properties>
+       <jsch.version>0.1.54</jsch.version>
+       <jackson-dataformat-xml.version>2.9.9</jackson-dataformat-xml.version>
+       <aws-java-sdk-s3.version>1.11.343</aws-java-sdk-s3.version>
+       <json.version>20171018</json.version>
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>com.jcraft</groupId>
+         <artifactId>jsch</artifactId>
+         <version>${jsch.version}</version>
+      </dependency>
+
+      <!-- amazonaws dependency -->
+      <dependency>
+         <groupId>com.amazonaws</groupId>
+         <artifactId>aws-java-sdk-s3</artifactId>
+         <version>${aws-java-sdk-s3.version}</version>
+      </dependency>
+
+      <!-- xml dependency -->
+      <dependency>
+         <groupId>org.json</groupId>
+         <artifactId>json</artifactId>
+         <version>${json.version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>jackson-dataformat-xml</artifactId>
+          <version>${jackson-dataformat-xml.version}</version>
+      </dependency>
+  </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${surefire-plugin.version}</version>
+            <configuration>
+               <reportsDirectory>${reportDir}</reportsDirectory>
+               <suiteXmlFiles>
+                  <file>${xmlFileName}</file>
+               </suiteXmlFiles>
+               <forkMode>pertest</forkMode>
+               <argLine>-Xms1024m -Xmx1024m -Xss1m</argLine>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>

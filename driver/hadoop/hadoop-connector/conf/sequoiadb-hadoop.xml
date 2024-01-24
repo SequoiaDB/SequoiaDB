@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <property>
+    <name>sequoiadb.input.url</name>
+    <value>192.168.30.182:11810</value>
+  </property>
+  <property>
+  	<name>sequoiadb.input.user</name>
+  	<value>sdbadmin</value>
+  	<description>default:null</description>
+  </property>
+  <property>
+  	<name>sequoiadb.input.passwd</name>
+  	<value>sdbadmin</value>
+  	<description>default:null</description>
+  </property>
+  
+  <property>
+    <name>sequoiadb.output.url</name>
+    <value>192.168.30.182:11810</value>
+  </property>
+  <property>
+  	<name>sequoiadb.output.user</name>
+  	<value>sdbadmin</value>
+  	<description>default:null</description>
+  </property>
+  <property>
+  	<name>sequoiadb.output.passwd</name>
+  	<value>sdbadmin</value>
+  	<description>default:null</description>
+  </property>
+   
+  <property>
+    <name>sequoiadb.in.collectionspace</name>
+    <value>chentest</value>
+  </property> 
+  <property>
+    <name>sequoiadb.in.collect</name>
+    <value>records</value>
+  </property> 
+   
+  <property>
+    <name>sequoiadb.out.pos</name>
+    <value>/tmp/out.txt</value>
+  </property> 
+  <property>
+    <name>sequoiadb.out.collectionspace</name>
+    <value>test</value>
+  </property> 
+  <property>
+    <name>sequoiadb.out.collect</name>
+    <value>t1</value>
+  </property> 
+  <property>
+    <name>sequoiadb.out.bulknum</name>
+    <value>100</value>
+  </property>
+  <property>
+    <name>sequoiadb.query.json</name>
+    <value>{"CREDENT_NO": "0002652309B"}</value>
+    <description>default:null;JSON type</description>
+  </property>
+  <property>
+    <name>sequoiadb.selector.json</name>
+    <value>{"CREDENT_NO":null,"ROLE":null}</value>
+    <description>default:null;JSON type</description>
+  </property>
+  <property>
+  	<name>sequoiadb.preferedinstance</name>
+  	<value>[slave/master/anyone/node(1-7)]</value>
+  </property>
+
+</configuration>

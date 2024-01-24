@@ -1,0 +1,5 @@
+2017.03.06
+基于sundown,编写程序将github风格的markdown文件转换为pandoc风格的markdown文件。以便pandoc可以将其认识的markdown扩展语法转换为troff格式。
+
+2017.03.08
+添加scons编译脚本，使得可以再windowns及linux编译。

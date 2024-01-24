@@ -1,0 +1,4 @@
+src/bson/libbson_la-bson-version.lo: src/bson/bson-version.c \
+ src/bson/bson-version.h
+
+src/bson/bson-version.h:

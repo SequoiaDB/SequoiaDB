@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{994B2F28-20E2-405E-864C-A7186BABF238}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CSharp</RootNamespace>
+    <AssemblyName>CSharp</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="sequoiadb">
+      <HintPath>..\..\sequoiadb.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoIncrement\Sequence24419.cs" />
+    <Compile Include="Cluster\TestSession23531.cs" />
+    <Compile Include="Crud\Analyze\AnalyzeAll14256.cs" />
+    <Compile Include="Crud\Analyze\AnalyzeCommon.cs" />
+    <Compile Include="Crud\Analyze\AnalyzeCs14257.cs" />
+    <Compile Include="Crud\Analyze\AnalyzeCl14258.cs" />
+    <Compile Include="Crud\Analyze\AnalyzeIndex14259.cs" />
+    <Compile Include="Crud\Analyze\AnalyzeGroup14260.cs" />
+    <Compile Include="Crud\Analyze\AnalyzeInexistCl14261.cs" />
+    <Compile Include="Crud\DataType\ArrayData14584.cs" />
+    <Compile Include="Crud\DataType\BinData14587.cs" />
+    <Compile Include="Crud\DataType\Bool14590.cs" />
+    <Compile Include="Crud\DataType\DateTime14589.cs" />
+    <Compile Include="Crud\DataType\Decimal14592.cs" />
+    <Compile Include="Crud\DataType\DoubleData14596.cs" />
+    <Compile Include="Crud\DataType\InsertUpdateDelete14595.cs" />
+    <Compile Include="Crud\DataType\InsertUpdateDelete14597.cs" />
+    <Compile Include="Crud\DataType\MinKeyAndMaxKey14582.cs" />
+    <Compile Include="Crud\DataType\NullData14583.cs" />
+    <Compile Include="Crud\DataType\Numberlong13652.cs" />
+    <Compile Include="Crud\DataType\NumberLongData14594.cs" />
+    <Compile Include="Crud\DataType\ObjectData14585.cs" />
+    <Compile Include="Crud\DataType\OidData14591.cs" />
+    <Compile Include="Crud\DataType\Regex14586.cs" />
+    <Compile Include="Crud\DataType\TimestampData14588.cs" />
+    <Compile Include="Crud\Insert\Insert14528.cs" />
+    <Compile Include="Crud\Insert\Insert14529.cs" />
+    <Compile Include="Crud\Insert\BulkInsert14531.cs" />
+    <Compile Include="Crud\Insert\BulkInsert14530.cs" />
+    <Compile Include="Crud\Insert\Insert14532.cs" />
+    <Compile Include="Crud\Insert\Insert16622.cs" />
+    <Compile Include="Crud\Insert\TestInsert18244.cs" />
+    <Compile Include="Crud\Lob\Lob13404.cs" />
+    <Compile Include="Crud\Lob\Lob13466.cs" />
+    <Compile Include="Crud\Lob\Lob13468.cs" />
+    <Compile Include="Crud\Lob\Lob22582.cs" />
+    <Compile Include="Crud\Lob\Lob22583.cs" />
+    <Compile Include="Crud\Lob\Lob22585.cs" />
+    <Compile Include="Crud\Lob\Lob22692.cs" />
+    <Compile Include="Crud\Lob\LobUtils.cs" />
+    <Compile Include="Crud\Lob\LockAndSeekParamVerify13477.cs" />
+    <Compile Include="Crud\Lob\LockAndWrite14794.cs" />
+    <Compile Include="Crud\Lob\LockParamVerify13476.cs" />
+    <Compile Include="Crud\Lob\ModificationTime13470.cs" />
+    <Compile Include="Crud\Lob\SeekWriteAndReadLob14888.cs" />
+    <Compile Include="Crud\Lob\TestIsEof15674.cs" />
+    <Compile Include="Crud\Lob\TestListLobs20312.cs" />
+    <Compile Include="Crud\Lob\TestLob20311.cs" />
+    <Compile Include="Crud\Lob\TruncateLob13478.cs" />
+    <Compile Include="Crud\Query\Count14544.cs" />
+    <Compile Include="Crud\Query\Cursor14581.cs" />
+    <Compile Include="Crud\Query\Query14543.cs" />
+    <Compile Include="Crud\Query\QueryWithFlag14545.cs" />
+    <Compile Include="Crud\Update\QueryAndUpdate12646.cs" />
+    <Compile Include="Crud\Update\QueryAndUpdate14537.cs" />
+    <Compile Include="Crud\Update\UpdateParamVerify14538.cs" />
+    <Compile Include="Crud\Update\Upsert14535.cs" />
+    <Compile Include="Crud\Update\Update14534.cs" />
+    <Compile Include="Crud\Update\Update14533.cs" />
+    <Compile Include="Crud\Update\UpdateShardingKey12645.cs" />
+    <Compile Include="Crud\Update\Upsert14536.cs" />
+    <Compile Include="Crud\Update\UpsertShardingKey12647.cs" />
+    <Compile Include="Crud\Delete\DeleteAllRecord14539.cs" />
+    <Compile Include="Crud\Delete\DeleteMatcherRecord14540.cs" />
+    <Compile Include="Crud\Delete\QueryAndRemove14541.cs" />
+    <Compile Include="Crud\Delete\Delete14542.cs" />
+    <Compile Include="Crud\Explain\Explain12475.cs" />
+    <Compile Include="Cluster\TestGetSlave14891.cs" />
+    <Compile Include="Cluster\TestAttachDetachNodePara16816.cs" />
+    <Compile Include="Meta\Common.cs" />
+    <Compile Include="Meta\Meta15186.cs" />
+    <Compile Include="Meta\Meta15187.cs" />
+    <Compile Include="Meta\Meta15188.cs" />
+    <Compile Include="Meta\Meta15189.cs" />
+    <Compile Include="Meta\Meta15190.cs" />
+    <Compile Include="Meta\Meta15191.cs" />
+    <Compile Include="Meta\Meta15192.cs" />
+    <Compile Include="Meta\Meta15193.cs" />
+    <Compile Include="Meta\Meta15225.cs" />
+    <Compile Include="Meta\Meta15232.cs" />
+    <Compile Include="Meta\Meta15238.cs" />
+    <Compile Include="Meta\TestAttachDetachCL14564.cs" />
+    <Compile Include="Meta\TestCL14563.cs" />
+    <Compile Include="Meta\TestCreateAndDropCS14560.cs" />
+    <Compile Include="Meta\TestCreateAndDropCS14561.cs" />
+    <Compile Include="Meta\TestCSCL14562.cs" />
+    <Compile Include="Meta\TestDeleteDomainAndCS14559.cs" />
+    <Compile Include="Meta\TestDomain14557.cs" />
+    <Compile Include="Meta\TestListDomains14558.cs" />
+    <Compile Include="Meta\RenamCS16637.cs" />
+    <Compile Include="Meta\RenameCL16641.cs" />
+    <Compile Include="Meta\RenameCL16642.cs" />
+    <Compile Include="Meta\RenameCS16638.cs" />
+    <Compile Include="Meta\DropCS24536.cs" />
+    <Compile Include="Meta\GetCollectionNames24873.cs" />
+    <Compile Include="Meta\GetDomainName24874.cs" />
+    <Compile Include="Split\Common.cs" />
+    <Compile Include="Split\TestSplit14551.cs" />
+    <Compile Include="Split\TestSplit14552.cs" />
+    <Compile Include="Split\TestSplit14553.cs" />
+    <Compile Include="Split\TestSplit14554.cs" />
+    <Compile Include="Split\TestSplit14555.cs" />
+    <Compile Include="Split\TestSplit14556.cs" />
+    <Compile Include="Split\TestTasks14579.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCommon\Common.cs" />
+    <Compile Include="TestCommon\Config.cs" />
+    <Compile Include="TestCommon\SdbTestBase.cs" />
+    <Compile Include="Cluster\ClusterManager15242.cs" />
+    <Compile Include="Cluster\Common.cs" />
+    <Compile Include="Sdb\Sdb15682.cs" />
+    <Compile Include="Sdb\TestSetSessionAttr20304.cs" />
+    <Compile Include="Sdb\TestGetSnapshot15759.cs" />
+    <Compile Include="Index\Index15934.cs" />
+    <Compile Include="Cluster\TestReplicaGroup15935.cs" />
+    <Compile Include="TestBaseException\ExceptionTest16532.cs" />
+    <Compile Include="TestBaseException\ExceptionTest16533.cs" />
+    <Compile Include="AutoIncrement\AutoIncrement16634.cs" />
+    <Compile Include="AutoIncrement\AutoIncrement16635.cs" />
+    <Compile Include="AutoIncrement\AutoIncrement16636.cs" />
+    <Compile Include="AutoIncrement\AutoIncrement16656.cs" />
+    <Compile Include="Sdb\TestListReplicaGroups16815.cs" />
+    <Compile Include="Bson\TestBsonArray14618.cs" />
+    <Compile Include="Bson\TestBsonBinaryData14610.cs" />
+    <Compile Include="Bson\TestBsonBinaryData14612.cs" />
+    <Compile Include="Bson\TestBsonBoolean14619.cs" />
+    <Compile Include="Bson\TestBsonDateTime14640.cs" />
+    <Compile Include="Bson\TestBsonDateTime14639.cs" />
+    <Compile Include="Bson\TestBsonDecimal14620.cs" />
+    <Compile Include="Bson\TestBsonDecimal14621.cs" />
+    <Compile Include="Bson\TestBsonDecimal14622.cs" />
+    <Compile Include="Bson\TestBsonDecimal14623.cs" />
+    <Compile Include="Bson\TestBsonDecimal14624.cs" />
+    <Compile Include="Bson\TestBsonDecimal14625.cs" />
+    <Compile Include="Bson\TestBsonDecimal14626.cs" />
+    <Compile Include="Bson\TestBsonDecimal14630.cs" />
+    <Compile Include="Bson\TestBsonDecimal14635.cs" />
+    <Compile Include="Bson\TestBsonDouble14641.cs" />
+    <Compile Include="Bson\TestBsonMaxKey14604.cs" />
+    <Compile Include="Bson\TestBsonMaxKey14605.cs" />
+    <Compile Include="Bson\TestBsonMaxKey14606.cs" />
+    <Compile Include="Bson\TestBsonMinKey14609.cs" />
+    <Compile Include="Bson\TestBsonMinKey14607.cs" />
+    <Compile Include="Bson\TestBsonMinKey14608.cs" />
+    <Compile Include="Bson\TestBsonMaxKey14637.cs" />
+    <Compile Include="Bson\TestBsonNull14644.cs" />
+    <Compile Include="Bson\TestBsonObjectId14613.cs" />
+    <Compile Include="Bson\TestBsonObjectId14615.cs" />
+    <Compile Include="Bson\TestBsonString14645.cs" />
+    <Compile Include="Bson\TestBsonTimestamp14598.cs" />
+    <Compile Include="Bson\TestBsonTimestamp14599.cs" />
+    <Compile Include="Bson\TestBsonTimestamp14600.cs" />
+    <Compile Include="Bson\TestBsonTimestamp14602.cs" />
+    <Compile Include="Bson\TestObjectId14646.cs" />
+    <Compile Include="Bson\TestObjectId14647.cs" />
+    <Compile Include="Bson\TestBsonDecimal14629.cs" />
+    <Compile Include="Bson\TestBsonInt14642.cs" />
+    <Compile Include="Bson\TestBsonInt6414643.cs" />
+    <Compile Include="Bson\TestBsonObjectId14614.cs" />
+    <Compile Include="Bson\TestBsonArray14638.cs" />
+    <Compile Include="Bson\TestBsonBinaryData14611.cs" />
+    <Compile Include="Bson\TestObjectId14648.cs" />
+    <Compile Include="Monitor\TestGetList13623.cs" />
+    <Compile Include="Monitor\TestResetSnapshot14578.cs" />
+    <Compile Include="Monitor\TestSnapshot13622.cs" />
+    <Compile Include="Monitor\TestSnapshotAccessplan14516.cs" />
+    <Compile Include="Monitor\TestSnapshot22813.cs" />
+    <Compile Include="Monitor\TestSnapshotIndexstats22774.cs" />
+    <Compile Include="Auth\TestAuth14567.cs" />
+    <Compile Include="Sql\TestSQL14580.cs" />
+    <Compile Include="Sdb\TestDBCursor14650.cs" />
+    <Compile Include="Index\TestIndex13649.cs" />
+    <Compile Include="Index\TestIndex14546.cs" />
+    <Compile Include="Index\TestIndex14547.cs" />
+    <Compile Include="Index\TestIndex14548.cs" />
+    <Compile Include="Index\TestGetIndexStat24549.cs" />
+    <Compile Include="Aggregate\TestAggregate14549.cs" />
+    <Compile Include="Aggregate\TestAggregate14550.cs" />
+    <Compile Include="Transaction\TestTransaction14565.cs" />
+    <Compile Include="Transaction\TestTransaction14566.cs" />
+    <Compile Include="Transaction\TestTransaction19216.cs" />
+    <Compile Include="Transaction\TestTransaction19217.cs" />
+    <Compile Include="Transaction\TestTransaction25359.cs" />
+    <Compile Include="Backup\TestBackup14569.cs" />
+    <Compile Include="Backup\TestBackup14570.cs" />
+    <Compile Include="Cluster\TestClusterManage12437.cs" />
+    <Compile Include="Cluster\TestClusterManage13646.cs" />
+    <Compile Include="Cluster\TestClusterManage14572.cs" />
+    <Compile Include="Cluster\TestClusterManage14573.cs" />
+    <Compile Include="Cluster\TestClusterManage14577.cs" />
+    <Compile Include="Cluster\TestConnect14575.cs" />
+    <Compile Include="Cluster\TestConnect14576.cs" />
+    <Compile Include="Cluster\TestClusterManage14574.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Config.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

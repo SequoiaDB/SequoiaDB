@@ -1,0 +1,4 @@
+com.sequoiadb.flink.table.SDBDynamicTableFactory
+
+com.sequoiadb.flink.format.json.cgb.CGBCanalJsonFormatFactory
+com.sequoiadb.flink.format.json.ogg.OggJsonFormatFactory

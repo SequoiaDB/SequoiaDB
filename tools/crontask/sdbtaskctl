@@ -1,0 +1,454 @@
+#!/bin/bash
+
+# author: Ting YU 2020-11-05
+
+#   error code list:
+#   5     fail to create directory or file
+#   6     fail to write file
+#   7     coord not found
+#   8     task already exists
+#   9     instance does not exist
+#   10    failed to check task
+#   64    command line usage error
+#   77    permission denied
+
+REBALANCE_UNIT=100
+
+function lack_para()
+{
+   local para_name=$1
+   echo "sdbtaskctl: no parameter \"$para_name\" specified" >&2
+   echo 'Try "sdbtaskctl --help" for more information.'
+   exit 64
+}
+
+function err_para()
+{
+   local para_name=$1
+   local para_value=$2
+   echo "sdbtaskctl: unrecognized $para_name \"$para_value\"" >&2
+   echo 'Try "sdbtaskctl --help" for more information.'
+   exit 64
+}
+
+function check_num_para()
+{
+   local para_name=$1
+   local para_value=$2
+
+   local regex='^[0-9]+$'
+   if ! [[ "$para_value" =~ $regex ]]; then
+      echo "sdbtaskctl: invalid value for parameter \"$para_name\": \"$para_value\"" >&2
+      echo 'Try "sdbtaskctl --help" for more information.'
+      exit 64
+   fi
+}
+
+function check_time_para()
+{
+   # check timestamp, for 'HH:mm'
+   
+   local para_name=$1
+   local para_value=$2
+   
+   # separated by :
+   local arr=(${para_value//:/ })  ## eg: 11:23 -> 11 23
+   local size=${#arr[*]}
+   if [ $size -ne 2 ] ; then 
+      echo "sdbtaskctl: invalid value for parameter \"$para_name\": \"$para_value\"" >&2
+      echo 'Try "sdbtaskctl --help" for more information.'
+      exit 64
+   fi
+   
+   # check hour and minute
+   local hour=${arr[0]}    ## range [0,23]
+   check_num_para "$para_name" "$hour"
+   
+   local minute=${arr[1]}  ## range [0,59]
+   check_num_para "$para_name" "$minute"
+   
+   if [ $hour -lt 0 -o $hour -gt 23 -o $minute -lt 0 -o $minute -gt 59 ] ; then
+      echo "sdbtaskctl: invalid value for parameter \"$para_name\": \"$para_value\"" >&2
+      echo 'Try "sdbtaskctl --help" for more information.'
+      exit 64
+   fi
+}
+
+function print_error()
+{
+   local log=$1
+   echo "[ERROR]: $log" >&2
+}
+
+function show_version()
+{
+   echo "sdbtaskctl: "$DB_VERSION
+   echo "Release: "$RELEASE
+   echo "Git version: "$GIT_VERSION
+   echo $BUILD_TIME
+}
+
+function check_user()
+{
+   #### load system configure file
+   local SDBADMIN_USER
+   source <( grep -E "^SDBADMIN_USER=" /etc/default/sequoiadb ) 
+
+   #### check user
+   local cur_user=`whoami`
+   if [ "$cur_user" != "$SDBADMIN_USER" ]
+   then
+      print_error "sdbtaskctl requires SDBUSER [$SDBADMIN_USER] permission"
+      exit 77
+   fi
+}
+
+#check task exists or not
+function check_task_exist()
+{
+   local task=$1
+   local exp_exist=$2
+
+   local act_exist=false
+   test -f $CONF_PATH/$task.conf && act_exist=true
+
+   if [ "$exp_exist" == false -a "$act_exist" == true ]; then
+      print_error "Task [$task] already exists"
+      exit 8
+   fi
+   if [ "$exp_exist" == true -a "$act_exist" == false ]; then
+      print_error "Task [$task] does not exist"
+      exit 9
+   fi
+}
+
+function list()
+{
+   if [ "$TASK_TYPE" == "rebalance" ] ; then 
+      list_task_rebalance
+   elif [ "$TASK_TYPE" == "shrink" ] ; then 
+      list_task_shrink
+   else
+      list_task_rebalance
+      list_task_shrink
+   fi
+}
+
+function list_task_rebalance()
+{
+   ### rebalance
+   printf "*************************** REBALANCE TASK: ***************************\n"
+   printf "%-20s %-20s %-20s %-20s\n" "NAME" "SCHEDULE" "CLNAME" "UNIT(MB)"
+
+   # if conf path exists, then loop every conf file
+   if [ -d $CONF_PATH ]; then
+      for file in `find $CONF_PATH -name "*.conf"`
+      do
+         # load conf file
+         local mode; local name; local frequency; local begintime; local clname; local unit;
+         source <(grep -E "^mode=|^name=|^frequency=|^begintime=|^clname=|^unit=" $file)
+         # print 
+         if [ "$mode" == "rebalance" ] ; then
+            printf "%-20s %-20s %-20s %-20s\n" \
+                   $name "$frequency-$begintime" $clname $unit
+         fi
+      done
+   fi
+   
+   echo ""
+}
+
+function list_task_shrink()
+{
+   ### shrink
+   printf "*************************** SHRINK TASK: ******************************\n"
+   printf "%-20s %-20s %-20s\n" "NAME" "SCHEDULE" "HOSTLIST"
+
+   # if conf path exists, then loop every conf file
+   if [ -d $CONF_PATH ]; then
+      for file in `find $CONF_PATH -name "*.conf"`
+      do
+         # load conf file
+         local mode; local name; local frequency; local begintime; local hostlist;
+         source <(grep -E "^mode=|^name=|^frequency=|^begintime=|^hostlist=" $file)
+         # print 
+         if [ "$mode" == "shrink" ] ; then
+            printf "%-20s %-20s %-20s\n" \
+                   $name "$frequency-$begintime" $hostlist
+         fi
+      done
+   fi
+
+   echo ""
+}
+
+function check_task()
+{
+   ###### get js script's parameter
+   local js_para="var mode='"$TASK_TYPE"';"
+   js_para+="var checkonly=true;" 
+
+   local coord_port=`$BIN_PATH/sdblist --role coord | grep sequoiadb  | awk -F '(' '{print $2}' | awk -F ')' '{print $1}' | head -1`
+   if [ -z $coord_port ] ; then
+      print_error "coord not found on localhost"
+      exit 7
+   fi
+   js_para+="var coord='localhost:"$coord_port"';" 
+
+   if [ "$TASK_TYPE" == "shrink" ] ; then
+      local tmp=`echo ${HOST_LIST//,/\',\'}`    # a,b,c -> a','b','c
+      js_para+="var hostlist=['"$tmp"'];"       # a','b','c -> ['a','b','c']
+   fi
+
+   js_para="\""$js_para"\""
+
+   ###### get sdb shell path
+   local sdb_shell_path=$BIN_PATH/sdb
+
+   ###### get quickDeploy.js path
+   local js_file=$TASK_PATH/dataRebalance.js
+
+   ###### get log path
+   local logfile=$LOG_PATH/$TASK_NAME.log
+   if [ -e $LOG_PATH ]
+   then 
+      test -d $LOG_PATH || \
+         { print_error "$LOG_PATH already exist, and it isn't directory. Please delete it." && exit 5 ; }
+   else
+      mkdir -p $LOG_PATH
+      test $? -ne 0 && { print_error "Failed to create directory $LOG_PATH" && exit 5 ; }
+   fi
+   if [ -e $logfile ] 
+   then 
+      test -f $logfile || \
+         { print_error "$logfile already exist, and it isn't file. Please delete it." && exit 5 ; }
+   else
+      touch $logfile
+      test $? -ne 0 && { print_error "Failed to create file $logfile" && exit 5 ; }
+   fi
+
+   ###### execute command
+   local command=$sdb_shell_path" -f "$js_file" -e "$js_para" >> "$logfile
+
+   eval $command
+   if [ $? -ne 0 ] ; then
+      print_error "Failed to check task, please read the log file[$logfile]"
+      exit 10
+   fi
+}
+
+function add_task()
+{
+   check_task_exist $TASK_NAME false
+
+   echo "Adding task $TASK_NAME ..."
+
+   ### check task
+   if [ "$TASK_TYPE" == "shrink" ] ; then
+      check_task
+   fi
+
+   ### generate instance configure file
+   mkdir -p $CONF_PATH
+   if [ $? -ne 0 ]; then
+      print_error "Failed to create directory $CONF_PATH"
+      exit 5
+   fi
+
+   touch $CONF_PATH/$TASK_NAME.conf
+   if [ $? -ne 0 ]; then
+      print_error "Failed to create file $CONF_PATH/$TASK_NAME.conf"
+      exit 5
+   fi
+   
+   ### write configure file
+   confContent="name=$TASK_NAME\n"
+   confContent+="mode=$TASK_TYPE\n"
+   confContent+="begintime=$BEGIN_TIME\n"
+   confContent+="frequency=$FREQUENCY\n"
+
+   if [ "$TASK_TYPE" == "rebalance" ]; then 
+      confContent+="clname=$CL_NAME\n"
+      confContent+="unit=$REBALANCE_UNIT"
+   else
+      confContent+="hostlist=$HOST_LIST"
+   fi
+
+   echo -e $confContent >> $CONF_PATH/$TASK_NAME.conf
+   if [ $? -ne 0 ]; then
+      print_error "Failed to write file $CONF_PATH/$TASK_NAME.conf"
+      rm -f $CONF_PATH/$TASK_NAME.conf
+      exit 6
+   fi
+
+   echo "ok"
+}
+
+function remove_task()
+{
+   check_task_exist $TASK_NAME true
+
+   echo "Removing task $TASK_NAME ..."
+   rm -f $CONF_PATH/$TASK_NAME.conf 
+   rm -f $LOG_PATH/$TASK_NAME.log
+
+   echo "ok"
+}
+
+function build_help()
+{
+   echo "sdbtaskctl is a utility to control cron task."
+   echo ""
+   echo "Usage:"
+   echo "  sdbtaskctl create <TASKNAME> <-t TASKTYPE> <-b BEGINTIME> <-f FREQUENCY> [-l CLNAME] [-u UNIT] [--hosts HOSTLIST]"
+   echo "  sdbtaskctl remove <TASKNAME>"
+   echo "  sdbtaskctl list [-t TASKTYPE]"
+   echo ""
+   echo "Common options:"
+   echo "  -t arg             task type, can be 'rebalance' or 'shrink'"
+   echo "  -b arg             begin timestamp, format: 'HH:mm'"
+   echo "  -f arg             frequency of task performed, can be 'daily' or 'once'"
+   echo "  -h, --help         print help message"
+   echo "  --version          print version information"
+   echo ""
+   echo "Rebalance options:"
+   echo "  -l arg             collection full name, such as 'foo.bar'"
+   echo "  -u arg             rebalance unit, unit: MB, default: 100"
+   echo ""
+   echo "Shrink options:"
+   echo "  --hosts arg        hostname list to shrink, separated by ',',such as: 'hostname1,hostname2,hostname3'"
+   echo ""
+   echo "Example: "
+   echo "  ./sdbtaskctl create task1 -t rebalance -b 23:00 -f once -l foo.bar -u 50"
+   echo "  ./sdbtaskctl create task2 -t shrink -b 23:00 -f once --hosts host1,host2,host3"
+   echo ""
+}
+
+##################################
+#    main entry
+##################################
+
+#The autogen will replace the following 4 values.
+DB_VERSION="x.x.x"
+RELEASE="0"
+GIT_VERSION="xxxxxxxxxx"
+BUILD_TIME="0000-00-00-00.00.00"
+
+#Parse command line parameters
+test $# -eq 0 && { build_help && exit 64; }
+
+ARGS=`getopt -o ht:b:l:f:u: --long help,version,hosts: -n 'sdbtaskctl' -- "$@"`
+ret=$?
+test $ret -ne 0 && exit $ret
+
+eval set -- "${ARGS}"
+
+while true
+do
+   case "$1" in
+      -t )          TASK_TYPE=$2
+                    test "$TASK_TYPE" == "rebalance" -o "$TASK_TYPE" == "shrink" \
+                       || err_para TASKTYPE $TASK_TYPE
+                    shift 2
+                    ;;
+      -f )          FREQUENCY=$2
+                    test "$FREQUENCY" == "once" -o "$FREQUENCY" == "daily" \
+                       || err_para FREQUENCY $FREQUENCY
+                    shift 2
+                    ;;
+      -b )          BEGIN_TIME=$2
+                    shift 2
+                    ;;
+      -l )          CL_NAME=$2
+                    shift 2
+                    ;;
+      -u )          REBALANCE_UNIT=$2
+                    check_num_para "UNIT" "$REBALANCE_UNIT"
+                    if [ "$REBALANCE_UNIT" -le 16 ] ; then 
+                       echo "sdbtaskctl: parameter '-u $REBALANCE_UNIT' should be greater than 16" >&2
+                       exit 64
+                    fi
+                    shift 2
+                    ;;
+      --hosts )     HOST_LIST=$2
+                    shift 2
+                    ;;
+      --version )   show_version
+                    exit 0
+                    ;;
+      -h | --help ) build_help
+                    exit 0
+                    ;;
+      --)           shift
+                    break
+                    ;;
+      *)            echo "Internal error!"
+                    exit 64
+                    ;;
+   esac
+done
+
+#process other argument
+case "$1" in
+   list)       CMD=$1; shift 1;;
+   create)     test -z $2 && lack_para "TASKNAME" || TASK_NAME=$2
+               test -z $TASK_TYPE && lack_para "-t <TASKTYPE>"
+               test -z $FREQUENCY && lack_para "-f <FREQUENCY>"
+               if [ "$TASK_TYPE" == "rebalance" ]; then
+                  test -z $CL_NAME && lack_para "-l <CLNAME>"
+               elif [ "$TASK_TYPE" == "shrink" ]; then
+                  test -z $HOST_LIST && lack_para "--hosts <HOSTLIST>"
+               fi
+               CMD=$1; shift 2;;
+   remove)     test -z $2 && lack_para "TASKNAME" || TASK_NAME=$2
+               CMD=$1; shift 2;;
+   *)          echo "sdbtaskctl: unrecognized operation command \"$1\"" >&2
+               echo 'Try "sdbtaskctl --help" for more information.'
+               exit 64
+               ;;
+esac
+
+if [ "$FREQUENCY" == "once" -o "$FREQUENCY" == "daily" ]; then
+   test -z $BEGIN_TIME && lack_para "-b BEGINTIME"
+   check_time_para "BEGINTIME" "$BEGIN_TIME"
+fi
+
+if [ "$*" != "" ]; then
+   echo "sdbtaskctl: too many arguments: $*" >&2
+   echo 'Try "sdbtaskctl --help" for more information.'
+   exit 64
+fi
+
+#get task path, eg: /opt/sequoiadb/tools/crontask
+dir_name=`dirname $0`
+if [[ ${dir_name:0:1} != "/" ]]; then
+   TASK_PATH=$(pwd)/$dir_name  #relative path
+else
+   TASK_PATH=$dir_name         #absolute path
+fi
+
+#get install path
+cur_path=`pwd`
+cd $TASK_PATH/../../ && INSTALL_PATH=`pwd`
+cd $cur_path >> /dev/null >&1
+
+#get bin path
+BIN_PATH="${INSTALL_PATH}/bin"
+
+#get conf path
+CONF_PATH="${TASK_PATH}/conf"
+
+#get log path
+LOG_PATH="${TASK_PATH}/log"
+
+#check user
+check_user
+
+#enter operation mode
+case $CMD in
+   list)      list;;
+   create)    add_task;;
+   remove)    remove_task;;
+esac
+
+exit 0

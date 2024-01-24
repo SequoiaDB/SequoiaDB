@@ -1,0 +1,1 @@
+java -jar chmProjectCreator.jar -i E:\work\sequoiadb\doc_new\build\mid -o E:\work\sequoiadb\doc_new\build\output -t "SequoiaDB 2.6.1" -c E:\work\sequoiadb\doc_new\config\toc.json

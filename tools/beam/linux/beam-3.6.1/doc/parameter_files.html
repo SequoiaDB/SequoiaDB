@@ -1,0 +1,222 @@
+<html>
+<head>
+  <title>BEAM: Parameter Files</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Parameter Files</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Introduction</h1>
+
+</p>
+<p>
+BEAM ships with a few different parameter files. These are pre-canned settings
+that form various starting points for <a href="customize.html">customizing BEAM</a>
+for your project.
+</p>
+<p>
+<h1>Parameter Files</h1>
+
+</p>
+<p>
+<dl>
+<!- ----------------------------------------------------------------------- -->
+  <dt><span class="strong">beam_default_parms.tcl</span></dt>
+  <dd>This is the default set of parameters. If you don't
+      specify a parameter file on the
+      <a href="beam_compile.html">beam_compile</a> command
+      line, this is the one that is used.
+</p>
+<p>
+      This enables some of the BEAM complaints that
+      we think are the most useful for a wide audience.
+      It will be enough to get you started, but
+      you will want to
+      <a href="customize.html">customize BEAM</a>
+      to get the most from it.
+</p>
+<p>
+      Use to begin a <a href="customize.html">custom</a> file:
+</p>
+<p>
+<pre class="example">
+source beam_default_parms.tcl
+...
+</pre>
+
+</p>
+<p>
+<!- ----------------------------------------------------------------------- -->
+  <dt><span class="strong">beam_level1_parms.tcl</span></dt>
+  <dd>This file enables more checks than <span class="file">beam_default_parms.tcl</span>.
+      It is useful for projects that want to turn up
+      the heat a little bit. Once your code is "BEAM clean"
+      with the default parameters and you are interested
+      in a deeper analysis, give this setting a try.
+</p>
+<p>
+      It might run a little longer and might produce a few more
+      false complaints but the trade-off is that it has
+      been designed to help find more elusive bugs. Some of
+      the complaints may not make sense for your project;
+      in that case, start a <a href="customize.html">custom</a>
+      file with <span class="file">beam_level1_parms.tcl</span> and disable
+      those complaints that you don't want to see.
+</p>
+<p>
+      It is called "level1" because we plan on adding more
+      levels in the future for even deeper analysis.
+</p>
+<p>
+      Note: This file is only useful for C, C++, and Java.
+      For other languages, it is no different from
+      <span class="file">beam_default_parms.tcl</span>.
+</p>
+<p>
+      Can be used on the command-line:
+</p>
+<p>
+<pre class="example">
+$ beam_compile --beam::parms=beam_level1_parms.tcl ...
+</pre>
+
+</p>
+<p>
+      or to begin a <a href="customize.html">custom</a> file:
+</p>
+<p>
+<pre class="example">
+source beam_level1_parms.tcl
+...
+</pre>
+
+</p>
+<p>
+<!- ----------------------------------------------------------------------- -->
+  <dt><span class="strong">beam_never_parms.tcl</span></dt>
+  <dd>This file will start you off with no complaints enabled.
+      You would use this when you want to start with a
+      clean slate and enable a specific set of checks.
+</p>
+<p>
+      Use to begin a <a href="customize.html">custom</a> file:
+</p>
+<p>
+<pre class="example">
+source beam_never_parms.tcl
+...
+</pre>
+
+</p>
+<p>
+<!- ----------------------------------------------------------------------- -->
+  <dt><span class="strong">beam_always_parms.tcl</span></dt>
+  <dd>This file will start you off with every complaint
+      enabled. You would start with this and remove the
+      complaints that you did not want to see.
+</p>
+<p>
+      Please understand that this file is <span class="strong">not</span>
+      a parameter setting that will produce the largest amount of
+      usable complaints. That is neither the case nor the intent. It is only
+      meant to seed your own configuration. Using is standalone without
+      additional configuration is a rotten idea. You have been warned.
+</p>
+<p>
+      Use to begin a <a href="customize.html">custom</a> file:
+</p>
+<p>
+<pre class="example">
+source beam_always_parms.tcl
+...
+</pre>
+
+</p>
+<p>
+</dl>
+</p>
+<p>
+<h1>IMPORTANT</h1>
+
+</p>
+<p>
+The file <span class="file">tcl/beam_default_c_and_cpp_parms.tcl</span> contains all
+possible settings for all parameters.  Many are commented out, but
+they are there just to show you the possibilities.  Therefore copy and
+paste from that file when setting up your own parameters.
+</p>
+<p>
+Each new release of BEAM contains new checks.  We enable every new
+check in <span class="file">beam_always_parms.tcl</span>, but only those we consider
+useful for everybody get enabled in <span class="file">beam_default_c_and_cpp_parms.tcl</span>.
+Thus if your own Tcl script starts by sourcing <span class="file">beam_always_parms.tcl</span>
+then each release will give you new complaints, which you may have to disable.
+On the other hand, if your Tcl script starts by sourcing <span class="file">beam_default_parms.tcl</span> then you need to try new checks to see if
+you want to enable them.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

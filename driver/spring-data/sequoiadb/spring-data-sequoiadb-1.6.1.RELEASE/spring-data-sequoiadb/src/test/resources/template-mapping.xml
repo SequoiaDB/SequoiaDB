@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:sdb="http://www.springframework.org/schema/data/sdb"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/data/sdb http://www.springframework.org/schema/data/sdb/spring-sdb.xsd">
+
+  <bean class="org.springframework.data.sequoiadb.core.TestSequoiadbConfiguration"/>
+  
+  <sdb:db-factory dbname="database"/>
+
+  <bean id="mappingConverter1" class="org.springframework.data.sequoiadb.core.convert.MappingSequoiadbConverter">
+  	<constructor-arg ref="sequoiadbFactory" />
+    <constructor-arg ref="mappingContext" />
+    <property name="customConversions" ref="conversions" />
+  </bean>
+
+  <bean id="mappingContext" class="org.springframework.data.sequoiadb.core.mapping.SequoiadbMappingContext">
+  	<property name="simpleTypeHolder">
+  		<bean factory-bean="conversions" factory-method="getSimpleTypeHolder" />
+  	</property>
+  </bean>
+  
+	<bean id="conversions" class="org.springframework.data.sequoiadb.core.convert.CustomConversions">
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.data.sequoiadb.core.PersonReadConverter" />
+				<bean class="org.springframework.data.sequoiadb.core.PersonWriteConverter" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+  <bean id="sequoiadbTemplate1" class="org.springframework.data.sequoiadb.core.SequoiadbTemplate">
+    <constructor-arg name="sequoiadbFactory" ref="sequoiadbFactory"/>
+    <constructor-arg name="sequoiadbConverter" ref="mappingConverter1"/>
+  </bean>
+
+  <sdb:mapping-converter id="mappingConverter2" base-package="org.springframework.data.sequoiadb.core.mapping">
+      <sdb:custom-converters>
+        <sdb:converter>
+          <bean class="org.springframework.data.sequoiadb.core.PersonReadConverter"/>
+        </sdb:converter>
+        <sdb:converter>
+          <bean class="org.springframework.data.sequoiadb.core.PersonWriteConverter"/>
+        </sdb:converter>
+      </sdb:custom-converters>
+  </sdb:mapping-converter>
+
+  <bean id="sequoiadbTemplate2" class="org.springframework.data.sequoiadb.core.SequoiadbTemplate">
+    <constructor-arg name="sequoiadbFactory" ref="sequoiadbFactory"/>
+    <constructor-arg name="sequoiadbConverter" ref="mappingConverter2"/>
+  </bean>
+
+
+</beans>

@@ -1,0 +1,240 @@
+<html>
+<head>
+  <title>BEAM: The .beam File</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">The .beam File</h1>
+<hr/>
+
+</p>
+<p>
+The <span class="file">.beam</span> file is BEAM's equivalent of the compiler's output.
+For C and C++, this is the <span class="file">.o</span> file. For Java, this is the 
+<span class="file">.class</span> file. Its purpose is to enable incremental BEAM runs.
+</p>
+<p>
+The file will be created if the <span class="command">beam_compile</span> command
+terminates successfully. If <span class="command">beam_compile</span> terminates 
+unsuccessfully a possibly existing <span class="file">.beam</span> file will <span class="strong">not</span>
+be removed. This behavior is consistent with what a compiler does.
+</p>
+<p>
+If <span class="option">--beam::conservative_dotbeam</span> is given on the command
+line, then the <span class="file">.beam</span> file will only be written if there were no
+complaints. This is useful for larger projects that wish to only
+track the most recent report from a complete BEAM run. See
+<a href="beam_compile.html">beam_compile</a> for details.
+</p>
+<p>
+If multiple input files are given to <span class="command">beam_compile</span> then
+these rules apply as if <span class="command">beam_compile</span> was run once for
+each source file. For example, if <span class="option">-o</span> is given with
+multiple C/C++ source files, then while processing each source file,
+BEAM will generate the same <span class="file">.beam</span> file, overriding it each
+time.
+</p>
+<p>
+The <span class="file">.beam</span> file contains the MD5 checksum for the corresponding input file
+(see <a href="http://rfc.net/rfc1321.html">RFC 1321</a> for algorithmic 
+details).
+</p>
+<p>
+<h1>C, C++, and PL.8</h1>
+
+</p>
+<p>
+The <span class="file">.beam</span> file for C, C++, and PL.8 source files will be created
+in the same location where the compiler would put its <span class="file">.o</span>
+file. Here are some examples:
+</p>
+<p>
+<table>
+<tr>
+<th>Source file</th>
+<th><span class="file">.beam</span> file</th>
+</tr>
+<tr>
+<td><span class="file">foo.c</span></td>
+<td><span class="file">foo.beam</span></td>
+</tr>
+<tr>
+<td><span class="file">../bar.c</span></td>
+<td><span class="file">bar.beam</span></td>
+</tr>
+<tr>
+<td><span class="file">/var/tmp/baz.c</span></td>
+<td><span class="file">baz.beam</span></td>
+</tr>
+</table>
+</p>
+<p>
+If the <span class="option">-o</span> flag is not specified, the name of the <span class="file">.beam</span> file
+will be derived from the source file by replacing the extension with
+<span class="file">.beam</span>. Otherwise, the argument of the <span class="option">-o</span> flag will
+be used to determine the name of the <span class="file">.beam</span> file according to the
+following table.
+</p>
+<p>
+<table>
+<tr>
+<th>-o flag</th>
+<th><span class="file">.beam</span> file</th>
+<th>Comment</th>
+</tr>
+<tr>
+<td><span class="option">-o foo.o</span></td>
+<td><span class="file">foo.beam</span></td>
+<td>Replace <span class="file">.o</span> with <span class="file">.beam</span></td>
+</tr>
+<tr>
+<td><span class="option">-o foo.beam</span></td>
+<td><span class="file">foo.beam</span></td>
+<td>File already has <span class="file">.beam</span> extension; do nothing</td>
+</tr>
+<tr>
+<td><span class="option">-o bar</span></td>
+<td><span class="file">bar.beam</span></td>
+<td>File has no extension: append <span class="file">.beam</span></td>
+</tr>
+<tr>
+<td><span class="option">-o baz.x</span></td>
+<td><span class="file">baz.x.beam</span></td>
+<td>File has unknown extension; append <span class="file">.beam</span></td>
+</tr>
+<tr>
+<td><span class="option">-o /dev/null</span></td>
+<td>no <span class="file">.beam</span> file</i></td>
+<td>Suppress generation of <span class="file">.beam</span> file</td>
+</tr>
+</table>
+</p>
+<p>
+<h1>Java</h1>
+
+</p>
+<p>
+The <span class="file">.beam</span> file for Java source files will be created
+in the same location where the compiler would put its <span class="file">.class</span>
+file. Here are some examples:
+</p>
+<p>
+<table>
+<tr>
+<th>Source file</th>
+<th><span class="file">.beam</span> file</th>
+</tr>
+<tr>
+<td><span class="file">Foo.java</span></td>
+<td><span class="file">Foo.beam</span></td>
+</tr>
+<tr>
+<td><span class="file">../Bar.java</span></td>
+<td><span class="file">../Bar.beam</span></td>
+</tr>
+<tr>
+<td><span class="file">/var/tmp/Baz.java</span></td>
+<td><span class="file">/var/tmp/Baz.beam</span></td>
+</tr>
+</table>
+</p>
+<p>
+If the <span class="option">-d</span> flag is not specified, the name of the <span class="file">.beam</span> file will be written in the same place as the source file,
+with the extension replaced with <span class="file">.beam</span>. Otherwise, the output
+directory specified by the <span class="option">-d</span> flag will be populated with
+<span class="file">.beam</span> files in the same way as the Java compiler would
+populate it with <span class="file">.class</span> files.  Consult the following table
+for examples.
+</p>
+<p>
+<table>
+<tr>
+<th>-d flag</th>
+<th>Source file</th>
+<th><span class="file">.beam</span> file</th>
+</tr>
+<tr>
+<td><span class="option">-d tmp</span></td>
+<td><span class="file">Foo.java</span></td>
+<td><span class="file">tmp/Foo.beam</span></td>
+</tr>
+<tr>
+<td><span class="option">-d /tmp</span></td>
+<td><span class="file">Foo.java</span></td>
+<td><span class="file">/tmp/Foo.beam</span></td>
+</tr>
+<tr>
+<td><span class="option">-d /tmp</span></td>
+<td><span class="file">package/sub/Baz.java</span></td>
+<td><span class="file">/tmp/package/sub/Baz.beam</span></td>
+</tr>
+<tr>
+<td><span class="option">-d /dev/null</span></td>
+<td><span class="val">Any file</span></td>
+<td>no <span class="file">.beam</span> files are generated</td>
+</tr>
+</table>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

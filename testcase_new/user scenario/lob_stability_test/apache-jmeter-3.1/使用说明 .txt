@@ -1,0 +1,1 @@
+ApacheJMeter是为Web/HTTP测试而设计的，但是它已经扩展以支持各种各样的测试模块.JMeter在Window XP / 2003 / W7 /W8基本都可以运行，前提是要安装好JDK包，JMeter是基于JAVA开发的压力测试软件。

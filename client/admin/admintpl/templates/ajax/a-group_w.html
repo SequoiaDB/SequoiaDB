@@ -1,0 +1,9 @@
+{{if $group_rc eq 0}}
+	<div class="alert alert-success alert-dismissable">
+	  执行成功
+	</div>
+{{else}}
+	<div class="alert alert-danger alert-dismissable">
+	  执行失败，错误：{{$group_respond}}
+	</div>
+{{/if}}

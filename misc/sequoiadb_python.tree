@@ -1,0 +1,3 @@
+.
+├── pysequoiadb-${SYS_VERSION}-py2.tar.gz
+└── pysequoiadb-${SYS_VERSION}-py3.tar.gz

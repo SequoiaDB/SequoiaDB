@@ -1,0 +1,8 @@
+misc/ci
+misc/dita2troff
+driver/hadoop/pig_connector
+thirdparty/mdocml/lib/win64
+thirdparty/boost/lib/win32
+thirdparty/boost/lib/win64
+thirdparty/crypto/openssl-1.1.1o/lib/win64
+

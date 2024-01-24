@@ -1,0 +1,26 @@
+<div class="confirm" ng-if="data.isShow" ng-style="Setting.Style">
+   <div class="body">
+   	<div ng-if="data.type == 1">
+		   <div class="contentTitle">{{data.title}}</div>
+         <div class="contentText">{{data.context}}</div>
+		</div>
+		<div ng-if="data.type == 2">
+         <div class="contentText">{{data.context}}</div>
+		</div>
+		<div ng-if="data.type == 3">
+			<div><i class="fa fa-times-circle contentWarning"></i></div>
+			<div style="padding-top:5px;">{{data.context}}</div>
+		</div>
+      <div ng-if="data.type == 4">
+         <div><i class="fa fa-check-circle contentSuccess"></i></div>
+         <div style="padding-top:5px;">{{data.context}}</div>
+      </div>
+   </div>
+   <div class="foot">
+      <button class="btn btn-primary" ng-class="{ confirmOk: data.normalOK != true }" ng-if="!(data.noOK == true)" ng-click="ok()">{{data.okText}}</button>
+      <button class="btn btn-default confirmClose" ng-if="!(data.noClose == true)" ng-click="close()">{{data.closeText}}</button>
+	</div>
+</div>
+
+
+

@@ -1,0 +1,129 @@
+<html>
+<head>
+  <title>BEAM: gcc</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Details of gcc Emulation</h1>
+<hr/>
+
+</p>
+<p>
+Because EDG provides robust support for GCC/G++ extensions and
+features, the main emulation that BEAM provides is in translating
+the command-line flags from the GCC/G++ command line to EDG
+options and compiler configuration options.
+</p>
+<p>
+<h1>Command-line Flags</h1>
+
+</p>
+<p>
+Please see the file <span class="file">beam_map_gcc_flags.tcl</span>
+in your BEAM installation. 
+</p>
+<p>
+<span class="strong">Notes:</span>
+</p>
+<p>
+<dl>
+<dt><span class="option">-m32</span> and <span class="option">-m64</span>
+<dd>
+What these flags do (for GCC) is
+to define a target machine with different characteristics. In BEAM the same
+thing is achieved by specifying the corresponding 
+<a href="compiler_configuration.html">compiler configuration</a> file.
+Which is what you need to do. You can still pass the option but it
+will be ignored. However, BEAM will issue a warning if you specify
+a configuration file that seems wrong for the given option.
+</p>
+<p>
+You can easily generate separate
+<a href="compiler_configuration.html">compiler configuration</a> files
+for 32-bit for 64-bit targets by invoking <a href="beam_configure.html">
+beam_configure</a> like so:
+</p>
+<pre class="example">
+beam_configure --c gcc -o gcc32.tcl -- -m32
+beam_configure --c gcc -o gcc64.tcl -- -m64
+</pre>
+<p>
+
+<dt><span class="option">-x <span class="val">lang</span></span>
+<dd>This option is  partially supported.
+Only one <span class="option">-x</span> option can be specified.
+Independent of where it appears on the command line, it will apply to all 
+source files.
+</dl>
+</p>
+<p>
+<h1>Predefined Macros</h1>
+
+</p>
+<p>
+For <span class="command">gcc</span> and <span class="command">g++</span>, the predefined macros
+that will be used are contained in the <a href="compiler_configuration.html">compiler configuration file</a> that is passed to BEAM.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

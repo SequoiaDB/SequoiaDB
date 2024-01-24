@@ -1,0 +1,136 @@
+<html>
+<head>
+  <title>BEAM: State File</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">The State File</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Avoiding multiple analysis of functions defined in header files </h1>
+
+By default, BEAM does not analyse functions that are defined in header files.
+However, it is very typical for C++ programs to define member functions in
+header files and those do not get analysed by default. Of course, this
+default setting can be changed but that has the side effect of multiple
+analyses of functions that have been analysed before. That has a
+detrimental effect on runtimes.
+</p>
+<p>
+<h1>The State File</h1>
+
+To overcome this problem we provide a "state file" which BEAM uses to
+keep track of functions that have been analysed before. The state file
+is specified by assigning the file name to the Tcl variable
+<a href="parms.html#beam::state_file"><span class="var">beam::state_file</span></a>. 
+As usual this can be done on the command
+line (<span class="option">--beam::state_file=...</span>) or in a Tcl file.
+</p>
+<p>
+BEAM will read the specified state file before it begins its analysis.
+Then, for every function BEAM will first lookup whether the function is
+already listed in the state file and if so, the analysis will be skipped.
+At the end BEAM will update the state file and add any newly analysed 
+functions.
+</p>
+<p>
+The state file should be deleted by the user before BEAM is run
+over a project. The file should not be kept between full BEAM runs,
+because the second time BEAM is run over a project, BEAM will
+consider all functions to have been analysed already.
+</p>
+<p>
+The content of the state file is unspecified and subject to change
+without notice.
+</p>
+<p>
+<h1>When to specify beam::build_root</h1>
+
+If you want to use a given state file to do a BEAM run over a set of files 
+that reside in a single directory tree, no 
+<a href="parms.html#beam::build_root"><span class="var">beam::build_root</span></a>
+needs to be specified. Most likely this is what you want to do.
+However, if you have several identical copies of your source code in different
+directories and you want to do parallel BEAM runs with 
+<span class="strong">the same state file</span> in those directories
+then <span class="var">beam::build_root</span> should be set to point
+to the corresponding root directory. It is not
+mandatory to specify <span class="var">beam::build_root</span> but the runtime savings 
+will be much larger if you do
+specify it. Keep reading for the gory details.
+</p>
+<p>
+In order for BEAM to decide whether a function has already been analysed
+it is not sufficient to look at the function name alone. In general, there can
+be many identically named functions with internal linkage in different 
+source files. Those can only be distinguished by looking at the file name.
+By default, BEAM uses the absolute pathname. This works fine as long as 
+the source code is contained in a single directory but it breaks down
+when there are multiple copies of the source code in different directories
+as described above.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

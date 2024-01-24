@@ -1,0 +1,66 @@
+{{if $isgroupnode eq 1}}
+	<table class="table table-bordered">
+		<tr>
+			<td>组名</td>
+			<td>角色</td>
+			<td>主节点</td>
+			<td>节点数</td>
+		</tr>
+		<tr>
+			<td>{{$group_list["GroupName"]}}</td>
+			<td>
+				{{if $group_list["Role"] eq 2}}
+					{{"catalog"}}
+				{{elseif $group_list["Role"] eq 0}}
+					{{"data"}}
+				{{/if}}
+			</td>
+			<td>
+				{{if array_key_exists ( "PrimaryNode", $group_list )}}
+					{{foreach $group_list["Group"] as $child}}
+						{{if $group_list["PrimaryNode"] eq $child["NodeID"]}}
+							{{$child["HostName"]}}
+							{{":"}}
+							{{foreach $child["Service"] as $child_child}}
+								{{if $child_child["Type"] eq 0}}
+									{{$child_child["Name"]}}
+								{{/if}}
+							{{/foreach}}
+							{{break}}
+						{{/if}}
+					{{/foreach}}
+				{{/if}}
+			</td>
+			<td>{{count($group_list["Group"])}}</td>
+		</tr>
+	</table>
+{{elseif $isgroupnode eq 2}}
+	<table class="table table-bordered">
+		<tr>
+			<td>节点名</td>
+			<td>计算机名</td>
+			<td>端口</td>
+			<td>节点路径</td>
+		</tr>
+		<tr>
+			<td>
+				{{$node_list["HostName"]}}
+				{{":"}}
+				{{foreach $node_list["Service"] as $child}}
+					{{if $child["Type"] eq 0}}
+						{{$child["Name"]}}
+					{{/if}}
+				{{/foreach}}
+			</td>
+			<td>{{$node_list["HostName"]}}</td>
+			<td>
+				{{foreach $node_list["Service"] as $child}}
+					{{if $child["Type"] eq 0}}
+						{{$child["Name"]}}
+					{{/if}}
+				{{/foreach}}
+			</td>
+			<td>{{$node_list["dbpath"]}}</td>
+		</tr>
+	</table>
+{{/if}}

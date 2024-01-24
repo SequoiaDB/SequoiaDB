@@ -1,0 +1,250 @@
+<html>
+<head>
+  <title>BEAM: Customization</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Customization</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Introduction</h1>
+
+</p>
+<p>
+This document is a step-by-step guide to customizing BEAM. 
+It is recommended that you read it top to bottom and follow the
+steps. In the end you will have a proper configuration
+file for your project.
+</p>
+<p>
+In this document we do not discuss how to set parameters that are 
+relevant to build integration, e.g. where BEAM writes its
+complaints.
+Those are discussed in the <a href="build.html">build integration
+guide</a>. We focus on the customization that controls which
+complaints are issued.
+</p>
+<p>
+Properly customizing BEAM is an iterative process. The objective is
+to maximize the number of complaints while at the same time keeping
+the number of false complaints to a minimum. 
+Whether a complaint is considered false or not depends on the policies
+that you have established for your project. E.g. if portability to 64bit
+machines is of no concern, then enabling any of the PORTABILITY checks
+is the wrong thing to do. People will consider those complaints to be false.
+If you are in a hurry, run BEAM with default settings
+and take it from there. In that case you can disregard the rest of this
+document.
+</p>
+<p>
+Configuring BEAM means setting up
+a parameter file that is later passed on the command line.
+E.g. for a project named <span class="var">foo</span> you could set up a file
+named <span class="file">foo-parms.tcl</span> (the exact name does not matter)
+and then pass it to BEAM like this:
+</p>
+<pre class="example">
+beam_compile --beam::parms=foo-parms.tcl ......
+</pre>
+<p>
+
+The remainder of this document is devoted to filling in the details
+of that parameter file. That file is written using the Tcl language.
+Therefore, you may need to write some Tcl code.
+If you are not familiar with Tcl, <a href="tclprimer.html">this primer</a>
+will teach you what you need to know in 5 minutes. Fear not, it is easy.
+</p>
+<p>
+<h1>Step #1: Start your parameter file</h1>
+
+</p>
+<p>
+Using your favorite editor create and begin editing your parameter file.
+Make its first line
+</p>
+<pre class="example">
+source beam_default_parms.tcl
+</pre>
+<p>
+
+This will activate some sensible default settings. This file can be
+found in the <span class="file">tcl</span> subdirectory of your local BEAM installation.
+</p>
+<p>
+There are other files you can start with besides
+<span class="file">beam_default_parms.tcl</span>. To read more about them, check
+out the <a href="parameter_files.html">parameter files</a>
+documentation.
+</p>
+<p>
+<h1>Step #2: Which files to ignore</h1>
+
+</p>
+<p>
+Unless told otherwise, BEAM will issue a complaint independent of where
+it appears. That is not always sensible. Most people are not interested
+in seeing <span class="strong">any</span> complaints about system headers or about files that 
+are out of their control. The variable <span class="var">beam::disabled_files</span>
+tells BEAM which files to ignore. By default BEAM will ignore <span class="strong">all</span>
+header files.
+In Tcl, this looks like this:
+</p>
+<pre class="example">
+set beam::disabled_files { *.h *.hpp *.H *.HPP }
+</pre>
+<p>
+
+It is also possible, to ignore files on a per-complaint basis. Say, you want
+to enable MISTAKE5 complaints for all files except those in directory
+<span class="file">foo</span>. To do so, you would add
+</p>
+<pre class="example">
+set beam::MISTAKE5::enabling_policy &quot;always&quot;
+set beam::MISTAKE5::disabled_files  { */foo/* }
+</pre>
+<p>
+
+<h1>Step #3: Which complaints to activate</h1>
+
+</p>
+<p>
+You should now read the document about <a href="builtin.html">built-in checks</a>
+which lists all checks that are available. For every complaint that you
+are interested in, add 
+</p>
+<pre class="example">
+set beam::<span class="val">complaint</span>::enabling_policy &quot;always&quot;
+</pre>
+<p>
+
+substituting the actual complaint name for <span class="val">complaint</span>.
+</p>
+<p>
+<h1>Step #4: Fine-tuning</h1>
+
+</p>
+<p>
+Before BEAM issues a complaint it wants to make sure that the complaint is
+valid. It is not always possible to get that right. As an example: either
+you care about <span class="code">malloc</span> returning <span class="code">NULL</span> or you do not.
+Therefore BEAM has a few parameters that you should define appropriately.
+They are:
+</p>
+<p>
+<ul>
+<li><a href="parms.html#beam::allocation_may_return_null">beam::allocation_may_return_null</a>
+<li><a href="parms.html#beam::clean_enum">beam::clean_enum</a>
+<li><a href="parms.html#beam::dirty_enum">beam::dirty_enum</a>
+<li><a href="parms.html#beam::extended_enum">beam::extended_enum</a>
+<li><a href="parms.html#beam::may_free_null">beam::may_free_null</a>
+<li><a href="parms.html#beam::may_read_null">beam::may_read_null</a>
+<li><a href="parms.html#beam::may_write_null">beam::may_write_null</a>
+<li><a href="parms.html#beam::may_add_null">beam::may_add_null</a>
+<li><a href="parms.html#beam::unused_enum_value">beam::unused_enum_value</a>
+</ul>
+</p>
+<p>
+For applications concerned about security we packaged related settings
+into <span class="file">beam_security.tcl</span>. To turn those checks on simply add this
+line to your parameter file:
+</p>
+<pre class="example">
+source beam_security.tcl
+</pre>
+<p>
+
+<h1>Step #5: Controlling runtime</h1>
+
+</p>
+<p>
+The default time limit is 10 minutes per 1000 lines of code. To see whether
+the default setting is appropriate you should investigate the 
+<a href="refstats.html">stats file</a> file.
+Functions that have a negative <span class="code">SEMANTIC_TIME</span> value could not
+be analyzed because BEAM ran out of time. The relevant parameter is
+<a href="parms.html#beam::max_time_per_kloc_in_sec"><span class="var">beam::max_time_per_kloc_in_sec</span></a>
+</p>
+<p>
+<h1>Additional information</h1>
+
+</p>
+<p>
+BEAM has <span class="term">function attributes</span> which provide detailed
+information about functions for which no source code is available. 
+With this extra 
+information, BEAM can report more interprocedural errors.
+For more
+information, check out the <a href="attributes.html">attributes</a> page.
+</p>
+<p>
+Groups of parameters and function attributes can be placed in one Tcl
+file, which is commonly used to describe the API to a library or
+project. Once written, this configuration file can be used in other
+programs which depend on this one. For more information, check out
+<a href="extapi.html">External APIs</a>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,235 @@
+<html>
+<head>
+  <title>BEAM: Execution</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Execution</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Contents:</h1>
+
+</p>
+<p>
+<ul>
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#driver">The BEAM Driver</a></li>
+  <li><a href="#core">The BEAM Core Executables</a></li>
+  <li><a href="#beam_options">How BEAM options are parsed</a></li>
+  <li><a href="#order">Summary of Execution Order</a></li>
+</ul>
+
+</p>
+<p>
+<hr />
+
+<a name="intro"></a><h1>Introduction</h1>
+
+
+</p>
+<p>
+    BEAM is actually made up of different executables and
+    scripts that perform different tasks. This document
+    describes what happens when <span class="command">beam_compile</span>
+    is executed: what is run under the covers, the order in
+    which command-line arguments are parsed, and when certain
+    configuration files are loaded and used.
+</p>
+<p>
+<hr />
+
+<a name="driver"></a><h1>The BEAM Driver</h1>
+
+
+</p>
+<p>
+    The <span class="command">beam_compile</span> binary is actually the BEAM
+    driver. Its job is to determine the language that BEAM
+    should be analyzing (by examining the command-line) and
+    executing the correct <a href="#core">core executable</a>
+    for that language.
+</p>
+<p>
+    First, the driver determines the compiler to emulate. This
+    can be specified by loading a compiler configuration file
+    explicitly with the <a href="beam_compile.html#beam::compiler">--beam::compiler=<span class="val">file</span></a> option, or by examining
+    the compiler specified on the command-line when running
+    with the <a href="beam_compile.html#beam::prefixcc">--beam::prefixcc</a>
+    option.
+</p>
+<p>
+    Second, the driver <a href="#beam_options">parses the arguments</a>,
+    which is partially guided by various rules and routines set up
+    by the <a href="argument_mapper.html">argument mapper file</a>.
+</p>
+<p>
+    Since each <a href="#core">core executable</a> can only
+    handle one source file at a time (due to many BEAM and
+    third-party library restrictions), the driver splits
+    up the command-line into source files and other flags.
+    Then, the driver runs the correct core executable
+    once for each source file by removing all other source
+    files from the command-line.
+</p>
+<p>
+    In some special cases, the driver gathers more information
+    about the source files before running the core executables.
+    For example, in Java, the driver finds all
+    <a href="java_ref.html#analyzedeps">dependent source files</a>
+    and adds them to the list of files that BEAM needs to
+    analyze.
+</p>
+<p>
+<hr />
+
+<a name="core"></a><h1>The BEAM Core Executables</h1>
+
+
+</p>
+<p>
+    The BEAM core executables (<span class="file">bin/beam_cc</span>,
+    <span class="file">bin/beam_java</span>, etc) are responsible for
+    taking in a single source file of the correct language,
+    emulating the compiler described by the
+    <a href="compiler_configuration.html">compiler configuration file</a>
+    by using the <a href="argument_mapper.html">argument mapper</a>
+    to translate command-line flags into BEAM settings,
+    and producing complaints.
+    The core executables are invoked from the <a href="#driver">BEAM driver</a>
+    once for each source file of the correct language.
+</p>
+<p>
+    After <a href="#parsing">parsing BEAM options</a>,
+    the script specified for <span class="option">--beam::steps=</span>
+    (or <span class="file">beam_default_steps.tcl</span>, the default) is sourced.
+    The default steps execute BEAM's checks and produce
+    complaints.
+</p>
+<p>
+<hr />
+
+<a name="beam_options"></a><h1>How BEAM options are parsed</h1>
+
+
+</p>
+<p>
+    Both the driver and the core executables parse BEAM options
+    so they can perform actions based on those options.
+</p>
+<p>
+    First, the compiler configuration files specified by
+    <span class="option">--beam::compiler=</span> are loaded.
+</p>
+<p>
+    Second, the script specified for <span class="option">--beam::parms=</span>
+    (or <span class="file">beam_default_parms.tcl</span>, the default) is
+    loaded.
+</p>
+<p>
+    Third, all <span class="option">--beam::<span class="var">x</span>=<span class="val">value</span></span>
+    assignments and all scripts specified for
+    <span class="option">--beam::source=</span> are set and sourced in the
+    order in which they appear on the command line. Variable
+    setting and script sourcing can interleave with each other
+    if the options are specified in an interleaving fashion.
+</p>
+<p>
+    Fourth, the script specified for <span class="option">--beam::post_parms=</span>
+    is sourced.
+</p>
+<p>
+<hr />
+
+<a name="order"></a><h1>Summary of Execution Order</h1>
+
+
+</p>
+<p>
+  The <span class="command">beam_compile</span> driver:
+</p>
+<p>
+  <ol>
+    <li>Determines the compiler</li>
+    <li>Expands <a href="atfile.html">@file</a> arguments and environment variables,
+        depending on the compiler</li>
+    <li>Processes the rest of the BEAM options</li>
+    <li>Does language-specific setup (like finding Java dependencies)</li>
+    <li>Executes BEAM core once for each source file</li>
+  </ol>
+</p>
+<p>
+    The BEAM core executable:
+</p>
+<p>
+  <ol>
+    <li>Loads all <span class="option">--beam::compiler=</span> Tcl files</li>
+    <li>Processes the rest of the BEAM options</li>
+    <li>Loads the <span class="option">--beam::steps=</span> Tcl file. If one isn't
+        specified, <span class="file">beam_default_steps.tcl</span> is loaded.</li>
+  </ol>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

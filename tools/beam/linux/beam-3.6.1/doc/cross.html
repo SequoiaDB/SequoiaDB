@@ -1,0 +1,395 @@
+<html>
+<head>
+  <title>BEAM: Dealing with Foreign Compilers</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Dealing with Foreign Compilers and Operating Systems</h1>
+<hr/>
+
+</p>
+<p>
+This document is required reading for everybody who wants to run
+BEAM on source code that is being developed on operating systems other than
+those that BEAM supports natively.
+</p>
+<p>
+<font color=red><span class="strong">Warning:</span></font>
+This task is not for the faint of heart and you cannot possibly accomplish
+this in an hour or so. You should plan to spend at least a day depending on how
+familiar you are with your compiler. An investigative mind and good engineering
+skills help, too.
+</p>
+<p>
+I will be using two terms in the rest of this document frequently. They are:
+</p>
+<p>
+<span class="strong">Native Environment</span><br>
+This is the environment in which your code is developed. It includes
+the compiler, all header files, the operating system, and environment
+variables. Sometimes I will use the phrase <span class="term">native compiler</span> which
+denotes the compiler from the native environment.
+</p>
+<p>
+Is your native environment UNIX-like?
+In case of Solaris, HP/UX, AIX, and GNU/Linux the answer is "yes".
+In case of Windows, OS/2, z/OS, AS/400 or any mainframe based OS the answer
+is "no".
+</p>
+<p>
+<span class="strong">BEAM Environment</span><br>
+This is the environment in which you will run BEAM.
+</p>
+<p>
+To run BEAM on code that is being developed in a different environment
+requires that we model that environment to some extent. 
+The bad news is, that, in general, we won't be able to do that 
+<span class="strong">exactly</span>. The good news is, that typically an approximate modeling 
+of the native environment is good enough for BEAM purposes.
+</p>
+<p>
+OK. Take a breath. Here it goes.
+</p>
+<p>
+<h1>Part #1: Assembling the source code</h1>
+
+<hr />
+
+<h2>Step #1: Install BEAM</h2>
+
+If you have not yet done so, go and install BEAM. You will find everything
+you need on the <a href="index.html">BEAM home page</a>.
+</p>
+<p>
+<h2>Step #2: Copy source code to the BEAM environment</h2>
+
+Note, that BEAM assumes the source code is written using the ASCII 
+character set. If your native environment uses a different character
+set, you will have to convert your source code to ASCII first.
+Make sure, that (after conversion) the files do not contain any 
+non printable characters. Non-printable characters will cause 
+syntax errors later. Get rid of them. Now.
+</p>
+<p>
+<h2>Step #3: Copy the system headers</h2>
+
+<span class="term">System headers</span> includes three sets of header files
+<ul>
+<li>C library, e.g. <span class="file">stdio.h</span>, <span class="file">stddef.h</span>
+<li>C++ library, e.g. <span class="file">iostream</span>
+<li>OS headers, e.g. <span class="file">unistd.h</span>
+</ul>
+While, in general, it is best to copy the headers, it is also a bit of work
+to assemble them all. If both the native system and the BEAM environment 
+is UNIX-like you can
+sometimes get away with using the header files in the BEAM environment.
+Examine your code and find out which system headers are being #include'd.
+</p>
+<p>
+<table>
+<tr>
+ <th>Included files</th>
+ <th>Need native system headers</th>
+</tr>
+<tr align=center>
+<td>Only <a href="standard-headers.html">Standard C/C++</a></td>
+<td>probably not</td>
+</tr>
+<tr align=center>
+<td><a href="standard-headers.html">Standard C/C++ and POSIX</a></td>
+<td>maybe</td>
+</tr>
+<tr align=center>
+<td>Other</td>
+<td>definitely</td>
+</tr>
+</table>
+</p>
+<p>
+If you need to copy the system headers, make sure you don't miss any.
+Convert to ASCII if necessary. Write down where you installed them.
+You'll need that later on.
+</p>
+<p>
+<h2>Step #4: Case sensitivity of file names</h2>
+
+The BEAM environment is case sensitive. That means, that <span class="file">foo.h</span>
+and <span class="file">FOO.H</span> are two different files. Therefore, if you
+<span class="code">#include &quot;FOO.H&quot;</span> but the file is named <span class="file">foo.h</span>
+it will not be found. That is something you need to fix. As an example
+you could convert all file names to lower case and then in all include
+directives change any uppercase letters to lower case. Of course, this only 
+works if file names are still unique after converting to lower case.
+</p>
+<p>
+<h1>Part #2: Emulating the native compiler</h1>
+
+<hr />
+
+<h2>Step #5: Create a configuration file</h2>
+
+You might have to refer to the
+<a href="compiler_configuration.html">compiler configuration</a>
+documentation and <a href="beam_configure.html">beam_configure</a>
+reference documentation.
+</p>
+<p>
+<h3>Step #5.1: beam_configure runs in the native environment</h3>
+
+Easy as pie. Just run it.
+Even if the native compiler is a cross compiler
+<span class="command">beam_configure</span> is typically able to figure out some
+characteristics of the target machine. In case there are several
+compilers available in your native environment, e.g. a native compiler
+and one or more cross compilers, you need to make sure
+that you specify the right compiler. You need to specify the compiler
+that you normally use for compiling your code.
+Then let <span class="command">beam_configure</span> do its work, watch for warnings,
+proofread the result and amend it as required. Proceed to step #6.
+</p>
+<p>
+<h3>Step #5.2: beam_configure does not run in the native
+environment</h3>
+
+Run <span class="command">beam_configure</span> in the BEAM environment and create a 
+template. Like so:
+</p>
+<pre class="example">
+beam_configure --template --c   -o foo_c_config.tcl   # for a C compiler
+beam_configure --template --cpp -o foo_cpp_config.tcl # for a C++ compiler
+</pre>
+<p>
+
+Here, <span class="var">foo</span> is the name of your compiler configuration.
+Later, when you run BEAM, you will refer to the output file by specifying
+<span class="option">--beam::compiler=foo_c_config</span> and
+<span class="option">--beam::compiler=foo_cpp_config</span> on the command line.
+</p>
+<p>
+The configuration file is divided into several sections all of which you
+will have to fill in. There are plenty of suggestions in the generated
+template.
+</p>
+<p>
+<h3>Step #5.2.1: Setting the language dialect</h3>
+
+Easy as pie. See <a href="compiler_configuration.html#section1">this page</a> 
+for a list of possible values:
+</p>
+<p>
+<h3>Step #5.2.2: Setting the include path</h3>
+
+You do remember where you installed the compiler's headers, don't you?
+The ones you copied in step #2. For every directory with system headers 
+add one or both of the following lines, depending on which languages
+you are creating configuration files for:
+</p>
+<pre class="example">
+lappend beam::compiler::c::system_include_path <span class="val">{/some/dir}</span>
+lappend beam::compiler::cpp::system_include_path <span class="val">{/some/dir}</span>
+</pre>
+<p>
+
+The directories will be searched in the specified order. The topmost 
+directory is first on the search path.
+</p>
+<p>
+<h3>Step #5.2.3: Defining the target machine</h3>
+
+This includes the sizes of the built-in data types, endianess etc.
+You probably know most of them. Otherwise consult the documentation for
+the native compiler. Or you may try to compile and run 
+<a href="target.c">this program</a> in the native environment.
+Stuff the output of the program into the configuration file.
+The most important piece is to get the <span class="var">target_sizeof_<span class="val">type</span></span>
+correct. If you don't know the alignment requirements for the various
+data types, use the same values for <span class="var">target_alignof_<span class="val">name</span></span>
+that you used for <span class="var">target_sizeof_<span class="val">name</span></span>.
+You can fine-tune the other things later.
+</p>
+<p>
+<h3>Step #5.4: Predefined macros of the native compiler</h3>
+
+You need to find out what the predefined macros of the compiler in the
+native environment are. It is not sufficient to find out <span class="strong">what</span> is
+defined, it is equally important to know <span class="strong">how</span> those macros expand.
+Some compilers have command line flags that make them spit out this
+information. Otherwise, the compiler documentation should have this 
+information. Also note, that the C and C++ compilers may have different
+predefined macros. It is very important to get this as correct as possible, 
+because most likely the header files from your native environment will depend
+on these macros being defined in a certain way.
+</p>
+<p>
+For every predefined macro, add one of the following to your configuration
+file:
+</p>
+<pre class="example">
+set beam::compiler::c::predefined_macro(<span class="val">name</span>)   {<span class="val">replacement text</span>}
+set beam::compiler::c::predefined_macro(<span class="val">name</span>)   {}
+</pre>
+<p>
+
+Use the latter form for macros that are defined but expand to nothing.
+Change <span class="var">beam::compiler::c</span> to <span class="var">beam::compiler::cpp</span>
+if you are writing a compiler configuration file for C++.
+</p>
+<p>
+<h2>Step #6: Getting EDGs predefined macros</h2>
+
+The EDG frontend only defines those macros that are required by the
+corresponding language standard. No more and no less. You can find the
+detailed list <a href="edg-predefined-macros.html">in this document</a>.
+</p>
+<p>
+If your native compiler does not define (some of) these macros or defines
+them differently, you need to first undefine them in the configuration file
+and later add the correct definition, like so:
+</p>
+<pre class="example">
+set beam::compiler::c::standard_predefined_macros &quot;* - __STDC__ __STDC_VERSION__&quot;
+
+set beam::compiler::c::predefined_macro(__STDC__)            0
+set beam::compiler::c::predefined_macro(__STDC_VERSION__)   42
+</pre>
+<p>
+
+Again, change <span class="var">beam::compiler::c</span> to <span class="var">beam::compiler::cpp</span>
+if you are writing a compiler configuration file for C++.
+</p>
+<p>
+<h2>Step #7: Converting compiler flags</h2>
+
+When you compile in the native environment there are probably command line
+flags being passed to the compiler (possibly different from file to file).
+These need to be translated into EDG command line flags. Note that some 
+command line flags have the side effect of <span class="code">#define</span>-ing or
+<span class="code">#undef</span>-ing macros. You need to find out. You can ignore flags
+that control optimization levels unless they have side effects.
+</p>
+<p>
+Take a look at the file <span class="file">tcl/beam_map_vac_flags.tcl</span> from
+the BEAM distro. It shows how we did this for the AIX compilers.
+</p>
+<p>
+For the <span class="var">foo</span> compiler you can name the mapper file whatever
+you want, but remember the name, because you will have to load it
+into beam in the next step. For this example, let's call it
+<span class="file">foo_map_flags.tcl</span>.
+</p>
+<p>
+<h2>Step #8: Assembling the command line</h2>
+
+You will invoke <span class="command">beam_compile</span> like this:
+</p>
+<pre class="example">
+beam_compile -c --beam::compiler=foo_cpp_config.tcl \
+                --beam::compiler=foo_c_config.tcl   \
+                --beam::compiler=foo_map_flags.tcl  <span class="val">filename</span>
+</pre>
+<p>
+
+Basically, you source the configuration file for the compiler / target
+(<span class="file">foo_cpp_config.tcl</span>) as well as the argument mapper
+(<span class="file">foo_map_flags.tcl</span>). In order for those files to be found
+they need to be on <a href="search_path.html">BEAMs search path</a> or
+you need to specify an absolute pathname.
+</p>
+<p>
+<h2>Step #10: Converting environment variables</h2>
+
+Does the native compiler look for environment variables? If so, are any 
+defined in the native environment?
+If so, determine whether they have any side effects like
+<span class="code">#define</span>-ing macro names and such.
+</p>
+<p>
+<h2>What to expect</h2>
+
+The amount of code that will parse successfully in the BEAM environment
+depends significantly on how correct you could fake the native environment.
+This in turn depends on available information which can be tough to
+come by (e.g. the predefined macros of the native compiler). But even, if you
+manage to do that perfectly, it does not guarantee 100% success. Here are
+a few things to consider:
+</p>
+<p>
+<ul>
+<li><span class="strong">C++programming language</span><br>
+The language changed significantly over time in particular in the last few
+years before it was standardized (1998). EDG attempts to implement the C++
+standard but also supports several C++ anachronisms. Still, some code
+might be rejected despite all your tweaking and
+fiddling with the language configuration.
+</p>
+<p>
+<li><span class="strong">Compiler extensions</span><br>
+Your compiler may have extensions to the language standards,
+e.g allow K&R style function declarations in C++ code, additional keywords
+for specifying linkage etc. Sometimes you can work around these by defining
+appropriate macros. 
+</ul>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

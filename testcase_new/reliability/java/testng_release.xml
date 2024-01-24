@@ -1,0 +1,70 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--This xml is for ci. -->
+<!--These testcases can be excuted only in sequoiadb release version, eg: 
+   disk-full testcase. -->
+
+<suite name="reliability" verbose="1">
+
+    <!--主机名，CI默认传入localhost-->
+    <parameter name="HOSTNAME"      value="${HOSTNAME}" />
+    <!--协调节点端口号，CI默认传入11810-->
+    <parameter name="SVCNAME"       value="${SVCNAME}" />
+    <!--全文索引ES端主机名，CI默认传入192.168.28.143-->
+    <parameter name="ESHOSTNAME"    value="${ESHOSTNAME}" />
+    <!--全文索引ES端端口号，CI默认传入9200-->
+    <parameter name="ESSVCNAME"     value="${ESSVCNAME}" />
+    <!--公共CS名-->
+    <parameter name="CHANGEDPREFIX" value="reliability_test" />
+    <!--用例创建节点预留端口号最小值-->
+    <parameter name="RSRVPORTBEGIN" value="26000" />
+    <!--用例创建节点预留端口号最大值-->
+    <parameter name="RSRVPORTEND"   value="27000" />
+    <!--用例新建节点的存放路径 -->
+    <parameter name="RSRVNODEDIR"   value="${RSRVNODEDIR}" />
+    <!--用例临时文件存放路径 -->
+    <parameter name="WORKDIR"       value="/tmp/ci_reliability" />
+    <!--用例新增节点备份日志文件路径-->
+    <parameter name="BACKUPTMPNODELOGPATH" value="${BACKUPTMPNODELOGPATH}" />
+    <!--远程机器root用户密码-->
+    <parameter name="ROOTPASSWD"    value="${ROOTPASSWD}" />
+    <!--远程机器用户名-->
+    <parameter name="REMOTEUSER"    value="${REMOTEUSER}" />
+    <!--远程机器用户密码-->
+    <parameter name="REMOTEPASSWD"  value="${REMOTEPASSWD}" />
+    <!--可靠性shell脚本位置-->
+    <parameter name="SCRIPTDIR" value="${SCRIPTDIR}" />
+
+    <listeners>
+        <listener
+             class-name="com.sequoiadb.commlib.ReliabilityInvokeMethodListener" />
+        <listener
+             class-name="com.sequoiadb.commlib.TimePrinterListener" />
+    </listeners>
+
+    <test name="reliability" preserve-order="true">
+        <packages>
+            <package name="com.sequoiadb.subcl.diskfull" />
+            <package name="com.sequoiadb.split.diskfull" />
+            <package name="com.sequoiadb.metaopr.diskfull" />
+            <package name="com.sequoiadb.datasync.diskfull" />
+            <package name="com.sequoiadb.cappedCL.diskfull" />
+            <package name="com.sequoiadb.transaction.diskfull" />
+            <package name="com.sequoiadb.faulttolerance.diskfull" />
+            <package name="com.sequoiadb.location.diskfull" />
+        </packages>
+    </test>
+
+    <test name="reliability_transaction_rcauto"
+         preserve-order="true">
+        <groups>
+            <run>
+               <include name="rcauto" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.diskfull" />
+        </packages>
+    </test>
+
+</suite>
+   

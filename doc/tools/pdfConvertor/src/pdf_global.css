@@ -1,0 +1,173 @@
+@charset "UTF-8";
+@font-face
+{
+   font-family: 'msyh';
+   src: url('msyh.ttf');
+}
+@font-face
+{
+   font-family: 'simsun';
+   src: url('simsun.ttc');
+}
+*:focus{outline:none;}
+html{ overflow-x:auto;}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,blockquote,p{padding:0; margin:0;}   
+li{list-style-type:none;}
+img{vertical-align:top;border:0;}
+ol,ul {list-style:none; margin:0; padding:0;}
+a {text-decoration:none;}
+em,i{font-style:normal;}
+.clear{ clear:both;}
+input[type="submit"],input[type="button"]{ cursor:pointer;}
+
+body
+{
+   padding: 0px ;
+   font-family: "msyh", "simsun", "Lucida Sans Unicode", "Lucida Grande", sans-serif ;
+   font-style: normal ;
+   font-variant: normal ;
+   font-weight: normal ;
+   word-wrap: break-word ;
+   font-size: 14px ;
+}
+
+p { font-size: 1.063em; margin:4px 0; line-height:2em; padding:8px 0; letter-spacing:-.003em; }
+.page_break { page-break-after: always; }
+
+a{ font-size: 1.063em; }
+a:link { color: #1492FA; }
+a:visited { color: #1492FA; }
+a:hover { color: #1492FA; }
+a:active { color: #1492FA; }
+hr{ display: block; -webkit-margin-before: 0.5em; -webkit-margin-after: 0.5em; -webkit-margin-start: auto; -webkit-margin-end: auto; border-style: inset; border-width: 1px; }
+
+em{ font-style:italic; }
+
+dd{ margin:0 0 0 30px; }
+
+.code{ font-size:12px; background-color:#E7E5DC; width:auto; padding-top:1px; text-align:left; font-family:"Consolas" , "Courier New" , Courier, mono, serif; margin:10px 0 10px 0; }
+.code > ol{ font-size:12px; list-style:decimal; margin:0px 0px 1px 45px !important; background-color:#fff; padding:0px; color:#5C5C5C; width:auto; }
+.code > ol > li{ font-size:12px; background-color:#FFF; list-style:decimal-leading-zero; list-style-position:outside !important; border-left:3px solid #6CE26C; padding:2px 3px 2px 10px !important; margin:0 !important; line-height:150%; word-wrap:break-word; }
+.code > ol > li:nth-child(2n+1){ background-color:#EEE; }
+.code .alt { background-color:#EEE; color:inherit; }
+.code .alt > span{ font-weight:bold; }
+
+ul { padding-left:20px; }
+ul > li { list-style-type:disc; margin:5px 0 0 0; line-height:22px; }
+
+ol{ display:block; list-style-type:decimal; -webkit-margin-before:1em; -webkit-margin-after:1em; -webkit-margin-start:0px; -webkit-margin-end:0px;-webkit-padding-start:30px; }
+ol > li{ display:list-item; text-align: -webkit-match-parent; list-style-type:decimal; }
+
+/* TOC */
+.h_toc
+{
+   counter-reset: toc_h1 ;
+   text-align: center ;
+   font-size: 40px ;
+   margin: 50px 0px 60px 0px ;
+   font-weight: bold ;
+}
+
+.li_toc
+{
+   list-style: none ;
+   margin: 10px 0px 0px 0px ;
+}
+
+.ul_toc
+{
+   font-size: 20px ;
+   padding-left: 0em ;
+}
+
+.ul_toc .ul_toc
+{
+   padding-left: 1em ;
+}
+
+.toc_item, .toc_page
+{
+   text-decoration: none ;
+}
+
+#ul_toc_top > .li_toc > .div_toc > .toc_item:before
+{
+   counter-increment: toc_h1 ;
+   content: "第 " counter( toc_h1 ) " 章  " ;
+   font-weight: bold ;
+}
+
+#ul_toc_top > .li_toc > .div_toc > .toc_item
+{
+   font-weight: bold ;
+}
+
+#ul_toc_top > .li_toc
+{
+   counter-reset: toc_h2 ;
+}
+
+#ul_toc_top > .li_toc > .ul_toc > .li_toc > .div_toc > .toc_item:before
+{
+   counter-increment: toc_h2 ;
+   content: counter( toc_h1 ) "." counter( toc_h2 ) "  " ;
+}
+
+#ul_toc_top > .li_toc > .ul_toc > .li_toc
+{
+   counter-reset: toc_h3 ;
+}
+
+#ul_toc_top > .li_toc > .ul_toc > .li_toc > .ul_toc > .li_toc > .div_toc > .toc_item:before
+{
+   counter-increment: toc_h3 ;
+   content: counter( toc_h1 ) "." counter( toc_h2 ) "." counter(toc_h3) "  " ;
+}
+
+.div_toc
+{
+   border-bottom: 1px dashed #ddd ;
+}
+
+.span_toc
+{
+   float: right ;
+   font-size: 16px ;
+   vertical-align: bottom ;
+}
+
+/* cover */
+.cover_wrapper
+{
+   width: 100% ;
+   padding: 0px 0px 0px 0px ;
+   margin: 0px 0px 0px 0px ;
+   align-content: center ;
+   position: relative ;
+}
+
+.cover_image
+{
+   width: 100% ;
+   text-align: center ;
+   vertical-align: top ;
+   border: 0 ;
+   padding: 0px 0px 0px 0px ;
+   margin: 0px 0px 0px 0px ;
+}
+
+.cover_header
+{
+   z-index: 1 ;
+   position: absolute ;
+   top: 0px ;
+   font-size: 56px ;
+   font-weight: bolder ;
+   line-height: 56px ;
+   vertical-align: top ;
+   text-align: left ;
+   color: #fff ;
+   padding: 0px 0px 0px 0px ;
+   margin-left: 20px ;
+   display: inline-block ;
+}

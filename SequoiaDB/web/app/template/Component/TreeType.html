@@ -1,0 +1,4 @@
+﻿<div ng-eval="field = Setting.items[0];">
+   <div class="JsontTreeTypeBox">{{field.type}}</div>
+   <div ng-if="field.isOpen" ng-eval="items = field.val;" ng-include="'./app/template/Component/TreeType_child.html'"></div>
+</div>

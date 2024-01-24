@@ -1,0 +1,59 @@
+﻿<!--更新主机弹窗-->
+<div ng-windows="info as UpdateHostIP.config" windows-callback="UpdateHostIP.callback">
+   <table class="table loosen border">
+      <tr style="background-color:#F1F4F5;height:30px;">
+         <td>{{autoLanguage("主机名")}}</td>
+         <td>{{autoLanguage("IP地址")}}</td>
+         <td>{{autoLanguage("状态")}}</td>
+      </tr>
+      <tr ng-repeat="hostInfo in UpdateHostList track by $index">
+         <td class="Ellipsis" style="word-break:break-all;">{{hostInfo['HostName']}}</td>
+         <td class="Ellipsis" style="word-break:break-all;">
+            <input class="form-control" ng-if="hostInfo['Flag'] != 0" ng-model="hostInfo['IP']" />
+            <span ng-if="hostInfo['Flag'] == 0" ng-bind="hostInfo['IP']"></span>
+         </td>
+         <td class="Ellipsis" style="word-break:break-all;">
+            {{hostInfo['Status']}}
+         </td>
+      </tr>
+   </table>
+</div>
+<!--删除主机下拉菜单-->
+<div ng-dropdown="config in RemoveHostDropdown.config" dropdown-event="RemoveHostDropdown.event" dropdown-callback="RemoveHostDropdown.callback">
+   <span class="Ellipsis" style="padding:8px 10px;display:block;" ng-click="RemoveHostDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+</div>
+<!--主机操作下拉菜单-->
+<div ng-dropdown="config in EditHostDropdown.config" dropdown-event="EditHostDropdown.event" dropdown-callback="EditHostDropdown.callback">
+   <span class="Ellipsis" style="padding:8px 10px;display:block;" ng-click="EditHostDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+</div>
+<div ng-container="{height:40}">
+   <button class="topBtn" ng-class="{0:'disabled'}[ClusterList.length]" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1160]" ng-disabled="ClusterList.length==0" ng-click="AddHost()">{{autoLanguage("添加主机")}}</button>
+   <button class="topBtn" ng-class="{true:'disabled'}[ClusterList.length==0||HostNum==0]" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1160]" ng-disabled="ClusterList.length==0||HostNum==0" ng-click="OpenRemoveHost($event)">{{autoLanguage("删除主机")}} <i class="fa fa-caret-down"></i></button>
+   <button class="topBtn" ng-class="{true:'disabled'}[ClusterList.length==0||HostNum==0]" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1160]" ng-disabled="ClusterList.length==0||HostNum==0" ng-click="OpenEditHostDropdown($event)">{{autoLanguage("主机操作")}} <i class="fa fa-caret-down"></i></button>
+   <button class="topBtn" ng-class="{true:'disabled'}[ClusterList.length==0||HostNum==0]" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1160]" ng-disabled="ClusterList.length==0||HostNum==0" ng-click="SelectAll()">{{autoLanguage("全选")}}</button>
+   <button class="topBtn" ng-class="{true:'disabled'}[ClusterList.length==0||HostNum==0]" ng-style="{'true':{'padding':'1px 6px'}}[WindowWidth < 1160]" ng-disabled="ClusterList.length==0||HostNum==0" ng-click="Unselect()">{{autoLanguage("反选")}}</button>
+</div>
+<div ng-container="{offsetY:-40}" ng-table="HostListTable['options']" table-title="HostListTable['title']" table-content="hostInfo in HostListTable['body']" table-callback="HostListTable['callback']">
+   <div class="Ellipsis" table-key="Check">
+      <input type="checkbox" ng-model="hostInfo['checked']" />
+   </div>
+   <div class="Ellipsis" table-key="Error.Flag">
+      <i class="fa fa-circle" style="color:#00CC66;" ng-if="hostInfo['Error']['Flag'] == 0"></i>
+      <i class="fa fa-circle error" ng-attr="{'data-desc':hostInfo['Error']['Message']}" ng-if="hostInfo['Error']['Flag'] != 0"></i>
+   </div>
+   <div class="Ellipsis" table-key="HostName">{{hostInfo['HostName']}}</div>
+   <div class="Ellipsis" table-key="IP">{{hostInfo['IP']}}</div>
+   <div class="Ellipsis" table-key="BusinessName">
+      <span ng-repeat="moduleInfo in ModuleList track by $index">
+         <span ng-repeat="installInfo in moduleInfo['Location'] track by $index" ng-if="hostInfo['HostName']==installInfo['HostName']">
+            <a class="linkButton" ng-if="moduleInfo['BusinessType']=='sequoiadb'||moduleInfo['BusinessType']=='sequoiasql-postgresql'||moduleInfo['BusinessType']=='sequoiasql-mysql'" ng-click="GotoDataModule(moduleInfo['ClusterName'],moduleInfo['BusinessType'],moduleInfo['DeployMod'],moduleInfo['BusinessName'])">{{moduleInfo['BusinessName']}}</a>
+            <span style="color:#666;" ng-if="moduleInfo['BusinessType']!='sequoiadb'&&moduleInfo['BusinessType']!='sequoiasql-postgresql'&&moduleInfo['BusinessType']!='sequoiasql-mysql'">{{moduleInfo['BusinessName']}}</span>&nbsp;
+         </span>
+      </span>
+   </div>
+   <div table-key="Packages">
+      <span class="Ellipsis badge badge-info ng-binding" style="font-size:90%;margin:3px 4px 3px 0;" ng-repeat="packageInfo in hostInfo['Packages'] track by $index" ng-attr="{'data-desc':packageInfo['Name']}">
+         {{abbreviate(packageInfo['Name'])}}<span ng-if="packageInfo['Version'].length>0">-{{packageInfo['Version']}}</span>
+      </span>
+   </div>
+</div>

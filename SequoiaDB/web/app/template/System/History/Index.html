@@ -1,0 +1,39 @@
+﻿<div ng-controller="System.History.Ctrl" ng-container="{}">
+   <div style="padding:10px 15px;" ng-container="{}">
+      <div class="underlineTab" ng-container="{height:50}">
+         <ul class="left">
+            <li class="active">
+               <a href="#/System/History">{{autoLanguage("历史记录")}}</a>
+            </li>
+         </ul>
+      </div>
+      
+      <div ng-windows="info as HisInfo.config" windows-callback="HisInfo.callback">
+         <table class="table loosen border">
+            <tr>
+               <td style="width:40%;background-color:#F1F4F5;"><b>Key</b></td>
+               <td style="width:60%;background-color:#F1F4F5;"><b>Value</b></td>
+            </tr>
+            <tr ng-if="key!='Index'&&key!='_id'&&key!='hasContent'&&key!='Detail'" ng-repeat="(key, value) in info track by $index">
+               <td>{{key}}</td>
+               <td>{{value}}</td>
+            </tr>
+         </table>
+      </div>
+
+      <div ng-container="{offsetY:-62}" ng-table="HistoryTable['options']" table-title="HistoryTable['title']" table-content="hisInfo in HistoryTable['body']">
+         <div class="Ellipsis" table-key="Time">
+            <a class="linkButton" ng-if="hisInfo['hasContent']" ng-click="OpenInfo(hisInfo['Index'])">{{hisInfo['Time']}}</a>
+            <span ng-if="!hisInfo['hasContent']">{{hisInfo['Time']}}</span>
+         </div>
+         <div class="Ellipsis" table-key="Success">
+            <a class="linkButton" ng-if="hisInfo['hasContent']" ng-click="OpenInfo(hisInfo['Index'])">{{hisInfo['Success']==true?autoLanguage("成功"):autoLanguage("失败")}}</a>
+            <span ng-if="!hisInfo['hasContent']">{{hisInfo['Success']==true?autoLanguage("成功"):autoLanguage("失败")}}</span>
+         </div>
+         <div class="Ellipsis" table-key="Desc">
+            <a class="linkButton" ng-if="hisInfo['hasContent']" ng-click="OpenInfo(hisInfo['Index'])">{{hisInfo['Desc']}}</a>
+            <span ng-if="!hisInfo['hasContent']">{{hisInfo['Desc']}}</span>
+         </div>
+      </div>
+   </div>
+</div>

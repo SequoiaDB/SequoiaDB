@@ -1,0 +1,190 @@
+<html>
+<head>
+  <title>BEAM: Quoting Hell</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+    <h1 class="title">Quoting Hell</h1>
+<hr/>
+
+</p>
+<p>
+    This document explains what you need to do when you want to pass
+    options using <span class="option">--edg</span> that contain characters that
+    require special treatment, such as '<span class="code">*</span>' or whitespace
+    characters.
+</p>
+<p>
+    These rules also apply in other places that take in a string
+    of options. Those other places link here explicitly.
+</p>
+<p>
+    What complicates the passing of <span class="option">--edg</span> options is
+    that those flags are interpreted twice. First, your shell will
+    remove quotes and unescape characters. Secondly, BEAM's argument
+    mapper will do the same (well, almost the same). The following
+    table illustrates what happens. Note, that individual options 
+    are shown on separate lines, so space that exists in each
+    option is part of the option.
+</p>
+<p>
+    <table>
+      <tr>
+	<th width="20%">
+          Typed in the shell as an argument to
+          <span class="command">beam_compile</span>
+	</th>
+	<th width="20%">
+          What <span class="command">beam_compile</span> sees after the shell
+          parses the options and removes quotes
+	</th>
+        <th width="20%">
+          What <span class="term">EDG</span> will see after the above rules
+          are used to parse the string
+        </th>
+	<th width="40%">
+	  Comments
+	</th>
+      </tr>
+      <tr>
+	<td>
+              <span class="option">--edg=--no_warnings</span>
+	</td>
+        <td>
+	      <span class="option">--edg=--no_warnings</span>
+        </td>
+	<td>
+	      <span class="option">--no_warnings</span>
+	</td>
+	<td>
+	  The simple case: a single argument is passed to EDG.
+        </td>
+      </tr>
+      <tr>
+	<td>
+	      <span class="option">--edg=&quot;--no_warnings --xref=foo&quot;</span>
+	</td>
+	<td>
+	      <span class="option">--edg=--no_warnings --xref=foo</span>
+        </td>
+        <td>
+	    <span class="option">--no_warnings</span>
+      <br>
+	    <span class="option">--xref=foo</span>
+	</td>
+	<td>
+	  Two flags separated by a space. The shell in which you type
+	  the beam_compile command removes your double-quotes, and
+	  the resulting string is split up into arguments based on
+	  the space between them. EDG sees two arguments.
+      </tr>
+      <tr>
+	<td>
+	      <span class="option">--edg=&quot;--xref=\&quot;a b\&quot;&quot;</span>
+	</td>
+  <td>
+        <span class="option">--edg=--xref=&quot;a b&quot;</span>
+  </td>
+	<td>
+	      <span class="option">--xref=a b</span>
+	</td>
+	<td>
+	  One flag with a space. The shell in which you
+	  type the beam_compile command removes your outer
+	  double-quotes, and changed the escaped double-quotes into
+	  non-escaped double-quotes. The resulting string is split
+	  into a single argument because the space is still quoted.
+    EDG sees one argument with a space.
+	</td>
+      </tr>
+    </table>
+</p>
+<p>
+    BEAM's argument mappers support the following quoting rules:
+</p>
+<p>
+    <ul>
+      <li>Single quotes and double quotes can be used to group
+          arguments with spaces together</li>
+      <li>Characters outside of quotes can be escaped with backslashes to
+          remove any special meaning and pass them through verbatim</li>
+      <li>Some characters inside of double-quotes can be escaped with
+          backslashes to remove any special meaning and pass them
+          through verbatim</li>
+      <li>A single quote inside a double-quoted argument is
+          taken as a literal single quote, and need not be escaped</li>
+      <li>A double quote inside a single-quoted argument is
+          taken as a literal double quote, and need not be escaped</li>
+      <li>Arguments not separated by spaces (even if they have quotes
+          that begin in the middle of them) are all part of the same
+          argument</li>
+    </ul>
+</p>
+<p>
+      <span class="strong">Caution:</span> Shell quoting is tricky. It is further complicated by 
+      some shells not handling it right. Therefore, if possible, it
+      should be avoided. And you gain readability along the way.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

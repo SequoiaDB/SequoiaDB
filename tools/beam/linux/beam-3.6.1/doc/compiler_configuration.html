@@ -1,0 +1,1569 @@
+<html>
+<head>
+  <title>BEAM: Compiler Configuration</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Compiler Configuration</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Contents:</h1>
+
+</p>
+<p>
+    <ul>
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#builtin">Built-in Configurations</a></li>
+  <li><a href="#automatic">Automatic Configuration: beam_configure</a></li>
+  <li><a href="#manual">Manual Configuration</a></li>
+  <li><a href="#loading">Loading the Configuration</a></li>
+  <li><a href="#overriding">Overriding configuration options</a></li>
+  <li><a href="#configuration">The Compiler Configuration File Syntax</a></li>
+  <li><a href="#section1">Section 1: Basic language options</a></li>
+  <li><a href="#section2">Section 2: Default include paths</a></li>
+  <li><a href="#section3">Section 3: Target machine configuration</a></li>
+  <li><a href="#section4">Section 4: Predefined macros</a></li>
+  <li><a href="#section5">Section 5: Miscellaneous options</a></li>
+</ul>
+
+</p>
+<p>
+<hr />
+
+<a name="intro"></a><h1>Introduction</h1>
+
+
+</p>
+<p>
+    In order for BEAM to reason about any source code it needs to know
+    about the characteristics of the compiler and target machine. This
+    information is called a <span class="term">compiler configuration</span> and is stored in a
+    <span class="term">compiler configuration file</span>. (We will use these terms
+    interchangeably as it will be clear from the context what is meant.)
+</p>
+<p>
+    For C and C++, a configuration includes the storage and alignment
+    requirements of data types as well as a list of directories to
+    search for system header files such as  <span class="file">stddef.h</span> or
+    <span class="file">algorithm</span>. Contrary to common belief, not all header files
+    are located in <span class="file">/usr/include</span> and below. In fact, for
+    popular compilers such as XL C/C++ and GCC the location of system headers
+    depends on where the compiler is installed. Essentially,
+    the headers could be stored anyplace. Therefore, in general,
+    compiler configuration files are system dependent. As a consequence
+    (and due to lack of psychic powers), we cannot provide configuration
+    files for most compilers including GCC. Instead we provide the 
+    <a href="beam_configure.html"><span class="command">beam_configure</span></a> script
+    that will determine the required information automagically. We
+    also provide the <a href="beam_compile.html#beam::prefixcc"><span class="option">--beam::prefixcc</span></a> option, which can automatically
+    configure the compiler for you.
+</p>
+<p>
+    For Java, a configuration includes the location of the core Jar files
+    for the Java language (which contain <span class="code">java.lang.*</span>, etc),
+    as well as the default language version that the compiler assumes
+    when one isn't given on the command-line.
+</p>
+<p>
+    This document describes the gory details of the compiler
+    configuration file. It explains how to generate the file
+    automatically and how to manually create and edit the file.
+    It also talks about the different ways of loading the file
+    into BEAM. At the end is a description of the syntax and
+    available options that can be set in the file.
+</p>
+<p>
+<hr />
+
+<a name="builtin"></a><h1>Built-in Configurations</h1>
+
+
+</p>
+<p>
+    For some compilers a configuration
+    is provided with the BEAM installation. These compilers are 
+    not general purpose compilers. Rather they are project-specific
+    and execute in well defined contexts. Therefore, 
+    the configurations for these compilers do not vary from
+    system to system, and thusly do not contain system-specific information.
+    Compilers like GCC and XLC do not fall into this category, and must be
+    configured <a href="#automatic">automatically</a>.
+</p>
+<p>
+    Check the list of <a href="compilers.html">supported compilers</a>.
+    If your compiler is listed there, and it has an associated
+    configuration file that ships with BEAM, then you can probably
+    use it directly. If your compiler is not listed there, read on
+    below for how to create a configuration file.
+</p>
+<p>
+<hr />
+
+<a name="automatic"></a><h1>Automatic Configuration: beam_configure</h1>
+
+
+</p>
+<p>
+    BEAM comes with a script in the <span class="file">bin</span> directory
+    of the install called <span class="command">beam_configure</span>. This script
+    examines a compiler, runs some tests, and figures out
+    as much information as possible, depending on the features
+    your compiler supports.
+</p>
+<p>
+    Running <span class="command">beam_configure</span> against your compiler
+    is simple. Pass <span class="command">beam_configure</span> your compiler,
+    plus any <span class="command">beam_configure</span> options like the
+    language (C, C++, Java), and it will generate a file for
+    your compiler and language combination. For compilers
+    that handle both C and C++, <span class="command">beam_configure</span>
+    must be run once for each langauge.
+</p>
+<p>
+    For example, this will create <span class="file">compiler_c_config.tcl</span> for C:
+</p>
+<pre class="example">
+beam_configure --c gcc
+</pre>
+<p>
+    
+    This will create <span class="file">compiler_cpp_config.tcl</span> for C++:
+</p>
+<pre class="example">
+beam_configure --cpp g++
+</pre>
+<p>
+
+    You can also specify configuration names other than the default.
+    This will create <span class="file">gcc_config.tcl</span> for C:
+</p>
+<pre class="example">
+beam_configure --c gcc -o gcc_config.tcl
+</pre>
+<p>
+
+    and this will create <span class="file">g++_config.tcl</span> for C++:
+</p>
+<pre class="example">
+beam_configure --cpp g++ -o g++_config.tcl
+</pre>
+<p>
+
+    For major things that <span class="command">beam_configure</span> can not
+    detect, a warning will be issued. See the
+    <a href="#manual">manual configuration section</a> below
+    for information on how to add in missing configuration
+    options for your compiler.
+</p>
+<p>
+    If you wish to pass extra flags to your compiler
+    during this process, add <span class="code">--</span> at the end of
+    the <span class="command">beam_configure</span> command line, and then
+    add your compiler's options after that. Note that any
+    flags that you specify that refer to files or paths in
+    the filesystem should refer to absolute paths, because
+    <span class="command">beam_configure</span> will change directories
+    before executing any commands. Relative paths will not
+    work correctly.
+</p>
+<pre class="example">
+beam_configure --c gcc -- -m32 -I/special/hidden/dir
+</pre>
+<p>
+
+    For a list of <span class="command">beam_configure</span> options and
+    a description of how <span class="command">beam_configure</span> works,
+    see the <a href="beam_configure.html"><span class="command">beam_configure</span>
+    reference page</a>.
+</p>
+<p>
+<hr />
+
+<a name="manual"></a><h1>Manual Configuration</h1>
+
+
+</p>
+<p>
+    If <span class="command">beam_configure</span> can't detect some of the
+    important characteristics of your compiler, you will need
+    to adjust the configuration by hand. You may also need to 
+    start from a brand new configuration file if
+    <span class="command">beam_configure</span> can not run on your platform
+    or does not detect anything.
+</p>
+<p>
+    To generate a default configuration file, run
+    <span class="command">beam_configure</span> with the <span class="option">--template</span>
+    option. You must choose the language (C, C++, or Java) by passing
+    <span class="option">--c</span>, <span class="option">--cpp</span>, or <span class="option">--java</span>,
+    respectively.
+</p>
+<p>
+    BEAM also ships with <span class="file">tcl/beam_default_c_config.tcl</span>,
+    <span class="file">tcl/beam_default_cpp_config.tcl</span>, and
+    <span class="file">tcl/beam_default_java_config.tcl</span>, which you can use
+    as starting points. Simply make a copy of one of these and modify
+    as needed.
+</p>
+<p>
+    Once you have a configuration file (either from running
+    <span class="command">beam_configure</span> with your compiler, or from
+    generating or copying the default configuration file),
+    open it up and take a look at the contents. The configuration
+    file is written in Tcl, and is well commented. There are
+    sections for each of the major configuration option groups, and
+    it is fairly easy to modify the file and obtain a
+    configuration that best matches your compiler.
+</p>
+<p>
+    For details on the options available in the configuration file,
+    read the <a href="#configuration">configuration file section</a>
+    below.
+</p>
+<p>
+<hr />
+
+<a name="loading"></a><h1>Loading the Configuration</h1>
+
+
+</p>
+<p>
+    Once a compiler configuration file is written, BEAM needs to
+    load it. Both C and C++ configuration files may be loaded at
+    the same time so that BEAM acts like your compiler would.
+    The Java configuration should be loaded separately.
+</p>
+<p>
+    You may not load two C configuration files or two C++
+    configuration files at the same time; they will conflict with
+    each other. You may not load a C and C++ configuration file
+    together if they are for different compilers, either
+    (the <span class="var">cc</span> setting).
+</p>
+<p>
+    You should load compiler configuration files with the
+    <a href="beam_compile.html#beam::compiler"><span class="option">--beam::compiler=</span></a>
+    option.
+</p>
+<p>
+    For example, this will load <span class="file">my_config.tcl</span>, which contains a C
+    configuration.
+</p>
+<pre class="example">
+beam_compile --beam::compiler=my_config.tcl file.c
+</pre>
+<p>
+
+    and this will load <span class="file">beam_cxlc400_config.tcl</span>, which comes with
+    BEAM:
+</p>
+<pre class="example">
+beam_compile --beam::compiler=beam_cxlc400_config file.c
+</pre>
+<p>
+
+    This will use the default settings and argument mapper, which is very basic:
+</p>
+<pre class="example">
+beam_compile file.c
+</pre>
+<p>
+
+    If no compiler configuration files are loaded, BEAM uses default
+    settings. No compiler is emulated. These default settings are very
+    basic, and will only work for the most trivial source files. For
+    example, no system header files will be found.
+</p>
+<p>
+<hr />
+
+<a name="overriding"></a><h1>Overriding configuration options</h1>
+
+
+</p>
+<p>
+    If the configuration is not perfect and you need to override some settings,
+    we recommend that you make a separate file and store your overrides in there.
+    Load this override file with <a href="beam_compile.html#beam::source"><span class="option">--beam::source=</span></a>, like so:
+</p>
+<pre class="example">
+beam_compile --beam::compiler=gcc_config.tcl --beam::source=<span class="val">my_overrides.tcl</span> foo.c
+</pre>
+<p>
+
+    This will make it easier for you to regenerate your compiler configuration file
+    when your compiler changes, when <span class="command">beam_configure</span> changes, or any other
+    time, without losing your overrides.
+</p>
+<p>
+<hr />
+
+<a name="configuration"></a><h1>The Compiler Configuration File Syntax</h1>
+
+
+</p>
+<p>
+    The compiler configuration file is a Tcl file that defines a
+    namespace which contains variables and procedures. These
+    variables and procedures are used to configure the BEAM parser
+    to act like your compiler.
+</p>
+<p>
+    The C and C++ configurations are described here. For Java, see
+    <a href="java_ref.html#compconf">this page</a> for details.
+</p>
+<p>
+    The namespace is either <span class="var">beam::compiler::c</span> for
+    the C configuration, or <span class="var">beam::compiler::cpp</span> for
+    the C++ configuration. We use separate namespaces so that both
+    configurations may be loaded at the same time. BEAM will look in
+    the correct namespace based on whether the input source file is
+    a C or C++ file.
+</p>
+<p>
+    Every variable that is set should be set with a fully-qualified
+    namespace, like so:
+</p>
+<pre class="example">
+set beam::compiler::c::<span class="var">variable</span> &quot;value&quot;
+set beam::compiler::cpp::<span class="var">variable</span> &quot;value&quot;
+</pre>
+<p>
+
+      At the top will be a setting of <span class="var">cc</span>, which
+      tells BEAM which compiler is being emulated. This variable
+      controls which <a href="argument_mapper.html">argument parsers</a>
+      to use, and which <a href="extapi.html">compiler-specific attributes</a> 
+      to load. For example, if you want the gcc argument mapper and
+      function attributes, set this to <span class="val">gcc</span>. If your
+      configuration file was generated by <span class="command">beam_configure</span>,
+      this should already be set if you are using one of our
+      <a href="compilers.html">supported compilers</a>.
+</p>
+<p>
+    <a name="section1"></a><h1>Section 1: Basic language options</h1>
+
+
+</p>
+<p>
+      These are the variables that control the language dialect and any
+      language extension modes that may be desired.
+</p>
+<p>
+      By default, C files are set up as:
+      <ul>
+        <li><span class="code">set beam::compiler::c::language_dialect c</span>
+        <li><span class="code">set beam::compiler::c::c99_mode 0</span>
+        <li><span class="code">set beam::compiler::c::strict_mode 0</span>
+        <li><span class="code">set beam::compiler::c::gnu_mode 0</span>
+<!--        <li><span class="code">set beam::compiler::c::msvc_mode 0</span> -->
+      </ul>
+      and C++ files are set up as:
+      <ul>
+        <li><span class="code">set beam::compiler::cpp::language_dialect c++</span>
+        <li><span class="code">set beam::compiler::cpp::c99_mode 0</span>
+        <li><span class="code">set beam::compiler::cpp::strict_mode 0</span>
+        <li><span class="code">set beam::compiler::cpp::gnu_mode 0</span>
+<!--        <li><span class="code">set beam::compiler::cpp::msvc_mode 0</span> -->
+      </ul>
+</p>
+<p>
+<!--
+</p>
+<p>
+ - The following Tcl flags are currently undocumented because they
+   are really only to be used in an "emergency":
+</p>
+<p>
+   - From the command line:
+     language_anachronisms_allowed
+     language_exceptions_enabled
+     language_rtti_enabled
+     language_nonstandard_qualifier_deduction
+     language_explicit_keyword_enabled
+     language_namespaces_enabled
+     language_old_specializations_allowed
+     language_guiding_decls_allowed
+     language_wchar_t_is_keyword
+     language_bool_is_keyword
+     language_long_long_is_standard
+     language_typename_enabled
+     language_do_dependent_name_processing
+     language_nonclass_prototype_instantiations
+     language_alternative_tokens_allowed
+     language_class_name_injection_enabled
+     language_arg_dependent_lookup_enabled
+     language_nonstandard_using_decl_allowed
+     language_designators_allowed
+     language_extended_designators_allowed
+     language_compound_literals_allowed
+     language_ignore_std_namespace
+     language_overload_keyword_enabled
+</p>
+<p>
+   - From targ_def.h:
+     target_char_constant_first_char_most_significant
+     target_bool_int_kind
+     target_force_one_bit_bit_field_to_be_unsigned
+     target_right_shift_is_arithmetic
+     target_too_large_shift_count_is_taken_modulo_size
+     target_sizeof_ptr_to_data_member
+     target_alignof_ptr_to_data_member
+     target_sizeof_ptr_to_member_function
+     target_alignof_ptr_to_member_function
+     target_sizeof_virtual_function_info
+     target_alignof_virtual_function_info
+     targ_bit_field_affects_union_alignment
+-->
+</p>
+<p>
+    <table>
+      <tr>
+	<th width="20%">
+	  Variable
+	</th>
+	<th width="20%">
+	  Value
+	</th>
+	<th width="60%">
+	  Description
+	</th>
+      </tr>
+</p>
+<p>
+<!-- language_dialect -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_dialect<br>
+	  beam::compiler::cpp::language_dialect
+	</td>
+	<td>
+	  <ul>
+	    <li>old_c</li>
+	    <li>c</li>
+	    <li>c++</li>
+	  </ul>
+	</td>
+	<td>
+	  This controls which dialect of C or C++ to
+	  accept. <span class="val">old_c</span> will accept the old K&R style
+	  pre-ANSI code. <span class="val">c</span> will accept the C language
+          as defined in the C89 standard, and <span class="val">c++</span> will accept
+          the C++ language from the C++98 standard.
+          <br><br>
+          Normally, you will <span class="strong">not</span> need to set this. It will
+          default to the langauge of the source file, based on the
+          file extension. For C the default dialect is <span class="val">c</span>.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- c99_mode -->
+      <tr>
+	<td>
+	  beam::compiler::c::c99_mode<br>
+	  beam::compiler::cpp::c99_mode
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  The default value is 0.
+	  Setting the value to <span class="val">1</span> will enable C99
+	  extensions. This is not compatible with the <span class="val">c++</span>
+	  dialect. If this is used with the <span class="val">old_c</span>
+	  dialect, the dialect will silently change to <span class="val">c</span>.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- strict_mode -->
+      <tr>
+	<td>
+	  beam::compiler::c::strict_mode<br>
+	  beam::compiler::cpp::strict_mode
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  The default value is 0.
+	  Setting this to <span class="val">1</span> will enable strict mode.
+	  This mode disables non-ANSI features and extensions.
+	  It is not compatible with the <span class="val">old_c</span> dialect.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- gnu_mode -->
+      <tr>
+	<td>
+	  beam::compiler::c::gnu_mode<br>
+	  beam::compiler::cpp::gnu_mode
+	</td>
+	<td>
+	  5 digit version number
+	</td>
+	<td>
+	  Setting this to a version number will enable GNU extensions
+	  for that version of the <span class="val">gcc</span> compiler.
+	  This is compatible with the <span class="val">c</span> and
+	  <span class="val">c++</span> dialects. If this is used with the
+	  <span class="val">old_c</span> dialect, the dialect will silently change
+	  to <span class="val">c</span>.
+	  <br>
+	  The version number must be a 5 digit number representing
+	  the version of <span class="val">gcc</span> to emulate. It is calculated
+	  like so:
+</p>
+<pre class="example">
+major_version_num * 10000 +
+minor_version_num * 100   +
+patch_version_num
+</pre>
+<p>
+
+	  For example, to emulate <span class="val">gcc 3.4.1</span>, set this
+	  variable to <span class="val">30401</span>.
+	  <br><br>
+	  The minimum allowable version is <span class="val">30200</span>. If your
+          GNU compiler has a smaller version, a warning will be printed
+          and <span class="val">30200</span> will be used.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- msvc_mode -->
+      <tr>
+	<td>
+	  beam::compiler::c::msvc_mode<br>
+	  beam::compiler::cpp::msvc_mode
+	</td>
+	<td>
+	  4 digit version number
+	</td>
+	<td>
+	  Setting this to a version number will enable language extensions
+	  for that version of the <span class="val">msvc</span> compiler. It will also
+	  emulate known bugs of that particular compiler version.
+	  This mode is compatible with the <span class="val">c</span> and
+	  <span class="val">c++</span> dialects.
+	  <br>
+	  The version number must be a 4 digit number representing
+	  the version of <span class="val">msvc</span> to emulate. It can be obtained
+	  from the predefined macro <span class="code">_MSC_VER</span> that the Visual C/C++
+          compiler defines. The default version is 1400 (Visual C/C++ 8).
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_friend_injection_enabled -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_friend_injection_enabled<br>
+	  beam::compiler::cpp::language_friend_injection_enabled
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if friend declarations without normal
+	  declarations are visible during normal lookup. 0 is the
+	  default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_use_nonstandard_for_init_scope -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_use_nonstandard_for_init_scope<br>
+	  beam::compiler::cpp::language_use_nonstandard_for_init_scope<br>
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if the old scoping rules for variables defined in 
+	  a <span class="code">for</span> statement's initializer should be used. The old
+	  rule implies that the visibility of those variables extends
+	  past the body of the <span class="code">for</span>
+	  statement. 0 is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_string_literals_are_const -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_string_literals_are_const<br>
+	  beam::compiler::cpp::language_string_literals_are_const
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if string literals have type
+	  <span class="term">array of const char</span>. Set this to 0 if string
+	  literals have type <span class="term">array of char</span>.
+	  1 is the default. This only affects C++.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_allow_dollar_in_id_chars -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_allow_dollar_in_id_chars<br>
+	  beam::compiler::cpp::language_allow_dollar_in_id_chars
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+          Set this to 1 to allow dollar signs in identifier names.
+          Set this to 0 otherwise. 1 is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_end_of_line_comments_allowed -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_end_of_line_comments_allowed<br>
+	  beam::compiler::cpp::language_end_of_line_comments_allowed
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+          Set this to 1 to allow end-of-line-comments (<span class="code">//</span>).
+          Set this to 0 otherwise. 1 is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_ignore_trailing_spaces_in_include_file_name -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_allow_spaces_in_include_directive<br>
+	  beam::compiler::cpp::language_allow_spaces_in_include_directive
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  When set to 1, leading and trailing spaces will be ignored in 
+	  a <span class="code">#include</span> directive. The following directives all
+	  refer to the same file <span class="file">foo.h</span>:
+          <ul>
+          <li><span class="code">#include &quot;foo.h&quot;</span>
+          <li><span class="code">#include &quot;foo.h &quot;</span>
+          <li><span class="code">#include &quot; foo.h      &quot;</span>
+          </ul>
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_custom_int_size_modifier -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_custom_int_size_modifier<br>
+	  beam::compiler::cpp::language_custom_int_size_modifier
+	</td>
+	<td>
+	  <span class="val">identifier name</span>
+	</td>
+	<td>
+          The specified name must obey the syntactic requirements for C/C++
+          identifiers.
+          When specified, the parser will interpret the name as a type
+	  specifier that modifies the size of a basic integer type. It
+          will be treated the same way as the <span class="code">short</span> modifier
+          is treated. For instance, a specification like this:
+</p>
+<pre class="example">
+set beam::compiler::c::language_custom_int_size_modifier colossal
+</pre>
+<p>
+
+          allows you to write:
+</p>
+<pre class="example">
+colossal i1;
+colossal int i2;
+unsigned colossal i3;
+</pre>
+<p>
+
+          The size and alignment effects of this type specifier can be
+          specified via the variables <span class="var">target_sizeof_custom_int</span>
+          and <span class="var">target_alignof_custom_int</span>. If the size of the
+          custom integer is smaller than <span class="code">sizeof(int)</span> values of
+	  this type will be promoted to <span class="code">int</span>. Otherwise, no
+	  type promotion takes place.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_restrict_keyword_enabled -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_restrict_keyword_enabled<br>
+	  beam::compiler::cpp::language_restrict_keyword_enabled
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  When set to 1, the <span class="code">restrict</span> keyword will be
+          recognized. Note that the <span class="code">restrict</span> keyword
+          is always recognized in C mode if
+          <span class="val">c99_mode</span> is on.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- language_trigraphs_allowed -->
+      <tr>
+	<td>
+	  beam::compiler::c::language_trigraphs_allowed<br>
+	  beam::compiler::cpp::language_trigraphs_allowed
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  When set to 1, trigraphs are converted in the preprocessing
+          phase. When set to 0, they are left unchanged.
+	</td>
+      </tr>
+</p>
+<p>
+    </table>
+</p>
+<p>
+      Example:
+</p>
+<pre class="example">
+# This sets C++ mode with GNU extensions from GCC version 3.0.1
+
+set beam::compiler::cpp::language_dialect c++
+
+set beam::compiler::cpp::gnu_mode 30301
+</pre>
+<p>
+
+    <a name="section2"></a><h1>Section 2: Default include paths</h1>
+
+
+</p>
+<p>
+      The <span class="var">system_include_path</span> variable is a Tcl list
+      that contains the directories that will be searched after
+      any directories specified by <span class="option">-I</span> on the command
+      line. These directories will be automatically appended to 
+      the search path after the command line has been read in.
+</p>
+<p>
+      Example:
+</p>
+<pre class="example">
+lappend beam::compiler::c::system_include_path {/usr/include}
+lappend beam::compiler::cpp::system_include_path {/my/compiler/include}
+</pre>
+<p>
+
+    <a name="section3"></a><h1>Section 3: Target machine configuration</h1>
+
+
+</p>
+<p>
+      Here are all of the variables that control the configuration of
+      the target machine (sizes, alignments, etc).
+</p>
+<p>
+    <table>
+      <tr>
+	<th width="20%">
+	  Variable
+	</th>
+	<th width="20%">
+	  Value
+	</th>
+	<th width="60%">
+	  Description
+	</th>
+      </tr>
+</p>
+<p>
+<!-- target_char_bit -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_char_bit<br>
+	  beam::compiler::cpp::target_char_bit
+	</td>
+	<td>
+	  Number
+	</td>
+	<td>
+	  This controls the number of bits that are in a
+	  <span class="code">char</span>. 8 is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_plain_char_is_unsigned -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_plain_char_is_unsigned<br>
+	  beam::compiler::cpp::target_plain_char_is_unsigned
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if the plain <span class="code">char</span> type is unsigned.
+	  Set this to 0 if it is signed.
+          0 is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_plain_int_bit_field_is_unsigned -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_plain_int_bit_field_is_unsigned<br>
+	  beam::compiler::cpp::target_plain_int_bit_field_is_unsigned
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if plain <span class="code">int</span> bit fields are signed.
+	  Set this to 0 if they are unsigned.
+          0 is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_enum_bit_fields_are_always_unsigned -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_enum_bit_fields_are_always_unsigned<br>
+	  beam::compiler::cpp::target_enum_bit_fields_are_always_unsigned
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if enum bit fields are always unsigned, even
+	  if the enum itself contains signed values.
+	  Set this to 0 if they can be signed.
+	  0 is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_string_literals_are_readonly -->
+      <tr>
+	<td>
+          beam::compiler::c::target_string_literals_are_readonly<br>
+          beam::compiler::cpp::target_string_literals_are_readonly
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if string literals are placed in readonly memory
+          and therefore cannot be modified at runtime.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_little_endian -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_little_endian<br>
+	  beam::compiler::cpp::target_little_endian
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if the target is little endian, and 0 otherwise.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_sizeof_* -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_sizeof_short<br>
+	  beam::compiler::c::target_sizeof_int<br>
+	  beam::compiler::c::target_sizeof_long<br>
+	  beam::compiler::c::target_sizeof_long_long<br>
+	  beam::compiler::c::target_sizeof_custom_int<br>
+	  <br>
+	  beam::compiler::c::target_sizeof_float<br>
+	  beam::compiler::c::target_sizeof_double<br>
+	  beam::compiler::c::target_sizeof_long_double<br>
+	  <br>
+	  beam::compiler::c::target_sizeof_pointer<br>
+	</td>
+	<td>
+	  Number
+	</td>
+	<td>
+	  Set each of these to the type's respective size in
+	  bytes.
+</p>
+<p>
+          The same variables also exist with the
+          <span class="var">beam::compiler::cpp</span> prefix.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_alignof_* -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_alignof_short<br>
+	  beam::compiler::c::target_alignof_int<br>
+	  beam::compiler::c::target_alignof_long<br>
+	  beam::compiler::c::target_alignof_long_long<br>
+	  beam::compiler::c::target_alignof_custom_int<br>
+	  <br>
+	  beam::compiler::c::target_alignof_float<br>
+	  beam::compiler::c::target_alignof_double<br>
+	  beam::compiler::c::target_alignof_long_double<br>
+	  <br>
+	  beam::compiler::c::target_alignof_pointer<br>
+	</td>
+	<td>
+	  Number
+	</td>
+	<td>
+	  Set each of these to the type's respective alignment
+	  in bytes. If you set the size of a type, but not the
+	  alignment, then the alignment will default to the same
+	  value as the size.
+</p>
+<p>
+          The same variables also exist with the
+          <span class="var">beam::compiler::cpp</span> prefix.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_size_t_int_kind -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_size_t_int_kind<br>
+	  beam::compiler::cpp::target_size_t_int_kind
+	</td>
+	<td>
+	  An unsigned integer type (unsigned int, unsigned long, etc)
+	</td>
+	<td>
+	  Set this to the integer type that <span class="code">size_t</span>
+	  is represented by. <span class="code">unsigned int</span> is the default.
+          The <span class="code">size_t</span> type is usually defined in 
+	  <stddef.h&gt.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_sizeof_size_t -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_sizeof_size_t<br>
+	  beam::compiler::cpp::target_sizeof_size_t
+	</td>
+	<td>
+	  Number
+	</td>
+	<td>
+	  Set this to be the size of the <span class="code">size_t</span> type
+	  in bytes. This is used to guess the underlying integer
+	  type to use if <span class="var">target_size_t_int_kind</span> above
+	  is not set. It is recommended that
+	  <span class="var">target_size_t_int_kind</span> be used instead of this.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_ptrdiff_t_int_kind -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_ptrdiff_t_int_kind<br>
+	  beam::compiler::cpp::target_ptrdiff_t_int_kind
+	</td>
+	<td>
+	  A signed integer type (int, long, etc)
+	</td>
+	<td>
+	  Set this to the integer type that <span class="code">ptrdiff_t</span>
+	  is represented by. <span class="code">int</span> is the default.
+          The <span class="code">ptrdiff_t</span> type is usually defined in 
+	  <stddef.h&gt.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_sizeof_ptrdiff_t -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_sizeof_ptrdiff_t<br>
+	  beam::compiler::cpp::target_sizeof_ptrdiff_t
+	</td>
+	<td>
+	  Number
+	</td>
+	<td>
+	  Set this to be the size of the <span class="code">ptrdiff_t</span> type
+	  in bytes. This is used to guess the underlying integer
+	  type to use if <span class="var">target_ptrdiff_t_int_kind</span> above
+	  is not set. It is recommended that
+	  <span class="var">target_ptrdiff_t_int_kind</span> be used instead of this.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_wchar_t_int_kind -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_wchar_t_int_kind<br>
+	  beam::compiler::cpp::target_wchar_t_int_kind
+	</td>
+	<td>
+	  Some integer type (int, unsigned int, etc)
+	</td>
+	<td>
+	  Set this to be the integer type that <span class="code">wchar_t</span>
+	  is represented by. <span class="code">unsigned short</span> is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_sizeof_wchar_t -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_sizeof_wchar_t<br>
+	  beam::compiler::cpp::target_sizeof_wchar_t
+	</td>
+	<td>
+	  Number
+	</td>
+	<td>
+	  Set this to be the size of the <span class="code">wchar_t</span> type
+	  in bytes. This is used to guess the underlying integer
+	  type to use if <span class="var">target_wchar_t_int_kind</span> above
+	  is not set. It is recommended that
+	  <span class="var">target_wchar_t_int_kind</span> be used instead of this.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_wchar_t_is_unsigned -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_wchar_t_is_unsigned<br>
+	  beam::compiler::cpp::target_wchar_t_is_unsigned
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if the <span class="code">wchar_t</span> type is unsigned.
+	  Set this to 0 if it is signed. This is used to guess the
+	  underlying integer type to use if
+	  <span class="var">target_wchar_t_int_kind</span> above is not set.
+	  It is recommended that
+	  <span class="var">target_wchar_t_int_kind</span> be used instead of this.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_wint_t_int_kind -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_wint_t_int_kind<br>
+	  beam::compiler::cpp::target_wint_t_int_kind
+	</td>
+	<td>
+	  Some integer type (int, unsigned int, etc)
+	</td>
+	<td>
+	  Set this to be the integer type that <span class="code">wint_t</span>
+	  is represented by. <span class="code">unsigned short</span> is the default.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_sizeof_wint_t -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_sizeof_wint_t<br>
+	  beam::compiler::cpp::target_sizeof_wint_t
+	</td>
+	<td>
+	  Number
+	</td>
+	<td>
+	  Set this to be the size of the <span class="code">wint_t</span> type
+	  in bytes. This is used to guess the underlying integer
+	  type to use if <span class="var">target_wint_t_int_kind</span> above
+	  is not set. It is recommended that
+	  <span class="var">target_wint_t_int_kind</span> be used instead of this.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_wint_t_is_unsigned -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_wint_t_is_unsigned<br>
+	  beam::compiler::cpp::target_wint_t_is_unsigned
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if the <span class="code">wint_t</span> type is unsigned.
+	  Set this to 0 if it is signed. This is used to guess the
+	  underlying integer type to use if
+	  <span class="var">target_wint_t_int_kind</span> above is not set.
+	  It is recommended that
+	  <span class="var">target_wint_t_int_kind</span> be used instead of this.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_flt_*, target_dbl_*, target_ldbl_* -->
+      <tr>
+	<td>
+<!-- Removed for now: beam::compiler::c::target_flt_mant_dig<br> -->
+	  beam::compiler::c::target_flt_min_exp<br>
+	  beam::compiler::c::target_flt_max_exp<br>
+	  <br>
+<!-- Removed for now: beam::compiler::c::target_dbl_mant_dig<br> -->
+	  beam::compiler::c::target_dbl_min_exp<br>
+	  beam::compiler::c::target_dbl_max_exp<br>
+	  <br>
+<!-- Removed for now: beam::compiler::c::target_ldbl_mant_dig<br> -->
+	  beam::compiler::c::target_ldbl_min_exp<br>
+	  beam::compiler::c::target_ldbl_max_exp<br>
+	</td>
+	<td>
+	  Numbers
+	</td>
+	<td>
+	  These variables represent the characteristics of the
+	  floating-point types. <span class="var">flt</span> is for
+	  <span class="code">float</span>, <span class="var">dbl</span> is for
+	  <span class="code">double</span>, and <span class="var">ldbl</span> is for
+	  <span class="code">long double</span>.
+</p>
+<p>
+<!-- Removed for now: The <span class="var">mant_dig</span> is for the number of bits in the
+	  mantissa, including the sign bit. -->
+</p>
+<p>
+	  The <span class="var">min_exp</span> and <span class="var">max_exp</span> are for
+	  the minimum and maximum exponent values that can be
+	  represented.
+</p>
+<p>
+	  If any of these are not specified, they will default to
+	  reasonable values based on their sizes.
+</p>
+<p>
+          Note that these values do not have to be exact because
+          BEAM currently has limited floating-point support.
+</p>
+<p>
+          The same variables also exist with the
+          <span class="var">beam::compiler::cpp</span> prefix.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_enum_types_can_be_smaller_than_int 
+      <tr>
+	<td>
+	  beam::compiler::c::target_enum_types_can_be_smaller_than_int<br>
+	  beam::compiler::cpp::target_enum_types_can_be_smaller_than_int
+	</td>
+	<td>
+	  0 or 1
+	</td>
+	<td>
+	  Set this to 1 if enum types can be smaller than the int
+	  type. Usually, all enum types are the same size as the
+	  int type. 0 is the default.
+	</td>
+      </tr>
+-->
+<!-- target_bit_field_container_size -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_bit_field_container_size<br>
+	  beam::compiler::cpp::target_bit_field_container_size
+	</td>
+	<td>
+	  -1, 0, or a positive number
+	</td>
+	<td>
+          This option controls the size of a bit field container.<br><br>
+          Set this to <span class="val">-1</span> if bit field containers should
+          be the size of the declared type of the bit field.<br><br>
+          Set this to <span class="val">0</span> if the size of the smallest integral type
+          that can contain the bit field should be used.<br><br>
+          Set this to some positive number if the bit field
+          container should be the size of some integral type with
+          the given number of bytes.<br><br>
+          The default is <span class="val">-1</span>.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_zero_width_bit_field_alignment -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_zero_width_bit_field_alignment<br>
+	  beam::compiler::cpp::target_zero_width_bit_field_alignment
+	</td>
+	<td>
+          -1, 0, or a positive number
+	</td>
+	<td>
+          This option controls the alignment of a zero-width bit field.<br><br>
+          Set this to <span class="val">-1</span> to use the alignment of the declared
+          type of the bit field.<br><br>
+          Set this to <span class="val">0</span> to use an alignment of one byte
+          (the smallest of the integral types that can be used).<br><br>
+          Set this to some positive number to use that number as the alignment.<br><br>
+          The default is <span class="val">-1</span>.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_zero_width_bit_field_affects_struct_alignment -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_zero_width_bit_field_affects_struct_alignment<br>
+	  beam::compiler::cpp::target_zero_width_bit_field_affects_struct_alignment
+	</td>
+	<td>
+          0 or 1
+	</td>
+	<td>
+          Set this to <span class="val">0</span> if the alignment of a zero-width
+          bit field only affects the alignment of the following field.<br><br>
+          Set this to <span class="val">1</span> if the alignment of a zero-width
+          bit field affects both the alignment of the following field
+          and the alignment of the overall structure it is declared in.<br><br>
+          The default is <span class="val">0</span>.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_unnamed_bit_field_affects_struct_alignment -->
+      <tr>
+	<td>
+	  beam::compiler::c::target_unnamed_bit_field_affects_struct_alignment<br>
+	  beam::compiler::cpp::target_unnamed_bit_field_affects_struct_alignment
+	</td>
+	<td>
+          0 or 1
+	</td>
+	<td>
+          Set this to <span class="val">0</span> if the alignment of an unnamed
+          bit field only affects the alignment of the following field.<br><br>
+          Set this to <span class="val">1</span> if the alignment of an unnamed
+          bit field affects both the alignment of the following field
+          and the alignment of the overall structure it is declared in.<br><br>
+          The default is <span class="val">0</span>.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- target_builtin_va_list_base_type -->
+      <tr>
+	<td>
+	  beam::compiler::cpp::target_builtin_va_list_base_type
+	</td>
+	<td>
+	  An integer type.
+	</td>
+	<td>
+          Only applicable for GCC compilers. If
+          <span class="code">__builtin_va_list type</span> is not a synonym for
+          <span class="code">void *</span> the value of this variable gives the base type
+          that is used to construct a pointer type for 
+          <span class="code">__builtin_va_list type</span>. For instance, a value of
+          <span class="code">char</span> means that GCC defines 
+          <span class="code">__builtin_va_list type</span> as <span class="code">char *</span>.
+	</td>
+      </tr>
+</p>
+<p>
+    </table>
+</p>
+<p>
+    <a name="section4"></a><h1>Section 4: Predefined macros</h1>
+
+
+</p>
+<p>
+      The <span class="var">predefined_macro</span> variable is an associated Tcl
+      array that maps a macro identifier to an expanded value. There
+      is no limit to the number of predefined macros that may be
+      defined for each language.
+</p>
+<p>
+      The value in the curly braces will be taken as the literal
+      expansion. Nested curly braces are allowed if they are paired up
+      correctly. Be sure to include quotes in the expansion if the
+      macro is supposed to expand to a literal character string.
+</p>
+<p>
+      Examples:
+</p>
+<pre class="example">
+set beam::compiler::c::predefined_macro(DEBUG) {1}
+
+set beam::compiler::cpp::predefined_macro(VER_STRING) {&quot;some version in quotes when expanded&quot;}
+
+set beam::compiler::c::predefined_macro(func_like(x,y)) { do { x += y; } while(x &lt; y); }
+</pre>
+<p>
+
+      Also, EDG sets up some pre-defined macros like <span class="var">__STDC__</span>.
+      Normally these are required, and they can be undefined if they
+      should be suppressed, but sometimes you want to turn them all off,
+      or only allow a few specific ones through. The
+      <span class="var">standard_predefined_macros</span> variable is a
+      <a href="parms.html#patterns">pattern</a> of standard pre-defined
+      macros to allow to be defined. It defaults to allow all EDG standard
+      pre-defined macros to be defined. For a list of EDG macros that
+      are predefined, see 
+      <a href="edg-predefined-macros.html">this page</a>.
+</p>
+<p>
+      Note: Normally, this should not be set. This is for complicated
+      cross-compiler setup where some of the basic required macros
+      need to be changed.
+</p>
+<p>
+      Examples:
+</p>
+<pre class="example">
+# Allow all EDG standard predefined macros except __STDC__
+
+set beam::compiler::c::standard_predefined_macros &quot;* - __STDC__&quot;
+
+# Define only __FILE__ and __LINE__ from EDG
+
+set beam::compiler::c::standard_predefined_macros &quot;__FILE__ __LINE__&quot;
+
+# Don't define anything from EDG (dangerous)
+
+set beam::compiler::cpp::standard_predefined_macros &quot;&quot;
+</pre>
+<p>
+
+    <a name="section5"></a><h1>Section 5: Miscellaneous options</h1>
+
+
+</p>
+<p>
+      These variables had no category of their own.
+</p>
+<p>
+    <table>
+      <tr>
+	<th width="20%">
+	  Variable
+	</th>
+	<th width="80%">
+	  Description
+	</th>
+      </tr>
+</p>
+<p>
+<!-- extern -->
+      <tr>
+	<td>
+	  beam::compiler::c::extern(string) "string"<br>
+	  beam::compiler::cpp::extern(string) "string"
+	</td>
+	<td>
+	  An associated Tcl array that maps
+	  an arbitrary string to a known language linkage specification.
+          This is handy to work around compiler extensions that allow
+	  language linkages other than <span class="val">&quot;C&quot;</span> and
+	  <span class="val">&quot;C++&quot;</span>.
+	  <br><br>
+	  Example:
+</p>
+<pre class="example">
+# We want this:
+
+extern &quot;builtin&quot; void func();
+
+# To act like this:
+
+extern &quot;C&quot; void func();
+
+# So here is the configuration option:
+
+set beam::compiler::cpp::extern(builtin) &quot;C&quot;
+</pre>
+<p>
+
+	  <br><br>
+	  Note that the quotes are part of Tcl syntax, and will not
+	  be part of the actual value. Removing the quotes from the
+	  above example would make no difference, and neither would
+	  using curly braces instead.
+	</td>
+      </tr>
+</p>
+<p>
+<!-- extern -->
+      <tr>
+	<td>
+          beam::compiler::c::function_name_is_string_literal(<span class="val">name</span>)<br>
+          beam::compiler::cpp::function_name_is_string_literal(<span class="val">name</span>)
+	</td>
+	<td>
+          Some compilers predefine one or more identifiers that
+	  are being replaced during parsing with the name of the function 
+          they appear in. The following identifiers
+	  are recognized: <span class="var">__func__</span>, <span class="var">__FUNCTION__</span>,
+	  <span class="var">__PRETTY_FUNCTION__</span>, and <span class="var">__FUNCDNAME__</span>.
+	  For each identifier it can be specified whether its replacement is
+	  a string literal (doubly quoted) or a variable (which is
+	  initialized with the function's name). The distinction is 
+	  important, because string literals can be concatenated. For
+	  instance, if <span class="var">__func__</span> is replaced with a string
+	  literal, then <span class="code">&quot;Hello, &quot;__func__</span> is valid C. However,
+	  if <span class="var">__func__</span> is replaced with a variable, the
+	  attempted concatenation will cause a syntax error.
+	  Example:
+</p>
+<pre class="example">
+	  set beam::compiler::c::function_name_is_string_literal(__func__) 1
+	  set beam::compiler::c::function_name_is_string_literal(__FUNCTION__) 0
+</pre>
+<p>
+
+          This means, that the compiler
+	  <ul>
+	  <li>defines <span class="var">__func__</span> and its replacement is a
+	  string literal
+	  <li>defines <span class="var">__FUNCTION__</span> and its replacement is a
+	  variable
+	  <li>does not define <span class="var">__PRETTY_FUNCTION__</span> and
+	  <span class="var">__FUNCDNAME__</span>
+	  </ul>
+	</td>
+      </tr>
+</p>
+<p>
+<!-- suppressed_diagnostics -->
+      <tr>
+        <td>
+          beam::compiler::c::suppressed_diagnostics<br>
+          beam::compiler::cpp::suppressed_diagnostics
+        </td>
+        <td>
+          The EDG C and C++ parser may issue diagnostic messages of its
+          own that are separate from BEAM. These messages can be suppressed
+          by setting <span class="var">suppressed_diagnostics</span> to be a
+          list of diagnostic codes to suppress. If one of the items
+          in the list is <span class="code">*</span> (a single asterisk), then all EDG
+          diagnostic messages will be suppressed.
+</p>
+<p>
+          Note that in BEAM 3.5.0 and above, all EDG warnings are suppressed
+          automatically. They must first be enabled via "--edg=--warnings"
+          on the BEAM command-line before you can individually suppress
+          those that you are not interested in.
+</p>
+<p>
+          See <a href="faq.html#EDG_Q10">the FAQ entry</a> for information
+          on how to determine the diagnostic code for a certain message.
+        </td>
+      </tr>
+</p>
+<p>
+    </table>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

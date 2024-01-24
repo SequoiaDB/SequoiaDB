@@ -1,0 +1,113 @@
+<html>
+<head>
+  <title>BEAM: CTE</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM and CTE</h1>
+<hr/>
+
+</p>
+<p>
+BEAM is installed in <a href="http://w3vlsi.watson.ibm.com/CTE/">CTE</a>.
+</p>
+<p>
+This installation supports the Linux-x86 and AIX-5.1.x platforms
+for C and C++.
+</p>
+<p>
+Java is not supported in CTE at this time - if you would like
+to use BEAM for Java, please <a href="install.html">install beam</a>
+locally.
+</p>
+<p>
+The path to BEAM is <span class="val">$cte/tools/beam</span>, where <span class="var">$cte</span>
+is the path to your local CTE mirror (<span class="val">/afs/eda/cte</span>,
+for example).
+</p>
+<p>
+Inside that directory are the supported versions of BEAM as well
+as a <span class="val">prod</span> symlinks. The <span class="val">prod</span> symlink points to the
+newest version of BEAM installed in CTE.
+</p>
+<p>
+We recommend that users run BEAM via the <span class="val">prod</span> symlink so
+they are always running the latest and greatest:
+</p>
+<pre class="example">
+/afs/eda/cte/tools/beam/prod/bin/beam_compile ...
+</pre>
+<p>
+
+After each BEAM release, the latest version is automatically
+added to CTE and should be available at your local CTE mirror
+within a day or two.
+</p>
+<p>
+Only a maximum of 2 versions will be supported in CTE. Once
+a new version of BEAM is released, any versions older than
+the most recent 2 will be deleted.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

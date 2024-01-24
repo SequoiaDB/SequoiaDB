@@ -1,0 +1,111 @@
+﻿<div style="padding:10px 15px;" ng-controller="Deploy.Index.Ctrl" ng-container="{}">
+   <div class="pull-left" ng-container="{offsetX:-280}">
+      <div class="underlineTab" ng-container="{height:50}">
+         <ul class="left">
+            <li ng-class="{'instance': 'active'}[CurrentPage]" ng-hide="InstanceNum == 0 && StorageNum == 0">
+               <a class="linkButton" ng-click="SwitchPage('instance')">{{autoLanguage("数据库实例")}}</a> <span class="badge badge-info">{{InstanceNum}}</span>
+            </li>
+            <li ng-class="{'storage': 'active'}[CurrentPage]">
+               <a class="linkButton" ng-click="SwitchPage('storage')">{{autoLanguage("分布式存储")}}</a> <span class="badge badge-info">{{StorageNum}}</span>
+            </li>
+            <li ng-class="{'host': 'active'}[CurrentPage]">
+               <a class="linkButton" ng-click="SwitchPage('host')">{{autoLanguage("主机")}}</a> <span class="badge badge-info">{{HostNum}}</span>
+            </li>
+         </ul>
+      </div>
+
+      <!--实例页面-->
+      <div ng-container="{offsetY:-50}" ng-controller="Deploy.Index.Instance.Ctrl" ng-hide="CurrentPage!='instance'" ng-include="'./app/template/Deploy/Index/Index.Instance.html'"></div>
+
+      <!--存储页面-->
+      <div ng-container="{offsetY:-50}" ng-controller="Deploy.Index.Storage.Ctrl" ng-hide="CurrentPage!='storage'" ng-include="'./app/template/Deploy/Index/Index.Storage.html'"></div>
+
+      <!--主机页面-->
+      <div ng-container="{offsetY:-50}" ng-controller="Deploy.Index.Host.Ctrl" ng-hide="CurrentPage!='host'" ng-include="'./app/template/Deploy/Index/Index.Host.html'"></div>
+   </div>
+
+   <!--操作栏-->
+   <div class="pull-right" ng-container="{width:270}">
+      <div class="borderBox" style="padding:10px;overflow-y:auto;overflow-x:hidden;" ng-container={{BoxHeight}}>
+         <div><b>{{autoLanguage("集群")}}</b></div>
+         <div ng-dropdown="config in ClusterDropdown.config" dropdown-event="ClusterDropdown.event" dropdown-callback="ClusterDropdown.callback">
+            <span class="Ellipsis" style="padding:5px 10px;display:block;" ng-click="ClusterDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+         </div>
+         <div style="padding-top:8px;" ng-repeat="clusterInfo in ClusterList track by $index">
+            <div style="">
+               <table class="table" style="margin-top:3px;">
+                  <tr>
+                     <td class="linkButton" style="padding-left:10px;cursor:pointer;text-decoration:none;" ng-style="{true:{'color':'#FF7547','font-weight':'bold'}}[CurrentCluster==$index]" ng-click="SwitchCluster($index)">
+                        <div class="Ellipsis">
+                           <i class="fa fa-archive"></i>
+                           <span>{{clusterInfo['ClusterName']}}</span>
+                        </div>
+                        <div class="Ellipsis" style="color:#ccc;font-size:90%;padding-left:0px;">{{clusterInfo['Desc']}}</div>
+                     </td>
+                     <td style="padding-left:10px;width:40px;">
+                        <button class="btn btn-default btn-lg" style="width:25px;" ng-click="OpenClusterDropdown($event,$index)">
+                           <i class="fa fa-caret-down" style=""></i>
+                        </button>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </div>
+      </div>
+      <div ng-container="{marginTop:10,height:109}">
+         <div ng-windows="form as CreateClusterWindow.config" windows-callback="CreateClusterWindow.callback">
+            <div class="underlineTab" style="height:50px;">
+               <ul class="left">
+                  <li ng-class="{true:'active'}[ShowType == 1]">
+                     <a class="linkButton" ng-click="SwitchParam(1)">{{autoLanguage("集群配置")}}</a>
+                  </li>
+                  <li ng-class="{true:'active'}[ShowType == 2]">
+                     <a class="linkButton" ng-click="SwitchParam(2)">{{autoLanguage("资源授权")}}</a>
+                  </li>
+               </ul>
+            </div>
+            <div ng-show="ShowType == 1" form-create para="form[0]"></div>
+            <div ng-show="ShowType == 2" form-create para="form[1]"></div>
+         </div>
+         <div ng-windows="form as RemoveClusterWindow.config" windows-callback="RemoveClusterWindow.callback">
+            <div form-create para="form"></div>
+         </div>
+         <div ng-windows="form as ResourceGrantWindow.config" windows-callback="ResourceGrantWindow.callback">
+            <div form-create para="form"></div>
+         </div>
+
+         <div ng-windows="form as DeployModuleWindow.config" windows-callback="DeployModuleWindow.callback">
+            <div class="underlineTab" style="height:50px;">
+               <ul class="left">
+                  <li ng-class="{true:'active'}[ShowType == 1]">
+                     <a class="linkButton" ng-click="SwitchParam(1)">{{autoLanguage("集群配置")}}</a>
+                  </li>
+                  <li ng-class="{true:'active'}[ShowType == 2]">
+                     <a class="linkButton" ng-click="SwitchParam(2)">{{autoLanguage("服务配置")}}</a>
+                  </li>
+                  <li ng-class="{true:'active'}[ShowType == 3]">
+                     <a class="linkButton" ng-click="SwitchParam(3)">{{autoLanguage("资源授权")}}</a>
+                  </li>
+               </ul>
+            </div>
+            <div ng-show="ShowType == 1" form-create para="form[0]"></div>
+            <div ng-show="ShowType == 2" form-create para="form[1]"></div>
+            <div ng-show="ShowType == 3" form-create para="form[2]"></div>
+         </div>
+         <table class="table border loosen" style="font-size:90%;">
+            <tr>
+               <th style="background-color:#F1F4F5;">{{autoLanguage("操作")}}</th>
+            </tr>
+            <tr>
+               <td><a class="linkButton" ng-click="ShowDeployModule()">{{autoLanguage("一键部署")}}</a></td>
+            </tr>
+            <tr>
+               <td><a class="linkButton" ng-click="ShowCreateCluster()">{{autoLanguage("创建集群")}}</a></td>
+            </tr>
+            <tr>
+               <td><a class="linkButton" ng-class="{false:'disabled'}[ClusterList.length > 0]" ng-click="ShowRemoveCluster()">{{autoLanguage("删除集群")}}</a></td>
+            </tr>
+         </table>
+      </div>
+   </div>
+</div>

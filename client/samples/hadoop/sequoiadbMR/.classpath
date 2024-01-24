@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/hadoop-connector"/>
+	<classpathentry kind="lib" path="E:/CDH/CDH/hadoop-connector.jar"/>
+	<classpathentry kind="lib" path="E:/CDH/CDH/sequoiadb.jar"/>
+	<classpathentry kind="lib" path="E:/sequoiadb/driver/hadoop/hadoop-connector/hadoop1.2/hadoop-client-1.2.1.jar"/>
+	<classpathentry kind="lib" path="E:/sequoiadb/driver/hadoop/hadoop-connector/hadoop1.2/hadoop-core-1.2.1.jar"/>
+	<classpathentry kind="lib" path="E:/sequoiadb/driver/hadoop/hadoop-connector/hadoop1.2/hadoop-tools-1.2.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,271 @@
+import os
+import re
+
+Import("env")
+Import("dllBuildEnv")
+Import("staticBuildEnv")
+
+gtestFiles = [
+   "../../../../../SequoiaDB/engine/gtest/src/gtest-all.cc"
+]
+
+testMainFile = [
+   "./common/testMain.cpp"
+]
+
+testCommonFiles = [
+   "./common/testcommon.cpp",
+   "./common/impWorker.cpp",
+   "./common/arguments.cpp",
+   "./common/testBase.cpp"
+]
+
+testFiles = [
+   [ "./lob/lob23377.cpp" ],
+   [ "./lob/lob23411.cpp" ],
+   [ "./checkClientCataVersion/checkClientCataVersion22815.cpp" ],
+   [ "./connectionpool/connpool_connTest9505.cpp" ],
+   [ "./connectionpool/connpool_invalidArgTest9524.cpp" ],
+   [ "./connectionpool/connpool_invalidConnTest9528.cpp" ],
+   [ "./connectionpool/connpool_invalidUsrTest9522.cpp" ],  # sync
+   [ "./connectionpool/connpool_threadTest9535.cpp", "./connectionpool/connpool_thread.cpp" ],
+   [ "./connectionpool/connpool_timeTest9499.cpp" ],  # sync
+   #[ "./connectionpool/connpool_authtest24439.cpp" ], #not exec
+   #[ "./connectionpool/connpool_authtest24537.cpp" ], #not exec
+   #[ "./connectionpool/connpool_authtest24543.cpp" ], #not exec
+   #[ "./connectionpool/connpool_coordTest9571.cpp" ],
+   #[ "./connectionpool/connpool_libTest9577.cpp" ],
+   #[ "./connectionpool/connpool_memCheck9578.cpp" ],
+   #[ "./connectionpool/connpool_strategyTest9483.cpp"],
+   #[ "./connectionpool/connpool_timeJumpTest9580.cpp"],
+   #[ "./connectionpool/connpool_updateAddr24546.cpp"],
+   [ "./meta/domain12510_12658.cpp" ], # sync
+   [ "./meta/domain12657.cpp" ], # sync
+   [ "./meta/cs12511_12659.cpp" ],
+   [ "./meta/cl12512_12747.cpp" ],
+   [ "./meta/cl12660.cpp" ],
+   [ "./meta/loadUnloadCS14680.cpp" ],
+   [ "./meta/renameCsCl14681.cpp" ],
+   [ "./meta/renamecsandcl_16557.cpp" ],
+   [ "./meta/listGroupInDomain14685.cpp" ], # sync
+   [ "./index/index12514.cpp" ],
+   [ "./index/idIndex12515.cpp" ],
+   [ "./index/getindextest_16781.cpp" ],
+   [ "./cursor/closeCursor12685_12686.cpp" ],
+   [ "./cursor/closeAllCursors12687.cpp" ],
+   [ "./cursor/closeAllCursors14183.cpp" ],
+   [ "./dbOpr/auth12521.cpp" ], # sync
+   [ "./dbOpr/backup12304.cpp" ],
+   [ "./dbOpr/procedure12522.cpp" ],
+   [ "./dbOpr/evalJS12525.cpp" ],
+   [ "./dbOpr/trans12520_12675.cpp" ],  # config
+   [ "./dbOpr/sql12676_12678.cpp" ],
+   [ "./dbOpr/forceSession14673.cpp" ],
+   [ "./dbOpr/forceStepUp14674.cpp" ], # sync
+   [ "./dbOpr/invalidateCache14675.cpp" ], # sync
+   [ "./dbOpr/reloadConf14676.cpp" ], # sync
+   [ "./dbOpr/setPDLevel14677.cpp" ], # sync
+   [ "./dbOpr/trace14678.cpp" ], # sync
+   [ "./dbOpr/msg14679.cpp" ],
+   [ "./disconnect/opCL12741.cpp" ],
+   # [ "./disconnect/opSdb12531.cpp" ], # manual
+   # [ "./disconnect/opDomain12739.cpp" ], # manual
+   # [ "./disconnect/opCS12740.cpp" ], # manual
+   [ "./disconnect/opCursor12742.cpp" ],
+   # [ "./disconnect/opRG12743.cpp" ], # manual
+   # [ "./disconnect/opNode12744.cpp" ], # manual
+   # [ "./disconnect/opLob12745.cpp" ], # manual
+   [ "./split/splitRange12682.cpp" ],
+   [ "./split/splitHash12683.cpp" ],
+   [ "./split/task12527.cpp" ],
+   [ "./crud/bulkInsert12540_12666.cpp" ],
+   [ "./crud/insertWithFlag30391.cpp" ],
+   [ "./crud/setSessionAttr12538.cpp" ],
+   [ "./crud/upsert12541.cpp" ],
+   [ "./crud/cudtest26312_4.cpp" ],
+   #[ "./crud/upsertShardingKey12637.cpp" ],
+   [ "./crud/truncate12667.cpp" ],
+   [ "./crud/queryOne12542.cpp" ],
+   [ "./crud/queryAndRemove12544.cpp" ],
+   [ "./crud/queryAndUpdate12543.cpp" ],
+   [ "./crud/autoincofsequence_16648.cpp" ],
+   #[ "./crud/queryAndUpdateShardingKey12636.cpp" ],
+   #[ "./crud/updateShardingKey12635.cpp" ],
+   [ "./crud/crud12513.cpp" ],
+   [ "./crud/aggregate12518.cpp" ],
+   [ "./crud/pop14505.cpp" ],
+   [ "./crud/getCount14682.cpp" ],
+   [ "./decimal/absAndGetSign8892.cpp" ],
+   [ "./decimal/add8895.cpp" ],
+   [ "./decimal/append8865.cpp" ],
+   [ "./decimal/ceilAndFloor8902.cpp" ],
+   [ "./decimal/compare8893.cpp" ],
+   [ "./decimal/div8899.cpp" ],
+   [ "./decimal/getPercision8891.cpp" ],
+   [ "./decimal/insAndQry8887.cpp" ],
+   [ "./decimal/max8881.cpp" ],
+   [ "./decimal/min8879.cpp" ],
+   [ "./decimal/mod8904.cpp" ],
+   [ "./decimal/mul8898.cpp" ],
+   [ "./decimal/sub8897.cpp" ],
+   [ "./decimal/zero8877.cpp" ],
+   [ "./decimal/specialDecimal_14006.cpp" ],
+   [ "./paramVerify/csFuncParamTest12719.cpp" ],
+   [ "./paramVerify/clFuncParamTest12671.cpp" ],
+   [ "./paramVerify/rgFuncParamTest12729.cpp" ],  # sync
+   [ "./paramVerify/dbFuncParamTest12694.cpp" ],
+   [ "./paramVerify/lobFuncParamTest12556.cpp" ],
+   [ "./paramVerify/initClientParamTest12736.cpp" ],
+   [ "./paramVerify/queryMeta13054.cpp" ],
+   [ "./cls/rgOpr12688_12693.cpp" ],  # sync
+   [ "./cls/nodeOpr12689_12692.cpp" ],  # sync
+   [ "./cls/attachDetachNode12553.cpp" ],  # sync
+   [ "./cls/masterSlave12690.cpp" ],  # sync
+   [ "./cls/getSlaveOnePos13784.cpp" ], # sync
+   [ "./cls/getSlaveMultiPos13785.cpp" ], # sync
+   [ "./cls/getSlaveNoPos13786.cpp" ], # sync
+   [ "./cls/getSlaveParaCheck13787.cpp" ],
+   [ "./cls/reelect14684.cpp" ], # sync
+   # [ "./cache/createClWithCache7800.cpp" ], # cache test need not to be automated
+   # [ "./cache/getCsWithCache7801.cpp" ],
+   # [ "./cache/getClWithCache7802.cpp" ],
+   # [ "./cache/getClWithCache7803.cpp" ],
+   # [ "./cache/dropCsWithCache7806.cpp" ],
+   # [ "./cache/dropClWithCache7807.cpp" ],
+   # [ "./cache/dropCsWithCache7808.cpp" ],
+   # [ "./cache/dropClWithCache7809.cpp" ],
+   # [ "./cache/opClWithCache7810.cpp" ],
+   # [ "./cache/getMulClAfterDropCsWithCache7812.cpp" ],
+   # [ "./cache/loadUnloadCsWithCache14693.cpp" ], # no need
+   # [ "./cache/renameCsClWithCache14694.cpp" ],
+   # [ "./cache/getCountWithCache14695.cpp" ], # no need
+   # [ "./cache/listLobPiecesWithCache14696.cpp" ], # no need
+   # [ "./cache/getVersionWithCache24412.cpp" ],
+   [ "./lob/lobOpr12516.cpp" ],
+   [ "./lob/lobSeek12663.cpp" ],
+   [ "./lob/lobClose12554_12665.cpp" ],
+   [ "./lob/closeAllCursors11063.cpp" ],
+   [ "./lob/lobMode12737_12738.cpp" ],
+   [ "./lob/listLobPieces14683.cpp" ],
+   [ "./misc/analyze11667.cpp" ],
+   [ "./misc/sync12237.cpp" ],
+   [ "./misc/flushConf12476.cpp" ],
+   [ "./misc/testConnectRepeatly12509.cpp" ],
+   #[ "./misc/getLastAliveTime12655.cpp" ],
+   [ "./misc/JSCompatible10969.cpp" ],
+   [ "./misc/prepareMore11761.cpp" ],
+   [ "./misc/bindata11734.cpp" ],
+   # [ "./misc/memcheck12559.cpp" ], # manual
+   [ "./misc/configs14878.cpp" ], # sync
+   [ "./misc/invalidFlag15381.cpp" ],
+   [ "./ssl/sslFalse9649.cpp" ],
+   [ "./ssl/sslTrue9648.cpp" ],  # config
+   [ "./monitor/getListContexts12526.cpp" ],
+   [ "./monitor/getListSessions12526.cpp" ],
+   [ "./monitor/getListCsCl12526.cpp" ],
+   [ "./monitor/getListStorageUnits12526.cpp" ],
+   [ "./monitor/getListGroups12526.cpp" ],
+   [ "./monitor/getListTransaction12526.cpp" ], # config
+   [ "./monitor/getSnapshotContexts12662.cpp" ],
+   [ "./monitor/getSnapshotSessions12662.cpp" ],
+   [ "./monitor/getSnapshotCsCl12662.cpp" ],
+   [ "./monitor/getSnapshotDB12662.cpp" ],
+   [ "./monitor/getSnapshotSYS12662.cpp" ],
+   [ "./monitor/getSnapshotCata12662.cpp" ],
+   [ "./monitor/getSnapshotTransaction12662.cpp" ], # config
+   [ "./monitor/resetSnapshot12664.cpp" ], # sync
+   [ "./monitor/resetSnapshot14455.cpp" ], # sync
+   [ "./monitor/getSnapshotPlan14514.cpp" ],
+   # [ "./monitor/monitorAuth28014.cpp" ],# SEQUOIADBMAINSTREAM-9798
+   [ "./date/date11754.cpp" ],
+   [ "./date/dateTime12219_12220.cpp" ],
+   [ "./numberLong/numberLong7822.cpp" ],
+   [ "./lob/lobSeekAndWrite13412_13413.cpp" ],
+   [ "./lob/lobWrite13414.cpp" ],
+   [ "./lob/lobLockAndWrite13415.cpp" ],
+   [ "./lob/getLobModTime13416.cpp" ],
+   [ "./lob/multiLockLob13417.cpp" ],
+   [ "./lob/multiLockLob13418.cpp" ],
+   [ "./lob/readWhenWriteLob13419.cpp" ],
+   [ "./lob/lobTruncate13421.cpp" ],
+   [ "./lob/readEmptyPiece13420.cpp" ],
+   [ "./lob/lockParamVerify13422.cpp" ],
+   [ "./lob/lockAndSeekParamVerify13423.cpp" ],
+   [ "./lob/truncateLobParamVerify13424.cpp" ],
+   [ "./uninited/sdb14032.cpp" ],
+   [ "./uninited/sdbCursor14033.cpp" ],
+   [ "./uninited/sdbNode14034.cpp" ],
+   [ "./uninited/sdbCollection14035.cpp" ],
+   [ "./uninited/sdbCollectionSpace14036.cpp" ],
+   [ "./uninited/sdbReplicaGroup14037.cpp" ],
+   [ "./uninited/sdbDomain14038.cpp" ],
+   [ "./uninited/sdbLob14039.cpp" ],
+   [ "./sessionAttr/instanceid14166.cpp" ], # sync
+   [ "./sessionAttr/sessionattr_cache1920.cpp" ], # sync
+   [ "./alter/alterdomain_15163.cpp" ],
+   [ "./alter/altercs_15166.cpp" ],
+   [ "./alter/altercl_15168.cpp" ],
+   [ "./alter/getCSCL23278.cpp" ],
+   [ "./datatype/timestamptest_15861.cpp" ],
+   [ "./paramVerify/snapshotTest15759.cpp" ],
+   [ "./lob/lobIsEof15671.cpp" ],
+   [ "./list/listtest_19946.cpp" ],
+   # [ "./datasource/DataSource24224.cpp" ],
+   #[ "./sdb/errobj_17385.cpp"]
+]
+
+def getFileName( filePath ):
+   strArr = re.split( r'[/.]', filePath )
+   # last element is suffix,
+   # second last element is the name
+   return strArr[-2]
+
+def getObjectName( filePath ):
+   return getFileName( filePath ) + ".o"
+
+# add common to path
+dllBuildEnv.Append( CPPPATH=[ "./common/" ] )
+staticBuildEnv.Append( CPPPATH=[ "./common/" ] )
+
+# compile common lib
+gtestall = env.StaticLibrary('gtest', gtestFiles)
+
+# complit main object file
+testMainObj = dllBuildEnv.Object( [testMainFile] )
+
+# compile common object file
+commObj = []
+for file in testCommonFiles:
+   commonFileName = getFileName( file )
+   commonFile = dllBuildEnv.Object( commonFileName, [file] )
+   commObj.append( commonFile )
+
+# compile test object file
+objectFiles = []
+for index in range( len(testFiles) ):
+   objectFileArr = []
+   for file in testFiles[index]:
+      objectFileName = getObjectName( file )
+      objectFile = dllBuildEnv.Object( objectFileName, [file] )
+      objectFileArr.append( objectFile )
+   objectFiles.append( objectFileArr )
+
+# dll compile
+dllPrograms = []
+for index in range( len(testFiles) ):
+   testFileName = getFileName( testFiles[index][0] )
+   dllProgram = dllBuildEnv.Program( testFileName, [objectFiles[index], testMainObj, commObj] )
+   dllPrograms.append( dllProgram )
+
+# static compile
+staticPrograms = []
+for index in range( len(testFiles) ):
+   testFileName = getFileName( testFiles[index][0] ) + ".static"
+   staticProgram = staticBuildEnv.Program( testFileName, [objectFiles[index], testMainObj, commObj])
+   staticPrograms.append( staticProgram )
+
+# dll install
+env.Install( '#/build_test', dllPrograms )
+
+# static install
+env.Install( '#/build_test', staticPrograms )

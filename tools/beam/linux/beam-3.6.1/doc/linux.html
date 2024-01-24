@@ -1,0 +1,203 @@
+<html>
+<head>
+  <title>BEAM: Running BEAM on the Linux Kernel</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Running BEAM on the Linux Kernel</h1>
+<hr/>
+
+</p>
+<p>
+  There are two ways to run BEAM on the kernel:
+</p>
+<p>
+  <ol>
+   <li>Use the built-in makefile support for invoking checking tools <br>
+       This is the preferred method. It does not work for older kernels but I
+       think those kernels must be really old (released in 2003 or earlier).
+   <li>Modify the kernel makefiles by changing the <span class="code">CC</span> variable <br>
+       This should only be used for old kernels where the make machinery does not
+       support the invocation of checkers.
+  </ol>
+</p>
+<p>
+  Both methods are described below.
+</p>
+<p>
+  We have run BEAM on the linux-2.6.0-test3 code drop using the
+  default kernel configuration and a native compiler
+  configuration. For these tests we modified the kernel makefiles.
+  All files compiled OK but you should choose a machine with lots of
+  memory.  My Thinkpad with 512MB was not sufficient to process some
+  files.
+</p>
+<p>
+  The Linux for z-series folks run BEAM using a cross compiler
+  configuration. They typically use the built-in makefile support for
+  checkers.
+</p>
+<p>
+<h1>BEAM Configuration</h1>
+
+</p>
+<p>
+  We recommend that you use the supplied <span class="file">linux_default_parms.tcl</span>
+  as a starting point. You need to specify this on the command line like so:
+</p>
+<pre class="example">
+--beam::parms=linux_default_parms
+</pre>
+<p>
+  
+  You will also need a <a href="compiler_configuration.html">compiler configuration file</a> for the version of GCC you use to
+  build the kernel.  Please note: if you're cross-compiling the
+  kernel, make sure that the compiler configuration file is for the
+  <span class="term">cross compiler</span> not for the native compiler.
+</p>
+<p>
+<h1>Method #1: Using Built-in Makefile Support For Checker Invocation</h1>
+
+</p>
+<p>
+  The makefiles of newer Linux kernels have been extended to invoke a
+  checking tool in addition to compiling the source. The checking
+  process is controlled by two makefile variables. The variable <span class="var">CHECK</span> holds the name of the checking tool to be invoked. By default
+  this is <span class="term">sparse</span>. The variable <span class="var">C</span> must be defined to enable
+  checking. For example:
+</p>
+<pre class="example">
+make C=1 CHECK=runbeam ...
+</pre>
+<p>
+
+  This will invoke the script <span class="command">runbeam</span> for every source file
+  that is being compiled. You need to make sure the specified script
+  can be found on your <span class="env">PATH</span>. Here is a simple <span class="command">runbeam</span> script that you can use as a starting point:
+</p>
+<pre class="example">
+#!/bin/sh
+
+beam_compile \
+   --beam::compiler=<span class="val">your_gcc_config.tcl</span> \
+   --beam::parms=linux_default_parms.tcl \
+   --beam::exit0 \
+   &quot;$@&quot;
+</pre>
+<p>
+
+  Note that you do <span class="strong">not</span> have to invoke GCC within the checking
+  script in order to satisfy dynamic build dependencies.  This is
+  already being done by the regular make machinery.
+</p>
+<p>
+  The advantage of this approach is that it does not require any
+  modifications to the existing kernel makefiles. That would be
+  impractical when builds happen on freshly checked-out source trees.
+</p>
+<p>
+<h1>Method #2: Makefile Modification</h1>
+
+</p>
+<p>
+  You need to redefine the <span class="var">CC</span> make variable in the toplevel
+  Makefile of the source tree:
+</p>
+<pre class="example">
+#CC             = $(CROSS_COMPILE)gcc
+CC              = $(CROSS_COMPILE)/some/place/runbeam
+</pre>
+<p>
+
+  We have used the following <span class="command">runbeam</span> script successfully:
+</p>
+<pre class="example">
+#!/bin/sh 
+
+E_seen=0
+
+for opt in &quot;$@&quot;
+do
+  if [ x&quot;$opt&quot; = &quot;x-E&quot; ]; then
+	  E_seen=1
+  fi
+done
+
+if [ $E_seen = 0 ]; then
+   beam_compile -c  --beam::exit0 \
+                    --beam::parms=linux_default_parms \
+                    --beam::compiler=<span class="val">your_gcc_config.tcl</span> \
+                    &quot;$@&quot;
+fi
+
+gcc &quot;$@&quot;
+</pre>
+<p>
+
+  Note, that this script invokes both BEAM and then GCC. The latter is
+  necessary so the make process does not die early because of missing
+  dependencies that are created dynamically.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

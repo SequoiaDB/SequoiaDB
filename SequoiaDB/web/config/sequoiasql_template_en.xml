@@ -1,0 +1,32 @@
+<DeployModList type="array">
+	<FILLER>
+		<DeployMod>olap</DeployMod>
+		<WebName>OLAP</WebName>
+		<BusinessType>sequoiasql</BusinessType>
+		<SeparateConfig>true</SeparateConfig>
+		<Property type="array">
+			<FILLER>
+				<Name>deploy_standby</Name>
+				<Type>bool</Type>
+				<Default>false</Default>
+				<Valid>true,false</Valid>
+				<Display>select box</Display>
+				<Edit>true</Edit>
+				<Desc>Whether deploy standby</Desc>
+				<Level>0</Level>
+				<WebName>Deploy Standby</WebName>
+			</FILLER>
+			<FILLER>
+				<Name>segment_num</Name>
+				<Type>int</Type>
+				<Default>1</Default>
+				<Valid>1-</Valid>
+				<Display>edit box</Display>
+				<Edit>true</Edit>
+				<Desc>Segment Number</Desc>
+				<Level>0</Level>
+				<WebName>Segment Number</WebName>
+			</FILLER>
+		</Property>
+ 	</FILLER>
+</DeployModList>

@@ -1,0 +1,63 @@
+﻿<div style="padding:10px 15px;" ng-controller="Config.MariaDB.Index.Ctrl" ng-container="{}">
+
+   <div class="underlineTab" style="padding:0 15px;height:50px;">
+      <ul class="left">
+         <li class="Ellipsis active" style="max-width:300px;">
+            {{ModuleName}}
+         </li>
+      </ul>
+   </div>
+
+   <div ng-container="{offsetY:-50}">
+
+      <div ng-windows="config as ConfigItemWindow.config" windows-callback="ConfigItemWindow.callback">
+         <table class="table loosen border">
+            <thead>
+               <tr>
+                  <td style="background-color:#F1F4F5;">{{pAutoLanguage("节点")}}</td>
+                  <td style="background-color:#F1F4F5;" ng-if="config.key != 'NodeName'">{{pAutoLanguage("值")}}</td>
+               </tr>
+            </thead>
+            <tbody>
+               <tr ng-repeat="item in config.value track by $index">
+                  <td>{{item['node']}}</td>
+                  <td ng-if="config.key != 'NodeName'">{{item['value']}}</td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <div ng-windows="form as ConfigsWindow.config" windows-callback="ConfigsWindow.callback">
+         <div class="error" style="margin-top:10px;">Tips: {{pAutoLanguage("修改的配置会自动同步到配置文件。")}}</div>
+         <div style="margin-top:10px;" form-create para="form"></div>
+      </div>
+
+      <div ng-windows="form as ConfigWindow.config" windows-callback="ConfigWindow.callback">
+         <div class="error" style="margin-top:10px;">Tips: {{pAutoLanguage("修改的配置会自动同步到配置文件。")}}</div>
+         <div style="margin-top:10px;" form-create para="form"></div>
+      </div>
+
+      <div>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="Refresh()">{{pAutoLanguage("刷新")}}</button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="OpenConfigsWindow()">
+            {{pAutoLanguage("修改配置")}}
+         </button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="RestartModule()">{{pAutoLanguage("重启实例")}}</button>
+      </div>
+
+      <div ng-container="{marginTop:10,offsetY:-40}" style="overflow-y:auto;position:absolute;">
+
+         <div ng-container="{}" ng-table="SettingTable['table']" table-title="SettingTable['title']" table-content="row in SettingTable['content']" table-callback="SettingTable['callback']">
+            <div table-key="VARIABLE_NAME" class="linkButton" ng-click="OpenConfigWindow(row.VARIABLE_NAME,row.VARIABLE_VALUE)">
+               {{row.VARIABLE_NAME}}
+            </div>
+            <div table-key="VARIABLE_VALUE" class="linkButton" ng-click="OpenConfigWindow(row.VARIABLE_NAME,row.VARIABLE_VALUE)">
+               {{row.VARIABLE_VALUE}}
+            </div>
+         </div>
+
+      </div>
+
+   </div>
+
+</div>

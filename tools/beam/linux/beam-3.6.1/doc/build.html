@@ -1,0 +1,581 @@
+<html>
+<head>
+  <title>BEAM: Build Integration Guide</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Build Integration Guide</h1>
+<hr/>
+
+</p>
+<p>
+If you tried <a href="impatient.html">BEAM for the Impatient</a> you
+invoked BEAM simply by typing <span class="command">beam_compile bug.c</span>.  This
+section tells you what to do if your life is more complicated than
+that.  And it can be more complicated in two ways.  First, you may
+have many compiler options for parsing your code. Second, you may
+want BEAM to do something different than the default behavior you saw
+in <a href="impatient.html">BEAM for the Impatient</a>.
+</p>
+<p>
+The answer to the first question is that BEAM takes the same flags as
+compiler.  The answer to the second question is that BEAM can be
+customized by a Tcl script as well as command line parameters.  This
+section explains how to do that.
+</p>
+<p>
+To use BEAM in a production environment you want to the do the following:
+</p>
+<p>
+<a href="#process">Understand the process BEAM goes through.</a>
+<br>
+<a href="#persistent">Decide whether and how to keep persistent data.</a>
+<br>
+<a href="#makefile">Add BEAM invocation to your makefile.</a>
+<br>
+<a href="#adjust">Adjust BEAM to your coding practices.</a>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="process"></a><h1>Process</h1>
+
+
+</p>
+<p>
+This section outlines the process BEAM carries out.
+</p>
+<p>
+<h2>BEAM inputs</h2>
+
+</p>
+<p>
+<table class="borderless">
+<tr>
+ <td><li>All the source file, including header files, that compiler needs
+ <td>(Required)
+</tr>
+<tr>
+ <td><li>All the flags that compiler needs 
+ <td>(Required)
+</tr>
+<tr>
+ <td><li>A <a href="compiler_configuration.html">compiler configuration file</a>
+ <td>(Required for C, C++, and Java)
+</tr>
+<tr>
+ <td><li>Flags and Tcl files for BEAM customization
+ <td>(Not required)
+</tr>
+<tr>
+ <td><li>Persistent data that BEAM stores from one run to the next 
+ <td>(Not required)
+</tr>
+</table>
+</p>
+<p>
+<h2>BEAM outputs</h2>
+ 
+</p>
+<p>
+<table class="borderless">
+  <tr><td><li>File of statistics<td>( <span class="option">--beam::stats_file</span> )
+  <tr><td><li>File of BEAM complaints<td>( <span class="option">--beam::complaint_file</span> )
+  <tr><td><li>File of syntax errors<td>( <span class="option">--beam::parser_file</span> )
+  <tr><td><li>foo.beam file for use as makefile dependence<td>( <span class="option">-o</span> )
+  <tr><td><li>Persistent data that BEAM stores from one run to the next<td>( <span class="option">--beam::data</span> )
+</table>
+</p>
+<p>
+BEAM as invoked by the <span class="command">beam_compile</span> driver does the following:
+</p>
+<p>
+<ul>
+<li>Decide which source files to analyze
+<li>Run BEAM once per source file
+</ul>
+</p>
+<p>
+That spawns BEAM itself, which:
+</p>
+<p>
+<ol>
+<li>Executes Tcl script containing parameter settings.
+<li>Executes Tcl script containing steps to carry out.
+</ol>
+</p>
+<p>
+With the installation comes <span class="file">tcl/beam_default_steps.tcl</span>, 
+which does the following
+</p>
+<p>
+<ul>
+<li>Read in command line parameters.
+<li>Parse your source code
+<li>Carry out checks
+</ul>
+</p>
+<p>
+You are very likely to want your own Tcl script in item 1.  In
+principle all options can be specified on the command line, but a Tcl
+script is more convenient.
+</p>
+<p>
+More information about BEAM execution and the order in which things
+occur can be found <a href="execution.html">here</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="persistent"></a><h1>Persistent data</h1>
+
+
+</p>
+<p>
+BEAM sometimes needs to store some data that needs to be persistent
+across invocations. Generally, this data is stored underneath the
+directory specified with the parameter <span class="var">beam::data</span>. Examples
+of such data are results of interprocedural analysis, or innocence
+codes.
+</p>
+<p>
+Conceptually, every software component (e.g. shared object) should
+have an associated <span class="var">beam::data</span> directory. The details of how
+BEAM stores its data in that repository are not documented, because
+they are subject to change as BEAM evolves over time.
+</p>
+<p>
+The <span class="var">beam::data</span> directory can be specified in a Tcl file,
+like so:
+</p>
+<pre class="example">
+set beam::data &quot;/u/smith/my_project/beam_data&quot;
+</pre>
+<p>
+
+In this example, the directory <span class="file">/u/smith/my_project</span> must
+already exist, but the directory <span class="file">beam_data</span> need not exist;
+BEAM will create it.
+</p>
+<p>
+If your component depends on other components which also have 
+<span class="var">beam::data</span> directories then you should refer to those by
+means of <span class="var">beam::base_data</span>. For instance:
+</p>
+<pre class="example">
+lappend beam::base_data   &quot;/u/jones/my_lib/beam_data&quot;   &quot;/u/doe/xyz/bd&quot;
+</pre>
+<p>
+
+That way IPA results and innocence codes are found automatically.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="makefile"></a><h1>How to add BEAM invocation to your makefile</h1>
+
+
+</p>
+<p>
+<h2>Illustration</h2>
+
+</p>
+<p>
+Consider a simple makefile like this 
+</p>
+<pre class="example">
+.SUFFIXES: .o
+
+COMPILER_OPTIONS = $&gt; -c -I../include -DOS=linux
+
+full: f1.o f2.o f3.o
+	cc f1.o f2.o f3.o
+
+.c.o: 
+	cc  $(COMPILER_OPTIONS)
+</pre>
+<p>
+
+Here is the same makefile after adding invocation of BEAM
+</p>
+<pre class="example">
+.SUFFIXES: .o .beam
+
+COMPILER_OPTIONS = $&gt; -c -I../include -DOS=linux
+
+BEAM_OPTIONS = --beam::stats_file=$*.stats --beam::compiler=my_config.tcl
+
+full: f1.o f2.o f3.o
+	cc f1.o f2.o f3.o
+
+beam: f1.beam f2.beam f3.beam
+	cat f1.stats f2.stats f3.stats &gt;beam_statistics
+
+.c.o: 
+	cc  $(COMPILER_OPTIONS)
+
+.c.beam: 
+	beam_compile  $(COMPILER_OPTIONS)    $(BEAM_OPTIONS)
+</pre>
+<p>
+
+Please note that for every compiler item there is a corresponding BEAM item.
+Like the compiler generates <span class="file">foo.o</span> for each <span class="file">foo.c</span>,
+BEAM will generate <span class="file">foo.beam</span> for each <span class="file">foo.c</span>.
+The <span class="file">.beam</span> files are used for makefile dependencies only.
+</p>
+<p>
+In addition, the makefile makes BEAM generate a <span class="file">foo.stats</span> for 
+each <span class="file">foo.c</span>.
+The contents of those <span class="file">foo.stats</span> files are statistics from the run.
+BEAM generates other outputs, in particular the complaints you are really after,
+but for some <span class="file">foo.c</span> there may be no complaints.
+For illustration the "link" step of <span class="code">beam:</span> collects all the 
+individual  statistics files into a big <span class="code">beam_statistics</span>.
+</p>
+<p>
+<h2>BEAM options</h2>
+
+</p>
+<p>
+In general, BEAM is invoked using the command 
+</p>
+<pre class="example">
+beam_compile $(COMPILER_OPTIONS) $(BEAM_OPTIONS)
+</pre>
+<p>
+
+<span class="option">$(COMPILER_OPTIONS)</span> are all the options you pass to your
+compiler, such as -I flags and -D flags.  <span class="option">$(BEAM_OPTIONS)</span>
+can be mixed with <span class="option">$(COMPILER_OPTIONS)</span> because they start
+with <span class="option">--beam</span>.  You are not required to specify any <span class="option">$(BEAM_OPTIONS)</span>, if you are happy with the defaults.
+</p>
+<p>
+<h2>Options on command line only</h2>
+
+</p>
+<p>
+As you saw above, you can control BEAM by providing a Tcl script of
+parameter settings and a Tcl script of steps to be performed.  The Tcl
+script of parameter settings assigns Tcl variables; all those settings
+can be overridden on the command line in <span class="option">$(BEAM_OPTIONS)</span>.
+In addition, there are BEAM options, which are not Tcl variables, and
+if specified, must be specified on the command line:
+</p>
+<p>
+<table class="borderless">
+<tr><td width=200>OPTION<td width=300>VALUE<td>DEFAULT
+<tr>
+ <td><span class="option">--beam::parms=</span>
+ <td>Tcl file containing parameter settings
+ <td><span class="file">beam_default_parms.tcl</span>
+</tr>
+<tr>
+ <td><span class="option">--beam::steps=</span>
+ <td>Tcl file containing steps to be performed
+ <td><span class="file">beam_default_steps.tcl</span>
+</tr>
+<tr>
+ <td><span class="option">--beam::parser_file=</span>
+ <td>file for syntax errors in programs
+ <td>"stderr"
+</tr>
+<tr>
+ <td><span class="option">--beam::compiler=</span>
+ <td>Tcl file(s) containing
+     <a href="compiler_configuration.html">compiler configuration settings</a>.
+ <td>uses default settings (very basic)
+</tr>
+<tr>
+ <td><span class="option">--beam::source=</span>
+ <td>Tcl file(s) containing
+     <a href="attributes.html">function attributes</a> or
+     <a href="extapi.html">external API information</a>.
+ <td>doesn't load additional configuration files
+</tr>
+<tr>
+ <td><span class="option">-o <span class="val">file</span></span>
+ <td>file for makefile dependencies
+ <td><span class="file">./$*.beam</span>
+</tr>
+</table>
+</p>
+<p>
+Example using all the above options
+</p>
+<pre class="example">
+beam_compile --beam::parms=my_parms.tcl              \
+             --beam::steps=my_steps.tcl              \
+             --beam::parser_file=/dev/null           \
+             --beam::compiler=my_compiler_config.tcl \
+             --beam::source=my_attributes.tcl        \
+             -o /tmp/$*.o
+</pre>
+<p>
+
+<h2>Directories for specified files</h2>
+
+</p>
+<p>
+In general, all files are specified relative to current directory.
+For example,the following two lines are equivalent
+</p>
+<pre class="example">
+beam_compile --beam::parser_file=p
+beam_compile --beam::parser_file=./p
+</pre>
+<p>
+
+In case of the two Tcl files there is a search path depending on your 
+installation point.
+The easiest way to see it is to specify an non-existent Tcl file, for example:
+</p>
+<pre class="example">
+beam_compile --beam::parms=non_existent.tcl
+</pre>
+<p>
+
+Then you will get an error message listing the whole search path.
+</p>
+<p>
+<h2>Option -o</h2>
+
+</p>
+<p>
+As you can see BEAM interprets the compiler option <span class="option">-o</span>.  It
+does it so that those files <span class="file">foo.beam</span> (for makefile
+dependencies) behave like the <span class="file">foo.o</span> files generated by the
+compiler.  This table shows what BEAM will generate for various values
+of [options '-o'] when compiling <span class="file">foo.c</span>.
+</p>
+<p>
+<table class="borderless">
+  <tr><td width=200>OPTION<td width=300>BEAM GENERATES
+  <tr><td><span class="option">-o</span> <span class="val">bar.ext</span><td>bar.beam
+  <tr><td><span class="option">-o</span> <span class="val">dir/bar.ext</span><td>dir/bar.beam
+  <tr><td><span class="option">-o</span> <span class="val">dir/bar</span><td>dir/bar.beam
+  <tr><td><span class="option">-o</span> <span class="val">/dev/null</span><td>nothing
+  <tr><td>no <span class="option">-o</span><td>foo.beam
+</table>
+</p>
+<p>
+<h2>Duplication of options</h2>
+
+</p>
+<p>
+In general, if an option is repeated on the command line then the last
+one overrides all previous ones. For example, the following two lines
+are equivalent
+</p>
+<pre class="example">
+beam_compile --beam::parms=A.tcl -o foo.a --beam::parms=B.tcl -o foo.b
+beam_compile --beam::parms=B.tcl -o foo.b
+</pre>
+<p>
+
+<h2>Setting Tcl variables on command line</h2>
+
+</p>
+<p>
+One of the first things BEAM does is to execute your Tcl file of
+parameters given by <span class="option">--beam::parms</span>.  Any variable set in that
+Tcl file can also be set on the command line; the setting on the
+command line overwrites the Tcl file setting.  This is useful, for
+example, for parameters whose value should be different in different
+directories of your source tree.  For example, suppose your Tcl script
+(given using <span class="option">--beam::parms</span>) contains
+</p>
+<pre class="example">
+set beam::ERROR1::enabling_policy  &quot;&quot;
+</pre>
+<p>
+
+On the command line you can change that by 
+<span class="option">--beam::ERROR1::enabling_policy=&quot;always&quot;</span> The general 
+form is <span class="option">--parameter=val</span>.  Its effect is to assign 
+<span class="option">val</span> to the named BEAM <span class="option">parameter</span>.
+</p>
+<p>
+The name space <span class="code">beam::</span> is reserved for built-in Tcl variables,
+for example, <span class="code">beam::root</span>.
+</p>
+<p>
+Every Tcl variable should have a name space to avoid conflicts.  <span class="code">beam::</span> is reserved for built-in Tcl variables.  We cannot stop you
+from using arbitrary variables in your Tcl script, but will stop you
+from using on the command line a Tcl variable without a name space.
+For example, if your command line contains <span class="option">--beam_root=xyz</span>,
+you will get the message
+</p>
+<pre class="example">
+beam_compile: error: Instead of &quot;--beam_root=xyz&quot; you perhaps meant &quot;--beam::root=xyz&quot;
+</pre>
+<p>
+
+If you want to assign not one string, but a list of strings to your Tcl
+variable then you should do it in Tcl (the quoting on the command-line
+that would be required is easy to forget):
+</p>
+<pre class="example">
+set     var &quot;&quot;
+lappend var string1 string2
+</pre>
+<p>
+
+<h2>Tcl variables commonly set on command line</h2>
+
+</p>
+<p>
+Here we list several built-in Tcl variables whose values are commonly
+set on the command line in a makefile.  If they are not set on the
+command line then their value is taken from the Tcl script as given by
+<span class="option">--beam::parms</span>.  If they are not set there either then their
+default is given in the table below.
+</p>
+<p>
+<table class="borderless">
+<tr><td width=200>OPTION<td width=300>VALUE<td>DEFAULT
+<tr><td><span class="option">--beam::complaint_file=</span>
+<td>file into which complaints should be written
+<td>stdout
+<tr><td><span class="option">--beam::stats_file=</span>
+<td>file into which statistics should be written
+<td>/dev/null
+<tr><td><span class="option">--beam::data=</span>
+<td>directory for persistent data
+<td>/dev/null
+<tr><td><span class="option">--beam::root=</span>
+<td>list of directories to be omitted when printing file names
+<td>empty list
+</table>
+</p>
+<p>
+Example using all the above options
+</p>
+<pre class="example">
+beam_compile --beam::complaint_file=BEAM-complaints \
+             --beam::stats_file=BEAM-stats          \
+             --beam::data=                          \
+             --beam::root=.:/afs/eda
+</pre>
+<p>
+
+<h2>Cleanup</h2>
+
+</p>
+<p>
+At the start of your makefile before the first invocation of
+beam_compile, you may need to cleanup any files from a previous BEAM
+run.  In general, BEAM always appends to given files; this allows you
+to have one file collecting complaints (or statistics, etc) for all
+your source files.
+</p>
+<p>
+Possibly generated files:
+<ul>
+<li>beam::complaint_file
+<li>beam::stats_file
+<li>beam::parser_file
+</ul>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="adjust"></a><h1>Adjusting BEAM to your coding practices</h1>
+
+
+</p>
+<p>
+If you tried <a href="impatient.html">BEAM for the Impatient</a> then by
+default you used <span class="file">beam_default_parms.tcl</span> as your parameter
+settings.  That is one of the parameter settings you can find in the
+<span class="file">tcl</span> directory, and is meant to be a representative sample of
+what is available.  Quite surely it caused complaints that you found
+of no interest, and conversely it lacks something you need.
+</p>
+<p>
+There are a few approaches to finding the right settings for you.  You
+can start with <span class="file">beam_default_parms.tcl</span>, which enables a set of
+complaints, which we expect to be of interest to about everybody.
+Alternatively you can start with one of our other
+<a href="parameter_files.html">parameter files</a>.
+See our <a href="customize.html">customization guide</a>
+for details.
+</p>
+<p>
+Once you have your own Tcl script, BEAM will use it if you specify it as a 
+parameter to beam_compile like this
+</p>
+<pre class="example">
+beam_compile --beam::parms=my_parms.tcl
+</pre>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

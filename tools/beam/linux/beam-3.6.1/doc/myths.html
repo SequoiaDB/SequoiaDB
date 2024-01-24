@@ -1,0 +1,230 @@
+<html>
+<head>
+  <title>BEAM: Myths</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Myths</h1>
+<hr/>
+
+</p>
+<p>
+<h2>The Syntax Myth: <br> BEAM just checks syntax.</h2>
+
+In reality we do our best not to.
+BEAM relies on a separate parser, which can generate messages about syntax errors.
+But BEAM proper assumes that the source code is correct syntactically.
+And if it is not, BEAM tries to analyze those parts that it could parse.
+</p>
+<p>
+<h2>The Panacea Myth: <br> BEAM will catch most bugs.</h2>
+
+Perhaps the largest category of bugs are misunderstood specifications,
+which BEAM knows nothing about.
+Several people have made estimates of what percentage of bugs BEAM
+catches, what percentage of critical bugs it catches, 
+what percentage of the bugs it catches are critical, etc.
+The percentages can be counted on the fingers of one hand,
+at best two hands.
+You do not need your toes.
+</p>
+<p>
+<h2>The Lint Myth: <br> Lint or even compilers catch the kind of problems BEAM looks for.</h2>
+
+There is a large intersection, but the difference lies in the accuracy of analysis.
+BEAM applies much more accurate (and hence more expensive) analysis
+than lint or a compiler.
+That allows it to report more bugs without many false alarms.
+It is very important to avoid false alarms, because otherwise
+it is not worth programmers' time to see why the tool thinks there is a problem.
+And without that effort BEAM complaints would suffer the same fate as 
+lint complaints -- either ignored or
+resolved by a change that may mask the real problem.
+</p>
+<p>
+<h2>The Distance Myth: <br> BEAM cannot catch a bug that causes a crash in modules far from the defect.</h2>
+
+Static and dynamic tools look for very different symptoms;
+the fact that the closest dynamic symptom is very far, does not say anything
+about static symptoms.
+Consider the following example:
+</p>
+<p>
+Machine crashed because of division by 0,
+which happened because the divisor came from a control block previously freed.
+The code that incorrectly freed the control block is very far from the 
+division operation.
+How the hell can BEAM analyze that?
+</p>
+<p>
+First, BEAM would not use division by 0 to detect the bug; instead it might detected it
+if it saw access to freed memory,
+and that may happen somewhere closer to the defect's cause.
+</p>
+<p>
+Furthermore, it is a bad idea to leave global variables containing 
+pointers to freed memory. If you agree, and let BEAM report that,
+then you can have a symptom very close to the cause.
+</p>
+<p>
+<h2>The Unit Test Myth: <br> BEAM can be useful only during unit test, not system test.</h2>
+
+Whether a bug is caught during unit test or system test is not a property 
+of the bug, nor the methods for bug detection.
+It is determined by the symptoms you are looking for.
+Consider the example in the Distance Myth.
+If the symptom you are looking for is a crash then a bug may be detectable 
+only during system test.
+But if you chose to consider dangling pointers symptoms of something unacceptable
+then the same bug can be caught during unit test.
+</p>
+<p>
+<h2>The Critical Defect Myth: <br> BEAM does catch critical defects. <br> BEAM does not catch critical defects.</h2>
+
+The only sure way of finding out is not to fix a reported problem
+and wait for a customer to find it (which has been done).
+As soon as you fix any bug, any determination of whether it could be critical
+is subjective.
+</p>
+<p>
+Again consider the example in the Distance Myth.
+Static analysis is useless for people who want to find the problem by detecting
+the division by 0.
+Static analysis is useful to those who decide never to have a dangling pointers around,
+even if they will never know whether such a defensive programming practice 
+prevented a customer disaster.
+</p>
+<p>
+<h2>The Evaluation Myth: <br> A tool like BEAM can be evaluated by giving it a code containing known bugs and seeing how many failures it detects.</h2>
+
+That is true only if you do not insist on detecting the same symptoms.
+</p>
+<p>
+For example, there was a case of a person looking for an irreproducible corrupted memory problem.
+She found it using BEAM, which reported a memory leak.
+A memory leak would not corrupt memory; but the bug involved freeing one variable
+instead of another.
+And this bug had several symptoms, one was a crash, the other was leaking the 
+memory held by the variable that was actually supposed to be freed.
+</p>
+<p>
+The moral is not to insist on detecting a crash.
+Instead let the tool look for symptoms of its choosing and see 
+how many bugs the programmers would be prompted to fix.
+</p>
+<p>
+<h2>The Cleanliness Myth: <br> Fixing code so as not to trigger any BEAM complaints will make it more reliable.</h2>
+
+Suppose you hire a summer student and let him modify your software
+so that it does not trigger any BEAM complaints.
+You would not expect the result to be more reliable for the following reasons:
+<ul>
+<li>If BEAM finds that something bad happens under some conditions,
+it takes an expert to determine what is the right thing to happen there.</li>
+<li>Fixing an uninitialized variable by initializing it at its declaration to 
+some default value only masks the real problem.
+It is important to see why BEAM thinks that it is uninitialized under some conditions,
+conditions that were meant to be impossible.</li>
+Something like an uninitialized variable may be just a symptom of an error in a condition.
+<li>Any change, even done by an expert, 
+caries a non-negligible chance of introducing a new bug.</li>
+<li>Even if a module is fixed to reflect original intentions,
+surrounding modules might already become dependent on the incorrect behavior.</li>
+</ul>
+The moral is that BEAM complaints should be viewed as nothing more
+than a colleague's critique about a strange looking code.
+</p>
+<p>
+<h2>The Configuration Myth: <br> BEAM needs no more configuration than a compiler.</h2>
+
+BEAM does not require any more configuration than a new compiler,
+but then you get the default behavior, which may not be satisfactory
+for two reasons: false alarms and problems not caught.
+</p>
+<p>
+You will get false alarms because
+<ul>
+  <li>By default BEAM assumes that all functions eventually return;
+in reality you may have special functions that terminate a thread
+or that report an internal error and exit, after which you do not
+want any complaints reported.
+  <li>Some parts of your code you do not want checked.
+  <li>Some checks turned on by default are not applicable to you.
+<p>
+In the default setting some problems will not be caught because
+  <li>The default setting turns on only the minimum checking
+  <li>More problems can be caught if BEAM knows about some of your special 
+functions, like those that allocate and free memory
+  <li>You may have requirements on your library calls or special coding 
+guidelines that BEAM cannot check unless it is told about them.
+  <li>More problems can be caught if you provide disk space 
+for results of inter-procedural analysis.
+</ul>
+</p>
+<p>
+If you want to get the most out of BEAM you should never stop providing 
+more information.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

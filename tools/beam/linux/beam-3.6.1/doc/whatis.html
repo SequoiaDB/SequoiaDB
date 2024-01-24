@@ -1,0 +1,117 @@
+<html>
+<head>
+  <title>BEAM: Introduction</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">What is BEAM?</h1>
+<hr/>
+
+</p>
+<p>
+BEAM is a static analysis tool that looks for bugs in C, C++, and Java software.  That
+is, it does not try to execute the source code and therefore does not require
+a testcase.  It analyzes the software in a fashion similar to a compiler,
+lint, or a formal verifier.  It differentiates itself from the others by
+making an effort to decide which potential problems are really feasible and
+report only the feasible ones.
+</p>
+<p>
+Like other such tools the problems it reports include bad memory accesses
+(uninitialized variables, dereferencing null pointers, etc), memory leaks,
+unnecessary computations, and so on.  It can also be given extra information
+to detect application-specific errors concerning locking, data base accesses,
+etc.
+</p>
+<p>
+Unlike other static analysis tools, BEAM is able to report more real errors
+without overwhelming the user with bogus ones.  It performs the necessary
+theorem proving to decide feasibility of paths and can therefore do a better
+job of identifying real problems.  As a result, BEAM reports more problems
+than a compiler or lint would while avoiding false ones.
+</p>
+<p>
+However, deciding feasibility of paths is a computationally hard problem which
+requires exponential resource (in the general case). BEAM prefers to spend
+time (rather than blowing up memory) to solve this problem. You should
+adjust your expectations accordingly. As a ball-park figure, BEAM takes
+7 CPU hours to analyze 1.4 million lines of code on a 2GHz Pentium with
+1GB RAM. For modern, well-structured code (i.e. not spaghetti code) it is often 
+possible to run BEAM interactively. However, path analysis is data dependent, 
+so your mileage may vary. You can limit the amount of time spent by trading off
+the number of reported problems.
+</p>
+<p>
+BEAM uses some of the techniques found in formal verifiers, but does not
+require any specifications (which prevents it from proving actual
+functionality).  Unlike verifiers, which try to form a proof of correctness
+and issue a complaint if they fail, BEAM tries to form a proof of
+incorrectness and issues a complaint if it succeeds.
+</p>
+<p>
+Still interested? Check out our 10 minute tutorial 
+<a href="impatient.html">Beam for the Impatient</a>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

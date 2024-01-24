@@ -1,0 +1,146 @@
+<html>
+<head>
+  <title>BEAM: Eclipse Plug-in</title>
+  <link rel="stylesheet" href="../style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="../images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="../whatis.html">What is BEAM</a></li>
+    <li><a href="../impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="../links.html">Links</a></li>
+    <li><a href="../myths.html">Myths</a></li>
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="../sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="../beam_trace.html">Build Tracing</a></li>
+    <li><a href="../windows.html">Windows Port</a></li>
+    <li><a href="../java.html">Java Support</a></li>
+    <li><a href="../eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="../install.html">Download</a></li>
+    <li><a href="../schedule.html">Schedule</a></li>
+    <li><a href="../history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="../quick.html">Quick start guide</a></li>
+    <li><a href="../install.html">Installation Instructions</a></li>
+    <li><a href="../customize.html">BEAM Customization</a></li>
+    <li><a href="../compilers.html">Compiler Emulation</a></li>
+    <li><a href="../build.html">Build Integration Guide</a></li>
+    <li><a href="../builtin.html">Built-in Checks</a></li>
+    <li><a href="../parms.html">Built-in Parameters </a></li>
+    <li><a href="../attributes.html">Function Attributes</a></li>
+    <li><a href="../reference.html">Reference Docs</a></li>
+    <li><a href="../appnotes.html">Application Notes</a></li>
+    <li><a href="../faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="../mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Eclipse Plug-in</h1>
+<hr/>
+
+</p>
+<p>
+The BEAM Eclipse Plug-in lets Eclipse users run BEAM and view the results
+from within the Eclipse environment (<a href="screenshot.gif">screenshot</a>).
+It is similar to the <a href="../emacs.html">the emacs
+interface</a> - it will match up BEAM complaints to your source code and allow
+you to automatically move from one complaint to the next. In addition, the Eclipse
+Plug-in also lets you run BEAM from within Eclipse IDE easily, automatically
+extracting information from your project and running BEAM over your source files
+for you.
+</p>
+<p>
+This plug-in is built on top of the TPTP Analysis Platform. Those who plan to
+use this plug-in need to be familier with TPTP Analysis Platform first.
+</p>
+<p>
+<h1>Prerequisites</h1>
+
+<ul>
+<li> Eclipse on Linux x86 or Windows</li>
+<li> Eclipse TPTP (<a href="http://www.eclipse.org/tptp">http://www.eclipse.org/tptp</a>)</li>
+</ul>
+</p>
+<p>
+The following table describes which Eclipse and TPTP versions you need to install for which BEAM Eclipse Plug-in version.
+</p>
+<p>
+<table id="prerequisite_table" border=1>
+<tr align=center><th>BEAM Plug-in</th><th>Eclipse</th><th>TPTP</th></tr>
+<tr align=center><td>0.1.6</td><td>3.2</td><td>4.3</td></tr>
+<tr align=center><td>1.0.3</td><td>3.3</td><td>4.4</td></tr>
+</table>
+</p>
+<p>
+<h1>Installation</h1>
+
+The BEAM Eclipse Plug-in is available through the Eclipse software updates mechanism.
+Follow these steps to install it:
+</p>
+<p>
+<ol>
+<li>Launch the Eclipse workbench</li>
+<li>Select the <span class="strong">Help, Software Updates, Find and Install</span> menu.</li>
+<li>Select <span class="strong">Search for new features to install</span> and press <span class="strong">Next</span>.</li>
+<li>Press the 'New Remove Site' button and input
+    <span class="strong">https://w3.eda.ibm.com/beam/eclipse/site.xml</span>
+    in the URL field. Input any name to the <span class="strong">Name</span> field.
+    <br>
+</p>
+<p>
+    <img src="update.gif"/>
+</p>
+<p>
+</li>
+<li>Select the site you just created and press <span class="strong">Finish</span>.</li>
+<li>Select the appropriate <span class="strong">BEAM</span> version as described in <a href="#prerequisite_table">prerequites</a> and press <span class="strong">Next</span>:
+    <br>
+</p>
+<p>
+    <img src="update2.gif"/></li>
+</p>
+<p>
+<li>Accept the license terms and press <span class="strong">Next</span>.</li>
+<li>Press <span class="strong">Finish</span>. If you see a dialog entitled <span class="strong">Verification</span>, press <span class="strong">Install</span>.</li>
+</ol>
+</p>
+<p>
+<h1>Usage</h1>
+
+   For instructions and help on using the BEAM Eclipse Plug-in, select
+   the <span class="strong">Help, Help Contents</span> menu from within the Eclipse workbench.
+   For information about TPTP, you can visit the
+   <a href="http://www.eclipse.org/tptp">TPTP Web site</a>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="hadoop-connector" default="jar" basedir=".">
+	<property name="build.dir"  value="${basedir}/build"/>
+	<property name="java.driver.jar" value="${basedir}/../../java/sequoiadb.jar"/>		
+	
+	<target name="init">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/src" />
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${build.dir}/lib" />
+		<mkdir dir="${build.dir}/dest" />
+	</target>
+
+	
+	<target name="copySrc" depends="init">
+		<copy todir="${build.dir}/src">
+			<fileset dir="."  includes="**/*.java" />
+		</copy>
+	</target>
+	
+	<target name="copyJar"  depends="init">
+		<copy todir="${build.dir}/lib">
+			<fileset dir="${basedir}/hadoop${hadoop.version}"  includes="**/*.jar" />
+			<fileset dir="${basedir}/lib" includes="**/*.jar" />			 
+		</copy>
+		<copy file="${java.driver.jar}" todir="${build.dir}/lib" />
+	</target>
+	
+	
+	<target name="compile" depends="copySrc,copyJar" >
+		<javac srcdir="${build.dir}/src" destdir="${build.dir}/classes" debug="on" fork="yes">
+			<compilerarg line="-encoding UTF-8"/>
+			<classpath>
+				<fileset dir="${build.dir}/lib" includes="*.jar"  />
+				<pathelement location="${java.driver.jar}"/>
+			</classpath>
+		</javac>	
+	</target>
+
+	<target name="jar" depends="compile">
+		<property name="jar.dir" value="${build.dir}/dest" />
+		<tstamp>
+			<format property="current.time" pattern="dd/MM/yyy HH:mm:ss" />
+		</tstamp>
+		<echo message="${current.time}" />
+
+		<jar file="${jar.dir}/hadoop-connector-${hadoop.version}.jar" basedir="${build.dir}/classes">
+			<manifest>
+				<attribute name="Version" value="1.0" />
+				<attribute name="Build-Timestamp" value="${current.time}" />
+			</manifest>
+		</jar>
+
+		<copy file="${jar.dir}/hadoop-connector-${hadoop.version}.jar" tofile="${basedir}/hadoop-connector-${hadoop.version}.jar" />
+		<delete file="${jar.dir}/hadoop-connector-${hadoop.version}.jar" />
+	</target>
+</project>

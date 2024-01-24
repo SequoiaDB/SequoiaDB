@@ -1,0 +1,554 @@
+<html>
+<head>
+  <title>BEAM: Rules of Evidence</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Rules of Evidence</h1>
+<hr/>
+
+</p>
+<p>
+Consider the following
+</p>
+<p>
+Example 1:
+</p>
+<pre class="example">
+int Average(int Sum, int N)
+{
+  return Sum / N;
+}
+</pre>
+<p>
+
+Is the function wrong in that it may divide by zero?
+</p>
+<p>
+The answer to this question illustrates the difference between 
+BEAM and formal verifiers.
+Most formal verifiers would issue a complaint because they want to 
+guarantee absence of all errors.
+Therefore they place the burden of proof on the user, and
+require that there be a precondition associated with the function
+stating that it may not be called with <span class="code">N == 0</span>.
+Such a precondition then allows all callers of <span class="function">Average</span> to be checked
+for the possibility of passing zero to <span class="var">N</span>.
+</p>
+<p>
+There is a general agreement that such a programming discipline
+would lead to much more robust software,
+and there is also a general agreement that programmers are not willing
+to write formal specifications today.
+We all write code assuming that our data structures are consistent,
+that numbers are not large enough to cause overflows, etc;
+it is not feasible to keep checking these properties.
+</p>
+<p>
+On the other hand, many programmers are willing to write informal specifications;
+those may be helpful to other programmers, but not to automatic tools.
+But even other programmers may not have complete trust in specifications, because they are 
+not always updated as code changes.
+As a result, somebody considering calling our function <span class="function">Average</span>
+would likely just look at the source code to determine whether 
+it can handle <span class="code">N == 0</span>.
+</p>
+<p>
+Therefore BEAM does not require any specifications;
+instead it tries to guess what a human would conclude by looking at a piece of code.
+Thus BEAM places the burden of proof on itself rather than the programmer,
+and issues a complaint only if it can find evidence that the error can actually 
+occur.
+Since no such evidence exists in the example as written,
+BEAM would not issue a complaint about the function <span class="function">Average</span>.
+Instead, guessing that a specification would require <span class="code">N != 0</span>,
+any caller violating this requirement would be considered in error.
+</p>
+<p>
+Example 2:
+</p>
+<pre class="example">
+int Average(int Sum, unsigned N)
+{
+  if (N == 0)
+    X = 1;
+    
+  return Sum / N;
+}
+</pre>
+<p>
+
+Example 2 is a typical form of evidence that BEAM would accept as
+indicating that a division by 0 can occur. In this case BEAM would
+complain about division by 0. The same would happen in the
+following example.
+</p>
+<p>
+Example 3:
+</p>
+<pre class="example">
+int Average(int Sum, unsigned N)
+{
+  if (N != 0)
+    X = 1;
+    
+  return Sum / N;
+}
+</pre>
+<p>
+
+Anybody looking at example 2 or example 3 would see a test for <span class="code">N == 0</span> or
+<span class="code">N != 0</span>, and conclude
+that the author of the function must have considered the possibility of 
+being called with  <span class="code">N == 0</span>.
+</p>
+<p>
+The next example might not be so obvious.
+</p>
+<p>
+Example 4:
+</p>
+<pre class="example">
+int Average(int Sum, unsigned N)
+{
+  if (N &gt;= 3) X = 3; else
+  if (N == 2) X = 2; else
+  if (N == 1) X = 1;
+    
+  return Sum / N;
+}
+</pre>
+<p>
+
+The author of examples 2 and 3 could not have expected 
+any guarantee that  <span class="var">N</span> will never be zero.
+But the author of example 4 could have expected such a guarantee
+and still tested <span class="code">if (N == 1)</span> although that test would be 
+unnecessary.
+He might do that for aesthetics and clarity.
+Actually, it would have been even clearer if he had written  
+</p>
+<p>
+Example 5:
+</p>
+<pre class="example">
+int Average(int Sum, unsigned N)
+{
+  if (N &gt;= 3) X = 3; else
+  if (N == 2) X = 2; else
+  if (N == 1) X = 1; else abort();
+    
+  return Sum / N;
+}
+</pre>
+<p>
+
+The default behavior of BEAM in example 4 is to issue the complaint about 
+division by 0.
+An analogous situation exists with switch statements
+and omitted default labels.
+</p>
+<p>
+Now suppose that example 2 was written in this form:
+</p>
+<p>
+Example 6:
+</p>
+<pre class="example">
+#define UPDATE_X    if (N == 0) X = 1;
+
+int Average(int Sum, unsigned N)
+{
+  UPDATE_X;
+  return Sum / N;
+}
+</pre>
+<p>
+
+After the macro expansion example 6 looks just like example 2.
+However, there is an important difference --
+the test of  <span class="var">N</span> is not explicitly written in the function <span class="function">Average</span>.
+It is possible that <span class="function">Average</span> is not meant to handle  <span class="code">N == 0</span>
+and the macro UPDATE_X is just a general purpose macro,
+where the test of  <span class="var">N</span> is for somebody else's purposes.
+Also a person examining the code of <span class="function">Average</span> is not likely
+to conclude that it is meant to handle  <span class="code">N == 0</span>.
+Therefore BEAM does not consider the test <span class="code">if (N == 0)</span> admissible evidence
+if it is the result of macro expansion.
+</p>
+<p>
+Now consider a slight twist.
+</p>
+<p>
+Example 7:
+</p>
+<pre class="example">
+#define UPDATE_X(A)    if (A == 0) X = 1;
+
+int Average(int Sum, unsigned N)
+{
+  UPDATE_X(N);
+  return Sum / N;
+}
+</pre>
+<p>
+
+In Example 7 the macro UPDATE_X tests a parameter A, and the implementation
+of <span class="function">Average</span> passes  <span class="var">N</span> explicitly to the macro.
+Will a person examining the code conclude that  <span class="var">N</span> is being tested explicitly?
+For some macros, such as <span class="code">assert(N)</span>, the answer is "yes"
+for others it may be "no".
+BEAM tries to heuristically guess what a person would conclude;
+in example 7 it would not issue the division by 0 complaint.
+</p>
+<p>
+Loops introduce another interesting twist.
+</p>
+<p>
+Example 8:
+</p>
+<pre class="example">
+int Foo(int *A, unsigned N)
+{
+  int Pivot;
+  int I;
+  
+  for (I = 0; I &lt; N; I++) {
+    if (A[I] != 0)
+      Pivot = I;
+  }
+}
+</pre>
+<p>
+
+Following the loop, <span class="var">Pivot</span> will be uninitialized if all the 
+elements of the array A are zero.
+Should that be reported?
+BEAM will issue that complaint, and actually will provide the 
+shortest path to the error, which is the case of  <span class="code">N == 0</span>.
+This is in spite of no evidence that  <span class="var">N</span> could be zero.
+</p>
+<p>
+(Please note that on the very first iteration of the loop
+the test is <span class="code">0 &lt; N</span>.
+If there were an explicit test <span class="code">if(0 &lt; N)</span>
+anywhere, that would be strong evidence that  <span class="var">N</span> could be 0.
+But the loop test cannot be considered to provide such strong evidence
+because the programmer would write the loop the same way
+even if he were sure that  <span class="var">N</span> cannot be zero.)
+</p>
+<p>
+We could take the very conservative attitude that we cannot issue the complaint
+unless we have evidence that  <span class="var">N</span> could be 0.
+What if an error can occur only if a loop is executed once?
+Should we need evidence that  <span class="var">N</span> can be 1?
+What if an error can occur only if a loop is executed 100 times ...?
+</p>
+<p>
+It is possible to take such a conservative attitude,
+but it would prevent us from reporting many errors involving loops.
+Instead we assume that it is possible for a loop to be executed
+any number of times (including 0), without any evidence.
+That is what most people expect of a loop.
+</p>
+<p>
+Now reconsider example 1 modified as follows:
+</p>
+<p>
+Example 9:
+</p>
+<pre class="example">
+int Average(int Sum, int N)
+{
+  int I;
+  for (I = 0; I &lt; N; I++)
+    ;
+  return Sum / N;
+}
+</pre>
+<p>
+
+We agreed that no division by 0 complaint should be issued for example 1.
+Surely inserting a loop should not cause anybody to assume that the 
+function <span class="function">Average</span> is prepared to handle <span class="code">N == 0</span>.
+Therefore no complaint is issued for example 9.
+</p>
+<p>
+This leads us to the following paradox.
+</p>
+<p>
+Example 10:
+</p>
+<pre class="example">
+int Foo(int *A, unsigned N)
+{
+  int Pivot;
+  int I;
+  
+  for (I = 0; I &lt; N; I++) {
+    if (A[I] != 0)
+      Pivot = I;
+  }
+  
+  return Pivot / N;
+}
+</pre>
+<p>
+
+BEAM will complain about <span class="var">Pivot</span> being uninitialized in
+case  <span class="code">N == 0</span>,
+but will not issue the division by 0 complaint that can happen under
+identical conditions.
+The reason is that the rules of evidence are different in the two cases.
+(Think of O.J. being convicted of murder in a civil case,
+but not in a criminal case.)
+This example is discussed below under "General statement of rules of evidence".
+</p>
+<p>
+Example 11:
+</p>
+<pre class="example">
+int A[10];
+
+int Foo(int I)
+{
+  if (I &lt;= 10)
+    return A[I];
+}
+</pre>
+<p>
+
+Should we issue a complaint that the subscript <span class="var">I</span>
+may exceed the bounds of the array <span class="var">A</span>?
+Most people would answer "yes" because the test 
+probably should have been <span class="code">I &lt; 10</span>.
+</p>
+<p>
+Should we issue a complaint that the subscript <span class="var">I</span>
+might be negative?
+Most people would answer "no" because 
+it looks like the programmer is relying on <span class="var">I</span>
+not being negative.
+In other words, looking at the code and guessing what specification
+the programmer would have written, most people would guess
+that he would require <span class="code">I &gt;= 0</span>, but would not require 
+<span class="code">I &lt; 10</span>.
+</p>
+<p>
+In general a test contains a border value (10 in our example),
+and the test is needed because values on both sides of the border are possible.
+Therefore we assume that the test <span class="code">if(I &lt;= 10)</span>
+implies that both <span class="code">I == 10</span> and <span class="code">I == 11</span>
+are possible.
+</p>
+<p>
+Example 12:
+</p>
+<pre class="example">
+int Average(int Sum, unsigned N)
+{
+  if (N == 0)
+    X = 1;
+    
+  if (Q) return Sum / N;
+  else   return 0;
+}
+</pre>
+<p>
+
+This is a modification of Example 2, where now the division by 0
+happens if two conditions are satisfied -- 
+<span class="code">N == 0</span> and <span class="var">Q</span> is true.
+As discussed above, most programmers agree that testing 
+<span class="code">N == 0</span> gives them an obligation to make <span class="function">Average()</span>
+work if <span class="code">N == 0</span>; and similarly for <span class="var">Q</span>.
+However, many would argue that it is OK to assume that at most one of the 
+two conditions can happen, and therefore they have no obligation to make
+their code work if both are true.
+On the other hand, many would agree that they should document 
+their assumption that one of <span class="code">N == 0</span>, <span class="var">Q</span>
+must be false.
+And once they agree to that kind of responsibility they accept BEAM
+issuing a division by 0 complaint, forcing the author to put in an 
+assertion expressing his assumption.
+</p>
+<p>
+Example 13:
+</p>
+<pre class="example">
+int Average(int Sum, unsigned N)
+{
+  if (N == 0)
+    X = 1;
+    
+  return F(Sum, N);
+}
+
+
+int F(int Sum, unsigned N)
+{
+  if (Q) return Sum / N;
+  else   return 0;
+}
+</pre>
+<p>
+
+This is a modification of Example 12, where the two conditions 
+<span class="code">N == 0</span> and <span class="var">Q</span> have been 
+split across the two functions.
+There is still a path leading to division by 0;
+the path is identical to the one in Example 12,
+except that there is a call to <span class="function">F()</span> on the path.
+And that changes everything.
+It is no longer acceptable to report the possible division by 0.
+</p>
+<p>
+The function <span class="function">F()</span> will fail if 
+<span class="code">N == 0</span> and <span class="var">Q</span> are both true.
+The programmer does feel an obligation to make it work 
+if <span class="var">Q</span> is true, because <span class="var">Q</span> is being tested.
+But he feels no such obligation toward <span class="code">N == 0</span>,
+just like the programmer of Example 1.
+The fact that a caller of <span class="function">F()</span> might test <span class="var">N</span>
+cannot put any burden on the author of <span class="function">F()</span>.
+Similarly, the function <span class="function">F()</span> will fail if 
+<span class="code">N == 0</span> and <span class="var">Q</span> are both true.
+However, the author feels no obligation to document that it must not be
+called with <span class="var">Q</span> true, just because some other function invoked
+might test <span class="var">Q</span>.
+</p>
+<p>
+This is a major difference between intra-procedural paths and 
+inter-procedural paths.
+A path to error containing two conditions is not considered acceptable
+evidence, if the second condition can be reached by some call 
+to <span class="function">F()</span>, where <span class="var">N</span> is not tested.
+The situation is actually the same as for macros (Example 6),
+only more severe;
+inter-procedural paths leading to an error are much less acceptable
+to programmers than paths passing through macros.
+</p>
+<p>
+<h1>General statement of rules of evidence</h1>
+
+</p>
+<p>
+There is a set of conditions for an error to occur.
+They are the tests along a path leading to the error.
+Each condition has a label, called <span class="term">evidence</span>, which 
+is heuristically assigned to be one of
+<ul>
+<li><span class="val">to prove</span>
+<li><span class="val">admissible</span>
+<li><span class="val">inadmissible</span>
+</ul>
+An error is reported provided all the conditions are consistent, and
+all the <span class="val">admissible</span> conditions imply all those <span class="val">to prove</span>.
+</p>
+<p>
+Consider example 10.
+The condition for division by 0 is that <span class="code">N == 0</span>
+and that is labeled <span class="val">to prove</span>.
+The test <span class="code">A[I] != 0</span> is labeled <span class="val">admissible</span>
+although it does not help us here.
+The test <span class="code">I &lt; N</span> is labeled <span class="val">inadmissible</span> 
+by our heuristic for loop conditions, and therefore
+it cannot be used to prove what we would need for issuing a complaint.
+</p>
+<p>
+The situation is different for <span class="var">Pivot</span>, which 
+will be uninitialized under the <span class="val">inadmissible</span>
+condition that <span class="code">I &lt; N</span> is false 
+the first time it is tested.
+Since there is no condition <span class="val">to prove</span>
+the uninitialized complained will be issued.
+</p>
+<p>
+Division by 0 will occur when <span class="code">N == 0</span>, which is <span class="val">to prove</span>,
+and under the <span class="val">inadmissible</span>
+condition that <span class="code">I &lt; N</span> is false 
+the first time it is tested.
+Since there is no <span class="val">admissible</span> condition to help,
+the division by 0 complaint is not issued.
+</p>
+<p>
+In example 11 there is one condition <span class="val">to prove</span>, namely 
+<span class="code">I &lt; 0 || I &gt;= 10</span>.
+There are two <span class="val">admissible</span> conditions 
+<span class="code">I &lt;= 10</span> and <span class="code">I == 10</span>.
+While the first one does not imply the condition <span class="val">to prove</span>,
+the second one does.
+</p>
+<p>
+In general, the strength of the evidence for a condition is
+decided heuristically.
+In addition there are parameters to control the decisions.
+However, we do not encourage users to set the 
+parameters themselves.
+If you do not like our assumptions about what inputs are 
+possible, let us know.
+Such problems are usually deeper than parameter settings.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

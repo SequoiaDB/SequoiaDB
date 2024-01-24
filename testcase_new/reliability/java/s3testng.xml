@@ -1,0 +1,51 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--this xml is for ci, please don't modify it -->
+<!--testcase for function test, which can be excuted concurrently -->
+<suite name="driver" verbose="1" preserve-order="true">
+
+    <!--主机名，CI默认传入localhost-->
+    <parameter name="HOSTNAME" value="${HOSTNAME}"/>
+    <!--协调节点端口号，CI默认传入11810-->
+    <parameter name="SVCNAME" value="${SVCNAME}"/>
+    <!--s3服务端主机名，CI默认传入localhost-->
+    <parameter name="S3HOSTNAME" value="${S3HOSTNAME}"/>
+    <!--公共CS名-->
+    <parameter name="CHANGEDPREFIX" value="newstory_java_s3test"/>
+    <!--用例创建节点预留端口号最小值-->
+    <parameter name="RSRVPORTBEGIN" value="26000"/>
+    <!--用例创建节点预留端口号最大值-->
+    <parameter name="RSRVPORTEND" value="27000"/>
+    <!--用例创建节点存放节点数据目录-->
+    <parameter name="RSRVNODEDIR" value="/opt/sequoiadb/database/"/>
+    <!--用例存放临时文件的目录-->
+    <parameter name="WORKDIR" value="/tmp"/>
+    <!--s3服务端管理员用户-->
+    <parameter name="S3USERNAME"    value="administrator" />
+    <!--远程机器用户-->
+    <parameter name="REMOTEUSER"    value="${REMOTEUSER}"/>
+    <!--远程机器用户名密码-->
+    <parameter name="REMOTEPASSWD"  value="${REMOTEPASSWD}"/>
+    <!--访问s3服务端秘钥-->
+    <parameter name="S3ACCESSKEYID" value="ABCDEFGHIJKLMNOPQRST" />
+    <!--远程机器root用户密码-->
+    <parameter name="ROOTPASSWD" value="${ROOTPASSWD}"/>
+    <!--可靠性shell脚本位置-->
+    <parameter name="SCRIPTDIR" value="${SCRIPTDIR}"/>
+
+    <listeners>
+      <listener
+         class-name="com.sequoiadb.commlib.ReliabilityInvokeMethodListener" />
+      <listener
+         class-name="com.sequoias3.commlibs3.TimePrinterListener" />
+   </listeners>
+
+    <test name = "reliability_s3" preserve-order="true">
+        <packages>
+            <package name="com.sequoias3.delimiter" />
+            <package name="com.sequoias3.object" />
+            <package name="com.sequoias3.region" /> 
+            <package name="com.sequoias3.partupload" />
+            <package name="com.sequoias3.privilege" />
+        </packages>
+    </test>
+</suite>

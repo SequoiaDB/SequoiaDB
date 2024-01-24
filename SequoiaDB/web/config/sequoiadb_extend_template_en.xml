@@ -1,0 +1,71 @@
+<DeployModList type="array">
+  <FILLER>
+    <DeployMod>horizontal</DeployMod>
+    <WebName>Add Data Group</WebName>
+    <BusinessType>sequoiadb</BusinessType>
+    <Property type="array">
+      <FILLER>
+        <Name>datagroupnum</Name>
+        <Type>int</Type>
+        <Default>1</Default>
+        <Valid>1-</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Data Replica Group Number</Desc>
+        <Level>0</Level>
+        <WebName>Extend Group Number</WebName>
+      </FILLER>
+      <FILLER>
+        <Name>replicanum</Name>
+        <Type>int</Type>
+        <Default>3</Default>
+        <Valid>1,2,3,4,5,6,7</Valid>
+        <Display>select box</Display>
+        <Edit>true</Edit>
+        <Desc>Data Copies Number</Desc>
+        <Level>0</Level>
+        <WebName>Replica Number</WebName>
+      </FILLER>
+    </Property>
+  </FILLER>
+  <FILLER>
+    <DeployMod>vertical</DeployMod>
+    <WebName>Add Replica Node</WebName>
+    <BusinessType>sequoiadb</BusinessType>
+    <Property type="array">
+      <FILLER>
+        <Name>coordnum</Name>
+        <Type>int</Type>
+        <Default>1</Default>
+        <Valid>0-</Valid>
+        <Display>edit box</Display>
+        <Edit>true</Edit>
+        <Desc>Coord Node Number.</Desc>
+        <Level>0</Level>
+        <WebName>Coord Node Number</WebName>
+      </FILLER>
+      <FILLER>
+        <Name>catalognum</Name>
+        <Type>int</Type>
+        <Default>1</Default>
+        <Valid>0,1,2,3,4,5,6,7</Valid>
+        <Display>select box</Display>
+        <Edit>true</Edit>
+        <Desc>Catalog Nodes Number</Desc>
+        <Level>0</Level>
+        <WebName>Catalog Node Number</WebName>
+      </FILLER>
+      <FILLER>
+        <Name>replicanum</Name>
+        <Type>int</Type>
+        <Default>1</Default>
+        <Valid>0,1,2,3,4,5,6,7</Valid>
+        <Display>select box</Display>
+        <Edit>true</Edit>
+        <Desc>Data Replica Group Number</Desc>
+        <Level>0</Level>
+        <WebName>Replica Group Number</WebName>
+      </FILLER>
+    </Property>
+  </FILLER>
+</DeployModList>

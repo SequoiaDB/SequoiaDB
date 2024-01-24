@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="sdb" class="org.springframework.data.sequoiadb.core.SequoiadbFactoryBean">
+		<!--
+		<property name="host" value="192.168.20.165"/>
+		<property name="port" value="11810"/>
+		-->
+		<property name="host" value="192.168.3.211"/>
+		<property name="port" value="11810"/>
+	</bean>
+
+	<bean id="sequoiadbFactory" class="org.springframework.data.sequoiadb.core.SimpleSequoiadbFactory">
+		<constructor-arg name="sdb" ref="sdb"/>
+		<constructor-arg name="databaseName" value="database"/>
+	</bean>
+
+	<bean id="sequoiadbTemplate" class="org.springframework.data.sequoiadb.core.SequoiadbTemplate">
+		<constructor-arg name="sequoiadbFactory" ref="sequoiadbFactory"/>
+	</bean>
+
+</beans>

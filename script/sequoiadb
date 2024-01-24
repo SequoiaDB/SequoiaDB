@@ -1,0 +1,312 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          skeleton
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Example initscript
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+# Author: Foo Bar <foobar@baz.org>
+#
+# Please remove the "Author" lines above and replace them
+# with your own name if you copy and modify this script.
+
+# Do NOT "set -e"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="sequoiadb database service"
+NAME=sequoiadb
+LOCK_FILE_DIR=/var/lock/subsys
+LOCK_FILE=${LOCK_FILE_DIR}/sdbcm
+
+DAEMON_START=sdbcmart
+DAEMON_STOP=sdbcmtop
+DB_STOP=sdbstop
+
+if [ -f /etc/default/sequoiadb ];then
+   . /etc/default/sequoiadb
+fi
+
+CFG_PATH="${INSTALL_DIR}/conf/sdbcm.conf"
+CFG_ITEM=`grep defaultPort ${CFG_PATH}`
+PORT=`echo ${CFG_ITEM} | awk -F '=' '{print $2}'`
+DAEMON_NAME="sdbcmd"
+
+
+DAEMON_ARGS=""
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+#. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.2-14) to ensure that this file is present
+# and status_of_proc is working.
+#. /lib/lsb/init-functions
+
+
+VERBOSE=yes
+
+log_daemon_msg_pre () { :; }
+log_daemon_msg_post () { :; }
+log_end_msg_pre () { :; }
+log_end_msg_post () { :; }
+
+# Sample usage:
+# log_daemon_msg "Starting GNOME Login Manager" "gdm"
+#
+# On Debian, would output "Starting GNOME Login Manager: gdm"
+# On Ubuntu, would output " * Starting GNOME Login Manager..."
+#
+# If the second argument is omitted, logging suitable for use with
+# log_progress_msg() is used:
+#
+# log_daemon_msg "Starting remote filesystem services"
+#
+# On Debian, would output "Starting remote filesystem services:"
+# On Ubuntu, would output " * Starting remote filesystem services..."
+
+log_daemon_msg () {
+    if [ -z "${1:-}" ]; then
+        return 1
+    fi
+    log_daemon_msg_pre "$@"
+
+    if [ -z "${2:-}" ]; then
+        echo -n "$1:"
+        return
+    fi
+
+    echo -n "$1: $2"
+    log_daemon_msg_post "$@"
+}
+
+# int log_begin_message (char *message)
+log_begin_msg () {
+    if [ -z "${1:-}" ]; then
+        return 1
+    fi
+    echo -n "$@"
+}
+
+# int log_end_message (int exitstatus)
+log_end_msg () {
+    # If no arguments were passed, return
+    if [ -z "${1:-}" ]; then
+        return 1
+    fi
+
+    retval=$1
+
+    log_end_msg_pre "$@"
+
+    # Only do the fancy stuff if we have an appropriate terminal
+    # and if /usr is already mounted
+    if log_use_fancy_output; then
+        RED=`$TPUT setaf 1`
+        YELLOW=`$TPUT setaf 3`
+        NORMAL=`$TPUT op`
+    else
+        RED=''
+        YELLOW=''
+        NORMAL=''
+    fi
+
+    if [ $1 -eq 0 ]; then
+        echo "."
+    elif [ $1 -eq 255 ]; then
+        /bin/echo -e " ${YELLOW}(warning).${NORMAL}"
+    else
+        /bin/echo -e " ${RED}failed!${NORMAL}"
+    fi
+    log_end_msg_post "$@"
+    return $retval
+}
+
+log_use_fancy_output () {
+    TPUT=/usr/bin/tput
+    EXPR=/usr/bin/expr
+    if [ -t 1 ] && [ "x${TERM:-}" != "x" ] && [ "x${TERM:-}" != "xdumb" ] && [ -x $TPUT ] && [ -x $EXPR ] && $TPUT hpa 60 >/dev/null 2>&1 && $TPUT setaf 1 >/dev/null 2>&1; then
+        [ -z $FANCYTTY ] && FANCYTTY=1 || true
+    else
+        FANCYTTY=0
+    fi
+    case "$FANCYTTY" in
+        1|Y|yes|true)   true;;
+        *)              false;;
+    esac
+}
+
+
+log_success_msg () {
+    if [ -n "${1:-}" ]; then
+        log_begin_msg $@
+    fi
+    log_end_msg 0
+}
+
+log_failure_msg () {
+    if [ -n "${1:-}" ]; then
+        log_begin_msg $@ "..."
+    fi
+    log_end_msg 1 || true
+}
+
+log_warning_msg () {
+    if [ -n "${1:-}" ]; then
+        log_begin_msg $@ "..."
+    fi
+    log_end_msg 255 || true
+}
+
+#
+# Return LSB status
+#
+status_of_proc () {
+    local daemon name status
+
+    daemon="$1"
+    name="$2"
+
+    status="0"
+    pidof -o %PPID -x "$daemon" || status="$?"
+
+    if [ "$status" = 0 ]; then
+        log_success_msg "$name is running"
+        return 0
+    else
+        log_failure_msg "$name is not running"
+        return $status
+    fi
+}
+
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+  mkdir -p ${LOCK_FILE_DIR}
+  touch ${LOCK_FILE}
+
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+  $INSTALL_DIR/bin/$DAEMON_START $DAEMON_ARGS \
+		|| return 2
+
+	# Add code here, if necessary, that waits for the process to be ready
+	# to handle requests from services started subsequently which depend
+	# on this one.  As a last resort, sleep for some time.
+        return 0
+}
+
+#
+# Function that stops the daemon/service
+#  arg1 isStopNode
+do_stop()
+{
+        # Return
+        #   0 if daemon has been stopped
+        #   other if a failure occurred
+        $INSTALL_DIR/bin/$DAEMON_STOP
+
+        isStopAllNode=$1 ;
+        # if $isStopAllNode == "true" ; then stop all nodes
+        if [ "a${isStopAllNode}" != "afalse" ] ; then
+           $INSTALL_DIR/bin/$DB_STOP -t all
+        fi
+        return $?
+
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_reload() {
+	#
+	# If the daemon can reload its configuration without
+	# restarting (for example, when it is sent a SIGHUP),
+	# then implement that here.
+	#
+	#start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME
+	return 0
+}
+
+
+case "$1" in
+  start)
+	[ "$VERBOSE" != "no" ] && log_daemon_msg "Starting $DESC" "$NAME "
+	do_start
+	case "$?" in
+		0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		*) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME "
+	do_stop
+	case "$?" in
+		0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		*) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  status)
+       status_of_proc "$DAEMON_NAME" "$NAME" && exit 0 || exit $?
+       ;;
+  #reload|force-reload)
+	#
+	# If do_reload() is not implemented then leave this commented out
+	# and leave 'force-reload' as an alias for 'restart'.
+	#
+	#log_daemon_msg "Reloading $DESC" "$NAME"
+	#do_reload
+	#log_end_msg $?
+	#;;
+  restart|force-reload)
+	#
+	# If the "reload" option is implemented then remove the
+	# 'force-reload' alias
+	#
+	log_daemon_msg "Restarting $DESC" "$NAME"
+   
+   if [ "X$2" != "Xall-nodes" ]
+   then
+      do_stop "false"
+   else
+      do_stop "true"
+   fi
+   
+	case "$?" in
+	  0)
+		do_start
+		case "$?" in
+			0) log_end_msg 0 ;;
+			*) log_end_msg 1 ;; # Failed to start
+		esac
+		;;
+	  *)
+	  	# Failed to stop
+		log_end_msg 1
+		;;
+	esac
+	;;
+  *)
+   echo "Usage: $SCRIPTNAME { start | stop | status | restart | force-reload }" >&2
+   echo "       $SCRIPTNAME { restart all-nodes | force-reload all-nodes }" >&2
+	exit 3
+	;;
+esac
+
+

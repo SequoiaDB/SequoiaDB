@@ -1,0 +1,78 @@
+﻿<div style="padding:10px 15px;" ng-controller="Config.PG.Index.Ctrl" ng-container="{}">
+
+   <div class="underlineTab" style="padding:0 15px;height:50px;">
+      <ul class="left">
+         <li class="Ellipsis active" style="max-width:300px;">
+            {{ModuleName}}
+         </li>
+      </ul>
+   </div>
+
+   <div ng-container="{offsetY:-50}">
+
+      <div ng-windows="config as ConfigItemWindow.config" windows-callback="ConfigItemWindow.callback">
+         <table class="table loosen border">
+            <thead>
+               <tr>
+                  <td style="background-color:#F1F4F5;">{{pAutoLanguage("节点")}}</td>
+                  <td style="background-color:#F1F4F5;" ng-if="config.key != 'NodeName'">{{pAutoLanguage("值")}}</td>
+               </tr>
+            </thead>
+            <tbody>
+               <tr ng-repeat="item in config.value track by $index">
+                  <td>{{item['node']}}</td>
+                  <td ng-if="config.key != 'NodeName'">{{item['value']}}</td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+      <div ng-windows="form as ModifyConfigWindow.config" windows-callback="ModifyConfigWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+
+      <div>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="Refresh()">{{pAutoLanguage("刷新")}}</button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="OpenModifyConfigWindow()">
+            {{pAutoLanguage("修改配置")}}
+         </button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="RestartModule()">{{pAutoLanguage("重启实例")}}</button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="SwitchExpandConfigs()">
+            <span ng-if="!Expand">{{pAutoLanguage("查看详细配置")}}</span>
+            <span ng-if="Expand">{{pAutoLanguage("查看配置")}}</span>
+         </button>
+         <button class="btn btn-default" ng-class="{true:'btn-xs'}[WindowWidth < 1366]" ng-click="OpenShowFieldDropdown($event)" ng-if="NodeNum > 1">
+            {{pAutoLanguage("选择显示列")}}&nbsp;<i class="fa fa-caret-down"></i>
+         </button>&nbsp;
+         <div ng-dropdown="config in FieldDropdown.config" dropdown-callback="FieldDropdown.callback">
+            <label class="Ellipsis" style="padding:5px 10px;display:block;cursor:pointer;" data-desc="{{TemplateDesc[config.key]['Desc']}}" ng-click="SaveField()">
+               <input type="checkbox" ng-model="config.isShow" />&nbsp;{{config.value}}
+            </label>
+         </div>
+      </div>
+
+      <div ng-container="{marginTop:10,offsetY:-40}" style="overflow-y:auto;position:absolute;">
+
+         <div ng-container="{}" ng-table="SettingTable['table']" table-title="SettingTable['title']" table-content="row in SettingTable['content']" table-callback="SettingTable['callback']">
+            <div table-key="name">
+               {{row.name}}
+            </div>
+            <div table-key="setting">
+               {{row.setting}}
+            </div>
+            <div table-key="context">
+               {{row.context}}
+            </div>
+            <div table-key="short_desc">
+               {{row.short_desc}}
+            </div>
+            <div table-key="extra_desc">
+               {{row.extra_desc}}
+            </div>
+         </div>
+
+      </div>
+
+   </div>
+
+</div>

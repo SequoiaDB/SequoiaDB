@@ -1,0 +1,86 @@
+import os
+
+Import("env")
+
+gtestFiles = [
+      "../../../../../../SequoiaDB/engine/gtest/src/gtest-all.cc"
+      ]
+
+gtestMainFile = [
+      "../../../../../../SequoiaDB/engine/gtest/src/gtest_main.cc"
+      ]
+
+testFiles1 = [
+        "testcommon.c",
+        "collection.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles2 = [
+        "testcommon.c",
+        "collectionspace.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles3 = [
+        "testcommon.c",
+        "cursor.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles4 = [
+        "testcommon.c",
+        "sdb.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles5 = [
+        "testcommon.c",
+        "snapshot.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles6 = [
+        "testcommon.c",
+        "concurrent_insert.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles7 = [
+        "testcommon.c",
+        "shard.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles8 = [
+        "testcommon.c",
+        "debug.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles9 = [
+        "testcommon.c",
+        "cbson.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+testFiles10 = [
+        "testcommon.c",
+        "domain.cpp",
+        "../../../../../../client/lib/libstaticsdbc.a"
+      ]
+
+#Google Test
+gtestall = env.StaticLibrary('gtest', gtestFiles)
+gtestMainObj = env.Object('gtestMainObj', gtestMainFile)
+
+collection = env.Program("collection_static", [testFiles1, gtestMainObj],
+                     _LIBDEPS='$_LIBDEPS_OBJS')
+collectionspace = env.Program("collectionspace_static", [testFiles2, gtestMainObj ])
+#                     _LIBDEPS='$_LIBDEPS_OBJS')
+cursor = env.Program("cursor_static", [testFiles3, gtestMainObj])
+#                     _LIBDEPS='$_LIBDEPS_OBJS')
+sdb = env.Program("sdb_static", [testFiles4, gtestMainObj])
+#                     _LIBDEPS='$_LIBDEPS_OBJS')
+snapshot = env.Program("snapshot_static", [testFiles5, gtestMainObj])
+#                     _LIBDEPS='$_LIBDEPS_OBJS')
+concurrent = env.Program("concurrent_static", [testFiles6, gtestMainObj])
+#                     _LIBDEPS='$_LIBDEPS_OBJS')
+shard = env.Program("shard_static", [testFiles7, gtestMainObj])
+#                     _LIBDEPS='$_LIBDEPS_OBJS')
+debug = env.Program("debug_static", [testFiles8, gtestMainObj])
+cbson = env.Program("cbson_static", [testFiles9, gtestMainObj])
+domain = env.Program("domain_static", [testFiles10, gtestMainObj])
+env.Install( '#/build_test', [collection,collectionspace,cursor,sdb,snapshot,concurrent,
+                              shard, debug, cbson, domain] )

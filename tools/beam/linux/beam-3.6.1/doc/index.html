@@ -1,0 +1,199 @@
+<html>
+<head>
+  <title>BEAM: Bugs, Errors and Mistakes</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Home Page</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Welcome to BEAM -- a tool for static analysis of software.</h1>
+
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>News</h1>
+
+</p>
+<p>
+<b>January 2, 2011 -- BEAM 3.6.1 released</b><br/>
+This is a maintenance release. It includes many bug
+fixes from our previous release. It also includes some
+new multi-threaded programming configuration and
+complaints.
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2011-January/000048.html">the announcement</a> for a detailed list of changes.
+</p>
+<p>
+<b>July 18, 2010 -- BEAM 3.6.0 released</b><br/>
+This is a major release. It includes a new parser for
+C and C++, which brings better compatibility for many
+modern compilers. It also features many bug fixes and
+ehancements.
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2010-July/000046.html">the announcement</a> for a detailed list of changes.
+</p>
+<p>
+<b>December 16, 2009 -- BEAM 3.5.3 released</b><br/>
+This is a maintenance release. New checks for locking
+are included with this release, as well as a large number
+of bug fixes and enhancements.
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2009-December/000045.html">the announcement</a> for a detailed list of changes.
+</p>
+<p>
+<b>July 12, 2009 -- BEAM 3.5.2 released</b><br/>
+This is a maintenance release. We have further improved algorithms for
+pointer analysis that may result in fewer false positives and/or more 
+complaints that are being reported. The release also includes several
+bug fixes and some miscellaneous enhancements.
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2009-July/000044.html">the announcement</a> for a detailed list of changes.
+</p>
+<p>
+<b>December 12, 2008 -- BEAM 3.5.1 released</b><br/>
+This is a maintenance release.
+As usual a large number of bug fixes and tweaks are included.
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2008-December/000043.html">the announcement</a> for a detailed list of changes.
+</p>
+<p>
+<b>June 25, 2008 -- BEAM 3.5.0 released</b><br/>
+This is a major release. It includes several usability enhancements, some
+new checks, and many bug fixes and tweaks. The BEAM tracing tool now also
+runs on x86_64. Additionally, BEAM can be invoked to run beam_configure under
+the covers thereby eliminating the need to store (and potentially mix up)
+configuration files.
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2008-June/000042.html">the announcement</a> for a detailed list of changes.
+</p>
+<p>
+<b>April 29, 2008 -- 9.17.*.* subnet is blocked</b><br/>
+BEAM download attempts (w3.eda.ibm.com/beam/install.html) that originate from 
+the 9.17.*.* subnet are now being blocked. This is a temporary measure to
+protect IBM assets. If you are an IBM employee who cannot download BEAM
+because of this please send a note to the
+<a href="mailto:beam-user@edamail.fishkill.ibm.com">BEAM user mailing list</a>
+and we will arrange to get you a copy of BEAM by other means.
+</p>
+<p>
+<b>December 14, 2007 -- BEAM 3.4.2 released</b><br/>
+This is a maintenance release. It includes an initial release of a build
+tracing tool that greatly simplifies integration of BEAM into a build
+process. As usual a large number of bug fixes and tweaks are included.
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2007-December/000041.html">the announcement</a> for a detailed list of changes.
+</p>
+<p>
+<b>September 30, 2007 -- BEAM 3.4.1 released</b><br/>
+This is a maintenance release. It includes new checks for Java, numerous
+smaller enhancements and bug fixes. Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2007-September/000040.html">the announcement</a> for a detailed list of changes.
+</p>
+<p>
+<b>June 30, 2007 -- BEAM 3.4.0 released</b><br/>
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2007-June/000039.html">the announcement</a> for a list of changes.
+</p>
+<p>
+<b>April 11, 2007 -- BEAM 3.3.1 released</b><br/>
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2007-April/000038.html">the announcement</a> for a list of changes.
+</p>
+<p>
+<b>January, 2007 -- BEAM named Outstanding Accomplishment</b><br/>
+BEAM was named an <a href="http://w3.research.ibm.com/tp/acc06/2006AccomTop.htm">Outstanding Accomplishment</a> of the research division. 
+</p>
+<p>
+<b>December 30, 2006 -- BEAM 3.3.0 released</b><br/>
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2006-December/000037.html">the announcement</a> for a list of changes.
+</p>
+<p>
+<b>September, 2006 -- BEAM for PL/X has been cancelled</b><br/>
+Due to lack of funding development of BEAM for PL/X has been discontinued.
+</p>
+<p>
+<b>June 30, 2006 -- BEAM 3.2.0 and BEAM for Java Beta (3.2.0-java) released</b><br/>
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2006-June/000036.html">the announcement</a> for a list of changes.
+</p>
+<p>
+<b>March 15, 2006 -- BEAM 3.1.1a for Z/OS released</b><br/>
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2006-March/000035.html">the announcement</a> for a list of changes.
+</p>
+<p>
+<b>February 15, 2006 -- BEAM 3.1.1 released</b><br/>
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2006-February/000034.html">the announcement</a> for a list of changes.
+</p>
+<p>
+<b>November 30, 2005 -- BEAM 3.1.0 released</b><br/>
+Please read <a href="http://edaweb.fishkill.ibm.com/pipermail/beam-announce/2005-November/000033.html">the announcement</a> for a list of changes.
+</p>
+<p>
+<a href="old_news.html">Older news</a>
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+Feedback and questions concerning this site should be directed to 
+<a href="mailto:beam-user@edamail.fishkill.ibm.com">the BEAM user mailing list</a>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

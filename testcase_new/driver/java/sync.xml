@@ -1,0 +1,47 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--this xml is for ci, please don't modify it-->
+<!--sync testcase, which should be excute serially-->
+
+<suite name="driver" verbose="1">
+
+    <!--主机名，CI默认传入localhost-->
+    <parameter name="HOSTNAME"       value="${HOSTNAME}" />
+    <!--协调节点端口号，CI默认传入11810-->
+    <parameter name="SVCNAME"        value="${SVCNAME}" />
+    <!--公共CS名-->
+    <parameter name="CHANGEDPREFIX"  value="story_java_test" />
+    <!--用例创建节点预留端口号最小值-->
+    <parameter name="RSRVPORTBEGIN"  value="26000" />
+    <!--用例创建节点预留端口号最大值-->
+    <parameter name="RSRVPORTEND"    value="27000" />
+    <!--用例创建节点存放节点数据目录-->
+    <parameter name="RSRVNODEDIR"    value="${RSRVNODEDIR}" />
+    <!--用例存放临时文件的目录-->
+    <parameter name="WORKDIR"        value="/tmp/javatest" />
+    <!--用例远程机器用户名-->
+    <parameter name="REMOTEUSER"     value="${REMOTEUSER}" />
+    <!--用例远程机器用户密码-->
+    <parameter name="REMOTEPASSWD"   value="${REMOTEPASSWD}" />
+
+    <listeners>
+        <listener class-name="com.sequoiadb.testcommon.TimePrinterListener" />
+    </listeners>
+
+    <test name="story">
+        <packages>
+            <package name="com.sequoiadb.datasource.serial"/>
+            <package name="com.sequoiadb.auth"/>
+            <package name="com.sequoiadb.backup"/>
+            <package name="com.sequoiadb.clustermanager"/>
+            <package name="com.sequoiadb.basicoperation.analyze"/>
+            <package name="com.sequoiadb.metadata.sync" />
+            <package name="com.sequoiadb.sdb.serial" />
+            <package name="com.sequoiadb.transaction.serial" />
+	        <package name="com.sequoiadb.driveconnection.serial"/>
+            <package name="com.sequoiadb.index.serial"/>
+            <package name="com.sequoiadb.bsontypes.serial"/>
+            <package name="com.sequoiadb.recyclebin"/>
+        </packages>
+    </test>
+</suite>
+   

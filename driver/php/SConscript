@@ -1,0 +1,103 @@
+Import("env")
+Import("root_dir")
+Import("testBuild")
+Import("clienttestBuild")
+Import("phpedition")
+
+phpFiles = [
+      "ext/sequoiadb.c",
+      "ext/php_function.c",
+      "ext/php_resource.c",
+      "ext/class/class_sequoiadb.c",
+      "ext/class/class_securesdb.c",
+      "ext/class/class_cs.c",
+      "ext/class/class_cl.c",
+      "ext/class/class_cursor.c",
+      "ext/class/class_group.c",
+      "ext/class/class_node.c",
+      "ext/class/class_domain.c",
+      "ext/class/class_lob.c",
+      "ext/class/class_objectid.c",
+      "ext/class/class_date.c",
+      "ext/class/class_timestamp.c",
+      "ext/class/class_int64.c",
+      "ext/class/class_regex.c",
+      "ext/class/class_binary.c",
+      "ext/class/class_decimal.c"
+      ]
+clientFiles = [
+      root_dir + "/../../SequoiaDB/engine/client/client.c"
+      ]
+clientLibFiles = [
+      root_dir + "/../../SequoiaDB/engine/oss/ossSSLCertificate.c",
+      root_dir + "/../../SequoiaDB/engine/oss/ossSSLWrapper.c",
+      root_dir + "/../../SequoiaDB/engine/oss/ossSSLContext.c",
+      root_dir + "/../../SequoiaDB/engine/oss/oss.c",
+      root_dir + "/../../SequoiaDB/engine/oss/ossUtil.c",
+      root_dir + "/../../SequoiaDB/engine/oss/ossMem.c",
+      root_dir + "/../../SequoiaDB/engine/client/common.c",
+      root_dir + "/../../SequoiaDB/engine/client/cJSON.c",
+      root_dir + "/../../SequoiaDB/engine/client/cJSON_ext.c",
+      root_dir + "/../../SequoiaDB/engine/client/cJSON_iterator.c",
+      root_dir + "/../../SequoiaDB/engine/client/jstobs.c",
+      root_dir + "/../../SequoiaDB/engine/client/timestampParse.c",
+      root_dir + "/../../SequoiaDB/engine/client/timestampTm.c",
+      root_dir + "/../../SequoiaDB/engine/client/timestampValid.c",
+      root_dir + "/../../SequoiaDB/engine/client/base64c.c",
+      root_dir + "/../../SequoiaDB/engine/client/network.c",
+      root_dir + "/../../SequoiaDB/engine/bson/md5.c",
+      root_dir + "/../../SequoiaDB/engine/util/utilTypeCast.c",
+      root_dir + "/../../SequoiaDB/engine/util/utilCipher.c"
+      ]
+clientLibFiles2 = [
+      root_dir + "/../../SequoiaDB/engine/client/bson/numbers.c",
+      root_dir + "/../../SequoiaDB/engine/client/bson/bson.h",
+      root_dir + "/../../SequoiaDB/engine/client/bson/encoding.h",
+      root_dir + "/../../SequoiaDB/engine/client/bson/bson.c",
+      root_dir + "/../../SequoiaDB/engine/client/bson/common_decimal.c",
+      root_dir + "/../../SequoiaDB/engine/include/common_decimal.h",
+      root_dir + "/../../SequoiaDB/engine/include/common_decimal_fun.h",
+      root_dir + "/../../SequoiaDB/engine/include/common_decimal_type.h",
+      root_dir + "/../../SequoiaDB/engine/client/bson/encoding.c"
+      ]
+env.Execute(Mkdir(root_dir + "/ext/temp"))
+env.Execute(Mkdir(root_dir + "/ext/temp/bson"))
+for file in clientFiles:
+   env.Execute(Copy(root_dir + "/ext/temp", file))
+for file in clientLibFiles:
+   env.Execute(Copy(root_dir + "/ext/temp", file))
+for file in clientLibFiles2:
+   env.Execute(Copy(root_dir + "/ext/temp/bson", file))
+srcFile = [
+      root_dir + "/ext/temp/client.c",
+      root_dir + "/ext/temp/ossSSLCertificate.c",
+      root_dir + "/ext/temp/ossSSLWrapper.c",
+      root_dir + "/ext/temp/ossSSLContext.c",
+      root_dir + "/ext/temp/oss.c",
+      root_dir + "/ext/temp/ossUtil.c",
+      root_dir + "/ext/temp/ossMem.c",
+      root_dir + "/ext/temp/common.c",
+      root_dir + "/ext/temp/cJSON.c",
+      root_dir + "/ext/temp/cJSON_ext.c",
+      root_dir + "/ext/temp/cJSON_iterator.c",
+      root_dir + "/ext/temp/jstobs.c",
+      root_dir + "/ext/temp/timestampParse.c",
+      root_dir + "/ext/temp/timestampTm.c",
+      root_dir + "/ext/temp/timestampValid.c",
+      root_dir + "/ext/temp/base64c.c",
+      root_dir + "/ext/temp/network.c",
+      root_dir + "/ext/temp/md5.c",
+      root_dir + "/ext/temp/bson/numbers.c",
+      root_dir + "/ext/temp/bson/bson.c",
+      root_dir + "/ext/temp/bson/common_decimal.c",
+      root_dir + "/ext/temp/bson/encoding.c",
+      root_dir + "/ext/temp/utilTypeCast.c",
+      root_dir + "/ext/temp/utilCipher.c"
+      ]
+if testBuild:
+    env.Program([testFiles])
+else:
+    if clienttestBuild :
+        env.Program([clienttestFiles])
+    else:
+        env.SharedLibrary('libsdbphp-' + phpedition,[phpFiles, srcFile ])

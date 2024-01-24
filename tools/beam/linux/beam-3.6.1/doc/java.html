@@ -1,0 +1,442 @@
+<html>
+<head>
+  <title>BEAM: BEAM for Java</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM for Java</h1>
+<hr/>
+
+</p>
+<p>
+    This page serves as the location where the Java-related BEAM
+    documentation resides. It is laid out in a tutorial fashion;
+    if you follow along from the top to the bottom, you should
+    have a working BEAM installation that you can test out
+    on your Java code.
+</p>
+<p>
+    For reference information about BEAM for Java
+    (supported command-line options, compiler configuration,
+    and other details), please visit the
+    <a href="java_ref.html">BEAM for Java Reference Page</a>.
+</p>
+<p>
+<ul>
+  <li><a href="#what">What is it?</a></li>
+  <li><a href="#downloading_installing">Downloading and Installing</a></li>
+  <li><a href="#configuring">Configuring</a></li>
+  <li><a href="#quick">Testing</a></li>
+  <li><a href="#running">Running</a></li>
+  <li><a href="#builds">Building Projects</a></li>
+  <li><a href="#customizing">Customizing</a></li>
+  <li><a href="#fromhere">Where to go from here?</a></li>
+  <li><a href="#help">Getting Help</a></li>
+</ul>
+
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="what"></a><h1>What is it?</h1>
+
+
+</p>
+<p>
+    Enabling BEAM for Java means gluing a Java language frontend (parser)
+    to the analysis machinery of the BEAM backend. That way we can take
+    advantage of existing infrastructure, allowing BEAM to issue many
+    of the same complaints for Java that already exist for other languages.
+</p>
+<p>
+    More detailed information can be found in the <a href="java_ref.html">reference section</a>, including the supported checks,
+    details about the supported environment, minor limitations, etc.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="downloading_installing"></a><h1>Downloading and Installing</h1>
+
+
+</p>
+<p>
+    Click on the download link on the menu to the left to download BEAM,
+    then follow the normal <a href="install.html">installation instructions</a>
+    to install.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="configuring"></a><h1>Configuring</h1>
+
+
+</p>
+<p>
+    In order for BEAM to parse your source code without errors,
+    BEAM has to match the behavior of your native Java compiler as much
+    as possible. This is achieved by describing compiler specifics in a
+    so-called <span class="term">compiler configuration file</span>.
+</p>
+<p>
+    To generate one automatically, run this command:
+</p>
+<pre class="example">
+beam-X.Y.Z/bin/beam_configure --java <span class="val">/path/to/javac</span> -o <span class="val">my_config.tcl</span>
+</pre>
+<p>
+    
+    You can call the output file whatever you want, but remember the
+    name of it for the next step.
+</p>
+<p>
+    Details about the <span class="command">beam_configure</span> command can be found on the
+    <a href="beam_configure.html">beam_configure Reference Page</a>.
+</p>
+<p>
+    Details about the compiler configuration file and the settings it
+    contains can also be found in the <a href="java_ref.html#compconf">reference section</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="quick"></a><h1>Testing</h1>
+
+
+</p>
+<p>
+    Now that BEAM is installed and configured, you can try it out on
+    a small source file to ensure that it is working correctly. Download
+    <a href="Example.java">this file</a>, save it somewhere, and run
+    BEAM on it:
+</p>
+<pre class="example">
+beam-X.Y.Z/bin/beam_compile Example.java --beam::compiler=<span class="val">my_config.tcl</span>
+</pre>
+<p>
+
+    You should see this output:
+</p>
+<pre class="example">
+BEAM_VERSION=X.Y.Z
+BEAM_ROOT=...
+BEAM_BUILD_ROOT=...
+BEAM_DIRECTORY_WRITE_INNOCENTS=
+BEAM_DIRECTORY_WRITE_ERRORS=
+
+-- ERROR2     /*operating on NULL*/     &gt;&gt;&gt;ERROR2_foo_55479ec82b606
+&quot;Example.java&quot;, line 11: invalid operation involving NULL pointer
+ONE POSSIBLE PATH LEADING TO THE ERROR:
+ &quot;Example.java&quot;, line 8: the if-condition is true (used as evidence that error is possible)
+ &quot;Example.java&quot;, line 11: using operation `[]' to dereference NULL pointer `p'
+
+VALUES AT THE END OF THE PATH:
+  p = 0
+</pre>
+<p>
+
+<hr />
+
+</p>
+<p>
+<a name="running"></a><h1>Running</h1>
+
+
+</p>
+<p>
+    Running BEAM is similar to running the <span class="command">javac</span> compiler
+    from your SDK. BEAM takes in the same options and source
+    files, but instead of compiling them, it analyzes them.
+</p>
+<p>
+    The correct way to invoke BEAM is to take the command-line that you
+    would have passed to <span class="command">javac</span> to compile your code, and pass
+    it instead to <span class="command">beam_compile</span>, with a few 
+    BEAM-specific options added to it.
+</p>
+<p>
+    Do not forget to specify the compiler configuration file. Without 
+    that BEAM will not work properly. Here is an example:
+</p>
+<pre class="example">
+beam-X.Y.Z/bin/beam_compile --beam::compiler=<span class="val">my_config.tcl</span> \
+                            <span class="val">normal javac options</span> \
+                            File1.java File2.java ...
+</pre>
+<p>
+
+    A list of <span class="command">javac</span> options that affect BEAM can
+    be found on the <a href="java_ref.html#options">BEAM for Java Reference Page</a>.
+</p>
+<p>
+    A list of general BEAM options that control other aspects
+    of BEAM's behavior can be found in the
+    <a href="beam_compile.html">beam_compile options</a>
+    documentation.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="builds"></a><h1>Building Projects</h1>
+
+
+</p>
+<p>
+    The <span class="command">beam_compile</span> command will act like a drop-in
+    replacement for the <span class="command">javac</span> command. It takes in the
+    same <a href="java_ref.html#options">options</a>,
+    it reads the same source files, understands the
+    <a href="java_ref.html#classpath">classpath rules</a>,
+    and it will 
+    <a href="java_ref.html#analyzedeps">check dependencies automatically</a>.
+</p>
+<p>
+    If the build process is simple, you can just invoke
+    <span class="command">beam_compile</span> instead of <span class="command">javac</span>
+    and things should just work.
+</p>
+<p>
+    If the build process is complex and has intricate dependencies, 
+    it is often better to write a simple wrapper script that
+    runs BEAM first and the Java compiler second. Then invoke the
+    wrapper script instead of <span class="command">javac</span>. That way it is
+    ensured that the build will go through and BEAM gets run at the
+    same time.
+</p>
+<p>
+    Here is an example:
+</p>
+<pre class="example">
+#!/bin/sh
+
+#####
+
+# Update these variables:
+
+LOGDIR=/some/dir/logs
+BEAM_HOME=/some/dir/beam-X.Y.Z
+JAVA_HOME=/some/dir/jdk1.5
+
+CONFIG=/some/dir/config/my_config.tcl
+
+#####
+
+mkdir -p &quot;$LOGDIR&quot;
+
+JAVAC=&quot;$JAVA_HOME/bin/javac&quot;
+BEAM_COMPILE=&quot;$BEAM_HOME/bin/beam_compile&quot;
+
+BEAM_FLAGS=&quot;--beam::complaint_file=$LOGDIR/BEAM-complaints&quot;
+BEAM_FLAGS=&quot;$BEAM_FLAGS --beam::compiler=$CONFIG&quot;
+BEAM_FLAGS=&quot;$BEAM_FLAGS --beam::skip_cmdline_files_if_analyzed&quot;
+
+$BEAM_COMPILE $BEAM_FLAGS &quot;$@&quot;
+
+$JAVAC &quot;$@&quot;
+</pre>
+<p>
+
+    Make sure you update the variables at the top. Once you save 
+    this script somewhere, simply tell your build to use this
+    instead of <span class="command">javac</span> and BEAM will be run over
+    your source files as they are built.
+</p>
+<p>
+    For projects that use the Ant Java build tool BEAM provides
+    an Ant Task. More information can be found on the 
+    <a href="ant_ref.html">Ant Task page</a>.
+</p>
+<p>
+    There is also an <span class="term">Eclipse plugin</span> for interactive BEAM runs
+    in that development environment.
+    For more information consult the <a href="eclipse/">Eclipse plugin page</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="customizing"></a><h1>Customizing</h1>
+
+
+</p>
+<p>
+    There are many ways to customize BEAM to produce more
+    of the complaints you want, and fewer of the complaints that
+    you don't want.
+</p>
+<p>
+    You can start by reading <a href="customize.html">BEAM Customization</a>.
+    Although this page has a bit of a C/C++ bias, it will start you off with 
+    a parameter file that you can customize for your project.
+</p>
+<p>
+    A possible next step is to write <a href="attributes.html">function attributes</a>.
+</p>
+<p>
+    Here is an example configuration that turns on
+    <a href="builtin.html#MISTAKE18">MISTAKE18</a>, which in our
+    case will issue a complaint whenever two <span class="code">java.lang.String</span>
+    objects are compared using <span class="code">==</span>. The complaint will
+    suggest using <span class="code">String::equals</span> instead.
+</p>
+<pre class="example">
+source beam_default_parms.tcl
+
+set beam::MISTAKE18::enabling_policy                    &quot;always&quot;
+set beam::MISTAKE18::compare_function(java.lang.String) &quot;String::equals&quot;
+</pre>
+<p>
+    
+    If you save that in a file called <span class="file">my_parms.tcl</span> then you can
+    load it into BEAM like so:
+</p>
+<pre class="example">
+beam-X.Y.Z/bin/beam_compile <span class="val">options</span> --beam::parms=my_parms.tcl
+</pre>
+<p>
+    
+    Here is another example that enables some advisory checks
+    (<a href="builtin.html#MISTAKE21">MISTAKE21</a>).
+    Turning these on will
+    cause BEAM to issue complaints when routines like
+    <span class="code">System::exit</span>, <span class="code">Object::finalize</span>,
+    String and Boolean constructors, and other discouraged
+    routines are called. This example also shows how to
+    add advisory messages to your own routines.
+</p>
+<pre class="example">
+source beam_default_parms.tcl
+
+set beam::MISTAKE21::enabling_policy &quot;discouraged_method_call&quot;
+
+# Add an advisory messasge to a custom routine
+
+beam::function_attribute {
+  advisory ( 
+    explanation = &quot;Don't call me because ...&quot;,
+    category = &quot;discouraged_method_call&quot;
+  )
+} -signatures &quot;org.my.package.Class.method()&quot;
+</pre>
+<p>
+    
+    More information about the advisory attribute can be found
+    on the <a href="attributes.html">function attributes page</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="fromhere"></a><h1>Where to go from here?</h1>
+
+
+</p>
+<p>
+    Now that you can run BEAM over your Java code and generate complaints
+    you should browse the rest of the
+    <a href="index.html">BEAM homepage</a>.
+    Just keep in mind that some of the documentation either won't apply
+    apply or will be inaccurate with respect to Java. This will
+    improve over time. Until then use this page as the source of definitive
+    information, and for other discrepancies, consult us for
+    <a href="#help">help</a>.
+</p>
+<p>
+    If you use JNI, BEAM can help you check for errors there too.
+    Visit our <a href="jni.html">JNI</a> page for details.
+</p>
+<p>
+    One more useful tip is that you can use emacs to view the complaints in a
+    nice way. You can walk through them, view the source code automatically,
+    jump to the right lines in the path, and more, all using the
+    <a href="emacs.html">emacs macro package</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<a name="help"></a><h1>Getting Help</h1>
+
+
+</p>
+<p>
+    The <a href="http://edaweb.fishkill.ibm.com/mailman/listinfo/beam-user">BEAM user mailing list</a>
+    is for BEAM users to discuss BEAM on. If you
+    run into trouble, have a question about BEAM, or need help in other
+    ways, speak up on that mailing list. We'll help you out.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

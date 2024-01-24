@@ -1,0 +1,207 @@
+<html>
+<head>
+  <title>BEAM: cxlc400</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Details of cxlc400 / cxlC400 Emulation</h1>
+<hr/>
+
+</p>
+<p>
+The current level of cxlc400 / cxlC400 emulation is mature.  We have
+been able to work around most language extensions that those compilers
+provide.  Experiments with XPF firmware show that BEAM can parse close
+to 100% of C and C++ code written for those compilers. There are
+however a large number of messages from the EDG parser.
+</p>
+<p>
+<h1>Target Machine</h1>
+
+</p>
+<p>
+The target machine has the following characteristics:
+</p>
+<p>
+<ul>
+<li>8 bits per byte
+<li>Big endian
+<li>A plain <span class="code">char</span> is unsigned unless <span class="option">-qchars=signed</span>
+    is specified on the command line.
+<li>A plain bitfield is unsigned unless <span class="option">-qbitfields=signed</span> is
+    specified on the command line.
+<li><span class="code">wchar_t</span> is unsigned
+</ul>
+</p>
+<p>
+The built-in data types are implemented according to this table:
+</p>
+<p>
+<table>
+<tr align=center>
+ <th>Datatype</th>
+ <th>Sizeof</th>
+ <th>Alignment</th>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">char</span></td>
+ <td>1</td>
+ <td>1</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">__int8</span></td>
+ <td>1</td>
+ <td>1</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">short</span></td>
+ <td>2</td>
+ <td>2</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">__int16</span></td>
+ <td>2</td>
+ <td>2</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">int</span></td>
+ <td>4</td>
+ <td>4</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">__int32</span></td>
+ <td>4</td>
+ <td>4</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">long</span></td>
+ <td>4</td>
+ <td>4</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">long long</span></td>
+ <td>8</td>
+ <td>8</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">__int64</span></td>
+ <td>8</td>
+ <td>8</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">float</span></td>
+ <td>4</td>
+ <td>4</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">double</span></td>
+ <td>8</td>
+ <td>8</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">long double</span></td>
+ <td>8</td>
+ <td>8</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">size_t</span></td>
+ <td>4</td>
+ <td>4</td>
+</tr>
+<tr align=center>
+ <td align=left><span class="code">wchar_t</span></td>
+ <td>2</td>
+ <td>2</td>
+</tr>
+<tr align=center>
+ <td align=left>pointer</td>
+ <td>16 (8)</td>
+ <td>16 (8)</td>
+</tr>
+</table>
+</p>
+<p>
+The size/alignment of a pointer is 16 bytes by default. If
+<span class="option">-qdatamodel=llp64</span> or <span class="option">-q64</span> is specified on the 
+command line the size/alignment of a pointer is set to 8 bytes.
+</p>
+<p>
+<h1>Predefined Macros</h1>
+
+</p>
+<p>
+The list of predefined macros can be found in the files
+<span class="file">tcl/beam_cxlc400_c_config.tcl</span> and
+<span class="file">tcl/beam_cxlc400_cpp_config.tcl</span> in your BEAM installation.
+</p>
+<p>
+<h1>Command-line Flags</h1>
+
+</p>
+<p>
+Please see the file <span class="file">tcl/beam_map_cxlc400_flags.tcl</span> in
+your BEAM installation. 
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

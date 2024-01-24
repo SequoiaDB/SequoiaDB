@@ -1,0 +1,137 @@
+<html>
+<head>
+  <title>BEAM: Searching for Configuration Files</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Searching for BEAM Configuration Files</h1>
+<hr/>
+
+</p>
+<p>
+It is sometimes desirable to have directory specific
+parameter settings for BEAM. A typical scenario is to overwrite
+the default parameter settings in a subdirectory. 
+To facilitate this a script is provided that walks
+the directories on the path leading to the file being analyzed.
+This path typically begins in the directory where BEAM was invoked
+and always ends in the directory containing the source file.
+In each directory along this path BEAM looks for Tcl files that
+match a certain file name pattern and reads them. Therefore,
+Tcl files in subdirectories can overwrite parameter settings 
+in parent directories.
+</p>
+<p>
+<h1>Usage</h1>
+
+To use this feature you need a parameter file.
+That is the file you specify  using
+<span class="option">--beam::parms=</span> on the command line. 
+At the <span class="strong">end</span> of the file add
+</p>
+<pre class="example">
+source beam_search_tree
+</pre>
+<p>
+
+Then populate directories in your code base as needed with their specific Tcl files.
+</p>
+<p>
+<h1>Parameters</h1>
+
+The search for directory-specific Tcl files can be controlled by the following
+parameters both of which are optional:
+</p>
+<p>
+<dl>
+<dt><span class="var">beam::search_top_dir</span>
+<dd>The value of this parameter is the first directory in which BEAM looks
+for a directory specific Tcl file. The default value is the value of
+<span class="var">beam::root</span> which again defaults to the current directory,
+i.e. the directory in which BEAM was invoked.
+</p>
+<p>
+<dt><span class="var">beam::search_file_pattern</span>
+<dd>
+The value of this parameter is a file name pattern that is used to locate
+the directory specific Tcl files. Any Tcl file found in a given directory
+is tested against this pattern and if it matches, it will be read.
+The default value for the pattern is <span class="val">beam*.tcl</span>.
+</dl>
+</p>
+<p>
+<h1>Notes</h1>
+
+<ul
+<li>For debugging purposes it will be helpful to have additional
+<span class="code">puts</span> statements in the various Tcl files that are scattered
+around your directory tree. You can then see easily what is being read and
+if the order matches your expectations.
+<li>Make sure the Tcl file specified with <span class="option">--beam::parms</span> does
+not match the <span class="var">beam::search_file_pattern</span>. In that case it will
+be read twice which will lead to Tcl errors. 
+</ul>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--this xml is for ci, please don't modify it -->
+<!--testcase which should configure node -->
+
+<suite name="driver" verbose="1">
+
+    <!--主机名，CI默认传入localhost-->
+    <parameter name="HOSTNAME"          value="${HOSTNAME}" />
+    <!--协调节点端口号，CI默认传入11810-->
+    <parameter name="SVCNAME"           value="${SVCNAME}" />
+    <!--全文索引ES端主机名，CI默认传入192.168.28.143-->
+    <parameter name="ESHOSTNAME"        value="${ESHOSTNAME}" />
+    <!--全文索引ES端端口号，CI默认传入9200-->
+    <parameter name="ESSVCNAME"         value="${ESSVCNAME}" />
+    <!--全文索引前缀，CI传入与工程名相关，例如NORMALTESTG3D3-->
+    <parameter name="FULLTEXTPREFIX"    value="${FULLTEXTPREFIX}" />
+    <!--公共CS名-->
+    <parameter name="CHANGEDPREFIX"     value="story_java_test" />
+    <!--用例创建节点预留端口号最小值-->
+    <parameter name="RSRVPORTBEGIN"     value="26000" />
+    <!--用例创建节点预留端口号最大值-->
+    <parameter name="RSRVPORTEND"       value="27000" />
+    <!--用例创建节点存放节点数据目录-->
+    <parameter name="RSRVNODEDIR"       value="${RSRVNODEDIR}" />
+    <!--用例存放临时文件的目录-->
+    <parameter name="WORKDIR"           value="/tmp/javatest" />
+    <!--sdbTestBaseConf用来修改配置的工具位置-->
+    <parameter name="CONFTOOL"          value="trunk/misc/ci_new/src/test/exec_testcase/changeConf.js" />
+    <!--是否开启事务-->
+    <parameter name="ENABLETRANSACTION" value="true" />
+    <!--用例新增节点备份日志文件路径-->
+    <parameter name="BACKUPTMPNODELOGPATH"   value="${BACKUPTMPNODELOGPATH}" />
+    <!--远程机器root用户密码-->
+    <parameter name="ROOTPASSWD"      value="${ROOTPASSWD}" />
+    <!--远程机器用户名-->
+    <parameter name="REMOTEUSER"      value="${REMOTEUSER}" />
+    <!--远程机器用户密码-->
+    <parameter name="REMOTEPASSWD"    value="${REMOTEPASSWD}" />
+
+    <listeners>
+        <listener
+            class-name="com.sequoiadb.testcommon.TimePrinterListener" />
+        <listener
+            class-name="com.sequoiadb.testcommon.SdbTestListener" />
+    </listeners>
+
+    <!--The testcases of different configure should be placed in different
+        <test> -->
+    <test name="rc" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="rc" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.rc" />
+            <package name="com.sequoiadb.transaction.unlock" />
+        </packages>
+    </test>
+
+    <test name="ru" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="ru" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.ru" />
+            <package name="com.sequoiadb.transaction.unlock" />
+            <package name="com.sequoiadb.transaction.session" />
+        </packages>
+    </test>
+
+    <test name="rcwaitlock" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="rcwaitlock" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.rcwaitlock" />
+        </packages>
+    </test>
+
+    <test name="rs" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="rs" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.rs" />
+            <package name="com.sequoiadb.transaction.rcwaitlock" />
+            <package name="com.sequoiadb.transaction.unlock" />
+        </packages>
+    </test>
+
+    <test name="rcauto" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="rcauto" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.rcauto" />
+        </packages>
+    </test>
+
+    <test name="rcuserbs" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="rcuserbs" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.rcuserbs" />
+            <package name="com.sequoiadb.transaction.rcwaitlock" />
+        </packages>
+    </test>
+
+    <test name="normaltest" parallel="classes" thread-count="5">
+        <packages>
+            <package name="com.sequoiadb.transaction.uniqueIndex" />
+            <package name="com.sequoiadb.transaction.metadata" />
+            <package name="com.sequoiadb.transaction.pendingobject" />
+        </packages>
+    </test>
+
+    <test name="rusync" parallel="classes" thread-count="1">
+        <groups>
+            <run>
+                <include name="ru" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.sessionserial" />
+        </packages>
+    </test>
+
+    <test name="synctest" parallel="classes" thread-count="1">
+        <packages>
+            <package name="com.sequoiadb.transaction.metadataserial" />
+        </packages>
+    </test>
+
+    <test name="lockEscalation" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="lockEscalation" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.transaction.lockEscalation" />
+        </packages>
+    </test>
+
+    <test name="recycleBinSync" parallel="classes" thread-count="1">
+        <groups>
+            <run>
+                <include name="recycleBin" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.recyclebin.serial" />
+        </packages>
+    </test>
+
+    <test name="recycleBin" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="recycleBin" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.recyclebin" />
+        </packages>
+    </test>
+
+<!--    <test name="location7" parallel="classes" thread-count="1">-->
+<!--        <parameter name="EXPANDNODENUM" value="7" />-->
+<!--        <groups>-->
+<!--            <run>-->
+<!--                <include name="location" />-->
+<!--            </run>-->
+<!--        </groups>-->
+<!--        <packages>-->
+<!--            <package name="com.sequoiadb.location" />-->
+<!--        </packages>-->
+<!--    </test>-->
+
+    <!--未开启privilegecheck执行用例会重启节点，开启privilegecheck可直接执行用例-->
+    <test name="rbac" parallel="classes" thread-count="5">
+        <groups>
+            <run>
+                <include name="rbac" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.rbac" />
+        </packages>
+    </test>
+
+    <test name="rbacsync" parallel="classes" thread-count="1">
+        <groups>
+            <run>
+                <include name="rbac" />
+            </run>
+        </groups>
+        <packages>
+            <package name="com.sequoiadb.rbac.serial" />
+        </packages>
+    </test>
+
+</suite>
+    

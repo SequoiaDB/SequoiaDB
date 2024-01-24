@@ -1,0 +1,23 @@
+# increase age by 1
+{$inc: {age:1}}
+
+# set name "danny chen"
+{$set: {name: "danny chen"}}
+
+# push founder "xiaozhou liu", push all voter
+{$push: {founder: "xiaozhou liu"}, $push_all: {voter: [{name:"leo wu",votes:4},{name:"xiaozhou liu", vote: 10}]}}
+
+# add to set founder "xiaozhou liu" "xiaozhou liu" "tao wang"
+{$addtoset: {founder:["xiaozhou liu", "xiaozhou liu", "tao wang"]}}
+
+# pop last element from founder
+{$pop: {founder: 2}}
+
+# pull something that not exist
+{$pull_all: {"zzz.zzz":[8,9,10]}}
+
+# pull a single record from zzz.zzz
+{$pull: {"zzz.zzz":8}}
+
+# empty pattern
+{}

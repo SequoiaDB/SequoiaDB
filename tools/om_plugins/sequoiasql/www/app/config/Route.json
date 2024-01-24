@@ -1,0 +1,112 @@
+{
+   "route": [
+      {
+         "path": "/Data/SequoiaSQL/PostgreSQL/Database/Index",
+         "options": {
+            "templateUrl": "./app/template/Data/PostgreSQL/Database/Index.html",
+            "resolve": [
+               "./app/controller/Data/PostgreSQL/Database/Index.js"
+            ]
+         }
+      },
+      {
+         "path": "/Data/SequoiaSQL/PostgreSQL/Operate/Data",
+         "options": {
+            "templateUrl": "./app/template/Data/PostgreSQL/Operate/Data.html",
+            "resolve": [
+               "./app/controller/Data/PostgreSQL/Operate/Data.js"
+            ]
+         }
+      },
+      {
+         "path": "/Data/SequoiaSQL/PostgreSQL/Operate/Structure",
+         "options": {
+            "templateUrl": "./app/template/Data/PostgreSQL/Operate/Structure.html",
+            "resolve": [
+               "./app/controller/Data/PostgreSQL/Operate/Structure.js"
+            ]
+         }
+      },
+      {
+         "path": "/Config/SequoiaSQL/PostgreSQL/Index",
+         "options": {
+            "templateUrl": "./app/template/Config/PostgreSQL/Index.html",
+            "resolve": [
+               "./app/controller/Config/PostgreSQL/Index.js"
+            ]
+         }
+      },
+      {
+         "path": "/Config/SequoiaSQL/MySQL/Index",
+         "options": {
+            "templateUrl": "./app/template/Config/MySQL/Index.html",
+            "resolve": [
+               "./app/controller/Config/MySQL/Index.Config.js", "./app/controller/Config/MySQL/Index.js"
+            ]
+         }
+      },
+      {
+         "path": "/Data/SequoiaSQL/MySQL/Database/Index",
+         "options": {
+            "templateUrl": "./app/template/Data/MySQL/Database/Index.html",
+            "resolve": [
+               "./app/controller/Data/MySQL/Database/Index.js"
+            ]
+         }
+      },
+      {
+         "path": "/Data/SequoiaSQL/MySQL/Operate/Data",
+         "options": {
+            "templateUrl": "./app/template/Data/MySQL/Operate/Data.html",
+            "resolve": [
+               "./app/controller/Data/MySQL/Operate/Data.js"
+            ]
+         }
+      },
+      {
+         "path": "/Data/SequoiaSQL/MySQL/Operate/Structure",
+         "options": {
+            "templateUrl": "./app/template/Data/MySQL/Operate/Structure.html",
+            "resolve": [
+               "./app/controller/Data/MySQL/Operate/Structure.js"
+            ]
+         }
+      },
+      {
+         "path": "/Config/SequoiaSQL/MariaDB/Index",
+         "options": {
+            "templateUrl": "./app/template/Config/MariaDB/Index.html",
+            "resolve": [
+               "./app/controller/Config/MariaDB/Index.js"
+            ]
+         }
+      },
+      {
+         "path": "/Data/SequoiaSQL/MariaDB/Database/Index",
+         "options": {
+            "templateUrl": "./app/template/Data/MariaDB/Database/Index.html",
+            "resolve": [
+               "./app/controller/Data/MariaDB/Database/Index.js"
+            ]
+         }
+      },
+      {
+         "path": "/Data/SequoiaSQL/MariaDB/Operate/Data",
+         "options": {
+            "templateUrl": "./app/template/Data/MariaDB/Operate/Data.html",
+            "resolve": [
+               "./app/controller/Data/MariaDB/Operate/Data.js"
+            ]
+         }
+      },
+      {
+         "path": "/Data/SequoiaSQL/MariaDB/Operate/Structure",
+         "options": {
+            "templateUrl": "./app/template/Data/MariaDB/Operate/Structure.html",
+            "resolve": [
+               "./app/controller/Data/MariaDB/Operate/Structure.js"
+            ]
+         }
+      }
+   ]
+}

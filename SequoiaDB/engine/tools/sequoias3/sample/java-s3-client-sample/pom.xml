@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.S3.Client</groupId>
+	<artifactId>java-s3-client</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>java-s3-client</name>
+	<description>Demo project for sequoias3</description>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.14.RELEASE</version>
+    </parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.7</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.11.343</version>
+			<!--<systemPath>${project.basedir}/lib/aws-java-sdk-s3-1.11.343.jar</systemPath>-->
+		</dependency>
+
+		<dependency>
+			<groupId>com.sequoias3</groupId>
+			<artifactId>sequoias3-client</artifactId>
+			<!--<version>1.0</version>-->
+			<scope>system</scope>
+			<systemPath>${project.basedir}/../../java/sequoias3-client-3.4.1.jar</systemPath>
+			<!--<systemPath>${project.basedir}/../../driver/java/target/sequoias3-client-1.0.jar</systemPath>-->
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.21</version>
+			<systemPath>${project.basedir}/../../java/lib/slf4j-log4j12-1.7.21.jar</systemPath>
+			<!--<systemPath>${project.basedir}/lib/slf4j-log4j12-1.7.21.jar</systemPath>-->
+		</dependency>
+	</dependencies>
+</project>

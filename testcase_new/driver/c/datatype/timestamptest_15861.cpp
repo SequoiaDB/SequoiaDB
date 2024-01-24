@@ -1,0 +1,77 @@
+/**************************************************************************
+ * @Description:   test case for C driver
+ *                 seqDB-15861:timestamp的increase边界值测试      
+ * @Modify:        wenjing wang Init
+ *                 2018-04-26
+ **************************************************************************/
+#include <gtest/gtest.h>
+#include <client.h>
+#include <stdio.h>
+#include "testcommon.hpp"
+#include "testBase.hpp"
+#include "arguments.hpp"
+class timestampTest:public testBase
+{
+protected:
+   void SetUp()
+   {
+   }
+   void TearDown()
+   {
+   }
+};
+
+bson_timestamp_t getTSFromConObj( bson_timestamp_t* ts )
+{
+   bson obj ;
+   bson_timestamp_t rts ;
+   bson_iterator it ;
+
+   bson_init( &obj ) ;
+   bson_append_timestamp( &obj, "time", ts);
+   bson_finish( &obj ) ;
+   
+   
+   bson_find( &it, &obj, "time");
+   rts = bson_iterator_timestamp(&it) ;
+   bson_destroy( &obj );
+   return rts ;
+}
+
+TEST_F( timestampTest, inRange   )
+{
+   bson_timestamp_t its ;
+   bson_timestamp_t rts ;
+   its.t = 10000 ;
+   its.i = 0 ;
+   rts = getTSFromConObj( &its ) ;
+   
+   ASSERT_EQ( rts.t, 10000 ) << "The seconds is not expected" ;
+   ASSERT_EQ( rts.i, 0 ) << "The microseconds is not expected" ;
+   
+   
+   its.t = 10000 ;
+   its.i = 100 ;
+   rts = getTSFromConObj( &its ) ;
+   
+   ASSERT_EQ( rts.t, 10000 ) << "The seconds is not expected" ;
+   ASSERT_EQ( rts.i, 100 ) << "The microseconds is not expected" ;
+   
+   its.t = 10000 ;
+   its.i = 999999 ;
+   rts = getTSFromConObj( &its ) ;
+   
+   ASSERT_EQ( rts.t, 10000 ) << "The seconds is not expected" ;
+   ASSERT_EQ( rts.i, 999999 ) << "The microseconds is not expected" ;
+}
+
+TEST_F( timestampTest, outRange   )
+{
+   bson_timestamp_t its ;
+   bson_timestamp_t rts ;
+   its.t = 10000 ;
+   its.i = 1000000 ;
+   rts = getTSFromConObj( &its ) ;
+   ASSERT_EQ( rts.t, 10001 ) << "The seconds is not expected" ;
+   ASSERT_EQ( rts.i, 0 ) << "The microseconds is not expected" ;
+}

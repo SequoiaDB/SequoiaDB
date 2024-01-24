@@ -1,0 +1,314 @@
+<html>
+<head>
+  <title>BEAM: EDG Command Line Options</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Command Line Options of the EDG Parser</h1>
+<hr/>
+
+</p>
+<p>
+  The EDG parser supports the following command line options which you
+  might find useful.
+</p>
+<p>
+  Note that EDG specific command line options need to be prefixed with
+  <span class="option">--edg=</span>. For instance:
+</p>
+<pre class="example">
+--edg=--no_warnings
+</pre>
+<p>
+
+  This is necessary so that there is no conflict between EDG's command
+  line options and the options for your native compiler.
+</p>
+<p>
+<h1>--absolute_file_name_in_diagnostics</h1>
+
+  (C, C++, Java)
+</p>
+<p>
+  Display absolute file names in diagnostic messages.
+</p>
+<p>
+<h1>--brief_diagnostics</h1>
+
+  (C, C++, Java)
+</p>
+<p>
+  The diagnostic message is not wrapped when it is too long to fit on
+  a single line. Additionally, the original source line is not displayed.
+</p>
+<p>
+<h1>--diag_suppress</h1>
+
+  (C, C++, Java)
+</p>
+<p>
+  This option takes a comma-separated list of error numbers:
+</p>
+<pre class="example">
+--diag_suppress=<span class="val">num,num,...</span>
+</pre>
+<p>
+
+  Suppress diagnostic messages for the specified numbers. Note, that
+  only warnings and informational diagnostics can be suppressed this
+  way. True errors cannot be suppressed. The 
+  numbers for each diagnostic message can be displayed using the
+  <span class="option">--display-error-number</span> option (see above).
+</p>
+<p>
+<h1>--display_error_number</h1>
+
+  (C, C++, Java)
+</p>
+<p>
+  Display the message number in any diagnostic messages that are generated.
+  This option can be used to determine the number to use when suppressing
+  a diagnostic.
+</p>
+<p>
+<h1>--list_macros</h1>
+
+  (C, C++)
+</p>
+<p>
+  EDG will display a list of all macros that are defined once the
+  source file is parsed. This implies no compilation, and no BEAM
+  analysis - the file is preprocessed only, and only macros are
+  written to the output file (or stdout if no -o is given).
+</p>
+<p>
+<h1>--no_anachronisms</h1>
+
+  (C++)
+</p>
+<p>
+  Advise the C++ frontend not to accept certain anachronisms that predate
+  the C++ standard and were accepted by C++ compilers at the time.
+  You may wish to experiment with this command line flag if you get 
+  unexpected parser messages.
+</p>
+<p>
+<h1>--no_warnings</h1>
+
+  (C, C++, Java)
+</p>
+<p>
+  Suppress warnings. This is the default. Errors are still issued.
+</p>
+<p>
+<h1>--no_wrap_diagnostics</h1>
+
+  (C, C++, Java)
+</p>
+<p>
+  The diagnostic message is not wrapped when it is too long to fit on
+  a single line. In other words, the message appears on a single line.
+  This comes in handy if you want to postprocess parser messages.
+</p>
+<p>
+<h1>--preinclude<br>
+          --preinclude_macros</h1>
+
+  (C, C++)
+</p>
+<p>
+  These options both take a filename as an argument:
+</p>
+<pre class="example">
+--preinclude=<span class="val">filename</span>
+--preinclude_macros=<span class="val">filename</span>
+</pre>
+<p>
+
+  Include the source code of the indicated file at the beginning of the
+  compilation.  This can be used to establish standard macro definitions,
+  etc. The file name is searched for in the directories on the include search
+  list. When the <span class="option">--preinclude_macros</span> variant is used, only the preprocessing
+  directives from the file are evaluated. All of the actual code is
+  discarded. The effect of this option is that any macro definitions from the
+  specified file will be in effect when the primary source file is compiled. All
+  of the macro-only files are processed before any of the normal
+  preincludes. Within each group, the files are processed in the order in which
+  they were specified.
+</p>
+<p>
+<h1>--report_gnu_extensions</h1>
+
+  (C, C++)
+</p>
+<p>
+  Display information when certain GNU extensions are in use. This is helpful
+  for those who wish to port code from a GNU compiler to a compiler that
+  doesn't support some or all of the GNU extensions. This also enables
+  warnings in general, which are off by default.
+</p>
+<p>
+  <a href="report_gnu_extensions.html">More information is here.</a>
+</p>
+<p>
+<h1>--warnings</h1>
+
+  (C, C++, Java)
+</p>
+<p>
+  Issue warnings and errors. Warnings are disabled by default.
+</p>
+<p>
+<h1>--xref</h1>
+
+  (C, C++)
+</p>
+<p>
+  This option takes a filename as an argument:
+</p>
+<pre class="example">
+--xref=<span class="val">filename</span>
+</pre>
+<p>
+
+  Generate cross-reference information in the file <span class="val">filename</span>. For each 
+  reference to an identifier in the source program, a line of the form:
+</p>
+<pre class="example">
+<span class="val">symbol-id#name#ref-code#file-name#line-number#column-number#symbol-kind#symbol-type</span>
+</pre>
+<p>
+
+  is written, where <span class="val">ref-code</span> is D for definition, d for
+  declaration (that is, a declaration that is not a definition), M for
+  modification, A for address taken, U for used, C for changed (but
+  actually meaning "used and modified in a single operation," such as
+  an increment), R for any other kind of reference, or E for an error
+  in which the kind of reference is indeterminate. <span class="val">symbol-id</span> is
+  a unique decimal number for the symbol. The fields of the above line
+  are separated by '#' characters. <span class="val">symbol-kind</span> is
+  self-explanatory.  <span class="val">symbol-type</span> indicates the type of the
+  symbol. A '<span class="code">-</span>' sign indicates that no type is available. The
+  following values are possible:
+</p>
+<p>
+  <table>
+    <tr>
+      <th>symbol-type</th>
+      <th>Meaning</th>
+      <th>symbol-type</th>
+      <th>Meaning</th>
+    </tr>
+    <tr>
+      <td>void</td>
+      <td>a void type</td>
+      <td>func</td>
+      <td>a function type</td>
+    </tr>
+    <tr>
+      <td>int</td>
+      <td>an integer type</td>
+      <td>array</td>
+      <td>an array type</td>
+    </tr>
+    <tr>
+      <td>fxp</td>
+      <td>a fixed-point type</td>
+      <td>class</td>
+      <td>a class type</td>
+    </tr>
+    <tr>
+      <td>float</td>
+      <td>a floating-point type</td>
+      <td>struct</td>
+      <td>a struct type</td>
+    </tr>
+    <tr>
+      <td>imag</td>
+      <td>an imaginary type</td>
+      <td>union</td>
+      <td>a union type</td>
+    </tr>
+    <tr>
+      <td>complex</td>
+      <td>a complex type</td>
+      <td>ptm</td>
+      <td>a pointer to member</td>
+    </tr>
+    <tr>
+      <td>ref</td>
+      <td>a reference type</td>
+      <td>tp</td>
+      <td>a template parameter</td>
+    </tr>
+    <tr>
+      <td>ptr</td>
+      <td>a pointer type</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

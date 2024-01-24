@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>SequoiaDB</title>
+   <link rel="stylesheet" media="all" href="./style/sdbcss.css">
+   <link rel="stylesheet" media="all" href="./images/icon/css/font-awesome.min.css">
+   <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge" /><![endif]-->
+   <!--[if lte IE 7]>
+      <link rel="stylesheet" media="all" href="./images/icon/css/font-awesome-ie7.min.css">
+      <script src="./scripts/angular/angular.ie7.js"></script>
+   <![endif]-->
+   <!--[if gt IE 7]>
+      <script src="./scripts/angular/angular.min.js"></script>
+   <![endif]-->
+   <!--[if !IE]><!-->
+      <script src="./scripts/angular/angular.min.js"></script>
+   <!--<![endif]-->
+   <!--[if lte IE 8]>
+      <script src="./scripts/json/json2.js"></script>
+   <![endif]-->
+   <script src="./app/init.js"></script>
+   <script src="./scripts/angular/angular-route.min.js"></script>
+   <script src="./scripts/jquery/jquery-1.11.1.min.js"></script>
+   <script src="./scripts/jquery/jquery.cookie.js"></script>
+   <script src="./scripts/jquery/jquery.md5.js"></script>
+   <script src="./app/other/lib/function.js"></script>
+   <script src="./app/other/lib/private.js"></script>
+   <script src="./app/app.js"></script>
+   <script src="./app/config/LoginRoute.js"></script>
+   <script src="./app/config/RouteProvider.js"></script>
+   <script src="./app/service/Function.js"></script>
+   <script src="./app/service/Rest.js"></script>
+   <script src="./app/service/Components.js"></script>
+   <script src="./app/directive/directive.js"></script>
+</head>
+<body id="ng-app" ng-app="sacApp" ng-cloak>
+   <div id="login" ng-view=ng-view ></div>
+</body>
+</html>

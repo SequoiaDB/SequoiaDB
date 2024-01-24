@@ -1,0 +1,363 @@
+#!/bin/bash
+
+# author: Ting YU 2020-11-05
+
+function print_log()
+{
+   local log_level=$1
+   local log=$2
+   local pid=`echo $$`
+   local date=`date "+%Y-%m-%d-%H:%M:%S"`
+   printf "%s [%s][%d]: %s\n" "$date" "$log_level" "$pid" "$log"
+}
+
+function show_version()
+{
+   echo "sdbtaskdaemon: "$DB_VERSION
+   echo "Release: "$RELEASE
+   echo "Git version: "$GIT_VERSION
+   echo $BUILD_TIME
+}
+
+function show_help()
+{
+   local exit_code=$1
+
+   echo "SequoiaDB Cron Task Daemon."
+   echo ""
+   echo "Uage: "
+   echo "  sdbtaskdaemon               start the daemon"
+   echo "  sdbtaskdaemon --stop        shut the daemon down"
+   echo "  sdbtaskdaemon --status      check daemon exist or not"
+   echo "  sdbtaskdaemon --help        print help message"
+   echo "  sdbtaskdaemon --version     print version information"
+   echo ""
+   echo "Example: "
+   echo "  Start daemon by: \"setsid ./sdbtaskdaemon >> ./sdbtaskdaemon.log 2>&1\""
+   echo ""
+
+   exit $exit_code
+}
+
+function check_daemon_exist()
+{
+   #return
+   #  0     daemon exist, echo PID
+   #  1     daemon does not exist
+
+   local exist=false
+
+   ### check pid file exists or not
+   if [ -f "$DAEMON_PID_FILE" ]; then
+
+      ### check process exists or not
+      local pid=`cat "$DAEMON_PID_FILE"`
+      local pid_info=`ps --pid $pid` # eg: PID TTY TIME CMD 13378 ? 00:17:31 sdbtaskdaemon
+      if [ $? -eq 0 ] ; then 
+         ### check it is sdbtaskdaemon process or not
+         local exe=`echo $pid_info | awk '{print $8}'`
+         if [ "$exe" == "sdbtaskdaemon" ] ; then
+            exist=true
+            echo $pid
+         else 
+            # if host restart, the pid may be other process's id 
+            rm -f $DAEMON_PID_FILE
+         fi
+      fi
+   fi
+
+   test "$exist" == true  && return 0
+   test "$exist" == false && return 1
+}
+
+function get_status()
+{
+   #exit
+   #  0     daemon exist, echo PID
+   #  1     daemon does not exist
+
+   local pid
+   pid=`check_daemon_exist`
+   if [ $? -eq 0 ]; then
+      echo "sdbtaskdaemon (PID: $pid) is running."
+      exit 0
+   else
+      echo "sdbtaskdaemon is not running."
+      exit 1
+   fi
+}
+
+function need_execute()
+{
+   #return
+   #  0     execute now!
+   #  1     don't execute
+
+   local conf_time=$1 # eg: HH:mm
+   local cur_absolute_second=$2
+   local last_absolute_second=$3
+
+   local conf_full_time=`date +"%Y-%m-%d "`$conf_time
+   local conf_absolute_second=`date -d "$conf_full_time" +%s` 
+
+   # if lastRunTime < taskConfTime <= currentTime, it is time to execute task
+   if [ "$conf_absolute_second" -gt "$last_absolute_second" -a \
+        "$conf_absolute_second" -le "$cur_absolute_second" ] ; then
+      return 0
+   else
+      return 1
+   fi
+}
+
+function execute_task()
+{
+   local conf_file=$1
+
+   ###### load conf file
+   local mode; local name; local clname; local unit; local hostlist; 
+   source <(grep -E "^mode=|^name=|^clname=|^unit=|^hostlist=" $conf_file)
+
+   ###### get js script's parameter
+   local js_para="var mode='"$mode"';"
+
+   local coord_port=`$BIN_PATH/sdblist --role coord | grep sequoiadb  | awk -F '(' '{print $2}' | awk -F ')' '{print $1}' | head -1`
+   if [ -z $coord_port ] ; then
+      print_log "ERROR" "coord not found on localhost"
+      return
+   fi
+   js_para+="var coord='localhost:"$coord_port"';" 
+
+   if [ "$mode" == "rebalance" ] ; then
+      js_para+="var cl='"$clname"';"
+      js_para+="var unit="$unit";"
+   elif [ "$mode" == "shrink" ] ; then
+      local tmp=`echo ${hostlist//,/\',\'}`    # a,b,c -> a','b','c
+      js_para+="var hostlist=['"$tmp"'];"      # a','b','c -> ['a','b','c']
+   fi
+
+   js_para="\""$js_para"\""
+
+   ###### get sdb shell path
+   local sdb_shell_path=$BIN_PATH/sdb
+
+   ###### get js path
+   local js_file=$TASK_PATH/dataRebalance.js
+
+   ###### get log path
+   local logfile=$LOG_PATH/$name.log
+
+   ###### execute command in background
+   local command=$sdb_shell_path" -f "$js_file" -e "$js_para" >> "$logfile" &"
+
+   print_log "EVENT" "Begin to execute task["$name"]"
+   print_log "EVENT" "Execute command: $command"
+
+   eval $command
+}
+
+function run_daemon()
+{
+   print_log "EVENT" "Start daemon."
+
+   ####### check #######
+   local pid
+   pid=`check_daemon_exist`
+   if [ $? -eq 0 ]; then
+      print_log "WARNING" "sdbtaskdaemon (PID: $pid) has been already started."
+      return
+   fi
+
+   ####### touch pid file #######
+   mkdir -p "$LOG_PATH"
+   mkdir -p "$DATA_PATH"
+   echo $$ > "$DAEMON_PID_FILE"
+   
+   ####### double check pid file #######
+   pid=`check_daemon_exist`
+   if [ $? -ne 0 ]; then 
+      print_log "WARNING" "sdbtaskdaemon (PID: $$) write pid file failed."
+      return 
+   fi
+   
+   if [ ${pid} -ne $$ ]; then
+      print_log "WARNING" "sdbtaskdaemon (PID: $pid) has been already started."
+      return
+   fi
+
+   ####### touch last-run file if not exist #######
+   test -f $LASTRUN_FILE || echo `date +%s` > $LASTRUN_FILE
+
+   ####### Loop every conf file every minute #######
+   while true
+   do
+      local cur_absolute_second=`date +%s`
+      local last_absolute_second=`cat $LASTRUN_FILE`
+
+      if [ -d "$CONF_PATH" ] ; then
+         local conf_file=""
+         for conf_file in `find $CONF_PATH -name "*.conf"`
+         do
+            ## load conf file
+            local frequency; local begintime;
+            source <(grep -E "^frequency=|^begintime=" $conf_file)
+            
+            ## execute task if it is time to execute
+            need_execute $begintime $cur_absolute_second $last_absolute_second
+            if [ $? -eq 0 ]; then
+               execute_task $conf_file
+               test "$frequency" == "once" && rm -f $conf_file
+            fi
+
+         done
+      fi
+
+      echo $cur_absolute_second > $LASTRUN_FILE
+
+      sleep 60
+   done
+}
+
+function stop_daemon()
+{
+   echo "Stop daemon."
+
+   ####### check #######
+   local pid
+   pid=`check_daemon_exist`
+   if [ $? -ne 0 ]; then
+      echo "sdbtaskdaemon is not running."
+      return
+   fi
+
+   ####### stop daemon #######
+   kill -15 $pid
+
+   ####### Delete pid file. Only if the process does not #######
+   ####### exist, can you delete the file.               #######
+   ps --pid $pid >> /dev/null 2>&1
+   test $? -ne 0 && { rm -f $DAEMON_PID_FILE ; echo $pid ; }
+}
+
+function check_user()
+{
+   ####### load system configure file
+   local SDBADMIN_USER
+   source <( grep -E "^SDBADMIN_USER=" /etc/default/sequoiadb ) 
+
+   ####### check user
+   local cur_user=`whoami`
+
+   if [ "$cur_user" != "$SDBADMIN_USER" ] ; then
+      if [ "$MODE" == "RUN_DAEMON" ] ; then
+         print_log "ERROR" "sdbtaskdaemon requires SDBUSER [$SDBADMIN_USER] permission"
+      else 
+         echo "[ERROR]: sdbtaskdaemon requires SDBUSER [$SDBADMIN_USER] permission" >&2
+      fi
+      exit 77
+   fi
+}
+
+function parse_parameter()
+{
+   ARGS=`getopt -o h --long help,version,stop,status -n 'sdbtaskdaemon' -- "$@"`
+   ret=$?
+   test $ret -ne 0 && exit $ret
+
+   eval set -- "${ARGS}"
+
+   has_status_para=false
+   has_stop_para=false
+
+   while true
+   do
+      case "$1" in
+         --status )       has_status_para=true
+                          shift
+                          ;;
+         --stop )         has_stop_para=true
+                          shift
+                          ;;
+         --version )      show_version
+                          exit 0
+                          ;;
+         -h | --help )    show_help
+                          exit 0
+                          ;;
+         --)              shift
+                          break
+                          ;;
+         *)               echo "Internal error!"
+                          exit 64
+                          ;;
+      esac
+   done
+
+   if [ "$*" != "" ]; then
+      echo "sdbtaskdaemon: too many arguments: $*" >&2
+      echo 'Try "sdbtaskdaemon --help" for more information.'
+      exit 64
+   fi
+
+   if [ "$has_status_para" == true -a "$has_stop_para" == true ] ; then
+      echo 'sdbtaskdaemon: parameter "--stop" and "--status" conflict' >&2
+      exit 64
+   fi
+
+   MODE="RUN_DAEMON"
+   test true == "$has_status_para" && MODE="GET_STATUS"
+   test true == "$has_stop_para"   && MODE="STOP_DAEMON"
+}
+
+###################### main entry ########################
+
+# The autogen will replace the following 4 values.
+DB_VERSION="x.x.x"
+RELEASE="0"
+GIT_VERSION="xxxxxxxxxx"
+BUILD_TIME="0000-00-00-00.00.00"
+
+####### 1. parse paramter #######
+MODE=""
+parse_parameter $*
+
+####### 2. get some path #######
+
+#get task path, eg: /opt/sequoiadb/tools/task
+dir_name=`dirname $0`
+if [[ ${dir_name:0:1} != "/" ]]; then
+   TASK_PATH=$(pwd)/$dir_name  #relative path
+else
+   TASK_PATH=$dir_name         #absolute path
+fi
+
+# get install path
+cur_path=`pwd`
+cd $TASK_PATH/../../ && INSTALL_PATH=`pwd`
+cd $cur_path >> /dev/null >&1
+
+#get bin path
+BIN_PATH="${INSTALL_PATH}/bin"
+
+#get conf path
+CONF_PATH="${TASK_PATH}/conf"
+DATA_PATH="${TASK_PATH}/data"
+DAEMON_PID_FILE="${DATA_PATH}/.sdbtaskdaemon.pid"
+LASTRUN_FILE="${DATA_PATH}/.lastrun"
+
+#get log path
+LOG_PATH="${TASK_PATH}/log"
+
+####### 3. check user #######
+check_user
+
+####### 4. excute #######
+case $MODE in
+   "RUN_DAEMON" )       run_daemon
+                        ;;
+   "STOP_DAEMON" )      stop_daemon
+                        ;;
+   "GET_STATUS" )       get_status
+                        ;;
+esac
+
+exit 0

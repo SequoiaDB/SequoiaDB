@@ -1,0 +1,52 @@
+﻿<div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("主机列表")}}</div>
+<div class="borderBox" style="padding:10px;" ng-container="{offsetY:-30}">
+   <div style="height:40px;">
+      <div class="pull-left" style="height:33px;width:28px;padding-top:7px;"><i class="fa fa-search"></i></div>
+      <div class="pull-left" style="height:40px;width:350px;">
+         <input class="form-control" ng-model="Search.text" ng-change="Filter()" />
+      </div>
+      <div class="clear-float"></div>
+   </div>
+   <div class="borderBox" style="overflow-y:auto;" ng-container="{maxHeight:'100%',offsetY:-40}">
+      <!--repeat 主机列表-->
+      <div style="height:55px;border-top:1px solid #fff;cursor:pointer;" ng-repeat="HostInfo in HostInfoList track by $index" ng-style="{true:{'border-top':'1px solid #E3E7E8'}}[$index>0]">
+         <div style="height:47px;margin:1px;border:3px solid #fff;" ng-style="{true:{'border-color':'#80c0ff','background':HostInfo['background']},false:{'border-color':HostInfo['background'],'background':HostInfo['background']}}[CurrentHost==$index]">
+            <table class="table" style="height:47px;">
+               <tr>
+                  <td style="padding-left:10px;width:30px;">
+                     <div style="font-size:130%;cursor:pointer;">
+                        <i class="fa" ng-click="CheckedHost($index)" ng-class="{true:'fa-check-square-o',false:'fa-square-o','undefined':'fa-square-o'}[HostInfo['IsUse']]"></i>
+                     </div>
+                  </td>
+                  <td ng-click="SwitchHost($index)">
+                     <div class="Ellipsis">
+                        <span ng-style="{'true':{'background':'#ffffab'},'false':{'background':HostInfo['background']}}[HostInfo['IsHostName']==true]">
+                           {{HostInfo['HostName']}}
+                        </span>
+                     </div>
+                     <div class="Ellipsis" style="font-size:90%;color:#888;padding-top:3px;">
+                        <span ng-style="{'true':{'background':'#ffffab'},'false':{'background':HostInfo['background']}}[HostInfo['IsIP']==true]">
+                           {{HostInfo['IP']}}
+                        </span>
+                     </div>
+                  </td>
+                  <td style="padding:0 10px;width:60px;text-align:right;" ng-if="HostInfo['CanUse'] != false" ng-click="SwitchHost($index)">
+                     <span class="badge badge-warning" ng-if="HostInfo['CanNotUseNum']>0" data-desc="{{HostInfo['DiskWarning']}}">
+                        {{HostInfo['CanNotUseNum']}}
+                     </span>
+                  </td>
+                  <td style="padding:0 10px;width:60px;text-align:right;" ng-if="HostInfo['CanUse'] == false" ng-click="SwitchHost($index)">
+                     <span class="badge badge-danger" ng-if="HostInfo['errno'] != 0" data-desc="{{HostInfo['detail']}}">
+                        {{autoLanguage("错误")}}
+                     </span>
+                     <span class="badge badge-info" ng-if="HostInfo['IsUseNum'] == 0" data-desc="{{autoLanguage('至少选择一个磁盘，主机才可以安装服务。')}}">
+                        {{autoLanguage("提示")}}
+                     </span>
+                  </td>
+               </tr>
+            </table>
+         </div>
+      </div>
+      <!--repeat-->
+   </div>
+</div>

@@ -1,0 +1,192 @@
+EnsureSConsVersion( 1, 1, 0 )
+
+import platform
+import os
+import re
+from os.path import join, dirname, abspath
+
+cur_dir = dirname(File('SConstruct').rfile().abspath)
+include_dir = join(cur_dir,'include')
+lib_dir = join(cur_dir,'lib')
+
+options = {}
+options_topass = {}
+
+def GuessOS():
+  id = platform.system()
+  if id == 'Linux':
+    return 'linux'
+  elif id == 'Windows' or id == 'Microsoft':
+    return 'win32'
+  else:
+    return None
+
+
+def GuessArch():
+  id = platform.machine()
+  id = id.lower()
+  if (not id) or (not re.match('(x|i[3-6])86$', id) is None):
+    return 'ia32'
+  elif id == 'i86pc':
+    return 'ia32'
+  elif id == 'x86_64':
+    return 'ia64'
+  elif id == 'amd64':
+    return 'ia64'
+  elif id == 'ppc64' :
+    return 'ppc64'
+  else:
+    return None
+
+guess_os = GuessOS()
+guess_arch = GuessArch()
+if guess_arch == 'ppc64':
+   exit
+
+def add_option( name, help , nargs , contibutesToVariantDir , dest=None ):
+
+    if dest is None:
+        dest = name
+
+    AddOption( "--" + name , 
+               dest=dest,
+               type="string",
+               nargs=nargs,
+               action="store",
+               help=help )
+
+    options[name] = { "help" : help ,
+                      "nargs" : nargs , 
+                      "contibutesToVariantDir" : contibutesToVariantDir ,
+                      "dest" : dest } 
+
+def get_option( name ):
+    return GetOption( name )
+
+def _has_option( name ):
+    x = get_option( name )
+    if x is None:
+        return False
+
+    if x == False:
+        return False
+
+    if x == "":
+        return False
+
+    return True
+
+def has_option( name ):
+    x = _has_option(name)
+
+    if name not in options_topass:
+        # if someone already set this, don't overwrite
+        options_topass[name] = x
+
+    return x
+
+def get_variant_dir():
+    
+    a = []
+    
+    for name in options:
+        o = options[name]
+        if not has_option( o["dest"] ):
+            continue
+        if not o["contibutesToVariantDir"]:
+            continue
+        
+        if o["nargs"] == 0:
+            a.append( name )
+        else:
+            x = get_option( name )
+            x = re.sub( "[,\\\\/]" , "_" , x )
+            a.append( name + "_" + x )
+            
+    s = "#build/${PYSYSPLATFORM}/"
+
+    if len(a) > 0:
+        a.sort()
+        s += "/".join( a ) + "/"
+    else:
+        s += "normal/"
+    return s
+    
+add_option( "dd", "debug build no optimization, additional debug logging, etc..." , 0 , True , "debugBuildAndLogging" )
+add_option( "include_path", "the path where place mongo client driver include files " , 0 , False , "includePath"  )
+add_option( "lib_path", "the path where place mongo client driver library files " , 0 , False ,  "libPath" )
+
+debugBuild = has_option( "debugBuildAndLogging" )
+
+if has_option("includePath"):
+    include_dir = get_option( "includePath" )
+
+if has_option("libPath"):
+    lib_dir = get_option( "libPath" )
+
+env = Environment()
+
+#env.Append ( CPPDEFINES=[ "SDB_DLL_BUILD" ] )
+if guess_os == "win32":
+    # check VC compiler
+    for pathdir in env['ENV']['PATH'].split(os.pathsep):
+        if os.path.exists(os.path.join(pathdir, 'cl.exe')):
+            print( "found visual studio at " + pathdir )
+            break
+        else:
+            #use current environment
+            env['ENV'] = dict(os.environ)
+
+    #env.Append( CPPDEFINES=["HAVE_SOCKLEN_T","ZEND_DEBUG=0", "WIN32","NDEBUG","_MBCS","_USRDLL","_EXPORTS","COMPILE_DL_SEQUOIADB","ZTS=1","ZEND_WIN32","PHP_WIN32","HAVE_SEQUOIADB=1"] )
+
+    # winLibString = "ws2_32.lib kernel32.lib advapi32.lib psapi.lib dbghelp.lib user32.lib gdi32.lib winspool.lib comdlg32.lib sdbcpp.lib"
+    if guess_arch != "ia64":
+        env.Append( LIBPATH=[join(lib_dir,'win32')] )
+        env.Append( CPPDEFINES=[ "_USE_32BIT_TIME_T=1"])
+
+    #env.Append( LIBS=Split(winLibString) )
+    env.Append( CPPDEFINES=[ "_CRT_RAND_S" ] )
+    env.Append( CPPDEFINES=[ "UNICODE" ] )
+    env.Append( CPPFLAGS=" /EHsc /W3 " )
+    if debugBuild:
+        env.Append( CPPFLAGS=" /RTC1 /MDd /Z7 /errorReport:none " )
+        env.Append( LINKFLAGS=" /debug " )
+        env.Append( CPPFLAGS=" /Od " )
+    else:
+        env.Append( CPPDEFINES=[ "NDEBUG" ] )
+        env.Append( CPPFLAGS= " /O2 /Gy " )
+        env.Append( CPPFLAGS= " /MT /Zi /errorReport:none " )
+        env.Append( CPPFLAGS= " /GL " ) 
+        env.Append( LINKFLAGS=" /LTCG " )    
+
+elif guess_os == "linux":
+
+    #env.Append( CPPDEFINES=["PHP_ATOM_INC","HAVE_CONFIG_H","PIC"])
+    env.Append( CPPFLAGS="-ggdb" )
+    env['ENV']['HOME']=os.environ['HOME']
+    env['ENV']['TERM']=os.environ['TERM']
+    if guess_arch == "ia64":
+        env.Append( LIBPATH="/usr/lib64")
+        env.Append( LIBPATH="/lib64")
+    elif guess_arch == "ia32":
+        env.Append( LIBPATH="/usr/lib")
+        env.Append( LIBPATH="/lib")
+    elif guess_arch == 'ppc64':
+        env.Append( LIBPATH="/usr/lib64")
+        env.Append( LIBPATH="/lib64")
+
+
+    winLibString = "sdbc boost_program_options boost_thread boost_system boost_filesystem gtest pthread"
+    #env.Append( LIBS=Split(winLibString) )
+    if debugBuild:
+        env.Append( CPPFLAGS=" -O0 -fstack-protector")
+        env['ENV']['GLIBCXX_FORCE_NEW']=1
+    else:
+        env.Append( CPPFLAGS=" -O3")
+
+print(include_dir)
+print(lib_dir)
+env.Append( LIBPATH=[lib_dir, '.'] )
+env.Append( CPPPATH=[include_dir + "/mongo", include_dir+"/bson"])
+env.Program(target='test-mongo', source=Glob('*.c'),LIBS=["mongoc-1.0","mongoc-priv","bson-1.0.so","pthread"])
+env.Install( '#/build_test', [ "test-mongo"] )

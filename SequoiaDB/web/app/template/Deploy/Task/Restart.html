@@ -1,0 +1,114 @@
+<div ng-controller="Deploy.Task.Restart.Ctrl" ng-container="{}">
+   <div style="padding:10px 15px;" ng-container="{offsetY:-4}">
+
+      <div ng-windows="info as GetLogWindow.config" windows-callback="GetLogWindow.callback">
+         <div class="well" style="overflow-y:auto;">
+            <pre style="padding:10px;margin:0;white-space:pre-wrap;">{{Logstr}}</pre>
+         </div>
+      </div>
+      <div ng-container="{offsetY:-45}">
+         <div class="pull-left" ng-container="{width:400}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("任务信息")}}</div>
+
+            <div class="borderBox" style="padding:10px;font-size:90%;overflow-y:auto;" ng-container="{offsetY:-30}">
+
+               <div style="margin-bottom:10px;">
+                  <button class="btn btn-default" ng-click="ShowGetLog()">{{autoLanguage("查看任务日志")}}</button>
+               </div>
+
+               <table class="table loosen border">
+                  <tr>
+                     <td style="width: 150px;">{{autoLanguage("任务ID")}}</td>
+                     <td>{{TaskInfo['TaskID']}}</td>
+                  </tr>
+                  <tr ng-if="TaskInfo['Info']['ClusterName'].length > 0">
+                     <td>{{autoLanguage("所属集群")}}</td>
+                     <td>{{TaskInfo['Info']['ClusterName']}}</td>
+                  </tr>
+                  <tr ng-if="TaskInfo['Info']['BusinessName'].length > 0">
+                     <td ng-if="ModuleType == 'sequoiadb'">{{autoLanguage("存储集群名")}}</td>
+                     <td ng-if="ModuleType != 'sequoiadb'">{{autoLanguage("实例名")}}</td>
+                     <td>{{TaskInfo['Info']['BusinessName']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("任务类型")}}</td>
+                     <td>{{TaskInfo['TaskName']}}</td>
+                  </tr>
+                  <tr>
+                     <td ng-if="ModuleType == 'sequoiadb'">{{autoLanguage("类型")}}</td>
+                     <td ng-if="ModuleType != 'sequoiadb'">{{autoLanguage("实例类型")}}</td>
+                     <td>{{ModuleType}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("项目数")}}</td>
+                     <td>{{TaskInfo['ResultInfo'].length}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("任务状态")}}</td>
+                     <td>{{TaskInfo['StatusDesc']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("进度")}}</td>
+                     <td>{{TaskInfo['Progress']}}%</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("预计剩余时间")}}</td>
+                     <td>{{TimeLeft}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("代理主机")}}</td>
+                     <td>{{TaskInfo['AgentHost']}}</td>
+                  </tr>
+                  <tr>
+                     <td>{{autoLanguage("代理端口")}}</td>
+                     <td>{{TaskInfo['AgentService']}}</td>
+                  </tr>
+               </table>
+
+            </div>
+
+         </div>
+         <div class="pull-left" ng-container="{offsetX:-410,marginLeft:10}">
+
+            <div style="height:30px;font-size:110%;font-weight:bold;">{{autoLanguage("进度")}}</div>
+
+            <div class="borderBox" style="padding:10px;overflow-y:auto;overflow-x:hidden;" ng-container="{offsetY:-30}">
+
+               <div class="progress2">
+                  <div class="bar" ng-class="{'0':'blue','1':'orange','2':'red','3':'green'}[BarColor]" ng-style="{'width':TaskInfo['Progress']+'%'}"></div>
+               </div>
+
+               <div ng-container="{offsetY:-50,marginTop:10}" ng-table="TaskTable['options']" table-title="TaskTable['title']" table-content="info in NewTaskInfo['ResultInfo']">
+                  <div table-key="Status">
+                     <img src="./images/loading2.gif" style="width:22px;height:22px;" ng-if="info['Status'] == 1 || info['Status'] == 0" />
+                     <i class="fa fa-undo" style="font-size:22px;color:#F9A937;" ng-if="info['Status'] == 2"></i>
+                     <i class="fa fa-check" style="font-size:22px;color:#00CC66;" ng-if="info['Status'] == 4 && info['errno'] == 0"></i>
+                     <i class="fa fa-times" style="font-size:22px;color:#D9534F;" ng-if="info['Status'] == 4 && info['errno'] != 0"></i>
+                     <i class="fa fa-times" style="font-size:22px;color:#D9534F;" ng-if="info['Status'] == 10 && info['errno'] != 0"></i>
+                  </div>
+                  <div class="Ellipsis" table-key="HostName">{{info['HostName']}}</div>
+                  <div class="Ellipsis" table-key="svcname">{{info['svcname']}}</div>
+                  <div class="Ellipsis" table-key="port">{{info['port']}}</div>
+                  <div class="Ellipsis" table-key="role">{{info['role']}}</div>
+                  <div class="Ellipsis" table-key="datagroupname">{{info['datagroupname']}}</div>
+                  <div class="Ellipsis" table-key="StatusDesc">{{info['StatusDesc']}}</div>
+                  <div class="Ellipsis" table-key="Flow">{{info['Flow'][info['Flow'].length-1]}}</div>
+               </div>
+            </div>
+
+         </div>
+         <div class="clear-float"></div>
+      </div>
+      <div style="text-align:center;" ng-container="{height:30,marginTop:20}">
+         <button class="btn btn-default" ng-if="DeployType != 'Task' && IsFinish && IsError" ng-click="GotoMod()"><i class="fa fa-chevron-left"></i> {{autoLanguage("上一步")}}</button>
+         <button class="btn btn-default" ng-if="DeployType == 'Task'" ng-click="GotoDeploy2()"><i class="fa fa-chevron-left"></i> {{autoLanguage("返回")}}</button>
+         &nbsp;&nbsp;&nbsp;
+         <button class="btn" ng-class="{'true':'btn-primary','false':'btn-danger'}[IsFinish]" ng-click="GotoDeploy()">
+            {{autoLanguage("完成")}} <i class="fa fa-chevron-right"></i>
+         </button>
+      </div>
+
+   </div>
+
+</div>

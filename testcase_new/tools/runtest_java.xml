@@ -1,0 +1,496 @@
+﻿<!-- ============================================================================
+@description:  run java testcase, junit or testng
+@parameter:    TEST_TYPE              eg: NORMALTEST
+               TEST_LEVEL_TYPE        eg: PACKAGE or CLASS
+               EXEC_TESTCASE_NAME     eg: com.story.sdb or com.story.sdb.testADD
+               TESTCASE_TYPE          eg: tdd_java
+               testcase_dir           eg: /tmp/ci/testcase/tdd/java
+               report_dir             eg：/tmp/ci/report/tdd_java
+@author:       CSQ 2016-12-09
+============================================================================= -->
+
+<project basedir="./" default="main_target">
+   <taskdef resource="net/sf/antcontrib/antlib.xml">
+      <classpath>
+         <pathelement location="${basedir}/ant-contrib-1.0b2.jar" />
+      </classpath>
+   </taskdef>
+   
+   <target name="main_target">
+       <if>
+         <isset property="remoteuser"/>
+         <else>
+            <var name="remoteuser" value="sdbadmin" />
+         </else>
+      </if>
+      <if>
+         <isset property="remotepwd"/>
+         <else>
+            <var name="remotepwd" value="Admin@1024" />
+         </else>
+      </if>
+
+       <if>
+         <isset property="rootpwd"/>
+         <else>
+            <var name="rootpwd" value="jenkins" />
+         </else>
+      </if>
+
+      <if>
+         <isset property="rsrvnodedir"/>
+         <else>
+            <var name="rsrvnodedir" value="/hdd/ci/sequoiadb" />
+         </else>
+      </if>
+      <if>
+         <isset property="branch"/>
+         <else>
+            <var name="branch" value="7.0" />
+         </else>
+      </if>
+      <switch value="${TESTCASE_TYPE}">
+         <case value="driver_java">             
+            <property name="testcase_dir" value="${basedir}/../../testcase_new/driver/java"/>
+            <property name="report_dir" value="${basedir}/../../testcase_new/driver/java"/>
+         </case>
+         <case value="tdd_java">             
+            <property name="testcase_dir" value="${basedir}/../../testcase_new/tdd/java"/>
+            <property name="report_dir" value="${basedir}/../../testcase_new/tdd/java"/>
+         </case>
+         <case value="story_java">             
+            <property name="testcase_dir" value="${basedir}/../../testcase_new/story/java"/>
+            <property name="report_dir" value="${basedir}/../../testcase_new/story/java"/>
+         </case>
+         <case value="reliability">
+            <property name="testcase_dir" value="${basedir}/../../testcase_new/reliability"/>
+            <property name="report_dir" value="${basedir}/../../testcase_new/reliability"/>
+         </case>
+         <default>
+            <property name="testcase_dir" value="${basedir}/../../testcase_new/sdv/java"/>
+            <property name="report_dir" value="${basedir}/../../testcase_new/sdv/java"/>
+         </default>
+      </switch>
+      <mkdir dir="${report_dir}"/>
+      <antcall target="exec_testcase">
+         <param name="casedir" value="${testcase_dir}"/>
+         <param name="reportdir" value="${report_dir}"/>
+
+      </antcall>
+   </target>
+   
+   <target name="exec_testcase"> 
+      <var name="begin_time" unset="true"/>
+      <tstamp>
+         <format property="begin_time" pattern="yyyy-MM-dd_HH:mm:ss" />
+      </tstamp>
+      <property name="tmp_report_dir" value="${casedir}/output" />
+      <delete dir="${tmp_report_dir}" failonerror="false"/>
+      <mkdir dir="${tmp_report_dir}"/>
+      
+      <propertyregex property="firsthost" input="${testhost_list}" regexp=",(.*)" replace="" defaultValue="${testhost_list}"/>
+      <var name="IDXPREFIX" unset="true"/>
+      <propertyregex property="IDXPREFIX" input="${firsthost}" regexp="-" replace="_"/> 
+      
+      <!--get src xml-->
+      <switch value="${TEST_TYPE}">
+         <case value="NORMALTEST">
+            <var name="srcxmlfile" value="testng.xml"/>
+         </case>
+         <case value="LARGEDATATEST">
+            <var name="srcxmlfile" value="largedata.xml"/>
+         </case>
+         <case value="CONFIGURETEST">
+            <var name="srcxmlfile" value="configure.xml"/>
+         </case>
+         <case value="SMOKETEST">
+            <var name="srcxmlfile" value="smoke.xml"/>
+         </case>
+         <case value="SYNCTEST">
+            <var name="srcxmlfile" value="sync.xml"/>
+         </case>
+         <case value="RELIABILITYTEST">
+            <if>
+               <equals arg1="${serial_number}" arg2="1"/>
+               <then>
+                  <var name="srcxmlfile" value="testng.xml"/>
+               </then>
+               <elseif>
+                  <equals arg1="${serial_number}" arg2="2"/>
+                  <then>
+                    <var name="srcxmlfile" value="testng_release.xml"/>
+                  </then>
+               </elseif>
+               <else>
+                  <var name="srcxmlfile" value="testng.xml,testng_release.xml"/>
+               </else>
+            </if>
+         </case>
+         <default/>
+      </switch>
+      
+      <!--get proxy xml-->
+      <switch value="${TEST_TYPE}">
+         <case value="SYNCTEST">
+            <delete file="${casedir}/proxyxml.xml"/>
+            <copyfile src="${casedir}/${srcxmlfile}" dest="${casedir}/proxyxml.xml"/>
+            <var name="xmlfile" value="proxyxml.xml"/>
+            <if>
+               <not>
+                  <isset property="TEST_LEVEL_TYPE"/>
+               </not>
+               <else>
+                  <generatexml filename="${xmlfile}"/>
+               </else>
+            </if>
+            <execsynctest xmlfile="${xmlfile}" hostname="${hostname}" svcname="${svcname}" sdbdriver="${sdbdriver}" sdbdriverdir="${sdbdriverDir}" eshostname="${eshostname}" essvcname="${essvcname}" dshostname="${dshostname}" dssvcname="${dssvcname}" remoteuser="${remoteuser}" remotepwd="${remotepwd}" rootpwd="${rootpwd}" rsrvnodedir="${rsrvnodedir}" branch="${branch}"/>
+         </case>
+         <case value="RELIABILITYTEST">
+            <delete file="${casedir}/proxyxml.xml"/>
+            <delete file="${casedir}/proxyxml_release.xml"/>
+            
+            <for list="${srcxmlfile}" param="onexml">
+               <sequential>
+                  <if>
+                     <equals arg1="@{onexml}" arg2="testng.xml"/>
+                     <then>
+                        <copyfile src="${casedir}/@{onexml}" dest="${casedir}/proxyxml.xml"/>
+                        <var name="xmlfile" value="s3testng.xml,proxyxml.xml"/>
+                     </then>
+                     <else>
+                        <copyfile src="${casedir}/@{onexml}" dest="${casedir}/proxyxml_release.xml"/>
+                        <if>
+                           <isset property="xmlfile"/>
+                           <then>
+                              <var name="xmlfile" value="${xmlfile},proxyxml_release.xml"/>
+                           </then>
+                           <else>
+                              <var name="xmlfile" value="proxyxml_release.xml"/>
+                           </else>
+                        </if>
+                     </else>
+                  </if>
+               </sequential>
+            </for>
+  
+            <if>
+               <not>
+                  <isset property="TEST_LEVEL_TYPE"/>
+               </not>
+               <else>
+                  <for list="${srcxmlfile}" param="onexml">
+                     <sequential>
+                        <generatexml filename="@{onexml}"/>
+                     </sequential>
+                  </for>
+               </else>
+            </if>
+            <execreliabilitytest xmlfile="${xmlfile}" serialnumber="${serial_number}" hostname="${hostname}" svcname="${svcname}" sdbdriver="${sdbdriver}" sdbdriverdir="${sdbdriverDir}" eshostname="${eshostname}" essvcname="${essvcname}" dshostname="${dshostname}" dssvcname="${dssvcname}" remoteuser="${remoteuser}" remotepwd="${remotepwd}" rootpwd="${rootpwd}" rsrvnodedir="${rsrvnodedir}" branch="${branch}"/>
+         </case>
+         <default>
+            <delete file="${casedir}/proxyxml.xml"/>
+            <if>
+               <or>
+                  <equals arg1="${testcasetype}" arg2="thirdparty_s3_java"/>
+                  <equals arg1="${testcasetype}" arg2="thirdparty_fapmongo_fap3-java-mongo2"/>
+                  <equals arg1="${testcasetype}" arg2="thirdparty_fapmongo_fap3-java-mongo3"/>
+               </or>
+               <then>
+                  <copyfile src="${casedir}/testng.xml" dest="${casedir}/proxyxml.xml"/>
+               </then>
+               <else>
+                  <copyfile src="${casedir}/${srcxmlfile}" dest="${casedir}/proxyxml.xml"/>
+               </else>
+            </if>
+            
+            <var name="xmlfile" value="proxyxml.xml"/>
+            <if>
+               <not>
+                  <isset property="TEST_LEVEL_TYPE"/>
+               </not>
+               <else>
+                  <generatexml filename="${xmlfile}"/>
+               </else>
+            </if>
+            <if>
+               <or>
+                  <equals arg1="${testcasetype}" arg2="thirdparty_fapmongo_fap3-java-mongo2"/>
+                  <equals arg1="${testcasetype}" arg2="thirdparty_fapmongo_fap3-java-mongo3"/>
+               </or>
+               <then>
+                  <execmongojavatest xmlfile="${xmlfile}" mongodriver="${mongoversion}"/>
+               </then>
+               <else>
+                  <execnormalandlargedatatest xmlfile="${xmlfile}" hostname="${hostname}" svcname="${svcname}" sdbdriver="${sdbdriver}" sdbdriverdir="${sdbdriverDir}" s3client="${s3client}" s3clientdir="${s3clientDir}" eshostname="${eshostname}" essvcname="${essvcname}" dshostname="${dshostname}" dssvcname="${dssvcname}" remoteuser="${remoteuser}" remotepwd="${remotepwd}" rootpwd="${rootpwd}" rsrvnodedir="${rsrvnodedir}" branch="${branch}"/>
+               </else>
+            </if>
+         </default>
+      </switch>
+
+      <var name="end_time" unset="true"/>
+      <tstamp>
+         <format property="end_time" pattern="yyyy-MM-dd_HH:mm:ss" />
+      </tstamp>
+      <echo message="begin at ${begin_time}, end at ${end_time}" />           
+   </target>
+   
+   <macrodef name="execreliabilitytest">
+      <attribute name="xmlfile"/>
+      <attribute name="serialnumber"/>
+      <attribute name="hostname"/>
+      <attribute name="svcname"/>
+      <attribute name="sdbdriver"/>
+      <attribute name="sdbdriverdir"/>
+      <attribute name="eshostname"/>
+      <attribute name="essvcname"/>
+      <attribute name="dshostname"/>
+      <attribute name="dssvcname"/>
+      <attribute name="remoteuser"/>
+      <attribute name="remotepwd"/>
+      <attribute name="rootpwd"/>
+      <attribute name="rsrvnodedir"/>
+      <attribute name="branch"/>
+      <sequential>
+         <!--serialnumber=2: only install and deploy once release db,the testng will exec twice, the first report will not be collected to WORKSPACE, so report_detect_dir is not the same-->
+         <var name="report_detect_dir" value="${WORKSPACE}/report/reliability"/>
+         <if>
+             <equals arg1="@{serialnumber}" arg2="3"/>
+             <then>
+                <var name="report_detect_dir" unset="true"/>
+                <var name="report_detect_dir" value="${CI_WORK_DIR}/report/reliability"/>
+             </then>
+         </if>
+         <for list="@{xmlfile}" param="xmlname">
+            <sequential>
+               <!--如果有失败的则中断-->
+               <var name="fail_num" value="0"/>
+               <var name="error_num" value="0"/>
+               <if>
+                   <equals arg1="@{xmlname}" arg2="s3testng.xml"/>
+                   <then>
+                      <var name="report_detect_dir" unset="true"/>
+                      <var name="report_detect_dir" value="${tmp_report_dir}/junitreports"/>
+                   </then>
+               </if>
+               <if>
+                  <available file="${tmp_report_dir}/junitreports" type="dir"/>
+                  <then>
+                     <countstr str="&lt;failure&gt;"  resultproperty="fail_num">
+                        <path-elements>
+                           <fileset dir="${report_detect_dir}" includes="*.xml"/>
+                        </path-elements>
+                     </countstr>
+                     <countstr str="&lt;/error&gt;"  resultproperty="error_num">
+                        <path-elements>
+                           <fileset dir="${report_detect_dir}" includes="*.xml"/>
+                        </path-elements>
+                     </countstr>
+                  </then>
+               </if>
+               <if>
+                  <and>
+                     <equals arg1="${fail_num}" arg2="0"/>
+                     <equals arg1="${error_num}" arg2="0"/>
+                  </and>
+                  <then>
+                     <var name="cmd" value="-X surefire-report:report -DxmlFileName=@{xmlname} -Dsdbdriver=@{sdbdriver} -DthreadexecutorDir=${CI_WORK_DIR}/testcase/tools -DsdbdriverDir=@{sdbdriverdir}  -DreportDir=${tmp_report_dir} -DS3HOSTNAME=@{hostname} -DHOSTNAME=@{hostname} -DSVCNAME=@{svcname} -DSCRIPTDIR=${CI_WORK_DIR}/testcase/reliability/java/script -DESHOSTNAME=@{eshostname} -DESSVCNAME=@{essvcname} -DFULLTEXTPREFIX=${IDXPREFIX} -DREMOTEUSER=@{remoteuser} -DREMOTEPASSWD=@{remotepwd} -DROOTPASSWD=@{rootpwd} -DRSRVNODEDIR=@{rsrvnodedir} -DBRANCH=@{branch}"/>
+                     <echo message="cmd : ${cmd} in dir ${casedir}"/>
+                     <exec executable="mvn" dir="${casedir}" failonerror="true" logError="true">
+                        <arg line="${cmd}" />
+                        <env key="JAVA_HOME" path="/opt/jdk1.8.0_11/" />
+                     </exec>
+                  </then>
+               </if>
+            </sequential>
+         </for>
+      </sequential>
+   </macrodef>
+   
+   <macrodef name="execnormalandlargedatatest">
+      <attribute name="xmlfile"/>
+      <attribute name="hostname"/>
+      <attribute name="svcname"/>
+      <attribute name="sdbdriver"/>
+      <attribute name="sdbdriverdir"/>
+      <attribute name="eshostname"/>
+      <attribute name="essvcname"/>
+      <attribute name="s3client"/>
+      <attribute name="s3clientdir"/>
+      <attribute name="dshostname"/>
+      <attribute name="dssvcname"/>
+      <attribute name="remoteuser"/>
+      <attribute name="remotepwd"/>
+      <attribute name="rootpwd"/>
+      <attribute name="rsrvnodedir"/>
+      <attribute name="branch"/>
+      <sequential>
+         <hostinfo prefix="host" />
+         <var name="cmd" value="-X surefire-report:report -DxmlFileName=@{xmlfile} -Dsdbdriver=@{sdbdriver} -DthreadexecutorDir=${CI_WORK_DIR}/testcase/tools -DsdbdriverDir=@{sdbdriverdir}  -DreportDir=${tmp_report_dir} -DHOSTNAME=@{hostname} -DSVCNAME=@{svcname} -DS3HOSTNAME=${host.ADDR4} -DS3SVCNAME=${s3svcname} -Ds3client=@{s3client} -Ds3clientDir=@{s3clientdir} -DESHOSTNAME=@{eshostname} -DESSVCNAME=@{essvcname} -DFULLTEXTPREFIX=${IDXPREFIX} -DREMOTEUSER=@{remoteuser} -DREMOTEPASSWD=@{remotepwd} -DROOTPASSWD=@{rootpwd} -DRSRVNODEDIR=@{rsrvnodedir} -DBRANCH=@{branch}"/>
+         <echo message="cmd : mvn ${cmd} in dir ${casedir}"/>
+         <exec executable="mvn" dir="${casedir}" failonerror="true" logError="true">
+            <arg line="${cmd}" />
+            <env key="JAVA_HOME" path="/opt/jdk1.8.0_11/" />
+         </exec>
+
+      </sequential>
+   </macrodef>
+   
+   <macrodef name="execmongojavatest">
+      <attribute name="xmlfile"/>
+      <attribute name="mongodriver"/>
+      <sequential>
+         <hostinfo prefix="host" />
+         <var name="cmd" value="-X surefire-report:report -DxmlFileName=@{xmlfile} -Dmongo-java-driver=@{mongodriver} -DreportDir=${tmp_report_dir}"/>
+         <echo message="cmd : mvn ${cmd} in dir ${casedir}"/>
+         <exec executable="mvn" dir="${casedir}" failonerror="true" logError="true">
+            <arg line="${cmd}" />
+         </exec>
+
+      </sequential>
+   </macrodef>
+   
+   <macrodef name="execsynctest">
+      <attribute name="xmlfile"/>
+      <attribute name="hostname"/>
+      <attribute name="svcname"/>
+      <attribute name="sdbdriver"/>
+      <attribute name="sdbdriverdir"/>
+      <attribute name="eshostname"/>
+      <attribute name="essvcname"/>
+      <attribute name="dshostname"/>
+      <attribute name="dssvcname"/>
+      <attribute name="remoteuser"/>
+      <attribute name="remotepwd"/>
+      <attribute name="rootpwd"/>
+      <attribute name="rsrvnodedir"/>
+      <attribute name="branch"/>
+      <sequential>
+         <var name="cmd" value="-X surefire-report:report -DxmlFileName=@{xmlfile} -Dsdbdriver=@{sdbdriver} -DthreadexecutorDir=${CI_WORK_DIR}/testcase/tools -DsdbdriverDir=@{sdbdriverdir}  -DreportDir=${tmp_report_dir} -DHOSTNAME=@{hostname} -DSVCNAME=@{svcname} -DESHOSTNAME=@{eshostname} -DESSVCNAME=@{essvcname}  -DFULLTEXTPREFIX=${IDXPREFIX} -DREMOTEUSER=@{remoteuser} -DREMOTEPASSWD=@{remotepwd} -DROOTPASSWD=@{rootpwd} -DRSRVNODEDIR=@{rsrvnodedir} -DBRANCH=@{branch}"/>
+         <echo message="cmd : ${cmd} in dir ${casedir}"/>
+         <exec executable="mvn" dir="${casedir}" failonerror="true" logError="true" >
+            <arg line="${cmd}" />
+            <env key="JAVA_HOME" path="/opt/jdk1.8.0_11/" />
+         </exec>
+      </sequential>
+   </macrodef>
+
+   
+   <macrodef name="generatexml">
+      <!--judge TEST_LEVEL_TYPE=PACKAGE or CLASS-->
+      <attribute name="filename"/>
+      <sequential>
+      <if>
+         <equals arg1="${TEST_LEVEL_TYPE}" arg2="PACKAGE"/>
+         <then>
+            <!--tag contains class line #-->
+            <markContainsStrline strValue="class" filename="@{filename}"/>
+            <!--delete contains # line-->
+            <delContainsStrline filename="@{filename}"/>
+            <!--tag contains package line #-->
+            <markContainsStrline strValue="package" filename="@{filename}"/>
+            <!--remove comtains some char line #-->
+            <removeMarkWhoContainsStr filename="@{filename}"/>
+            <!--delete contains # line-->
+            <delContainsStrline filename="@{filename}"/>
+         </then>
+         <elseif>
+            <equals arg1="${TEST_LEVEL_TYPE}" arg2="CLASS"/>
+            <then>
+               <!--tag contains package line #-->
+               <markContainsStrline strValue="package" filename="@{filename}"/>
+               <!--delete contains # line-->
+               <delContainsStrline filename="@{filename}"/>
+               <!--tag contains class line #-->
+               <markContainsStrline strValue="class" filename="@{filename}"/>
+               <!--remove comtains some char line #-->
+               <removeMarkWhoContainsStr filename="@{filename}"/>
+               <!--delete contains # line-->
+               <delContainsStrline filename="@{filename}"/>
+            </then>
+         </elseif>
+         <else>
+            <fail message="TEST_LEVEL_TYPE only suppor PACKAGE or CLASS"/>
+         </else>
+      </if>
+      </sequential>
+   </macrodef>
+   
+   <macrodef name="markContainsStrline">
+      <attribute name="strValue"/>
+      <attribute name="filename"/>
+      <sequential>
+         <exec executable="sed">
+            <arg value="-i"/>
+            <arg line="'/@{strValue} / s/^/#/' ${testcase_dir}/@{filename}"/>
+         </exec>
+      </sequential>
+   </macrodef>
+   
+   <macrodef name="delContainsStrline">
+      <attribute name="filename"/>
+      <sequential>
+         <exec executable="sed">
+            <arg value="-i"/>
+            <arg line="'/#/d' ${testcase_dir}/@{filename}"/>
+         </exec>
+      </sequential>
+   </macrodef>
+   
+   <macrodef name="removeMarkWhoContainsStr">
+      <attribute name="filename"/>
+      <sequential>
+         <exec executable="sed">
+            <arg value="-i"/>
+            <arg line="'/${EXEC_TESTCASE_NAME}/ s/^#//' ${testcase_dir}/@{filename}"/>
+         </exec>
+      </sequential>
+   </macrodef>
+   
+   <macrodef name="compilecase">
+      <attribute name="srcdir"/>
+
+      <sequential>
+         <delete dir="@{srcdir}/build" failonerror="false" />
+         <mkdir dir="@{srcdir}/build"/>
+         <copy file="/opt/sequoiadb/java/sequoiadb.jar" todir="@{srcdir}/lib" overwrite="true" />
+         <copy file="${basedir}/../thirdparty/testng-master/lib/linux64/testng-6.10.1-SNAPSHOT.jar" todir="@{srcdir}/lib" overwrite="true" />
+         <javac executable="javac" 
+                srcdir="@{srcdir}" 
+                destdir="@{srcdir}/build"
+                encoding="UTF-8"
+                debug="true" 
+                debuglevel="lines,vars,source"
+                fork="true" 
+                includeAntRuntime="false"
+                failonerror="true">
+            <classpath>
+               <fileset dir="@{srcdir}/lib" includes="**/*.jar"/>               
+            </classpath>
+         </javac>
+         <copy todir="@{srcdir}/build">
+            <fileset dir="@{srcdir}" includes="**/node.conf"/>
+         </copy>
+      </sequential>
+   </macrodef>
+   
+   <macrodef name="countstr">
+      <attribute name="resultproperty"/>
+      <attribute name="str"/>
+      <element name="path-elements"/>
+      <sequential> 
+         <var name="@{resultproperty}" unset="true"/>
+         <resourcecount property="@{resultproperty}">
+         <tokens>
+            <concat>
+               <filterchain>
+                  <tokenfilter>
+                     <containsstring contains="@{str}"/>
+                  </tokenfilter>
+               </filterchain>
+               <path-elements/>
+            </concat>
+         </tokens>
+         </resourcecount>
+      </sequential>
+   </macrodef>
+</project>

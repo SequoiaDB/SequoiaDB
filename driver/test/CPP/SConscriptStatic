@@ -1,0 +1,76 @@
+import os
+
+Import("env")
+
+gtestFiles = [
+      "../../../../../../SequoiaDB/engine/gtest/src/gtest-all.cc"
+      ]
+
+gtestMainFile = [
+      "../../../../../../SequoiaDB/engine/gtest/src/gtest_main.cc"
+      ]
+
+testCommonFiles = [
+        "testcommon.cpp",
+        "../../../../../../client/lib/libstaticsdbcpp.a"
+      ]
+
+testFiles1 = [
+        "collection.cpp"
+      ]
+testFiles2 = [
+        "collectionspace.cpp"
+      ]
+testFiles3 = [
+        "cursor.cpp"
+      ]
+testFiles4 = [
+        "sdb.cpp"
+      ]
+testFiles5 = [
+        "cppbson.cpp"
+      ]
+#testFiles6 = [
+#        "shard.cpp"
+#      ]
+testFiles7 = [
+        "debug.cpp"
+      ]
+testFiles8 = [
+        "domain.cpp"
+      ]    
+
+
+
+
+#Google Test
+gtestall = env.StaticLibrary('gtest', gtestFiles)
+gtestMainObj = env.Object('gtestMainObj', gtestMainFile)
+
+collection = env.Program("collection_static", [testFiles1, gtestMainObj, testCommonFiles],
+                     _LIBDEPS='$_LIBDEPS_OBJS')
+collectionspace = env.Program("collectionspace_static", [testFiles2, gtestMainObj, testCommonFiles],
+                     LIBDEPS=["testCommonLib"],
+                     _LIBDEPS='$_LIBDEPS_OBJS')
+cursor = env.Program("cursor_static", [testFiles3, gtestMainObj, testCommonFiles],
+                     LIBDEPS=["testCommonLib"],
+                     _LIBDEPS='$_LIBDEPS_OBJS')
+sdb = env.Program("sdb_static", [testFiles4, gtestMainObj, testCommonFiles],
+                     LIBDEPS=["testCommonLib"],
+                     _LIBDEPS='$_LIBDEPS_OBJS')
+cppbson = env.Program("cppbson_static", [testFiles5, gtestMainObj, testCommonFiles],
+                     LIBDEPS=["testCommonLib"],
+                     _LIBDEPS='$_LIBDEPS_OBJS')
+#shard = env.Program("shard_static", [testFiles6, gtestMainObj, testCommonFiles],
+#                     LIBDEPS=["testCommonLib"],
+#                     _LIBDEPS='$_LIBDEPS_OBJS')
+debug = env.Program("debug_static", [testFiles7, gtestMainObj, testCommonFiles],
+                     LIBDEPS=["testCommonLib"],
+                     _LIBDEPS='$_LIBDEPS_OBJS')
+domain = env.Program("domain_static", [testFiles8, gtestMainObj, testCommonFiles],
+                     LIBDEPS=["testCommonLib"],
+                     _LIBDEPS='$_LIBDEPS_OBJS')
+
+
+env.Install( '#/build_test',[collection,collectionspace,cursor,
+                             sdb,cppbson, debug, domain] )

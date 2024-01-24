@@ -1,0 +1,100 @@
+﻿<div ng-controller="Monitor.SdbNode.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div class="active" ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div>{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li class="active">
+               <a href="#/Monitor/SDB-Nodes/Node/Index">{{autoLanguage("节点信息")}}</a>
+            </li>
+            <li ng-if="ModuleMode == 'distribution'">
+               <a href="#/Monitor/SDB-Nodes/Node/Session">{{autoLanguage("会话")}}</a>
+            </li>
+            <li ng-if="ModuleMode == 'distribution'">
+               <a href="#/Monitor/SDB-Nodes/Node/Context">{{autoLanguage("上下文")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+            <li>
+               <a href="#/Monitor/SDB-Nodes/Node/Log">{{autoLanguage("日志")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div class="well Ellipsis" style="margin-top:10px;">
+         <i class="fa fa-circle" ng-if="nodeInfo" ng-style="{true:{'color':'#00CC66'},false:{'color':'#D9534F'}}[nodeInfo['Flag'] == 0]"></i>&nbsp;<span style="font-weight:bold;color:#006699;">{{nodeInfo['NodeName']}}</span>
+      </div>
+
+      <div ng-container="{offsetY:-125,marginTop:10}">
+         <div style="float:left;border:1px solid #ddd;padding:10px;overflow-y:auto;font-size:90%;color:#666;" ng-container="{width:300}">
+            <table class="table loosen" style="width:100%;">
+               <tr ng-if="ModuleMode == 'distribution'">
+                  <td style="width:40%;font-weight:bold;">{{autoLanguage("分区组")}}</td>
+                  <td style="width:60%;" class="Ellipsis"><a class="linkButton" ng-click="GotoGroup( nodeInfo['GroupName'] )">{{nodeInfo['GroupName']}}</a></td>
+               </tr>
+               <tr>
+                  <td style="width:40%;font-weight:bold;">{{autoLanguage("角色")}}</td>
+                  <td style="width:60%;" class="Ellipsis">{{nodeInfo['Role']}}</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">{{autoLanguage("节点ID")}}</td>
+                  <td class="Ellipsis">{{nodeInfo['NodeID']}}</td>
+               </tr>
+               <tr ng-if="nodeInfo['Role'] == 'catalog' || nodeInfo['Role'] == 'data'">
+                  <td style="font-weight:bold;">{{autoLanguage("类型")}}</td>
+                  <td ng-if="nodeInfo['IsPrimary'] == true" class="Ellipsis">{{autoLanguage("主节点")}}</td>
+                  <td ng-if="nodeInfo['IsPrimary'] == false" class="Ellipsis">{{autoLanguage("备节点")}}</td>
+                  <td ng-if="nodeInfo['IsPrimary'] == 'unknow'" class="Ellipsis">-</td>
+               </tr>
+               <tr ng-if="nodeInfo['Role'] != 'coord'">
+                  <td style="font-weight:bold;">{{autoLanguage("集合数")}}</td>
+                  <td class="Ellipsis">{{nodeInfo['TotalCl']}}</td>
+               </tr>
+               <tr ng-if="nodeInfo['Role'] != 'coord'">
+                  <td style="font-weight:bold;">{{autoLanguage("记录数")}}</td>
+                  <td class="Ellipsis">{{nodeInfo['TotalRecords']}}</td>
+               </tr>
+               <tr ng-if="nodeInfo['Role'] != 'coord'">
+                  <td style="font-weight:bold;">{{autoLanguage("Lob数")}}</td>
+                  <td class="Ellipsis">{{nodeInfo['TotalLobs']}}</td>
+               </tr>
+               <tr ng-if="nodeInfo['Role'] == 'catalog' || nodeInfo['Role'] == 'data'">
+                  <td style="font-weight:bold;">{{autoLanguage("当前LSN")}}</td>
+                  <td class="Ellipsis">{{nodeInfo['CurrentLSN']['Offset']}}</td>
+               </tr>
+               <tr ng-if="nodeInfo['Role'] == 'catalog' || nodeInfo['Role'] == 'data'">
+                  <td style="font-weight:bold;">{{autoLanguage("完成LSN")}}</td>
+                  <td class="Ellipsis">{{nodeInfo['CompleteLSN']}}</td>
+               </tr>
+               <tr ng-if="nodeInfo['Role'] == 'catalog' || nodeInfo['Role'] == 'data'">
+                  <td style="font-weight:bold;">{{autoLanguage("LSN队列数")}}</td>
+                  <td class="Ellipsis">{{nodeInfo['LSNQueSize']}}</td>
+               </tr>
+               <tr>
+                  <td style="font-weight:bold;">{{autoLanguage("主机")}}</td>
+                  <td class="Ellipsis"><a class="linkButton" ng-click="GotoHostInfo(nodeInfo['HostName'])">{{nodeInfo['HostName']}}</a></td>
+               </tr>
+               <tr valign="top">
+                  <td style="font-weight:bold;">{{autoLanguage("路径")}}</td>
+                  <td style="word-break:break-all;">{{nodeInfo['Disk']['DatabasePath']}}</td>
+               </tr>
+            </table>
+         </div>
+         <div style="float:left;overflow-y:auto;border:1px solid #ddd;padding-top:10px;position:relative;" ng-container="{offsetX:-320,offsetY:0,marginLeft:10}">
+            <div style="min-width:350px;float:left;padding:10px 0 0 10px;" ng-container="{height:230,width:'50%',offsetX:-20}" create-chart="charts.Insert"></div>
+            <div style="min-width:350px;float:left;padding:10px 0 0 10px;" ng-container="{height:230,width:'50%',offsetX:-20}" create-chart="charts.Update"></div>
+            <div style="min-width:350px;float:left;padding:10px 0 0 10px;" ng-container="{height:230,width:'50%',offsetX:-20}" create-chart="charts.Delete"></div>
+            <div style="min-width:350px;float:left;padding:10px 0 0 10px;" ng-container="{height:230,width:'50%',offsetX:-20}" create-chart="charts.Query"></div>
+            <div class="clear-float"></div>
+         </div>
+         <div class="clear-float"></div>
+      </div>
+   </div>
+</div>

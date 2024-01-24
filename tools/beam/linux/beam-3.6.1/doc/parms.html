@@ -1,0 +1,2676 @@
+<html>
+<head>
+  <title>BEAM: Parameters</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Parameters</h1>
+<hr/>
+
+</p>
+<p>
+There are three kind of parameters: 
+<ol>
+<li><a href="#global_parms">global parameters</a>
+<li><a href="#common_parms">parameters common to all checks</a>
+<li><a href="#specific_parms">check-specific parameters</a>
+</ol>
+</p>
+<p>
+All parameters are Tcl variables.
+Global parameters have names of the form 
+<span class="val">site</span><span class="code">::</span><span class="val">attribute</span>.
+Other parameters have names of the form
+<span class="val">site</span><span class="code">::</span><span class="val">check</span><span class="code">::</span><span class="val">attribute</span>.
+The Tcl namespace <span class="val">site</span><span class="code">::</span> allows users at different 
+geographic sites to introduce parameter names without creating conflicts.
+The namespace <span class="var">beam</span> is reserved for parameters in the core BEAM 
+system. 
+Examples are:
+</p>
+<pre class="example">
+beam::root                       # global parameter
+beam::ERROR10::enabling_policy   # parameter common to all checks
+beam::ERROR28::functions         # check-specific parameter
+</pre>
+<p>
+
+The possible values for <span class="val">check</span> are the names listed in
+the <a href="builtin.html">document describing built-in checks</a>.
+</p>
+<p>
+A parameter name may be in the form of an array, for example
+<span class="code">beam::ERROR10::special(printf)</span> or 
+<span class="code">beam::MISTAKE12::instead_of(abs,float)</span>
+</p>
+<p>
+A parameter that is never set has the default value "".
+</p>
+<p>
+<a name="patterns"></a><h1>Patterns</h1>
+
+
+In general, values of parameters are character strings.
+In some cases these strings have a special interpretation as patterns,
+which are Tcl lists.
+</p>
+<p>
+For example,
+</p>
+<pre class="example">
+set beam::disabled_files           { *.h - */special/*.h }
+set beam::ERROR10::disabled_macros { * - SOME* + SOMERSAULT }
+set beam::disabled_functions       { * - f1 - f2 }
+</pre>
+<p>
+
+The first example specifies a set of file names that are to be disabled.
+It is all the .h files except for those in the directory tree of 
+<span class="file">special</span>.
+</p>
+<p>
+The second example specifies a set of macro names that are to be disabled.
+It includes all the macros except those starting with <span class="code">SOME</span>;
+however the macro <span class="code">SOMERSAULT</span> is included in the set.
+</p>
+<p>
+The third example says that all functions are disabled (i.e. will not
+be analyzed) except the functions <span class="function">f1</span> and <span class="function">f2</span>.
+</p>
+<p>
+In general, a pattern is a list of terms in a Tcl list separated by '+' signs and '-' signs.
+The wild-card character '*' has a special interpretation.
+The '+' sign may be omitted as shown above in the setting of 
+<span class="var">beam::ERROR7::enabling_policy</span>.
+</p>
+<p>
+A given name, say, <span class="file">/usr/include/stdio.h</span>, matches a given pattern
+provided there is a term in the pattern that can be made equal to the given 
+name by some replacement of the wild-card character '*',
+and the last such term is not preceded by the '-' sign.
+</p>
+<p>
+For example, the pattern <span class="code">{ * - SOME* + SOMERSAULT }</span>
+matches the names <span class="code">XYZ</span>, <span class="code">Some</span>, <span class="code">SOMERSAULT</span> 
+as well as the empty string.
+But it does not match <span class="code">SOME</span>, or <span class="code">SOMEthing</span>.
+</p>
+<p>
+Please note that '/' does not get any special interpretation during a pattern 
+match.
+Therefore the pattern <span class="code">{ *.h - */special/*.h }</span>
+excludes <span class="file">/u/smith/special/foo.h</span> as well 
+as <span class="file">/u/smith/special/subdir/foo.h</span>.
+</p>
+<p>
+Also note that patterns that specify file names and that don't start with '/' or
+'*' will only match file names relative to the current directory; that is,
+a pattern like <span class="code">foo*</span> will only match files in the current directory
+that start with "foo". To match files in all subdirectories as well, use
+<span class="code">*/foo*</span> as the pattern.
+</p>
+<p>
+The terms themselves can be anything, which is important for file names that
+contain spaces. If a space or special character needs to be embedded into a
+pattern, use Tcl's list construction explicitly.
+</p>
+<pre class="example">
+set beam::disabled_files [list {C:\Program Files\Visual Studio\Include} + *.h]
+</pre>
+<p>
+
+Patterns that are simple and have terms that have no whitespace or other special
+characters can use Tcl's string syntax to specify the pattern. This is still a
+Tcl list, but because there are no special characters, there is no risk of
+misinterpretation.
+</p>
+<pre class="example">
+set beam::disabled_files &quot;*&quot;
+set beam::disabled_files &quot;*.h&quot;
+set beam::clean_enum     &quot;* - LEVEL&quot;
+</pre>
+<p>
+
+<h1>Type Names</h1>
+
+Sometimes you want to tell BEAM something about a particular type.
+For example
+</p>
+<pre class="example">
+set        &quot;beam::MISTAKE18::compare_function(char *)&quot;  &quot;strcmp&quot;
+</pre>
+<p>
+
+This particular example means that you want BEAM to remind you that
+in place of <span class="code">string1 == string2</span>
+you meant to use <span class="code">strcmp(string1, string2)</span>.
+This is to apply to all variables of type <span class="code">char *</span>.
+</p>
+<p>
+<span class="strong">A type name is not a pattern.</span>
+The character '*' is not a wild-card character; it is the C notation for a 
+pointer.
+Therefore when setting a parameter you need to check the documentation to see 
+if the parameter expects a pattern or a type name.
+</p>
+<p>
+In C and C++ there are several ways of writing the same type.
+These are basically permutations of keywords. E.g. 
+<span class="code">signed int</span>, <span class="code">int signed</span>, and <span class="code">int</span> all 
+denote the same type to the compiler.
+But in a Tcl file they are interpreted as different strings.
+We do not allow the same variety in Tcl as a compiler allows and require that 
+you use the type specifier listed in the right column of the following
+table to denote type in the left column.
+(Do not worry, you do not need to memorize this; it is here just for 
+completeness. See below how to get a type name automatically.)
+</p>
+<p>
+<table>
+<tr> <th>denoted type</th> <th>type specifier</th></tr>
+<tr><td>plain character type</td> <td> char</td></tr>
+<tr><td>signed character type</td> <td> signed char</td></tr>
+<tr><td>unsigned character type</td> <td> unsigned char</td></tr>
+</p>
+<p>
+<tr><td>signed short type</td> <td> short</td></tr>
+<tr><td>unsigned short type</td> <td> unsigned short</td></tr>
+</p>
+<p>
+<tr><td>signed int type	</td> <td> int</td></tr>
+<tr><td>unsigned int type</td> <td> unsigned int</td></tr>
+</p>
+<p>
+<tr><td>signed long type</td> <td> long</td></tr>
+<tr><td>unsigned long type</td> <td> unsigned long</td></tr>
+</p>
+<p>
+<tr><td>signed long long type</td> <td> long long</td></tr>
+<tr><td>unsigned long long type</td> <td> unsigned long long</td></tr>
+</p>
+<p>
+<tr><td>float type</td> <td> float</td></tr>
+<tr><td>double type</td> <td> double</td></tr>
+<tr><td>long double type</td> <td> long double</td></tr>
+</p>
+<p>
+<tr><td>enum type</td> <td> enum <span class="val">tagname</span></td></tr>
+<tr><td>struct type</td> <td> struct <span class="val">tagname</span></td></tr>
+<tr><td>union type</td> <td> union <span class="val">tagname</span></td></tr>
+<tr><td>class type</td> <td> class <span class="val">tagname</span></td></tr>
+</p>
+<p>
+<tr><td>typedef'ed type </td> <td>the typedef name</td></tr>
+</table>
+</p>
+<p>
+Note that you cannot specify struct/unions/enums without tag
+names. You either need to give them a proper tag name or
+create a type synonym (using typedef).
+</p>
+<p>
+<h2>Qualified Types</h2>
+
+If a type is qualified, the qualifier(s) shall precede the
+type specifier, e.g. you need to write <span class="code">const int</span> and not
+<span class="code">int const</span>. If a type has more than one qualifier, the
+qualifiers should be listed in alphabetical order, e.g.
+<span class="code">const volatile int</span>, not <span class="code">volatile const int</span>.
+</p>
+<p>
+<h2>Derived Types</h2>
+
+Use the corresponding abstract declarator. 
+</p>
+<p>
+<span class="strong">Array derivation: </span>
+Examples are <span class="code">int [3]</span> and <span class="code">float [2][3]</span>. 
+Note, that you cannot specify types with unknown array bounds.
+</p>
+<p>
+<span class="strong"> Pointer / reference derivation: </span>
+Examples are <span class="code">int *</span> and <span class="code">float *const **</span> and 
+<span class="code">double&amp;</span>.
+</p>
+<p>
+<span class="strong"> Function derivation: </span>
+Examples are <span class="code">int (*)(void)</span> and 
+<span class="code">void *(*)(int, float *)</span>.
+You must not use parameter names.
+</p>
+<p>
+More complex derived types follow the rules for writing 
+abstract declarators.
+</p>
+<p>
+<h2>Nested Types</h2>
+
+In C++ types can be defined in a class. You can use them outside
+by properly qualifying the type name
+</p>
+<p>
+<h2>Spaces</h2>
+
+When writing types you may use additional spaces if you like
+as long as that does not change the type or invalidates the
+syntax. E.g.
+"<span class="code">void **</span> is the same as "<span class="code">void* * </span> and so forth.
+</p>
+<p>
+<h2>Are you confused about types?</h2>
+
+You do not need to understand the rules of complicated types.
+To figure out the proper type name, write a simple program <span class="file">prog.c</span>
+containing a declaration involving your type of interest.
+Then issue the command 
+</p>
+<pre class="example">
+beam_compile   prog.c  --beam-cout
+</pre>
+<p>
+
+That will generate a file <span class="file">prog.cout</span>
+and inside you will find your type. 
+Just copy it into your Tcl file of parameters.
+</p>
+<p>
+<a name="foreach_complaint"></a><h1>Setting Parameters in All Complaints</h1>
+
+
+</p>
+<p>
+To set a parameter in all complaints, use the Tcl routine
+<span class="code">::beam::foreach_complaint</span>. It takes in a body
+of Tcl commands and evaluates it in each BEAM complaint namespace.
+</p>
+<p>
+   Example:
+</p>
+<pre class="example">
+source beam_default_parms
+
+# Set structured comment to suppress complaints to 'BEAM'
+
+::beam::foreach_complaint {
+  set disabling_comment &quot;BEAM&quot;
+}
+</pre>
+<p>
+
+The routines <span class="code">::beam::enable_option</span> and
+<span class="code">beam::disable_option</span> are convenience routines
+to add or remove options from the
+<a href="#beam::check::complaint_options"><span class="var">complaint_options</span></a>
+parameter.
+</p>
+<pre class="example">
+# Turn on show_source for all complaints
+
+::beam::foreach_complaint {
+  ::beam::enable_option &quot;show_source&quot;
+}
+
+# Turn off show_values for all complaints
+
+::beam::foreach_complaint {
+  ::beam::disable_option &quot;show_values&quot;
+}
+
+# You can do both at once, too
+
+::beam::foreach_complaint {
+  ::beam::enable_option  &quot;show_source&quot;
+  ::beam::disable_option &quot;show_values&quot;
+}
+</pre>
+<p>
+
+Note that some namespaces don't have all of the parameters, so
+if your Tcl body needs to get the value of a parameter (instead
+of simply setting it), program defensively and ensure the
+parameter exists before using it:
+</p>
+<pre class="example">
+source beam_default_parms
+
+::beam::foreach_complaint {
+  if { [::info exists functions] } {
+
+    # Now $functions is safe to use
+    do_something_with $functions
+
+  }
+}
+</pre>
+<p>
+
+<a name="translated_file_names"></a><h1>Translated File Names</h1>
+
+
+</p>
+<p>
+Some options that take output file names have the
+ability to replace parts of the output file name
+with parts of the input file name, allowing BEAM
+to automatically match up input and output files
+across large runs. This makes it easy to separate
+output by the input file name.
+</p>
+<p>
+If an option below specifies an output file name,
+and that option declares that it can handle
+<span class="term">translated file names</span>, then the
+following is true:
+</p>
+<p>
+<ul>
+<li>Any occurrence of <span class="code">%%</span> in the file
+    name will be replaced with <span class="code">%</span>
+    before the file is opened for writing</li>
+<li>Any occurrence of <span class="code">%P</span> in the file
+    name will be replaced by the name of the input
+    source file, relative to <a href="#beam::root">
+    beam::root</a>. Any nested sub-directories
+    that have to be created to place the output
+    file in the correct location will happen
+    automatically.</li>
+<li>Any occurrence of <span class="code">%F</span> in the file
+    name will be replaced by the name of the input
+    source file, relative to <a href="#beam::root">
+    beam::root</a>, after all directory separators
+    have been replaced by periods.
+    This is the "flat" option.</li>
+<li>Any occurrence of <span class="code">%B</span> in the file
+    name will be replaced by the basename of the
+    input file, which is the name after all
+    directory components have been removed.</li>
+<li>Any other <span class="code">%X</span> sequence, for some
+    character <span class="code">X</span> that is not listed
+    above, will remain untouched in the output
+    file name</li>
+</ul>
+</p>
+<p>
+The files will be appended to, just as before. This
+means that between runs, you should clean up the
+output files.
+</p>
+<p>
+Here is an example. Suppose you have three input files,
+<span class="file">src/a.c</span>, <span class="file">src/b.c</span>, and
+<span class="file">src/c.c</span>, all relative to some root directory.
+Also suppose that <span class="file">src/a.c</span> has a BEAM complaint,
+<span class="file">src/b.c</span> has a parse error, and <span class="file">src/c.c</span>
+has neither.
+</p>
+<p>
+The following command:
+</p>
+<pre class="example">
+beam_compile --beam::complaint_file=&quot;/output/%F.complaints&quot; \
+             --beam::parser_file=&quot;/output/%P.errors&quot; \
+             --beam::stats_file=&quot;/output/%B.stats&quot; \
+             src/a.c \
+             src/b.c \
+             src/c.c \
+             --beam::root=&quot;.&quot;
+</pre>
+<p>
+
+will create the following output files:
+</p>
+<p>
+<ul>
+<li><span class="file">/output/src.a.c.complaints</span></li>
+<li><span class="file">/output/src/b.c.errors</span></li>
+<li><span class="file">/output/a.c.stats</span></li>
+<li><span class="file">/output/b.c.stats</span></li>
+<li><span class="file">/output/c.c.stats</span></li>
+</ul>
+</p>
+<p>
+Basically, by adding the right <span class="code">%X</span> to the output
+file name, a BEAM run over multiple files can split
+up the output into different files of your choosing.
+</p>
+<p>
+<a name="global_parms"></a><h1>1. Global Parameters</h1>
+
+
+</p>
+<p>
+<table>
+<tr>
+ <th>Parameter</th>
+ <th>Value</th>
+ <th>Meaning</th>
+</tr>
+<tr>
+  <td><a href="#beam::allocation_may_return_null">beam::allocation_may_return_null</a>
+ <td><span class="code">yes</span> <br> <span class="code">no</span> <br> <span class="code">maybe</span>
+ <td>Consider or ignore the possibility of running out of memory.
+</tr>
+<tr>
+ <td><a href="#beam::assume_no_overflow">beam::assume_no_overflow</a>
+ <td>positive integer
+ <td>Results of all operations assumed to fit comfortably into given 
+     number of bits.
+</tr>
+<tr>
+ <td><a href="#beam::avalanche_prevention">beam::avalanche_prevention</a>
+ <td>pattern
+ <td>What kinds of avalanche errors should be prevented.
+</tr>
+<tr>
+  <td><a href="#beam::base_data">beam::base_data</a>
+ <td>list of directories
+ <td>Persistent data from other projects.
+</tr>
+<tr>
+  <td><a href="#beam::build_root">beam::build_root</a>
+ <td>pathname
+ <td>Points to the root directory of a build tree.
+</tr>
+<tr>
+ <td><a href="#beam::complaint_file">beam::complaint_file</a>
+ <td>file name
+ <td>Where to write complaints.
+</tr>
+<tr>
+ <td><a href="#beam::conservative_dotbeam">beam::conservative_dotbeam</a>
+ <td><span class="code">yes</span><br><span class="code">no</span>
+ <td>When to write the <span class="file">.beam</span> file.
+</tr>
+<tr>
+ <td><a href="#beam::data">beam::data</a>
+ <td>directory name
+ <td>Where to store persistent data.
+</tr>
+<tr>
+ <td><a href="#beam::clean_enum">beam::clean_enum</a>
+ <td>pattern
+ <td>Enumeration types whose possible values are determined from the enumerators.
+</tr>
+<tr>
+ <td><a href="#beam::dirty_enum">beam::dirty_enum</a>
+ <td>pattern
+ <td>Enumeration types whose possible values are not limited to the enumerators.
+</tr>
+<tr>
+ <td><a href="#beam::extended_enum">beam::extended_enum</a>
+ <td>pattern
+ <td>Enumeration types whose possible values are not limited to the enumerators.
+</tr>
+<tr>
+ <td><a href="#beam::disabled_files">beam::disabled_files</a>
+ <td>pattern
+ <td>Source files for which no complaint is to be issued.
+</tr>
+<tr>
+ <td><a href="#beam::disabled_files_for_parser_warnings">beam::disabled_files_for_parser_warnings</a>
+ <td>pattern
+ <td>Source files for which no parser warnings are to be issued.
+</tr>
+<tr>
+ <td><a href="#beam::disabled_functions">beam::disabled_functions</a>
+ <td>pattern
+ <td>Names of functions for which no complaint is to be issued.
+</tr>
+<tr>
+ <td><a href="#beam::disabled_macros">beam::disabled_macros</a>
+ <td>pattern
+ <td>Macros inside which no complaint is to be issued.
+</tr>
+<tr>
+ <td><a href="#beam::disabling_comment">beam::disabling_comment</a>
+ <td>list of strings
+ <td>Appearance of any of the strings in source text disables any complaint.
+</tr>
+<tr>
+ <td><a href="#beam::disabling_comment_capitalization">beam::disabling_comment_capitalization</a>
+ <td><span class="code">ignore</span><br><span class="code">respect</span></td>
+ <td>Are comments case sensitive?
+</tr>
+<tr>
+ <td><a href="#beam::disabling_comment_policy">beam::disabling_comment_policy</a>
+ <td>string
+ <td>Where can a disabling comment be placed?
+</tr>
+<tr>
+ <td><a href="#beam::display_parms">beam::display_parms</a>
+ <td><span class="code">yes</span><br><span class="code">no</span>
+ <td>Whether to display parameter settings.
+</tr>
+<tr>
+ <td><a href="#beam::dont_report_caught_runtime_exceptions">beam::dont_report_caught_runtime_exceptions</a>
+ <td>pattern
+ <td>Exceptions that should not generate a complaint in case caught.
+</tr>
+<tr>
+ <td><a href="#beam::exit0">beam::exit0</a>
+ <td><span class="code">yes</span><br><span class="code">no</span>
+ <td>Forces return code of zero.
+</tr>
+<tr>
+ <td><a href="#beam::expand_kind">beam::expand_kind</a>
+ <td>pattern
+ <td>What kinds of functions should be expanded in-line.
+</tr>
+<tr>
+ <td><a href="#beam::expand_max_lines">beam::expand_max_lines</a>
+ <td>positive integer
+ <td>Maximal size of function to be expanded inline.
+</tr>
+<tr>
+ <td><a href="#beam::function_name_style">beam::function_name_style</a>
+ <td><span class="code">qualified</span><br>
+     <span class="code">unqualified</span><br>
+     <span class="code">signature</span>
+ <td>Controls how a function name appears in a complaint.
+</tr>
+<tr>
+ <td><a href="#beam::ipa">beam::ipa</a>
+ <td>string
+ <td>Identifies the mode for interprocedural analysis.
+</tr>
+<tr>
+ <td><a href="#beam::ipa_check">beam::ipa_check</a>
+ <td><span class="code">yes</span><br><span class="code">no</span>
+ <td>Checks IPA repositories for consistency and errors.
+</tr>
+<tr>
+ <td><a href="#beam::list-all-ids">beam::list-all-ids</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Whether to write out function signatures and names, including
+     compiler generated functions.
+</tr>
+<tr>
+ <td><a href="#beam::list-all-variables">beam::list-all-variables</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Whether to write out variable names, including compiler generated 
+     variables.
+</tr>
+<tr>
+ <td><a href="#beam::list-ids">beam::list-ids</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Whether to write out function signatures and names.
+</tr>
+<tr>
+ <td><a href="#beam::list-variables">beam::list-variables</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Whether to write out variable names.
+</tr>
+<tr>
+ <td><a href="#beam::may_add_null">beam::may_add_null</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Is is OK to perform an addition on the null pointer?
+</tr>
+<tr>
+ <td><a href="#beam::may_call_null">beam::may_call_null</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Is is OK to call a function through a null function pointer?
+</tr>
+<tr>
+ <td><a href="#beam::may_free_null">beam::may_free_null</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Is is OK to call <span class="code">free(NULL)</span>?
+</tr>
+<tr>
+ <td><a href="#beam::may_read_null">beam::may_read_null</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Is is OK to read contents of location 0?
+</tr>
+<tr>
+ <td><a href="#beam::may_write_null">beam::may_write_null</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Is is OK to overwrite contents of location 0?
+</tr>
+<tr>
+ <td><a href="#beam::max_time_per_kloc_in_sec">beam::max_time_per_kloc_in_sec</a>
+ <td>positive integer
+ <td>Time limit for 1000 lines of code.
+</tr>
+<tr>
+ <td><a href="#beam::new_returns_null">beam::new_returns_null</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>What to assume about <span class="code">operator new</span> and 
+     <span class="code">operator new []</span>.
+</tr>
+<tr>
+ <td><a href="#beam::nostdattr">beam::nostdattr</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Whether to load files with function attributes (for the standard C and C++
+     libraries).
+</tr>
+<tr>
+ <td><a href="#beam::no_throw_list">beam::no_throw_list</a>
+ <td><span class="code">anything</span><br> <span class="code">nothing</span>
+ <td>How to interpret function declarations without a throw list.
+</tr>
+<tr>
+ <td><a href="#beam::parser_file">beam::parser_file</a>
+ <td>file name
+ <td>Where to write all messages issued from the parser. If this is not specified,
+     parser errors are written to <span class="code">stderr</span>, and parser warnings are
+     automatically suppressed.
+</tr>
+<tr>
+ <td><a href="#beam::post_parms">beam::post_parms</a>
+ <td>file name
+ <td>Additional Tcl file to be read after command line processing.
+</tr>
+<tr>
+ <td><a href="#beam::read_disabled_input_files">beam::read_disabled_input_files</a>
+ <td><span class="code">yes</span><br><span class="code">no</span>
+ <td>Whether or not to read disabled input files.
+</tr>
+<tr>
+ <td><a href="#beam::references_may_be_null">beam::references_may_be_null</a>
+ <td><span class="code">yes</span><br> <span class="code">no</span>
+ <td>Can a C++ reference variable ever contain NULL?
+</tr>
+<tr>
+ <td><a href="#beam::root">beam::root</a>
+ <td>list of directories
+ <td>A file name containing any of the directories will be shortened.
+</tr>
+<tr>
+ <td><a href="#beam::state_file">beam::state_file</a>
+ <td>file name
+ <td>Where to keep the analysis state.
+</tr>
+<tr>
+ <td><a href="#beam::stats_file">beam::stats_file</a>
+ <td>file name
+ <td>Where to write statistics.
+</tr>
+<tr>
+ <td><a href="#beam::stub_function_comment">beam::stub_function_comment</a>
+ <td>list of strings
+ <td>Appearance of any of the strings in the body of a function declares it 
+a stub function.
+</tr>
+<tr>
+ <td><a href="#beam::stub_function_contents">beam::stub_function_contents</a>
+ <td>pattern
+ <td>What can be in a function and still be considered an empty stub function.
+</tr>
+<tr>
+ <td><a href="#beam::unused_enum_value">beam::unused_enum_value</a>
+ <td>pattern
+ <td>Unused enumeration values.
+</tr>
+<tr>
+ <td><a href="#beam::user_innocent">beam::user_innocent</a>
+ <td>directory name
+ <td>Directory from storing innocent info from emacs.
+</tr>
+<tr>
+ <td><a href="#beam::xml_complaint_file">beam::xml_complaint_file</a>
+ <td>file name
+ <td>Where to write complaints in XML format.
+</tr>
+</table>
+</p>
+<p>
+<a name="common_parms"></a><h1>2. Parameters Common To All Checks</h1>
+
+
+The following parameters are supported by all built-in checks.
+</p>
+<p>
+<table>
+<tr>
+ <th>Parameter</th>
+ <th>Value</th>
+ <th>Meaning</th>
+</tr>
+<tr>
+ <td><a href="#beam::check::complaint_options">beam::<span class="val">check</span>::complaint_options</a>
+ <td>pattern
+ <td>How a complaint should be displayed.
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::disabled_files">beam::<span class="val">check</span>::disabled_files</a>
+ <td>pattern
+ <td>Complaint will not be issued for source files matching the pattern.
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::disabled_for_template_instantiations">beam::<span class="val">check</span>::disabled_for_template_instantiations</a>
+ <td><span class="code">yes</span><br><span class="code">no</span>
+ <td>Complaint will not be issued for problems inside instantiated template 
+     functions.
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::disabled_functions">beam::<span class="val">check</span>::disabled_functions</a>
+ <td>pattern
+ <td>Complaint will not be issued for functions matching the pattern.
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::disabled_macros">beam::<span class="val">check</span>::disabled_macros</a>
+ <td>pattern
+ <td>Complaint will not be issued for problems inside macros matching 
+     the pattern.
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::disabling_comment">beam::<span class="val">check</span>::disabling_comment</a>
+ <td>list of strings
+ <td>Appearance of any of the strings in source text disables complaint.
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::disabling_comment_policy">beam::<span class="val">check</span>::disabling_comment_policy</a>
+ <td>string
+ <td>Where can a disabling comment be placed?
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::disabled_macros">beam::<span class="val">check::enabled_in_macro</span></a>
+ <td><span class="code">yes</span><br><span class="code">no</span>
+ <td>This parameter is obsolete and has been replaced by disabled_macros.
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::enabling_policy">beam::<span class="val">check</span>::enabling_policy</a>
+ <td><span class="code">always</span><br>""<br>possibly other string
+ <td>Under what conditions the complaint should be issued.
+</tr>
+</p>
+<p>
+<tr>
+ <td><a href="#beam::check::severity">beam::<span class="val">check</span>::severity</a>
+ <td>string
+ <td>Any string to be printed with the complaint.
+</tr>
+</table>
+</p>
+<p>
+<a name="specific_parms"></a><h1>3. Check-Specific Parameters</h1>
+
+
+</p>
+<p>
+Check-specific parameters are described with their respective checks
+in <a href="builtin.html">this section</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Global Parameters Controlling BEAM Output</h1>
+
+</p>
+<p>
+<a name="beam::complaint_file"></a><h1>beam::complaint_file</h1>
+
+
+This parameter controls where BEAM complaints are written to.
+The value of the parameter is a string which is interpreted as a 
+file name. For example:
+</p>
+<pre class="example">
+set  beam::complaint_file  &quot;/u/smith/BEAM-complaints&quot;
+set  beam::complaint_file  &quot;blah&quot;
+set  beam::complaint_file  &quot;reports/BEAM&quot;
+set  beam::complaint_file  &quot;stdout&quot;
+set  beam::complaint_file  &quot;stderr&quot;
+set  beam::complaint_file  &quot;/dev/null&quot;
+set  beam::complaint_file  &quot;%P.complaints&quot;
+</pre>
+<p>
+
+The values <span class="code">stdout</span> and <span class="code">stderr</span> are special.
+They are not interpreted as file names but as the respective output streams.
+By default BEAM writes complaints to stdout.
+If you specify a file name the following details apply:
+<ul>
+<li>BEAM will <span class="strong">append</span> its complaints
+rather than overwrite the previous file contents.
+<li>Whenever a complaint is appended, the file will be locked first.
+This enables parallel runs.
+</ul>
+This file name will be translated according to the
+<a href="#translated_file_names">translated file name rules</a>.
+</p>
+<p>
+<a name="beam::display_parms"></a><h1>beam::display_parms</h1>
+
+
+When set to "yes" BEAM will display the values of parameter settings.
+By default, parameter settings will not be written out.
+</p>
+<p>
+<a name="beam::list-all-ids"></a><h1>beam::list-all-ids</h1>
+
+
+When set to "yes" BEAM will list the signatures and names of all defined 
+functions, including compiler generated functions.
+</p>
+<p>
+<a name="beam::list-all-variables"></a><h1>beam::list-all-variables</h1>
+
+
+When set to "yes" BEAM will list the signatures and names of all defined 
+variables, including compiler generated functions.
+</p>
+<p>
+<a name="beam::list-ids"></a><h1>beam::list-ids</h1>
+
+
+When set to "yes" BEAM will list the signatures and names of all defined 
+functions. Normal code checking will be skipped. Compiler generated functions
+are not included. To see them, use <span class="option">--beam::list-all-ids</span>.
+</p>
+<p>
+<a name="beam::list-variables"></a><h1>beam::list-variables</h1>
+
+
+When set to "yes" BEAM will list the names of all defined 
+variables. Normal code checking will be skipped. Compiler generated variables
+are not included. To see them, use <span class="option">--beam::list-all-variables</span>.
+</p>
+<p>
+<a name="beam::parser_file"></a><h1>beam::parser_file</h1>
+
+
+This parameter controls where parser messages are written to.
+The value of the parameter is a string which is interpreted as a 
+file name. 
+The values <span class="code">stdout</span> and <span class="code">stderr</span> are special. 
+They are not interpreted as file names but as the respective output streams.
+By default BEAM writes parser messages to stderr.
+If you specify a file name the following details apply:
+<ul>
+<li>BEAM will <span class="strong">append</span> the parser messages
+rather than overwrite the previous file contents.
+<li>Whenever a message is appended, the file will be locked first.
+This enables parallel runs.
+</ul>
+This file name will be translated according to the
+<a href="#translated_file_names">translated file name rules</a>.
+</p>
+<p>
+<a name="beam::state_file"></a><h1>beam::state_file</h1>
+
+
+This parameter specifies a file name that BEAM uses to keep a list
+of functions that have already been analyzed.
+For example:
+</p>
+<pre class="example">
+set  beam::state_file  &quot;/tmp/BEAM-state&quot;
+set  beam::state_file  &quot;blah&quot;
+set  beam::state_file  &quot;/dev/null&quot;
+set  beam::state_file  &quot;%P.state&quot;
+</pre>
+<p>
+
+This file should be deleted by the user before BEAM is run over
+a project. The file should not be kept between full BEAM runs,
+because the second time BEAM is run over a project, BEAM will
+consider all functions to have been analyzed already.
+See <a href="state_file.html">this document</a> for more details.
+</p>
+<p>
+This file name will be translated according to the
+<a href="#translated_file_names">translated file name rules</a>.
+</p>
+<p>
+<a name="beam::stats_file"></a><h1>beam::stats_file</h1>
+
+
+This parameter controls where BEAM statistics are written to.
+The value of the parameter is a string which is interpreted as a 
+file name. For example:
+</p>
+<pre class="example">
+set  beam::stats_file  &quot;/u/smith/BEAM-stats&quot;
+set  beam::stats_file  &quot;blah&quot;
+set  beam::stats_file  &quot;stats/BEAM&quot;
+set  beam::stats_file  &quot;stdout&quot;
+set  beam::stats_file  &quot;stderr&quot;
+set  beam::stats_file  &quot;/dev/null&quot;
+set  beam::stats_file  &quot;%P.stats&quot;
+</pre>
+<p>
+
+The values <span class="code">stdout</span> and <span class="code">stderr</span> are special. 
+They are not interpreted as file names but as the respective output streams.
+By default BEAM does not write any statistics.
+If you specify a file name the following details apply:
+<ul>
+<li>BEAM will <span class="strong">append</span> statistics
+rather than overwrite the previous file contents.
+<li>Whenever information is appended, the file will be locked first.
+This enables parallel runs.
+</ul>
+For the gory details about this file, please read 
+<a href="refstats.html">the reference documentation</a>.
+</p>
+<p>
+This file name will be translated according to the
+<a href="#translated_file_names">translated file name rules</a>.
+</p>
+<p>
+<a name="beam::stub_function_comment"></a><h1>beam::stub_function_comment</h1>
+
+
+The value of this parameter is a list of strings whose appearance in the
+body of a function will cause it to be considered just a stub function.
+A call to a stub function will not trigger a complaint that it has no effect,
+although actually it may have none.
+</p>
+<p>
+<a name="beam::stub_function_contents"></a><h1>beam::stub_function_contents</h1>
+
+
+This parameter lets you tell BEAM to recognize automatically some functions
+as stub functions.
+A call to a stub function will not trigger a complaint that it has no effect,
+although actually it may have none.
+The value of this parameter is a pattern indicating what is the maximum
+that can be in a function body and still be considered just a stub.
+</p>
+<p>
+We recognize just one kind of stub functions -- those that have 
+no more functionality than returning a constant. That includes
+</p>
+<pre class="example">
+{return 42;} /* return a constant */
+{return;   } /* return nothing */
+{          } /* implicit return */
+</pre>
+<p>
+That also includes functions that may have more code, but that code will never
+be executed because it is disabled by conditional compile, or by a conditional test
+which is always false.
+</p>
+<p>
+If you do want such functions recognized as stub functions then
+</p>
+<pre class="example">
+set beam::stub_function_contents &quot;return_constant&quot;
+</pre>
+<p>
+If you want no functions recognized as stub functions then
+</p>
+<pre class="example">
+set beam::stub_function_contents &quot;&quot;
+</pre>
+<p>
+No function matches the empty pattern because every function, 
+at minimum, does return.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Global Parameters Controlling Writing of Complaints</h1>
+
+</p>
+<p>
+<a name="beam::disabling_comment"></a><h1>beam::disabling_comment</h1>
+
+
+The value of this parameter is a list of strings that when appearing in a
+comment in the source can be used to suppress a particular occurrence of
+any complaint. A typical example would be:
+</p>
+<pre class="example">
+lappend beam::disabling_comment &quot;beam&quot;
+</pre>
+<p>
+
+Suppose that BEAM issued a complaint about a line in your source code.
+If you add a comment /* beam */ or 
+/* ignore beam complaint */, or anything containing the word "beam"
+then you will not get any BEAM complaint about that line in future runs.
+</p>
+<p>
+Alternatively you can have a different disabling comment for 
+each kind of complaint, see <a href="#beam::check::disabling_comment">here</a>.
+</p>
+<p>
+The comment is normally placed on the very line identified by BEAM,
+but the placement possibilities can be extended
+by setting the parameter 
+<a href="#beam::disabling_comment_policy"><span class="var">beam::disabling_comment_policy</span></a>.
+</p>
+<p>
+See also the global parameter 
+<a href="#beam::disabling_comment_capitalization"><span class="var">beam::disabling_comment_capitalization</span></a>.
+</p>
+<p>
+<a name="beam::disabling_comment_capitalization"></a><h1>beam::disabling_comment_capitalization</h1>
+
+
+The value of this variable is a string that controls whether BEAM
+should be case sensitive or case insensitive when interpreting a
+<a href="#beam::check::disabling_comment">comment in the source code that is meant to suppress a complaint</a>.
+</p>
+<p>
+As an example, suppose that you have registered the disabling comment
+<span class="code">FALL_THRU</span> for MISTAKE4 (the a-break-might-be-missing 
+complaint).
+By default, BEAM is <span class="term">case insensitive</span>, i.e no matter whether the
+comment reads <span class="code">FALL_THRU</span> or <span class="code">fall_thru</span> or
+<span class="code">Fall_ThRu</span>, BEAM will suppress the complaint. To enable
+case sensitivity, add 
+</p>
+<pre class="example">
+set  beam::disabling_comment_capitalization &quot;respect&quot;
+</pre>
+<p>
+
+to your Tcl configuration file.
+</p>
+<p>
+<a name="beam::disabling_comment_policy"></a><h1>beam::disabling_comment_policy</h1>
+
+
+The value of this variable is a string that controls where BEAM
+should look for a
+<a href="#beam::check::disabling_comment">comment in the source code that is meant to suppress a complaint</a>.
+</p>
+<p>
+Suppose that BEAM issues a complaint 
+</p>
+<pre class="example">
+-- WARNING3     /*not used*/     &gt;&gt;&gt;WARNING3_f_fdfe85475
+&quot;d.c&quot;, line 4: parameter `u' is never used
+</pre>
+<p>
+
+and suppose that  parameter `u' is not meant to be ever used.
+You can suppress this complaint in the future by 
+placing a comment containing "not used" into your source code.
+Where it can be placed is determined by the setting of 
+beam::disabling_comment_policy, where "L" refers to the line 4.
+For example,
+</p>
+<pre class="example">
+set beam::disabling_comment_policy &quot;L&quot;;                 # must be placed on line 4
+set beam::disabling_comment_policy &quot;L-1 to L&quot;;          # must be placed on line 3, or 4
+set beam::disabling_comment_policy &quot;L-1 to L+1&quot;;        # must be placed on line 3, 4, or 5
+set beam::disabling_comment_policy &quot;L-1000 to L+1000&quot;;  # must be placed on line 1 through 1004
+</pre>
+<p>
+
+The setting of beam::disabling_comment_policy applies to all 
+checks, but can be overridden for an individual checks by
+<a href="#beam::check::disabling_comment_policy"><span class="var">beam::check::disabling_comment_policy</span></a>.
+</p>
+<p>
+<a name="beam::disabled_files"></a><h1>beam::disabled_files</h1>
+
+
+The value is a <a href="#patterns">pattern</a> identifying files for which 
+BEAM should never ever issue a complaint.
+For example:
+</p>
+<pre class="example">
+set beam::disabled_files { /usr/include/* /usr/local/include/* }
+</pre>
+<p>
+
+BEAM will not complain about any files in the <span class="file">/usr/include</span>
+and <span class="file">/usr/local/include</span> directory trees.
+</p>
+<pre class="example">
+set beam::disabled_files { *.c - */foo.c - */bar.c }
+</pre>
+<p>
+
+This will disable all .c files except <span class="file">foo.c</span> and <span class="file">bar.c</span>.
+</p>
+<p>
+In determining whether a given file matches the specified pattern
+BEAM first converts the file name to an absolute pathname.
+</p>
+<p>
+Note that a file that is disabled globally (using 
+<span class="var">beam::disabled_files</span>)
+cannot be enabled later for a specific complaint (using 
+<span class="var">beam::</span><span class="val">check</span><span class="var">::disabled_files</span>).
+</p>
+<p>
+<a name="beam::disabled_files_for_parser_warnings"></a><h1>beam::disabled_files_for_parser_warnings</h1>
+
+
+</p>
+<p>
+The value is a <a href="#patterns">pattern</a> identifying files for which parser warnings should be suppressed.
+</p>
+<p>
+For example:
+</p>
+<pre class="example">
+set beam::disabled_files_for_parser_warnings { /home/me/project/* }
+</pre>
+<p>
+
+This would suppress all parser warnings for all source files in the directory
+<span class="file">/home/me/project</span>. Note that for BEAM versions 3.5.0 and later, parser
+warnings are turned off by default, so this option would have no effect unless
+parser warnings have been explicitly turned on by specifying the command-line 
+option <span class="option">--edg=--warnings</span>.
+</p>
+<p>
+<a name="beam::disabled_functions"></a><h1>beam::disabled_functions</h1>
+
+
+The value is a <a href="#patterns">pattern</a> identifying functions for 
+which BEAM should never ever issue a complaint.
+For example:
+</p>
+<pre class="example">
+set beam::disabled_functions { main  special::new_* }
+</pre>
+<p>
+
+BEAM will not complain about the function <span class="function">main</span> as 
+well as all member function of the class <span class="var">special</span>
+whose name starts with <span class="code">new_</span>.
+</p>
+<p>
+The functions are identified "by name", which includes the class name or 
+name space, but does not include parameters.
+</p>
+<p>
+Note that a function that is disabled globally (using 
+<span class="var">beam::disabled_functions</span>)
+cannot be enabled later for a specific complaint (using 
+<span class="var">beam::</span><span class="val">check</span><span class="var">::disabled_functions</span>).
+</p>
+<p>
+<a name="beam::disabled_macros"></a><h1>beam::disabled_macros</h1>
+
+
+The value is a <a href="#patterns">pattern</a> identifying macros for which 
+BEAM should never ever issue any complaint.
+For example:
+</p>
+<pre class="example">
+set beam::disabled_macros { RA* *RA }
+</pre>
+<p>
+
+BEAM will not complain about anything in a macro starting or ending with RA.
+</p>
+<pre class="example">
+set beam::disabled_macros { * - RA* }
+</pre>
+<p>
+
+This will disable all macros except those starting with RA.
+</p>
+<p>
+Note that a macro that is disabled globally (using 
+<span class="var">beam::disabled_macros</span>)
+cannot be enabled later for a specific complaint (using 
+<span class="var">beam::</span><span class="val">check</span><span class="var">::disabled_macros</span>).
+</p>
+<p>
+<a name="beam::root"></a><h1>beam::root</h1>
+
+
+This variable controls how file names appear in complaints.
+Its value is a list of strings that are interpreted as prefixes that
+BEAM removes from an absolute pathname before writing a complaint.
+With a setting like this:
+</p>
+<pre class="example">
+set beam::root &quot;/u/smith/src&quot;
+</pre>
+<p>
+
+BEAM would refer to the file <span class="file">/u/smith/src/foo/bar.c</span>
+by writing only <span class="file">foo/bar.c</span>. Whereas with a setting like this
+</p>
+<pre class="example">
+set beam::root &quot;/u/smith/src/foo&quot;
+</pre>
+<p>
+
+BEAM would only write <span class="file">bar.c</span>.
+</p>
+<p>
+The value of <span class="var">beam::root</span> may be a list of directories, as in
+</p>
+<pre class="example">
+lappend beam::root &quot;/u/smith/src&quot; &quot;/usr/include&quot;
+</pre>
+<p>
+
+In this case  <span class="file">/u/smith/src/foo.c</span> and 
+<span class="file">/usr/include/stdio.h</span> will be shortened to 
+<span class="file">foo.c</span> and 
+<span class="file">stdio.h</span> respectively.
+</p>
+<p>
+The value of <span class="var">beam::root</span> may be a relative directory name, as in
+</p>
+<pre class="example">
+lappend beam::root &quot;.&quot; &quot;../include&quot;
+</pre>
+<p>
+
+These directories are relative to the directory where BEAM is invoked.
+</p>
+<p>
+Not setting <span class="var">beam::root</span> will default to "", which will cause 
+full pathnames to be written.
+</p>
+<p>
+<!---
+@dfn{beam::root} is a list of strings, for example
+@example
+lappend  beam::root   "/u/smith/src    ../include"
+@end example
+In general, your source file names have a full path, for example 
+@file{/u/smith/src/util/foo.c}.
+With the above setting BEAM will omit @file{/u/smith/src} and 
+it will print only @file{util/f.c}.
+It will omit not just the actual string you typed, but also 
+the path it represents; for example, it will understand that 
+@file{../include} and @file{/u/smith/include} may be the same thing.
+If @code{beam::root} is never set then it defaults to "",
+which will cause full paths to be printed.
+-->
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Global Parameters Controlling Storing of Persistent Data</h1>
+
+</p>
+<p>
+<a name="beam::data"></a><h1>beam::data</h1>
+
+
+This variable controls where persistent data is stored.
+Its value is a character string that is interpreted as a directory
+where BEAM will store data that is meant to be persistent between 
+invocations. BEAM will create the directory if it does not exist.
+Information about complaints considered <span class="term">innocent</span>
+is stored there as well as some path information used by the 
+<a href="emacs.html">emacs</a> macros for browsing BEAM complaints.
+It is recommended that you also set <a href="#beam::build_root">beam::build_root</a> when you set <span class="var">beam::data</span>.
+If <span class="var">beam::data</span> is not set at all, BEAM will not store any
+persistent data. This is not recommended.
+</p>
+<p>
+<a name="beam::base_data"></a><h1>beam::base_data</h1>
+
+
+It is a list of strings, for example
+</p>
+<pre class="example">
+lappend beam::base_data &quot;/sourcelib/utilities/beam_data&quot; &quot;/sourcelib/our_project/beam_data&quot;
+</pre>
+<p>
+
+The parameter <span class="var">beam::base_data</span> identifies directories in
+which persistent data from other projects (software components) is stored.
+Consider the following situation.
+</p>
+<p>
+There are several people working on your project and they all place their 
+<a href="innocent.html">declarations of innocence</a>.
+into a global <span class="file">/sourcelib/our_project/beam_data</span>.
+When you run BEAM in your sandbox you may not want to write into the global
+<span class="file">/sourcelib/our_project/beam_data</span>, so you have a local 
+directory specified by <span class="var">beam::data</span>.
+Yet you do want to have all the declarations of innocence from you coworkers.
+In this situation you would include 
+<span class="file">/sourcelib/our_project/beam_data</span>
+among you <span class="file">base_data</span> directories.
+</p>
+<p>
+Another use of <span class="var">beam::base_data</span> is for 
+<a href="ipa.html#enable">interprocedural analysis</a>.
+</p>
+<p>
+<a name="beam::user_innocent"></a><h1>beam::user_innocent</h1>
+
+
+The <a href="emacs.html">emacs interface</a> allows with one key-stroke
+to declare an particular instance of a complaint to be innocent.
+By default that information will be stored in the 
+<a href="#beam::data">beam::data directory</a>.
+The user can override the default using the parameter beam::user_innocent.
+</p>
+<p>
+Typically it is used in the following situation.
+There is a beam data directory for a whole project,
+which contains innocent information for the whole project.
+During a particular BEAM run the user may prefer to specify 
+some local beam_data directory to collect detailed error information.
+However, declarations of innocence should go into the 
+global project beam data directory, and that can be specified using 
+the beam::user_innocent parameter.
+</p>
+<p>
+<a name="beam::xml_complaint_file"></a><h1>beam::xml_complaint_file</h1>
+
+
+This parameter controls where BEAM complaints are written to
+in XML format. The value of the parameter is a string which
+is interpreted as a file name. For example:
+</p>
+<pre class="example">
+set  beam::xml_complaint_file  &quot;reports/BEAM_%B.xml&quot;
+set  beam::xml_complaint_file  &quot;stdout&quot;
+set  beam::xml_complaint_file  &quot;/dev/null&quot;
+set  beam::xml_complaint_file  &quot;%P.xml&quot;
+</pre>
+<p>
+
+The values <span class="code">stdout</span> and <span class="code">stderr</span> are special.
+They are not interpreted as file names but as the respective output streams.
+By default BEAM will not write any XML.
+If you specify a file name the following details apply:
+<ul>
+<li>BEAM will <span class="strong">append</span> its complaints
+rather than overwrite the previous file contents.
+<li>Whenever a complaint is appended, the file will be locked first.
+This enables parallel runs.
+</ul>
+This file name will be translated according to the
+<a href="#translated_file_names">translated file name rules</a>.
+</p>
+<p>
+Because XML files need a single root element, we advise that
+you always use some escape from the translated file name
+rules to separate out the XML files one per source file.
+If you clean up the results between runs, then after each
+run, you will have one XML file per each source file, and
+the XML files will be well-formed.
+</p>
+<p>
+The XML will conform to the <a href="beam_results_1.1.dtd">BEAM DTD</a>.
+There may be multiple versions; the version that is specified in the
+BEAM output is the version that it conforms to.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Global Parameters Controlling Semantics</h1>
+
+When BEAM reasons about a program it applies the semantics set forth in 
+the respective language standard. But literal interpretation of a standard
+might result in complaints that you may or may not want to see, 
+depending on your application.
+Therefore, BEAM provides a few parameters that let you control its
+interpretation of certain constructs.
+</p>
+<p>
+<a name="beam::allocation_may_return_null"></a><h1>beam::allocation_may_return_null</h1>
+
+
+This variable controls how BEAM interprets the return value of an allocation
+function. There are three cases to consider. We will use this example to
+illustrate them:
+</p>
+<pre class="example">
+foo = malloc(10);
+bar = malloc(20);
+
+*foo = 0;
+if(bar == NULL) {
+  a = 42;
+}
+*bar = 0;
+</pre>
+<p>
+
+<span class="strong">Case #1:</span> <span class="code">set beam::allocation_may_return_null &quot;no&quot;</span><br>
+This advises BEAM that <span class="function">malloc</span> and friends should not be
+considered to ever return <span class="code">NULL</span>. As a consequence, there will
+be no complaints about both the dereference of <span class="code">foo</span> and 
+<span class="code">bar</span> in the above example. However, there will be a complaint
+(MISTAKE5, if enabled) indicating that the test <span class="code">if(bar == NULL)</span> 
+is not necessary.
+</p>
+<p>
+<span class="strong">Case #2:</span> <span class="code">set beam::allocation_may_return_null &quot;yes&quot;</span><br>
+This advises BEAM that <span class="function">malloc</span> and friends should be
+considered to return <span class="code">NULL</span>. As a consequence, there will
+be complaints (ERROR5) about both the dereference of <span class="code">foo</span> 
+and <span class="code">bar</span> in the above example. Also, BEAM will assume that C++
+allocators that may throw <span class="code">std::bad_alloc</span> actually will,
+affecting ERROR30.
+</p>
+<p>
+<span class="strong">Case #3:</span> <span class="code">set beam::allocation_may_return_null &quot;maybe&quot;</span><br>
+This is BEAM's default setting.
+It means that there is a possibility of allocation failing,
+but BEAM should not assume that possibility without further evidence.
+That means, you can dereference the result of allocation without testing it.
+But if you do test the result of a particular allocation call for 
+<span class="code">NULL</span>, then that is considered evidence that that particular 
+allocation could fail. For the above example, BEAM will issue ERROR5 for
+<span class="code">*bar = 0</span> because the preceding if-statement is considered
+evidence that <span class="code">bar</span> might in fact be <span class="code">NULL</span>.
+</p>
+<p>
+Who are the friends of <span class="function">malloc</span>?
+They are all functions that have been given the 
+<a href="attributes.html">function attribute</a> of allocator,
+and their resource has the string "memory" in its name.
+</p>
+<p>
+Note: For C++ code, <span class="code">operator new</span> and <span class="code">operator new[]</span>
+are assumed to never return NULL because the current C++ standard requires
+them to throw an exception instead. If you want to configure this behavior,
+see the 
+<a href="#beam::new_returns_null">--beam::new_returns_null</a>
+command line option.
+</p>
+<p>
+<a name="beam::may_free_null"></a><h1>beam::may_free_null</h1>
+
+
+This variable may take the values <span class="code">yes</span> or <span class="code">no</span>.
+The value <span class="code">yes</span> means that it is OK to pass <span class="code">NULL</span>
+to the function <span class="function">free</span> or any other function marked as a
+deallocator. By default, BEAM assumes it is not OK to <span class="code">free(NULL)</span>.
+</p>
+<p>
+<a name="beam::may_read_null"></a><h1>beam::may_read_null</h1>
+
+
+This variable may take the values <span class="code">yes</span> or <span class="code">no</span>.
+The value <span class="code">yes</span> means that it is OK to read the contents of 
+location 0. This is so on AIX, but not on most other operating systems.
+Even or AIX reading from location 0 is usually unintended.
+By default, BEAM assumes it is not OK to read from location 0.
+</p>
+<p>
+<a name="beam::may_write_null"></a><h1>beam::may_write_null</h1>
+
+
+This variable may take the values <span class="code">yes</span> or <span class="code">no</span>.
+The value <span class="code">yes</span> means that it is OK to overwrite the contents of 
+location 0.
+To our knowledge no operating system allows that, but the kernel itself might 
+be allowed to do so.
+By default, BEAM assumes it is not OK to write into location 0.
+</p>
+<p>
+<a name="beam::may_add_null"></a><h1>beam::may_add_null</h1>
+
+
+This variable may take the values <span class="code">yes</span> or <span class="code">no</span>.
+The value <span class="code">yes</span> means that you wish to override the C-language 
+prohibition against arithmetic operations on the null pointer.
+For example: 
+</p>
+<p>
+<pre class="example">
+NULL+4
+</pre>
+
+</p>
+<p>
+Another example: 
+</p>
+<p>
+<pre class="example">
+ptr-&gt;field
+</pre>
+ 
+</p>
+<p>
+in case <span class="code">ptr = NULL</span>. The language also disallows:
+</p>
+<p>
+<pre class="example">
+addr = &amp;(ptr-&gt;field)
+</pre>
+ 
+</p>
+<p>
+in case <span class="code">ptr = NULL</span>.
+However, <span class="code">&amp;(NULL-&gt;field)</span> is such a common way of calculating the 
+offset of a field that BEAM will not complaint about it (ERROR2).
+Therefore you do not need to set <span class="var">beam::may_add_null</span> to 
+<span class="code">no</span>
+if you just want to calculate offsets of fields.
+By default, BEAM assumes it is not OK to add to NULL (except in expressions 
+<span class="code">NULL-&gt;field</span>).
+</p>
+<p>
+<a name="beam::may_call_null"></a><h1>beam::may_call_null</h1>
+
+
+This variable may take the values <span class="code">yes</span> or <span class="code">no</span>.
+It controls whether it is allowed to perform a call <span class="code">f()</span>,
+where f is a function pointer variable containing NULL.
+By default, BEAM assumes it is not OK to call NULL function pointer.
+</p>
+<p>
+<a name="beam::references_may_be_null"></a><h1>beam::references_may_be_null</h1>
+
+
+Normally a C++ reference evaluates to the address of some variable.
+It is possible to be the address 0, but that can be accomplished 
+only by dereferencing null at some point. 
+That would lead to a crash on most operating systems.
+Therefore the value of <span class="var">beam::references_may_be_null</span>
+should normally be the same as <span class="var">beam::may_read_null</span>.
+It is rare, but you may want to set <span class="var">beam::references_may_be_null</span>
+to <span class="code">yes</span>, if for some paranoid reasons you keep checking
+whether pointers obtained from references could be null, and you do not 
+want BEAM tell you that the check is unnecessary.
+</p>
+<p>
+<a name="beam::no_throw_list"></a><h1>beam::no_throw_list(callee), beam::no_throw_list(self)</h1>
+
+
+In C++ a function may declare an empty throw list, or no throw list at all
+with very different semantics.
+Example:
+</p>
+<pre class="example">
+void foo() throw(); // guaranteed not to throw an exception
+
+void bar();         // may throw any exception
+</pre>
+<p>
+
+By omitting any throw list from the declaration of <span class="function">bar()</span>
+you are telling the compiler to expect that bar() may throw any exception.
+But you rarely mean that.
+If you are not throwing any exceptions anywhere you will not bother mentioning 
+them in any function declaration.
+And you would not want BEAM to tell you about all the terrible things that will
+happen if <span class="function">bar()</span> should throw an exception.
+Conversely, you probably also do not want BEAM tell you that 
+you are not allowed to throw an exception in a function without a throw list,
+because after all the C++ standard allows that.
+</p>
+<p>
+The parameter <span class="var">beam::no_throw_list</span> allows you to configure
+BEAM to interpret these situations in different ways.
+</p>
+<p>
+There are 4 possible settings.
+</p>
+<p>
+<table>
+<tr>
+ <th align=left>Parameter
+ <th align=left>Value
+ <th align=left>Effect
+</tr>
+<tr>
+ <td><span class="code">no_throw_list(callee)</span>
+ <td><span class="code">&quot;nothing&quot;</span>
+ <td>Calling a function with no throw list won't throw any exceptions.
+</tr>
+<tr>
+ <td><span class="code">no_throw_list(callee)</span>
+ <td><span class="code">&quot;anything&quot;</span>
+ <td>Calling a function with no throw list may throw any exception.
+</tr>
+<tr>
+ <td><span class="code">no_throw_list(self)</span>
+ <td><span class="code">&quot;nothing&quot;</span>
+ <td>No exception may be thrown while within the body of a function with no throw list.
+</tr>
+<tr>
+ <td><span class="code">no_throw_list(self)</span>
+ <td><span class="code">&quot;anything&quot;</span>
+ <td>Any exception may be thrown while within the body of a function with no throw list.
+</tr>
+</table>
+</p>
+<p>
+<a name="beam::clean_enum"></a>
+<a name="beam::dirty_enum"></a>
+<a name="beam::extended_enum"></a>
+<h1>beam::clean_enum, beam::dirty_enum, beam::extended_enum</h1>
+
+These three variables control what BEAM assumes about the possible values of
+C/C++ variables that have enumerated type. Consider this example:
+</p>
+<pre class="example">
+typedef enum {
+  RED   = 1,
+  BLUE  = 2, 
+  GREEN = 4
+} COLOR;
+
+int foo(COLOR color)
+{
+  int var;
+
+  switch(color) {
+  case RED:   var = 1; break;
+  case BLUE:  var = 2; break;
+  case GREEN: var = 3; break;
+  }
+
+  return var;
+}
+</pre>
+<p>
+
+The $64,000 question is whether BEAM should complain about <span class="var">var</span>
+being uninitialized when returned. The only way for <span class="var">var</span>
+to be uninitialized is when <span class="var">color</span>
+has a value that is not listed in the enumeration, e.g. the value 42. 
+The answer depends on whether anybody will ever call foo with a parameter 
+other than 1, 2, or 4.
+</p>
+<p>
+BEAM allows users to specify how they intend to use enumeration types.
+There are three options for the above  example.
+<ol>
+<li>COLOR is a clean enum: its values are {1, 2, 4}.
+<li>COLOR is an extended enum: its values are {0, 1, 2, 3, 4, 5, 6, 7}.
+<li>COLOR is a dirty enum: its values those of the underlying type, such as int.
+</ol>
+Extended enumerated types are allowed by C++ so that,
+for example, <span class="code">RED | BLUE</span> can be used to represent "purple".
+Dirty enums are not explicitly allowed by the language, 
+but they are sometimes used.
+They are not encouraged because they are not portable.
+</p>
+<p>
+Going back to our original question,
+BEAM will complain about <span class="var">var</span>
+being uninitialized, provided the type <span class="code">COLOR</span> is either 
+dirty or extended, but not if it is clean.
+</p>
+<p>
+The three variables <span class="var">beam::clean_enum, beam::dirty_enum, beam::extended_enum</span>
+can be used to express users intentions.
+Their value is a <a href="#patterns">pattern</a> of type names, for example,
+</p>
+<pre class="example">
+set beam::clean_enum &quot;* - LEVEL&quot;
+set beam::dirty_enum &quot;COLOR  MODEL&quot;
+</pre>
+<p>
+
+A type is clean if its name matches the pattern of <span class="var">beam::clean_enum</span>.
+Similarly for dirty and extended.
+If a type name matches none of the three then the default is determined from  
+the enumerator values. If all the enumerators are assigned (explicitly or
+implicitly) consecutive integers then the type is assumed clean.
+Otherwise (as in the case of our type COLOR) the type is extended.
+</p>
+<p>
+Having determined the values of a type, there is a question of 
+values of an expression.
+Certainly the values of an expression are restricted to those of the expression's type,
+including enumeration types.
+But the values can be further restricted depending on the context  of the expression.
+There are several simple examples.
+</p>
+<pre class="example">
+COLOR c;           /* values of c are values of COLOR */
+int i = (int) c;   /* values of i are values of COLOR */
+int j = -i;        /* values of j are negative values of COLOR */
+</pre>
+<p>
+
+There are less obvious examples where the same memory location 
+is being fetched using different types.
+</p>
+<pre class="example">
+union {
+  int   i;
+  COLOR c;
+} x;
+int   a;
+if (some_flag) {
+  a = x.i;  /* values of a are all ints */
+} else {
+  a = x.c;  /* values of a are values of COLOR */
+}
+</pre>
+<p>
+
+If the two accesses of the union happen in the same execution 
+then BEAM's assumptions are unspecified:
+</p>
+<pre class="example">
+union {
+  int   i;
+  COLOR c;
+} x;
+int   a;
+a = x.i;  /* values of a unspecified */
+a = x.c;  /* values of a unspecified */
+</pre>
+<p>
+
+The same location can be accessed in two different ways
+without unions.
+Here is an example where the two accesses are on two different execution paths:
+</p>
+<pre class="example">
+void *x;
+int   a;
+if (some_flag) {
+  a = *(int *) x;    /* values of a are all ints */
+} else {
+  a = *(COLOR *) x;  /* values of a are values of COLOR */
+}
+</pre>
+<p>
+
+Example where the two accesses are on the same execution paths:
+</p>
+<pre class="example">
+void *x;
+int   a;
+a = *(int *) x;    /* values of a unspecified */
+a = *(COLOR *) x;  /* values of a unspecified */
+</pre>
+<p>
+
+</p>
+<p>
+<a name="beam::unused_enum_value"></a><h1>beam::unused_enum_value</h1>
+
+
+This variable controls what BEAM assumes about the possible values of
+C/C++ variables that have enumerated type. Consider this example:
+</p>
+<pre class="example">
+typedef enum {
+  RED, 
+  BLUE, 
+  GREEN,
+  NUM_COLOR,
+} COLOR;
+
+int foo(COLOR color)
+{
+  int var;
+
+  switch(color) {
+  case RED:   var = 1; break;
+  case BLUE:  var = 2; break;
+  case GREEN: var = 3; break;
+  }
+
+  return var;
+}
+</pre>
+<p>
+
+The $64,000 question is whether BEAM should complain about <span class="var">var</span>
+being uninitialized when returned. Let us assume that <span class="code">COLOR</span>
+is <a href="#beam::clean_enum">clean</a>, i.e.
+the variable <span class="var">color</span> has one of the values listed in the type
+definition. Then the only way for <span class="var">var</span>
+to be uninitialized is when <span class="var">color</span>
+has the value <span class="code">NUM_COLOR</span>. 
+Sometimes the purpose of such a sentinel is only to provide a convenient
+way to know the number of enumerators in a type. In that case 
+<span class="code">NUM_COLOR</span> is not considered a legal value for a variable.
+By default BEAM would issue a complaint for the above example because it
+assumes that all enumerator values in a type definition are valid.
+If you want to change that behavior you need to
+declare <span class="code">NUM_COLOR</span> as an <span class="code">unused enum value</span> like this:
+</p>
+<pre class="example">
+set beam::unused_enum_value(COLOR) &quot;NUM_COLOR&quot;
+</pre>
+<p>
+
+In general the value of <span class="var">beam::unused_enum_value</span> is a 
+<a href="#patterns">pattern</a>
+identifying a set of enumeration values.
+And of course the type name be a pattern, too.
+For example:
+</p>
+<pre class="example">
+set beam::unused_enum_value(*)    &quot;NUM_*&quot;
+set beam::unused_enum_value(CT*)  &quot;*_MIN  *_MAX&quot;
+</pre>
+<p>
+
+The first line specifies that for all enumerated types, values beginning
+with <span class="code">NUM_</span> should be considered unused. The second line specifies
+that for all enumerated types whose name begins with <span class="code">CT</span> 
+enumerators with names ending in <span class="code">_MIN</span> or <span class="code">_MAX</span>
+should be considered unused.
+</p>
+<p>
+<a name="beam::assume_no_overflow"></a><h1>beam::assume_no_overflow</h1>
+
+
+Consider the following hypothetical code segment handling the number of 
+downloads of the BEAM tool.
+</p>
+<pre class="example">
+static unsigned int num_downloads = 0;
+char * table;
+
+if (somebody_downloaded) {
+  num_downloads++;
+  table = (char *) malloc(100);
+}
+
+if (num_downloads == 0)
+  return;
+</pre>
+<p>
+
+Can a memory leak occur when executing the return statement?
+It could happen if the allocation of <span class="var">table</span> is executed and then 
+the condition <span class="code">if (num_downloads == 0)</span> is satisfied.
+That can happen provided before entering the code fragment the value of the 
+static variable 
+<span class="var">num_downloads</span> is 4,294,967,265;
+the increment statement will then cause a wrap-around to 0.
+</p>
+<p>
+Should we worry about the possibility of that many downloads?
+One could argue "yes", because there are more people in the world than that.
+But even declaring <span class="var">num_downloads</span> as <span class="code">long long</span>
+would not make the code robust enough to handle a major population explosion
+with everybody wanting a copy of BEAM.
+</p>
+<p>
+Well, we do not worry about that many downloads.
+But more than 255 downloads is perfectly reasonable,
+therefore we would want a complaint issued if <span class="var">num_downloads</span>
+were only 8 bits, but no complaint if it is 32 bits.
+</p>
+<p>
+Every  system is designed to operate 
+within certain limits and it will fail outside those limits.
+In the ideal world designers would specify the limits of software systems,
+and BEAM could then check or overflow within those limits,
+plus many other failure possibilities.
+However the world is less than ideal and design limits are not available.
+The parameter <span class="var">beam::assume_no_overflow</span>
+is a very modest attempt at specification of design limits.
+For example, setting it to "32" implies that all numbers are small enough 
+for results of all operations to fit into 32 bits, but not necessarily into 
+fewer bits.
+With that setting no complaint is issued for the above code fragment, but 
+if <span class="var">num_downloads</span> were declared as <span class="code">char</span>
+or <span class="code">short</span> then the memory leak would be reported.
+</p>
+<p>
+<a name="beam::avalanche_prevention"></a><h1>beam::avalanche_prevention</h1>
+
+
+Consider the following example.
+</p>
+<pre class="example">
+int f(int *x)
+{
+  int a, b;
+  if (x) a = 1;
+  else   a = 0;
+  b = 42/a;
+  return b + *x;
+}
+</pre>
+<p>
+
+If the parameter <span class="var">x</span> is null, then the return statement will 
+dereference the null pointer.
+But in reality that cannot happen because before it gets a chance 
+to dereference null, the previous statement will crash due to division by 0.
+Here, the fact that variable "a" is 0 causes two errors. We call
+multiple error reports due to a single cause "avalanche errors".
+You may only want to see the first such error, or perhaps you want to see
+all of them. 
+</p>
+<p>
+The parameter <span class="var">beam::avalanche_prevention</span> gives you some control
+about the reporting of avalanche errors. Its default setting is to suppress
+all avalanche errors.
+</p>
+<p>
+However, in practice things are not as clear-cut as in the example above and
+it is often hard to decide whether something is an avalanche error or not.
+Therefore, you may still see some complaints that you might consider avalanche
+errors (but BEAM did not).
+</p>
+<p>
+Now on to the question of whether you want avalanche errors suppressed or not.
+The argument in favour of suppression is reduced runtime. But there is also
+a psychological component. Many people consider avalanche errors an annoyance,
+in particular when they already have many complaints to look at.
+The argument against suppression is that fixing a complaint might cause the
+suppressed complaint to be issued in the next run. Suppose in the example
+above you fixed the division-by-zero complaint by changing 
+<span class="code">b = 42/a</span> to <span class="code">b = 42 / (a+1);</span> because that was the
+right thing to do. You expect the next BEAM run to be without complaints,
+but clearly the NULL dereference issue is still present and will be reported.
+That can be annoying, too. 
+</p>
+<p>
+You control your decision by setting <span class="var">beam::avalanche_prevention</span>,
+which is a <a href="#patterns">pattern</a>.
+If it includes <span class="code">&quot;failures&quot;</span> then BEAM will try to report only 
+the first failure, which in our example is division by 0.
+</p>
+<p>
+Another possible term for <span class="var">beam::avalanche_prevention</span>
+is <span class="code">&quot;resources&quot;</span>.
+That comes into play when reporting resource leaks (ERROR23)
+or returning a deallocated resource (ERROR11).
+For example, suppose that you allocate memory in a function
+containing several return statements and forget to free the memory
+at each of the return statements.
+Do you want BEAM to issue a complaint about each of the return statements?
+If you do not then add <span class="code">&quot;resources&quot;</span> to the value of 
+<span class="var">beam::avalanche_prevention</span>.
+</p>
+<p>
+In the past this parameter was not a pattern, but had values 0 or 1.
+For backward compatibility these values are still recognized
+and given their original meaning.
+That is, setting of "0" is equivalent "", i.e., no avalanche prevention.
+Setting of "1" is equivalent "failures", i.e., avalanche prevention
+will be done for failures, but not resources.
+</p>
+<p>
+<a name="beam::expand_kind"></a><h1>beam::expand_kind</h1>
+
+
+If BEAM considered some functions as if they were expanded in-line
+you could get more accurate analysis reporting more real errors and fewer 
+invalid ones.
+However, at the same time it might cause you to spend more CPU time as well
+as more human time doing diagnosis.
+If you are ready for it, there are two parameters (filters) for deciding
+whether a function should be expanded in-line -- 
+<span class="var">beam::expand_kind</span> and <span class="var">beam::expand_max_lines</span>.
+</p>
+<p>
+The parameter <span class="var">beam::expand_kind</span> is a <a href="#patterns">pattern</a>
+of words describing what kinds of functions to expand:
+</p>
+<p>
+<table>
+<tr> <th align=left>constructor <td>expand constructors</tr>
+<tr> <th align=left>destructor <td>expand destructors</tr>
+<tr> <th align=left>inline <td>expand functions declared inline and functions whose body is in a class definition</tr>
+</table>
+</p>
+<p>
+For example
+</p>
+<pre class="example">
+set beam::expand_kind &quot;inline&quot;                   # expand inline functions
+set beam::expand_kind &quot;constructor destructor&quot;   # expand constructors and destructors
+set beam::expand_kind &quot;*&quot;                        # expand all functions
+</pre>
+<p>
+
+A function will be expanded only if it satisfies the criteria of both 
+<span class="var">beam::expand_kind</span> and  <span class="var">beam::expand_max_lines</span>.
+A function for which you provided an <a href="attributes.html">attribute</a>
+will never be expanded, so as not to lose your information.
+In addition, only functions containing straight line code will be expanded,
+because otherwise there is a increased danger of invalid complaints.
+Also there is an upper limit on the result of the expansion.
+We may remove these restriction in the future depending on user feedback
+on this feature of expanding functions.
+</p>
+<p>
+<a name="beam::expand_max_lines"></a><h1>beam::expand_max_lines</h1>
+
+
+If BEAM would consider some functions as if they were expanded in-line
+you could get more accurate analysis reporting more real errors and fewer 
+invalid once.
+However, at the same time it might cause you to spend more CPU time as well
+as more human time doing diagnosis.
+If you are ready for it, there are two parameters (filters) for deciding
+whether a function should be expanded in-line -- 
+<span class="var">beam::expand_kind</span> and <span class="var">beam::expand_max_lines</span>.
+</p>
+<p>
+The parameter <span class="var">beam::expand_max_lines</span> limits the size of 
+functions to be expanded.
+For example,
+</p>
+<pre class="example">
+set beam::expand_max_lines &quot;10&quot;  # expand functions no longer than 10 lines
+</pre>
+<p>
+
+A function will be expanded only if it satisfies the criteria of both 
+<span class="var">beam::expand_kind</span> and  <span class="var">beam::expand_max_lines</span>.
+In addition, only functions containing straight line code will be expanded,
+because otherwise there is a increased danger of invalid complaints.
+Also there is an upper limit on the result of the expansion.
+We may remove these restriction in the future depending on user feedback
+on this feature of expanding functions.
+</p>
+<p>
+<a name="beam::function_name_style"></a><h1>beam::function_name_style</h1>
+
+
+This parameter controls the appearance of function names in a complaint.
+There are three styles:
+<ol>
+<li><span class="val">qualified</span><br>
+The qualified name of the function is used. This includes prefices due to
+class nesting  and namespaces. E.g. <span class="code">foo::bar::baz</span>. 
+This is the default style for C++ and Java.
+<li><span class="val">unqualified</span><br>
+The unqualified name of the function is used. For C++ and Java this name
+does not include prefices nested classes and namespaces. (For C the qualified
+and unqualified name is the same).
+<li><span class="val">signature</span><br>
+The signature of a function is used. For C++ and Java this includes the
+parameter type list. E.g. <span class="code">foo::bar(int, char *)</span>.
+</ol>
+</p>
+<p>
+<a name="beam::new_returns_null"></a><h1>beam::new_returns_null</h1>
+
+
+When set to "yes" BEAM will assume the old C++ behavior that 
+<span class="code">operator new</span> and <span class="code">operator new[]</span> return NULL 
+instead of throwing an exception when memory is exhausted.
+By default, BEAM assumes that <span class="code">operator new</span> and 
+<span class="code">operator new[]</span> never return NULL because the 
+C++ standard requires them to throw an exception when memory is 
+exhausted.
+</p>
+<p>
+<a name="beam::dont_report_caught_runtime_exceptions"></a><h1>beam::dont_report_caught_runtime_exceptions</h1>
+
+
+This parameter has any effect only in Java.
+</p>
+<p>
+Example:
+</p>
+<pre class="example">
+class MyException extends Exception
+{
+}
+
+class Test
+{
+
+  public void preparedForNoException(Object o)
+  {
+    o.getClass();
+  }
+  
+  public void notPreparedForRuntimeException(Object o) throws MyException
+  {
+    o.getClass();
+  }
+  
+  public void preparedForAnyException(Object o) throws Exception
+  {
+    o.getClass();
+  }
+  
+  public void preparedForAnyRuntimeException(Object o) throws RuntimeException
+  {
+    o.getClass();
+  }
+  
+  public void preparedForSingleRuntimeException(Object o) throws NullPointerException
+  {
+    o.getClass();
+  }
+  
+  public void preparedForSingleRuntimeExceptionUsingTry(Object o)
+    {
+        try {
+            o.getClass();
+        } catch (NullPointerException e) {
+        }
+    }
+}
+</pre>
+<p>
+
+If there is a call <span class="code">preparedForNoException(null)</span> 
+then BEAM will issue a complaint about the null-reference access.
+But should it do so in case of 
+<span class="code">preparedForSingleRuntimeExceptionUsingTry(null)</span>?
+Perhaps not, because the programmer seems to mean to handle it.
+How about in case of <span class="code">preparedForAnyException(null)</span>,
+where the programmer may or may not be aware of the possibility 
+that <span class="code">o == null</span>.
+The situation is even less clear in case of a large try block,
+with many possibilities for run-time exceptions -- 
+does the programmer mean to allow them?
+</p>
+<p>
+The parameter <span class="var">beam::dont_report_caught_runtime_exceptions</span>
+lets you control the answer.
+It is a pattern of of class names, for example,
+</p>
+<pre class="example">
+set beam::dont_report_caught_runtime_exceptions &quot;java.lang.Exception&quot; 
+
+set beam::dont_report_caught_runtime_exceptions &quot;java.lang.RuntimeException&quot; 
+
+set beam::dont_report_caught_runtime_exceptions &quot;java.lang.ArithmeticException       \
+                                                 java.lang.NullPointerException      \
+                                                 java.lang.IndexOutOfBoundsException&quot;
+</pre>
+<p>
+
+The first setting means that no complaint should be issued
+if the code is prepared for any kind of Exception. The second
+setting would suppress the complaint only if the code is
+prepared for any kind of RuntimeException. And the third
+ setting would suppress the complaint only 
+if the code is prepared one of the specific exceptions.
+</p>
+<p>
+A piece of code is <span class="term">prepared for an exception</span> if it is in a 
+try block catching the exception or it is in a method
+declaring to throw that exception.
+</p>
+<p>
+For example, given the first setting, the complaint about 
+<span class="code">o == null</span>
+would be issued only for 
+<span class="code">preparedForNoException(null)</span> and 
+<span class="code">notPreparedForRuntimeException(null)</span>.
+</p>
+<p>
+Given the second setting the complaint would also be issued
+for <span class="code">preparedForAnyException(null)</span>.
+</p>
+<p>
+And given the third setting the complaint would also be issued
+for <span class="code">preparedForAnyRuntimeException(null)</span>.
+</p>
+<p>
+Having said all this, there is one code pattern where the value of the parameter 
+dont_report_caught_runtime_exceptions is ignored, namely,
+</p>
+<pre class="example">
+try {o.cleanup();} catch (Exception e) {}
+</pre>
+<p>
+
+This is a common way of doing some cleanup and ignoring any exception that
+might make the cleanup fail.
+</p>
+<p>
+Specifically a runtime exception will not generate a complaint
+if the exception is caught in any way 
+(regardless the value of dont_report_caught_runtime_exceptions)
+and the exception is triggered by a call to a method deallocating
+a resource, which is the only statement in a try block.
+</p>
+<p>
+<a name="beam::nostdattr"></a><h1>beam::nostdattr</h1>
+
+
+When set to "yes" BEAM will not load the Tcl files that define function
+attributes for the C and C++ libraries.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Miscellaneous Global Parameters</h1>
+
+</p>
+<p>
+<a name="beam::build_root"></a><h1>beam::build_root</h1>
+
+
+The value is a pathname that points to the root of a build tree.
+This variable is used when 
+<a href="ipa.html#enable">interprocedural analysis</a> is enabled.
+It can also be beneficial to specify this variable together with
+<a href="#beam::state_file">beam::state_file</a> and
+<a href="#beam::data">beam::data</a>.
+</p>
+<p>
+If unspecified, <a href="#beam::root">beam::root</a> and "." will
+be used, in that order. IPA is an exception, and requires
+the explicit setting of <span class="var">beam::build_root</span>.
+</p>
+<p>
+<a name="beam::conservative_dotbeam"></a><h1>beam::conservative_dotbeam</h1>
+
+
+When set to "yes", only write the <span class="file">.beam</span> file if there were 
+no parse errors AND no complaints. This may be useful for large 
+projects - with this option turned on, any re-run of BEAM over the source 
+tree will re-run any file that had complaints from the previous run, 
+meaning that the latest report is always a complete report.
+</p>
+<p>
+<a name="beam::exit0"></a><h1>beam::exit0</h1>
+
+
+When set to "yes" BEAM will exit with a zero return code, even if there
+were syntax errors. For more information about return codes please see
+<a href="beam_compile.html#beam::exit_codes">this document</a>.
+</p>
+<p>
+<a name="beam::ipa"></a><h1>beam::ipa</h1>
+
+
+The value identifies the mode of interprocedural analysis.
+Currently, only the value <span class="val">all</span> is supported.
+</p>
+<p>
+<a name="beam::ipa_check"></a><h1>beam::ipa_check</h1>
+
+
+When set to "yes" BEAM checks the consistency of any
+specified repositories.
+</p>
+<p>
+<a name="beam::max_time_per_kloc_in_sec"></a><h1>beam::max_time_per_kloc_in_sec</h1>
+
+
+The variable controls how much time BEAM should spend analyzing
+1000 lines of code. Its value is a positive integer. For example:
+</p>
+<pre class="example">
+set beam::max_time_per_kloc_in_sec &quot;300&quot;
+</pre>
+<p>
+
+The value limits the amount of time spent on semantic analysis, 
+which is the most expensive part of the whole process.
+In the above example, a source file with 1000 lines would not be allowed
+to run longer than 300 seconds, i.e., 5 minutes.
+</p>
+<p>
+The limit is applied to each source files as a whole, as opposed to individual 
+functions.
+Functions in each file are analyzed starting from the smallest one proceeding to
+the largest one (measured by number of lines).
+As soon as the limit is exceeded, processing of the file stops.
+</p>
+<p>
+<a name="beam::post_parms"></a><h1>beam::post_parms</h1>
+
+
+The value is the name of a Tcl file that will be read only <span class="strong">after</span>
+the command line has been processed. There is more detail about order of
+evaluation in <a href="beam_compile.html#beam::order_of_evaluation">this
+document</a>.
+</p>
+<p>
+<a name="beam::read_disabled_input_files"></a><h1>beam::read_disabled_input_files</h1>
+
+
+A disabled file is a file for which no complaints should ever be issued.
+If a primary input file (that is the file that is given on the command line) 
+is also disabled, then there is really no point in reading that file.
+This parameter controls whether or not BEAM reads disabled primary source
+files. The default setting is to read them. 
+This can be wasteful, in particular when whole directories are disabled.
+Note, that disabled primary source files will leave no trace in 
+<a href="refstats.html">stats files</a>.
+</p>
+<p>
+<hr />
+
+</p>
+<p>
+<h1>Parameters Common To All Checks</h1>
+
+</p>
+<p>
+<a name="beam::check::enabling_policy"></a><h1>beam::check::enabling_policy</h1>
+
+
+This parameter is a string controlling whether the check should be done.
+All checks use the value <span class="code">&quot;always&quot;</span> to unconditionally
+enable complaints and the value <span class="code">&quot;&quot;</span> to unconditionally
+disable any complaint. Other values may be possible. The actual list of
+values can be found in the <a href="builtin.html">built-in checks</a>
+document. 
+If not set, the parameter value defaults to "", which implies no complaint 
+from that check.
+</p>
+<p>
+<a name="beam::check::complaint_options"></a><h1>beam::check::complaint_options</h1>
+
+
+The value is a <a href="#patterns">pattern</a> indicating how complaints
+from this check should be displayed. For example 
+</p>
+<pre class="example">
+set beam::PORTABILITY2::complaint_options    &quot;show_source   show_values&quot;
+</pre>
+<p>
+
+<a name="beam::check::show_source"></a><h1>beam::check::show_source</h1>
+
+
+The value "show_source" will cause an offending source line to be displayed.
+For example:
+</p>
+<pre class="example">
+set  beam::ERROR10::complaint_options  &quot;show_source&quot;; # display source line
+set  beam::ERROR11::complaint_options  &quot;&quot;;            # do not display source line
+</pre>
+<p>
+
+It does not make sense to display the source line with every complaint;
+for example, memory usually leaks at the end of a function,
+but that is not very informative.
+This option is intended for those whose do not use the 
+<a href="emacs.html">emacs macros</a>,
+in spite of our encouragement to do so.
+</p>
+<p>
+By default (in beam_default_parms.tcl) source lines are not shown 
+for any complaint.
+Whereas beam_always_parms.tcl causes source lines to be shown 
+for all complaints.
+The following two Tcl snippets can be used to globally control whether
+or not source lines are shown.
+</p>
+<pre class="example">
+# enable writing out source lines for all complaints
+beam::foreach_complaint {
+  beam::enable_option &quot;show_source&quot;
+}
+
+# disable writing out source lines for all complaints
+beam::foreach_complaint {
+  beam::disable_option &quot;show_source&quot;
+}
+</pre>
+<p>
+
+<a name="beam::check::show_values"></a><h1>beam::check::show_values</h1>
+
+
+This will cause a listing of values of various expressions
+at the end of a path leading to each error.
+For an example see <a href="impatient.html">here</a>.
+</p>
+<p>
+Not all expressions are displayed; only those we heuristically decide 
+would help you in understanding the conditions for the error.
+</p>
+<p>
+Please keep in mind that the value displayed for a variable is the one it has 
+at the end of the path; if the variable is assigned several times along the 
+path, only the final value is displayed.
+The only exception are parameters assigned in the body of the function.
+In such a situation we print the final value of the parameter, as well as
+its initial value -- identified by saying "at function entry".
+</p>
+<p>
+<a name="beam::check::show_calls_with_side_effect"></a><h1>beam::check::show_calls_with_side_effect</h1>
+
+
+BEAM may issue a complaint only under the asumption that some calls have certain 
+side-effects. Such an assumption may be surprizing to a programmer
+because it is wrong, or it is right, but unexpected.
+By turning this option on, the programmer may see the assumptions
+BEAM is making, which may help in understanding a complaint.
+</p>
+<p>
+<a name="beam::check::disabled_files"></a><h1>beam::check::disabled_files</h1>
+
+
+The value is a <a href="#patterns">pattern</a> identifying files for which 
+BEAM should never issue a complaint from this check.
+For example:
+</p>
+<pre class="example">
+set  beam::ERROR10::disabled_files               { */test/*  -  */test/main.c }
+set  beam::ERROR23(heap_memory)::disabled_files  { *  -  */test/* }
+set  beam::ERROR23::disabled_files               { *bug* }
+</pre>
+<p>
+
+This disables <span class="code">ERROR10</span> for all files under the <span class="file">test</span> directory except 
+<span class="file">main.c</span>.
+It disables <span class="code">ERROR23(heap_memory)</span> for all files except those in the <span class="file">test</span>
+directory.
+Also it disables <span class="code">ERROR23(heap_memory)</span> as well as <span class="code">ERROR23</span> with any other parameter for
+all files whose full path contains "bug".
+</p>
+<p>
+In general, a file is disabled for a  <span class="code">check(arg)</span> if the file's absolute 
+path name matches the pattern <span class="var">beam::<span class="val">check(arg)</span>::disabled_files</span> or
+the pattern <span class="var">beam::check::disabled_files</span> or
+the pattern <span class="var">beam::disabled_files</span>.
+</p>
+<p>
+<a name="beam::check::disabled_for_template_instantiations"></a><h1>beam::check::disabled_for_template_instantiations</h1>
+
+
+If set to <span class="val">&quot;yes&quot;</span>, complaints about problems found inside instantiated template functions will not be reported. This can be useful if, for example, you want to suppress complaints for template code that are only meaningful for specific instantiations. The default value for this parameter is <span class="val">&quot;no&quot;</span>.
+</p>
+<pre class="example">
+set  beam::MISTAKE5::disabled_for_template_instantiations &quot;yes&quot;
+</pre>
+<p>
+
+This would prevent MISTAKE5 complaints from being issued for constant conditions occurring inside template functions.
+</p>
+<p>
+<a name="beam::check::disabled_functions"></a><h1>beam::check::disabled_functions</h1>
+
+
+The value is a <a href="#patterns">pattern</a> identifying functions for 
+which BEAM should never issue a complaint from this check.
+For example:
+</p>
+<pre class="example">
+set  beam::ERROR23::disabled_functions  { main }
+</pre>
+<p>
+
+This prevents complaints about any resource leaks in the function 
+<span class="function">main</span>.
+</p>
+<p>
+The functions are identified "by name", which includes the class name or 
+name space, but does not include parameters.
+</p>
+<p>
+Note that a file that is disabled globally (using 
+<span class="var">beam::disabled_functions</span>)
+cannot be enabled later for a specific complaint (using 
+<span class="var">beam::</span><span class="val">check</span><span class="var">::disabled_functions</span>).
+</p>
+<p>
+<a name="beam::check::disabled_macros"></a><h1>beam::check::disabled_macros</h1>
+
+
+The parameter 
+controls BEAM's behavior when a given complaint occurs
+in a macro expansion. 
+Some macros do unusual things and we may not want to be told about it.
+The value is a <a href="#patterns">pattern</a> identifying macro names for 
+which BEAM should never issue a complaint from this check.
+For example,
+</p>
+<pre class="example">
+set  beam::ERROR10::disabled_macros  { * - RA* + RANDOM }
+</pre>
+<p>
+
+This disables all macros, except those starting with <span class="code">RA</span>, but 
+it does disable <span class="code">RANDOM</span>.
+</p>
+<p>
+Note that a macro that is disabled globally (using 
+<span class="var">beam::disabled_macros</span>)
+cannot be enabled later for a specific complaint (using 
+<span class="var">beam::</span><span class="val">check</span><span class="var">::disabled_macros</span>).
+</p>
+<p>
+<a name="beam::check::disabling_comment"></a><h1>beam::check::disabling_comment</h1>
+
+
+The value of this parameter is a list of strings that when appearing in a
+comment in the source can be used to suppress a particular occurrence of
+the given complaint. The most typical example is a comment used to suppress
+BEAM complaints about a potentially missing <span class="code">break</span> statement
+(MISTAKE4).
+</p>
+<pre class="example">
+lappend beam::MISTAKE4::disabling_comment &quot;fall through&quot; &quot;fall thru&quot;
+</pre>
+<p>
+
+For your convenience each BEAM complaint lists a disabling comment as in 
+</p>
+<pre class="example">
+-- MISTAKE4     /*fall through*/     &gt;&gt;&gt;MISTAKE4_cdsSectorCheck_5f9c43a0
+</pre>
+<p>
+
+If you do not want to to see this complaint in the future,
+paste <span class="code">/*fall through*/</span> into your program on the line identified 
+in the complaint.
+You can also add extra text as in 
+<span class="code">/* fall through to the next case */</span>.
+The comment is normally placed on the very line identified by BEAM,
+but the placement possibilities can be extended
+by setting the parameter 
+<a href="#beam::disabling_comment_policy"><span class="var">beam::disabling_comment_policy</span></a>.
+</p>
+<p>
+See also the global parameter 
+<a href="#beam::disabling_comment_capitalization"><span class="var">beam::disabling_comment_capitalization</span></a>
+</p>
+<p>
+<a name="beam::check::disabling_comment_policy"></a><h1>beam::check::disabling_comment_policy</h1>
+
+
+The interpretation is the same as for the 
+global parameter 
+<a href="#beam::disabling_comment_policy"><span class="var">beam::disabling_comment_policy</span></a>.
+The setting of beam::<span class="val">check</span>::disabling_comment_policy
+overrides beam::disabling_comment_policy.
+For example,
+</p>
+<pre class="example">
+set beam::WARNING1::disabling_comment_policy &quot;L to L+1&quot;
+set beam::disabling_comment_policy &quot;L&quot;
+</pre>
+<p>
+
+The result is that for WARNING1 the disabling comment can be placed 
+on the line reported by BEAM or the next line.
+For all other checks the comment must be placed on the very
+line reported by BEAM.
+</p>
+<p>
+<a name="beam::check::severity"></a><h1>beam::check::severity</h1>
+
+
+BEAM does not assign a severity to a given complaint. But users might want to
+do so. That is what this parameter is for. Its value is a string indicating
+the severity. It will be printed with the complaint. For example:
+</p>
+<pre class="example">
+set beam::ERROR1::severity &quot;lethal&quot;
+</pre>
+<p>
+
+will cause a complaint to be written like this:
+</p>
+<pre class="example">
+-- ERROR1  lethal   /*uninitialized*/
+&quot;err.c&quot;, line 4:  variable 'a' is used, but never assigned
+</pre>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,246 @@
+<html>
+<head>
+  <title>BEAM: The "suppressed_complaint" Files</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">The suppressed_complaint File</h1>
+<hr/>
+
+</p>
+<p>
+BEAM collects statistics about complaints it did not report.
+The information can be written
+to a file called the <span class="term">suppressed_complaint file</span> in BEAM lingo. 
+This file is not written
+by default but can be requested by adding 
+<span class="option">--beam::suppressed_complaint_file=</span><span class="val">file</span> 
+to the command line.
+</p>
+<p>
+The format of the file is meant to be easily disectable by Perl or Awk.
+</p>
+<p>
+This file name will be translated according to the
+<a href="parms.html#translated_file_names">translated file name rules</a>.
+</p>
+<p>
+<h1>File format</h1>
+
+The <span class="term">suppressed_complaint</span> file is a plain text file consisting 
+of a sequence of <span class="term">records</span>.
+There is one record per line. A record is a sequence of <span class="term">fields</span> separated
+by the `<span class="code">#</span>' character. 
+The first field in the record determines the record type.
+Each field is a name-value pair:
+<span class="var">name</span><span class="code">=</span><span class="val">value</span> where <span class="var">name</span> takes the form of a C
+identifier, immediately followed by the `<span class="code">=</span>' character, immediately 
+followed by the value. 
+It is guaranteed, that neither <span class="var">name</span> nor <span class="val">value</span> contain the
+'<span class="code">#</span>' character. 
+(We guarantee that simply by replacing any '<span class="code">#</span>' character in 
+your file or function name by '<span class="code">*</span>'.)
+</p>
+<p>
+The following table lists all record types and their fields.
+</p>
+<p>
+<table>
+<tr>
+  <th>Record</th>
+  <th>Field</th>
+  <th>Value</th>
+</tr>
+</p>
+<p>
+<!--- COMPLAINT record -->
+<tr>
+  <td rowspan=6><span class="code">COMPLAINT</span></td>
+  <td><span class="code">COMPLAINT</span></td>
+  <td>Complaint name</td>
+</tr>
+<tr>
+  <td><span class="code">FUNC</span></td>
+  <td>Function name (could be empty)</td>
+</tr>
+<tr>
+  <td><span class="code">FILE</span></td>
+  <td>File name relative to <span class="var">beam::root</span></td>
+</tr>
+<tr>
+  <td><span class="code">LINE</span></td>
+  <td>Line number</td>
+</tr>
+<tr>
+  <td><span class="code">CODE</span></td>
+  <td>Innocent code identifying the context of the complaint</td>
+</tr>
+  <td><span class="code">REASON</span></td>
+  <td>One of the following
+      <ul>
+      <li><span class="val">comment</span>
+      <li><span class="val">innocent_file</span>
+      </ul>
+  </td>
+</tr>
+</p>
+<p>
+<!--- FUNCTION record -->
+<tr>
+  <td rowspan=4><span class="code">FUNC</span></td>
+<tr>
+  <td><span class="code">FUNC</span></td>
+  <td>Function name</td>
+</tr>
+<tr>
+  <td><span class="code">FILE</span></td>
+  <td>File name relative to <span class="var">beam::root</span></td>
+</tr>
+  <td><span class="code">REASON</span></td>
+  <td>One of the following
+      <ul>
+        <li><span class="val">disabled</span>
+        <li><span class="val">state</span>
+        <li><span class="val">syntax</span>
+        <li><span class="val">generated</span>
+      </ul>
+  </td>
+</tr>
+</p>
+<p>
+<!--- FILE record -->
+<tr>
+  <td rowspan=4><span class="code">FILE</span></td>
+<tr>
+  <td><span class="code">FILE</span></td>
+  <td>File name relative to <span class="var">beam::root</span></td>
+</tr>
+  <td><span class="code">REASON</span></td>
+  <td><span class="val">disabled</span>
+  </td>
+</tr>
+</table>
+</p>
+<p>
+<h1>File Contents</h1>
+
+There is a <span class="code">FILE</span> record for each of your source files 
+not analyzed because included among beam::disabled_files.
+</p>
+<p>
+There is a <span class="code">FUNC</span> record for each of your functions
+appearing in analyzed files, but the function itself is not analyzed.
+It might not be analyzed for several reasons:
+<ul>
+   <li>disabled -- included among beam::disabled_functions
+   <li>state -- function included many times in an include file
+   <li>syntax -- function has a syntax error
+   <li>generated -- compiler generated function
+</ul>
+</p>
+<p>
+There is a <span class="code">COMPLAINT</span> record for each instance of a complaint
+not issued.
+It might not be issued for a couple reasons:
+<ul>
+   <li>comment -- there is a disabling comment in the code
+   <li>innocent_file -- its innocent code appears in the innocent file 
+</ul>
+</p>
+<p>
+<span class="strong">Note:</span> The suppressed_complaint file is always appended to. 
+Therefore, you want to remove it after a processing a sequence of source files
+and before you want to rerun that sequence.
+</p>
+<p>
+<h1>Future File Format Changes</h1>
+
+The suppressed_complaint file format is likely to change in the future. 
+We guarantee that
+<ul>
+<li>no record type will be removed
+<li>no field will be removed from a record
+</ul>
+However, the following changes are likely to occur:
+<ul>
+<li>new records types will be added
+<li>new fields will be added to records
+<li>new reasons will be added
+<li>the order of fields within a record may change (except the first field)
+<li>the order of records within a file may change
+</ul>
+Scripts that analyze suppressed_complaint files should therefore be written 
+in a way that they don't break if any of these changes occur.
+</p>
+<p>
+<h1>Example</h1>
+
+</p>
+<pre class="example">
+COMPLAINT=ERROR23(heap_memory)#FUNC=foo#FILE=f.c#LINE=123#CODE=ERROR23(heap_memory)_foo_f7828c24597736#REASON=comment
+FUNC=foo#FILE=f.c#REASON=syntax
+FILE=broken.c#REASON=disabled
+</pre>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

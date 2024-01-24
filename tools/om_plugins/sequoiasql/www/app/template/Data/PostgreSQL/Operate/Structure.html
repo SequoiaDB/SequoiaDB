@@ -1,0 +1,59 @@
+<div style="padding:10px 15px;" ng-controller="Data.PostgreSQL.Structure.Ctrl" ng-container="{}">
+   <div class="underlineTab" ng-container="{height:50}">
+      <ul class="right">
+         <li class="text Ellipsis" style="width:350px;">
+            <b><a class="linkButton" href="#/Data/SequoiaSQL/PostgreSQL/Database/Index">{{ModuleName}}</a> <span style="font-size:80%; color:#666;">></span> {{FullName}}</b>
+         </li>
+         <li class="active">
+            <a href="#/Data/SequoiaSQL/PostgreSQL/Operate/Structure">{{pAutoLanguage("表信息")}}</a>
+         </li>
+         <li>
+            <a href="#/Data/SequoiaSQL/PostgreSQL/Operate/Data">{{pAutoLanguage("数据")}}</a>
+         </li>
+      </ul>
+   </div>
+   <div ng-container="{height:30}">
+      <div ng-dropdown="config in IndexDropdown.config" dropdown-event="IndexDropdown.event" dropdown-callback="IndexDropdown.callback">
+         <span class="Ellipsis" style="padding:8px 10px;display:block;" ng-click="IndexDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+      </div>
+      <div ng-dropdown="config in EditFieldDropdown.config" dropdown-event="EditFieldDropdown.event" dropdown-callback="EditFieldDropdown.callback">
+         <span class="Ellipsis" style="padding:8px 10px;display:block;" ng-click="EditFieldDropdown.OnClick($index)">&nbsp;{{config.key}}</span>
+      </div>
+      <div ng-windows="form as AddFieldWindow.config" windows-callback="AddFieldWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as CreateIndexWindow.config" windows-callback="CreateIndexWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as DropIndexWindow.config" windows-callback="DropIndexWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as RenameFieldWindow.config" windows-callback="RenameFieldWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as SetfFieldDefaultWindow.config" windows-callback="SetfFieldDefaultWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as SetfFieldTypetWindow.config" windows-callback="SetfFieldTypetWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <div ng-windows="form as SetPrimaryWindow.config" windows-callback="SetPrimaryWindow.callback">
+         <div form-create para="form"></div>
+      </div>
+      <button class="topBtn" ng-click="QueryTableStruct()"><i class="fa fa-refresh"></i> {{pAutoLanguage("刷新")}}</button>
+      <button class="topBtn" ng-click="ShowAddField()"><i class="fa fa-plus"></i> {{pAutoLanguage("添加字段")}}</button>
+      <button class="topBtn" ng-class="{0:'disabled'}[FieldsSelect.length]" ng-disabled="FieldsSelect.length==0" ng-click="ShowIndexDropdown($event)">{{pAutoLanguage("索引操作")}} <i class="fa fa-caret-down"></i></button>
+      <div class="clear-float"></div>
+   </div>
+   <div ng-container="{marginTop:10,offsetY:-93,offsetX:-15}" ng-controller="Data.PostgreSQL.Structure.Table.Ctrl" ng-table="GridTable['options']" table-title="GridTable['title']" table-content="info in GridTable['body']" table-callback="GridTable['callback']">
+      <div class="Ellipsis" table-key="index">{{$index+1}}</div>
+      <div class="Ellipsis" table-key="column_name">{{info.column_name}}</div>
+      <div class="Ellipsis" table-key="operation">
+         <a class="linkButton" ng-click="ShowEditFieldDropdown( $event, info['column_name'], info['data_type'], info['character_maximum_length'] )" ng-attr="{'data-desc':pAutoLanguage('编辑字段')}"><i class="fa fa-edit"></i></a>
+         <a class="linkButton" ng-click="ShowDropFieldWindow( info['column_name'] )" ng-attr="{'data-desc':pAutoLanguage('删除字段')}"><i class="fa fa-remove"></i></a>
+      </div>
+      <div class="Ellipsis" table-key="data_type">{{info.data_type}}<span ng-if="info.character_maximum_length != null">({{info.character_maximum_length}})</span></div>
+      <div class="Ellipsis" table-key="column_default">{{info.column_default}}</div>
+      <div class="Ellipsis" table-key="is_nullable">{{info.is_nullable=='YES'?true:false}}</div>
+   </div>
+</div>

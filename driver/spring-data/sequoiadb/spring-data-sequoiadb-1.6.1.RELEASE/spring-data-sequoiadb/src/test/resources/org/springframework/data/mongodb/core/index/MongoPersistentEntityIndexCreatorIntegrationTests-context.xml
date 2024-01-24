@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:sdb="http://www.springframework.org/schema/data/sdb"
+	xsi:schemaLocation="http://www.springframework.org/schema/data/sdb http://www.springframework.org/schema/data/sdb/spring-sdb.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<sdb:mapping-converter id="sequoiadbConverter" db-factory-ref="factory1"
+		base-package="org.springframework.data.sequoiadb.core.index" />
+
+	<bean id="sequoiadb1" class="org.springframework.data.sequoiadb.core.SequoiadbTemplate">
+		<constructor-arg ref="factory1" />
+		<constructor-arg ref="sequoiadbConverter" />
+	</bean>
+
+	<bean id="sequoiadb2" class="org.springframework.data.sequoiadb.core.SequoiadbTemplate">
+		<constructor-arg ref="factory2" />
+	</bean>
+
+	<sdb:db-factory id="factory1" host="127.0.0.1" dbname="sdb-index-db1" />
+	<sdb:db-factory id="factory2" host="127.0.0.1" dbname="sdb-index-db2" />
+
+</beans>

@@ -1,0 +1,4 @@
+env = Environment(tools=["rbacgen"])
+
+env.ActionHeaderBuilder(target = "SequoiaDB/engine/include/authRBACGen.hpp", source=["SequoiaDB/engine/auth/authRBAC.yaml", "SequoiaDB/engine/auth/authRBACGen.hpp.tpl"])
+env.ActionSourceBuilder(target = "SequoiaDB/engine/auth/authRBACGen.cpp", source=["SequoiaDB/engine/auth/authRBAC.yaml", "SequoiaDB/engine/auth/authRBACGen.cpp.tpl"])

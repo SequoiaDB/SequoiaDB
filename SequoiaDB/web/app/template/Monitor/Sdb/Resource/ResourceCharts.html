@@ -1,0 +1,53 @@
+<div ng-controller="Monitor.SdbResource.ResourceCharts.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodes()">{{autoLanguage("节点")}}</div>
+         <div class="active" ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHosts()">{{autoLanguage("主机")}}</div>
+         <!--<div ng-click="GotoUser()">{{autoLanguage("安全")}}</div>-->
+      </div>
+   </div>
+   <div style="padding:8px 15px 10px 15px;" ng-container="{offsetY:-60}">
+      <div class="underlineTab" style="padding-top:10px;border-top:2px solid #F0F0F0;" ng-container="{height:50,marginTop:10}">
+         <ul class="left">
+            <li>
+               <a href="#Monitor/SDB-Resources/Session">{{autoLanguage("会话")}}</a>
+            </li>
+            <li>
+               <a href="#Monitor/SDB-Resources/Context">{{autoLanguage("上下文")}}</a>
+            </li>
+            <li ng-if="ModuleMode == 'distribution'">
+               <a href="#Monitor/SDB-Resources/Domain">{{autoLanguage("域")}}</a>
+            </li>
+            <li ng-if="ModuleMode == 'distribution'">
+               <a href="#Monitor/SDB-Resources/Procedure">{{autoLanguage("存储过程")}}</a>
+            </li>
+            <li>
+               <a href="#Monitor/SDB-Resources/Transaction">{{autoLanguage("事务")}}</a>
+            </li>
+            <!--<li>
+               <a>{{autoLanguage("锁")}}</a>
+            </li>
+            <li>
+               <a>{{autoLanguage("慢查询")}}</a>
+            </li>-->
+            <li class="active">
+               <a href="#/Monitor/SDB-Resources/Charts">{{autoLanguage("图表")}}</a>
+            </li>
+         </ul>
+      </div>
+
+      <div ng-container="{offsetY:-95,marginTop:10}">
+         <div ng-container="{offsetX:-10,height:'50%'}">
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%'}" create-chart="charts.Sessions"></div>
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%',marginLeft:16}" create-chart="charts.Contexts"></div>
+            <div class="clear-float"></div>
+         </div>
+         <div ng-container="{offsetX:-10,marginTop:20,height:'50%'}">
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-container="{offsetX:-10,width:'50%'}" create-chart="charts.Transactions"></div>
+            <div class="borderBox pull-left" style="padding:10px 10px 0 10px;" ng-if="ModuleMode == 'distribution'" ng-container="{offsetX:-10,width:'50%',marginLeft:16}" create-chart="charts.Procedures"></div>
+            <div class="clear-float"></div>
+         </div>
+      </div>
+   </div>
+</div>

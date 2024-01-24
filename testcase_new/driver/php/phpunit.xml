@@ -1,0 +1,17 @@
+<phpunit>
+   <php>
+      <includePath>.</includePath>
+      <!--主机名，CI默认传入localhost-->
+      <post name="HOSTNAME" value="localhost" />
+      <!--协调节点端口号，CI默认传入11810-->
+      <post name="SVCNAME" value="11810" />
+      <!--公共CS名-->
+      <post name="CHANGEDPREFIX" value="sdv_php_test" />
+      <!--用例创建节点预留端口号最小值-->
+      <post name="RSRVPORTBEGIN" value="2600" />
+      <!--用例创建节点预留端口号最大值-->
+      <post name="RSRVPORTEND" value="2700" />
+      <!--用例创建节点存放节点数据目录-->
+      <post name="RSRVNODEDIR" value="/opt/sequoiadb/database/" />
+   </php>
+</phpunit>

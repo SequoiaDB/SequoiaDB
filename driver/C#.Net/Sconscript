@@ -1,0 +1,21 @@
+import os
+from os.path import dirname, abspath
+import SCons.Builder
+import SCons.Util
+Import("csEnv")
+Import("isDebug")
+
+csclibcom = "$CSC /target:library $FLG /reference:$LIB /out:${TARGET.abspath} /recurse:Driver\*.cs $SOURCES"
+CscLibBuilder = SCons.Builder.Builder(action = '$CSCLIBCOM', suffix = '.dll')
+csEnv['BUILDERS']['CLILibrary'] = CscLibBuilder
+csEnv['ENV'] = os.environ
+csEnv['CSC'] = 'csc'
+if isDebug:
+   csEnv['FLG'] = '/debug'
+else:
+   csEnv['FLG'] = '/warn:0 /o'
+csEnv['LIB'] = dirname(File('SConscript').rfile().abspath) + os.sep + 'Driver\Bson\WindowsBase.dll'
+csEnv['CSCLIBCOM'] = SCons.Action.Action(csclibcom)
+
+sourceFiles = [] 
+csEnv.CLILibrary('sequoiadb.dll', sourceFiles)

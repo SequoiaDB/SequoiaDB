@@ -1,0 +1,208 @@
+EnsureSConsVersion( 1, 1, 0 )
+import platform
+import os
+import re
+from os.path import join, dirname, abspath
+
+Import("env")
+Import("dllBuildEnv")
+Import("staticBuildEnv")
+Import("client_lib_dir")
+
+gtestFiles = [
+   "../../../../../SequoiaDB/engine/gtest/src/gtest-all.cc"
+]
+
+testMainFile = [
+   "./common/testMain.cpp"
+]
+
+clientStaticLib = [
+   client_lib_dir + "/libstaticsdbc.a"
+]
+
+testCommonFiles = [
+   "./common/testcommon.cpp",
+   "./common/impWorker.cpp",
+   "./common/arguments.cpp",
+   "./common/testBase.cpp"
+]
+
+clientStaticLibFile = join( client_lib_dir, 'libstaticsdbc.a' )
+
+testFiles = [
+   [ "./lob/lob_23433.cpp" ],
+   [ "./lob/lob_23434.cpp" ],
+   [ "./concurrent/concurrentCl.cpp" ],
+   [ "./concurrent/concurrentCs.cpp" ],
+   [ "./concurrent/concurrentCursor.cpp" ],
+   [ "./concurrent/concurrentDomain.cpp" ],  # sync
+   [ "./concurrent/concurrentLob.cpp" ],
+   [ "./concurrent/concurrentNode.cpp" ], # sync
+   [ "./concurrent/concurrentRg.cpp" ], # sync
+   [ "./concurrent/concurrentOidGen.cpp" ],
+   [ "./misc/JSCompatible.cpp" ],
+   [ "./misc/analyze.cpp" ],
+   [ "./misc/attachAndDetachNode.cpp" ], # sync
+   [ "./misc/backup.cpp" ],
+   [ "./misc/bson_array.cpp" ],
+   [ "./misc/bson_oid.cpp" ],
+   [ "./misc/code.cpp" ],
+   [ "./misc/date.cpp" ],
+   [ "./misc/decimal.cpp" ],
+   [ "./misc/dropCsAndWriteLob.cpp" ],
+   [ "./misc/forceSession.cpp" ],
+   [ "./misc/handle.cpp" ],
+   [ "./misc/idIndex.cpp" ],
+   [ "./misc/index.cpp" ],
+   [ "./misc/numberLong.cpp" ],
+   [ "./misc/prepareMore.cpp" ],
+   [ "./misc/procedure.cpp" ],
+   [ "./misc/restAbnormal.cpp" ],
+  #[ "./misc/socketMutex.cpp" ],
+   [ "./misc/turnonCache.cpp" ],
+   [ "./misc/sync.cpp" ],
+   [ "./misc/snapshotTrans.cpp" ], # conf
+   [ "./misc/masterSlave.cpp" ], # sync
+   [ "./misc/snapshotSys14118.cpp" ],
+   [ "./misc/resetSnapshot14424.cpp" ], # sync
+   [ "./misc/configs14875.cpp" ], # sync
+   [ "./misc/invalidFlag15382.cpp" ],
+   [ "./misc/snapshot25411.cpp" ],
+   [ "./load/loadUnloadCS.cpp" ],
+   [ "./load/rename.cpp" ],   # sync
+   [ "./load/setPDLevel.cpp" ],
+   [ "./ssl/sslFalse.cpp" ],
+   [ "./ssl/sslTrue.cpp" ],  # conf
+   [ "./lob/lobAbnormal.cpp" ],
+   [ "./lob/lobNormal.cpp" ],
+   [ "./lob/lobTruncate13434.cpp" ],
+   [ "./lob/lobTruncate13437.cpp" ],
+   [ "./lob/lobSeekAndWrite13425_13426.cpp" ],
+   [ "./lob/lobSeekWrite13427.cpp" ],
+   [ "./lob/lobLockAndWrite13428.cpp" ],
+   [ "./lob/lobModTime13429.cpp" ],
+   [ "./lob/lobMultiLock13430.cpp" ],
+   [ "./lob/lobMultiLock13431.cpp" ],
+   [ "./lob/lobReadWhenWrite13432.cpp" ],
+   [ "./lob/lobReadEmpty13433.cpp" ],
+   [ "./lob/lobLock13435.cpp" ],
+   [ "./lob/lobCreateAndList_22190.cpp" ],
+   [ "./lob/lobLockAndSeek13436.cpp" ],
+   [ "./lob/lobLockCR14123.cpp" ],
+   [ "./lob/lobModTime14129.cpp" ],
+   [ "./lob/lobSeek14130.cpp" ],
+   [ "./lob/lobSeekEnd14190.cpp" ],
+   [ "./cls/getSlaveOnePos13781.cpp" ], # sync
+   [ "./cls/getSlaveMultiPos13782.cpp" ], # sync
+   [ "./cls/getSlaveNoPos13783.cpp" ], # sync
+   [ "./cls/getSlaveParaCheck13780.cpp" ],
+   [ "./cbsonTest/cbson22070.cpp" ],
+   [ "./cls/collection.cpp" ],
+   [ "./meta/collectionspace.cpp" ],
+   [ "./concurrent/concurrentInsert11187.cpp" ],
+   [ "./meta/domain10401.cpp" ],
+   [ "./concurrent/mutex22071.cpp" ],
+   [ "./meta/sdb.cpp" ],
+   [ "./misc/snapshot.cpp" ],
+   [ "./misc/rgTest22056.cpp" ],
+   #[ "./crud/updateShardingKey.cpp" ],
+   #[ "./crud/queryAndUpdateShardingKey.cpp" ],
+   #[ "./crud/upsertShardingKey.cpp"],
+   [ "./crud/queryMeta.cpp" ],
+   [ "./crud/query25369_25370.cpp" ],
+   [ "./crud/specialDecimal_14004.cpp" ],
+   [ "./crud/snapshotPlan14515.cpp" ],
+   [ "./crud/closeAllCursors20122.cpp" ],
+   [ "./crud/pop14506.cpp" ],
+   [ "./crud/insert26324.cpp" ],
+   [ "./crud/insert30390.cpp" ],
+   [ "./crud/delete25407.cpp" ],
+   [ "./crud/update25408.cpp" ],
+   [ "./crud/upsert25409.cpp" ],
+   [ "./paraVerify/domain22020.cpp" ],
+   [ "./paraVerify/lobFunc14388.cpp" ],
+   [ "./paraVerify/sdbFunc14277.cpp" ],
+   [ "./paraVerify/clFunc14281.cpp" ],
+   [ "./alter/alterdomain_15171.cpp" ],
+   [ "./alter/altercs_15173.cpp" ],
+   [ "./alter/altercl_15174.cpp" ],
+   [ "./datatype/timestamptest_15861.cpp"],
+   [ "./paraVerify/snapshotTest15759.cpp"],
+   [ "./lob/lobIsEof15672.cpp"],
+   [ "./meta/renameCL16569.cpp"],  # sync
+   [ "./meta/renameCLFail16570_16571.cpp"],  # sync
+   [ "./meta/renameCS16565.cpp"],  # sync
+   [ "./meta/renameCSFail16566_16567.cpp"],  # sync
+   [ "./indexs/getIndextest_16780.cpp"],
+   [ "./indexs/getIndexStat_26670.cpp"],
+   [ "./misc/getLastErrObj.cpp"],
+   [ "./crud/autoIncrementSequence16623_16624_16654.cpp"],
+   [ "./crud/insertReplaceondup18581.cpp" ],
+   [ "./sessionAttr/sessionAttrCache19208_19209.cpp" ],   # sync
+   [ "./list/list19948.cpp" ],   # sync
+   [ "./list/list26398.cpp" ],
+   [ "./crud/query10404.cpp" ],
+   [ "./cls/getCLDetail22183.cpp" ],
+   [ "./cls/getCollectionStat29800.cpp" ],
+   [ "./misc/snapshotIndexStat22498.cpp" ],
+   [ "./list/listTest.cpp" ],
+   [ "./meta/getDomainName25084.cpp" ],
+#   [ "./crud/closeAllCursors20122.cpp" ]
+]
+
+def getFileName( filePath ):
+   strArr = re.split( r'[/.]', filePath )
+   # last element is suffix,
+   # second last element is the name
+   return strArr[-2]
+
+def getObjectName( filePath ):
+   return getFileName( filePath ) + ".o"
+
+# add common to path
+dllBuildEnv.Append( CPPPATH=[ "./common/" ] )
+staticBuildEnv.Append( CPPPATH=[ "./common/" ] )
+
+# compile common lib
+gtestall = env.StaticLibrary('gtest', gtestFiles)
+
+# complit main object file
+testMainObj = dllBuildEnv.Object( [testMainFile] )
+
+# compile common object file
+commObj = []
+for file in testCommonFiles:
+   commonFileName = getFileName( file )
+   commonFile = dllBuildEnv.Object( commonFileName, [file] )
+   commObj.append( commonFile )
+
+# compile test object file
+objectFiles = []
+for index in range( len(testFiles) ):
+   objectFileArr = []
+   for file in testFiles[index]:
+      objectFileName = getObjectName( file )
+      objectFile = dllBuildEnv.Object( objectFileName, [file] )
+      objectFileArr.append( objectFile )
+   objectFiles.append( objectFileArr )
+
+# dll compile
+dllPrograms = []
+for index in range( len(testFiles) ):
+   testFileName = getFileName( testFiles[index][0] )
+   dllProgram = dllBuildEnv.Program( testFileName, [objectFiles[index], testMainObj, commObj] )
+   dllPrograms.append( dllProgram )
+
+# static compile
+staticPrograms = []
+for index in range( len(testFiles) ):
+   testFileName = getFileName( testFiles[index][0] ) + ".static"
+   staticProgram = staticBuildEnv.Program( testFileName, [objectFiles[index], testMainObj, commObj])
+   staticPrograms.append( staticProgram )
+
+# dll compile
+env.Install( '#/build_test', dllPrograms )
+
+# static compile
+env.Install( '#/build_test', staticPrograms )

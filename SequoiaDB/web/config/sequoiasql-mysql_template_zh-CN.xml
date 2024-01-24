@@ -1,0 +1,8 @@
+<DeployModList type="array">
+	<FILLER>
+		<DeployMod></DeployMod>
+		<WebName>SequoiaSQL-Mysql</WebName>
+		<BusinessType>sequoiasql-mysql</BusinessType>
+		<Property type="array"></Property>
+ 	</FILLER>
+</DeployModList>

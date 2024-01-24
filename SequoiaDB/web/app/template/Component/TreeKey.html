@@ -1,0 +1,14 @@
+﻿<div class="jsonTreeBox" ng-eval="field = Setting.items[0];">
+   <table class="table">
+      <tr style="cursor:pointer;" ng-click="toggle(field)">
+         <td style="width:10px;">
+            <i class="caret caret-5x" ng-class="{ 'caret-right': !field.isOpen, 'caret-bottom': field.isOpen }"></i>
+         </td>
+         <td style="width:25px;"><img src="./images/tree/object.png"></td>
+         <td>
+            <div style="width:300px;" class="Ellipsis">({{Setting.index}}) {{field.key}}</div>
+         </td>
+      </tr>
+   </table>
+   <div ng-if="field.isOpen" style="padding-left:14px;" ng-eval="items = field.val;" ng-include="'./app/template/Component/TreeKey_child.html'"></div>
+</div>

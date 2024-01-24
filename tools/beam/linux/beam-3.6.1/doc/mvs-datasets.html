@@ -1,0 +1,191 @@
+<html>
+<head>
+  <title>Support for MVS Dataset Header Files</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Support for MVS Dataset Header Files</h1>
+<hr/>
+
+</p>
+<p>
+BEAM on USS supports the use of MVS datasets as include files and
+in include search paths. If your project makes use of header files
+that are stored in datasets, here is a brief description of what you
+have to do to include them. This information is not specific to BEAM
+as BEAM seeks only to emulate the behavior of the compilers
+available on USS and so the method of including dataset headers
+should be identical.
+</p>
+<p>
+First, whether you are including a dataset header in the source code
+or passing a partitioned dataset (PDS) on the command line as an
+include directory, you must enclose the name in single quotes and
+prepend two forward slashes. On the command line you will need
+to enclose the name in an additional set of double quotes to prevent 
+the shell from consuming the single quotes. PDS member names should be in
+parentheses following the PDS name. So, for example, if you have a PDS
+named BEAM.INCLUDE.H with a member dataset named UTIL, and you want
+to include it in your source file, then you need to write:
+</p>
+<pre class="example">
+#include &lt;//'BEAM.INCLUDE.H(UTIL)'&gt;
+</pre>
+<p>
+
+Alternatively, you can just include the member name in the source code:
+</p>
+<pre class="example">
+#include &lt;UTIL&gt;
+</pre>
+<p>
+
+And then pass the PDS name on the command line as an include directory:
+</p>
+<pre class="example">
+cc -I&quot;//'BEAM.INCLUDE.H'&quot;
+</pre>
+<p>
+
+The MVS file system is case insensitive, so the case of dataset names
+used in source code generally should not matter. Also, everything after 
+and including the first period in the include file name will be stripped 
+before searching for a corresponding dataset, so all of the following 
+would also work for the above example:
+</p>
+<pre class="example">
+#include &lt;util&gt;
+#include &lt;util.h&gt;
+#include &lt;util.nonsense.gibberish&gt;
+</pre>
+<p>
+
+<h1>Details of the wildcard syntax for including PDSs</h1>
+
+</p>
+<p>
+In addition to the regular syntax for adding a PDS to the include path, you
+can use a sort of wildcard notation consisting of a PDS base followed by ".+"
+as in -I"//'SYNLIB.BEAM.+'". If this syntax is used, directories preceding
+the included file get appended as qualifiers to the PDS base, then suffixes
+following the included file get appended, and finally the base file name is
+used as the member name. Examples will clarify (hopefully). All of the 
+following combinations of include directives and PDS names passed as
+include directories on the command lines will translate to
+//'SYNLIB.BEAM.INCLUDE.H(FOO)':
+</p>
+<pre class="example">
+#include &lt;h/foo&gt;
+cc -I &quot;//'SYNLIB.BEAM.INCLUDE.+'&quot;
+
+#include &lt;foo.h&gt;
+cc -I&quot;//'SYNLIB.BEAM.INCLUDE.+'&quot;
+
+#include &lt;include/h/foo&gt;
+cc -I&quot;//'SYNLIB.BEAM.+'&quot;
+
+#include &lt;include/foo.h&gt;
+cc -I&quot;//'SYNLIB.BEAM.+'&quot;
+
+#include &lt;foo.include.h&gt;
+cc -I&quot;//'SYNLIB.BEAM.+'&quot;
+
+#include &lt;beam/include/h/foo&gt;
+cc -I&quot;//'SYNLIB.+'&quot;
+
+#include &lt;beam/include/foo.h&gt;
+cc -I&quot;//'SYNLIB.+'&quot;
+
+#include &lt;beam/foo.include.h&gt;
+cc -I&quot;//'SYNLIB.+'&quot;
+
+#include &lt;foo.beam.include.h&gt;
+cc -I&quot;//'SYNLIB.+'&quot;
+</pre>
+<p>
+
+<h1>Names longer than 8 characters</h1>
+
+</p>
+<p>
+When a path in an include directive gets translated to a PDS name, any
+pieces (qualifiers or members names) which exceed 8 characters in length
+get truncated. Long names on the command line do not get truncated (they
+will just never match anything, since no such name could exist). 
+</p>
+<p>
+To take a ludicrous example, if you have the following include directive
+in a source file:
+</p>
+<pre class="example">
+#include &lt;longdirectory/longerdirectory/longfilename.longsuffixone.secondsuffix&gt;
+</pre>
+<p>
+
+And you pass the following <span class="code">-I&quot;//'BEAM.INCLUDE.+'&quot;</span> on the 
+command line, then the resulting dataset name would be 
+<span class="code">//'BEAM.INCLUDE.LONGDIRE.LONGERDI.LONGSUFF.SECONDSU(LONGFILE)</span>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,305 @@
+<html>
+<head>
+  <title>BEAM: Detecting Ignored Return Codes</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Detecting Ignored Return Codes</h1>
+<hr/>
+
+</p>
+<p>
+Consider a function 
+</p>
+<pre class="example">
+int do_transaction(void);
+</pre>
+<p>
+
+It returns a negative number if it fails in some sense, and returns a 
+non-negative number otherwise.
+Suppose you want to flag calls to <span class="code">do_transaction</span>
+that do not check the returned value.
+There are several cases of what it means "not to check the return value".
+</p>
+<p>
+<span class="strong">Case 1:</span> The programmer completely ignored the result of <span class="code">do_transaction</span>. 
+</p>
+<pre class="example">
+do_transaction();
+</pre>
+<p>
+
+You catch this by turning on <a href="builtin.html#WARNING9">WARNING9</a>.
+But be careful; there are many functions,
+e.g.,  <span class="code">printf</span>, which also return a value,
+but it is usually OK to ignore it.
+Therefore you can provide a <a href="parms.html#patterns">pattern</a>
+of function names <a href="builtin.html#WARNING9">beam::WARNING9::functions</a>,
+allowing you to restrict WARNING9 to only functions of interest.
+</p>
+<p>
+<span class="strong">Case 2:</span> The programmer prevented WARNING9 by assigning the 
+result but did not use it.
+</p>
+<pre class="example">
+int i = do_transaction();
+</pre>
+<p>
+
+You catch this by turning on <a href="builtin.html#WARNING2">WARNING2</a>,
+which reports unused variables.
+</p>
+<p>
+<span class="strong">Case 3:</span> The programmer is using the result of <span class="code">do_transaction</span>
+but not in a test.
+</p>
+<pre class="example">
+int i = do_transaction();
+return i;
+</pre>
+<p>
+
+You catch this by turning on <a href="builtin.html#MISTAKE23">MISTAKE23</a>,
+in addition to giving <span class="code">do_transaction</span> a force_test
+<a href="attributes.html">attribute</a> like this.
+</p>
+<pre class="example">
+beam::function_attribute {
+    force_test ( test_index = return,
+                 num_dereference = 0,
+                 test_type = less_than,
+                 value = 0 )
+} -names &quot;do_transaction&quot;
+</pre>
+<p>
+
+It tells BEAM that the function indicates something unusual by returning a 
+value < 0.
+</p>
+<p>
+<span class="strong">Case 4:</span> The programmer is testing the result of <span class="code">do_transaction</span>
+but then uses it incorrectly regardless (perhaps because of an unintended semicolon).
+</p>
+<pre class="example">
+int i = do_transaction();
+if (i &gt;= 0);
+return a[i];
+</pre>
+<p>
+
+You catch this by turning on <a href="builtin.html#ERROR7">ERROR7</a>,
+which flags indices out of array range.
+To catch this particular error there is no need set the force_test
+attribute because the statement <span class="code">if (i &lt; 0);</span>
+is used as evidence that <span class="var">i</span> could be negative.
+</p>
+<p>
+<span class="strong">Case 5:</span> Same as above except the result of <span class="code">do_transaction</span>
+is never tested.
+</p>
+<pre class="example">
+int i = do_transaction();
+return a[i];
+</pre>
+<p>
+
+In this example there is no evidence that <span class="code">do_transaction</span>
+could return a negative number, unless <span class="code">do_transaction</span>
+is given the force_test attributes as in Case 3.
+If that is done then <a href="builtin.html#ERROR7">ERROR7</a>
+will flag this problem.
+</p>
+<p>
+<span class="strong">Case 6:</span> Similar to the above except the 
+symptom of the error is application specific.
+</p>
+<pre class="example">
+int i = do_transaction();
+return foo(i);
+</pre>
+<p>
+
+Suppose that  the function <span class="code">foo</span> would fail if given negative argument.
+If BEAM has access to the source code of <span class="code">foo</span> it may figure out
+under what conditions it will fail, but otherwise you can specify that
+by providing the following attribute
+</p>
+<pre class="example">
+beam::function_attribute {
+    property (index = 1,         
+              num_dereference = 0,      
+              type = requires,           
+              test_type = greater_than_or_equal, 
+              test_value = 0)
+} -names &quot;foo&quot;
+</pre>
+<p>
+
+It states that <span class="code">foo</span> requires its first argument to be >= 0.
+This attribute will put this case on the same footing as Case 5.
+Instead of ERROR7, it can be caught by ERROR26, 
+which checks for invalid values of function parameters.
+As before, in order to flag it as an error we need evidence that <span class="code">do_transaction</span>
+could return a negative number.
+That evidence would be an explicit test as in Case 4,
+or the force_test attribute as in Case 3.
+</p>
+<p>
+<span class="strong">Case 7:</span> Similar to the above except the result of <span class="code">do_transaction</span>
+is not being passed directly.
+</p>
+<pre class="example">
+int i = do_transaction();
+return complete_transaction();
+</pre>
+<p>
+
+Suppose that  the function <span class="code">complete_transaction</span> 
+requires that <span class="code">do_transaction</span> was successfully executed first.
+This requirement can be expressed by introducing a fictitious global variable
+<span class="code">transaction_successful</span>, and asserting that it not be 0 before 
+<span class="code">complete_transaction</span> is called.
+</p>
+<pre class="example">
+beam::function_attribute  {
+	property (variable = &quot;transaction_successful&quot;,
+            num_dereference = 1,
+            type = requires,    
+            test_type = not_equal,
+            test_value = 0)
+} -names &quot;complete_transaction&quot;
+</pre>
+<p>
+
+Secondly you need to relate the value of <span class="code">transaction_successful</span>
+to the return code of <span class="code">do_transaction</span> as follows
+</p>
+<pre class="example">
+beam::function_attribute  {
+	property (variable = &quot;transaction_successful&quot;,
+      		  num_dereference = 1,
+		        type = provides,    
+      		  test_type = not_equal,
+      		  test_value = 0)
+        if (index = return,
+            num_dereference = 0,
+            type = output,   
+            test_type = greater_than_or_equal,
+            test_value = 0),
+        
+	property (variable = &quot;transaction_successful&quot;,
+      		  num_dereference = 1,
+       		  type = provides,    
+       		  test_type = equal,
+      		  test_value = 0)
+        if (index = return,
+            num_dereference = 0,
+            type = output,   
+            test_type = less_than,
+            test_value = 0),
+} -names &quot;do_transaction&quot;
+</pre>
+<p>
+
+It states that after <span class="code">do_transaction</span> returns,
+<span class="code">transaction_successful != 0</span> if 
+<span class="code">do_transaction() &gt;= 0</span>
+and secondly that <span class="code">transaction_successful == 0</span> if 
+<span class="code">do_transaction() &lt; 0</span>.
+</p>
+<p>
+If there actually is a global variable representing the success or failure
+of <span class="code">do_transaction</span> you can certainly use that instead of 
+a fictitious one.
+Otherwise make sure that the name you  introduce does not clash 
+with an existing variable.
+</p>
+<p>
+This attribute will put this case on the same footing as Case 5 and Case 6.
+In order to flag it as an error we need evidence that <span class="code">do_transaction</span>
+could return a negative number.
+That evidence would be an explicit test as in Case 4,
+or the force_test attribute as in Case 3.
+</p>
+<p>
+<h1>Conclusion:</h1>
+ 
+There are several ways of flagging that a return code has not been checked.
+<ul>
+<li>WARNING9 will catch the example in Case 1.
+<li>WARNING2 will catch the example in Case 2.
+<li>MISTAKE23 will catch the example in Case 1, 2, 3, 5, 6, 7,
+provided <span class="code">do_transaction</span> is given a force_test attribute.
+<li>ERRRO7 (as a representative of checks understanding semantics of the programming language)
+will catch the example in Case 4 and Case 5,
+provided there is evidence that <span class="code">do_transaction</span> could return a negative 
+number.
+<li>ERROR26 will catch the example in Case 6 and Case 7,
+provided there is evidence that <span class="code">do_transaction</span> could return a negative  
+number.
+</ul>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--this xml is for ci, please don't modify it-->
+<!--testcase for function test, which can be excuted concurrently-->
+
+<suite name="driver" verbose="1" parallel="tests" >
+    
+    <!--主机名，CI默认传入localhost-->
+    <parameter name="HOSTNAME"       value="${HOSTNAME}" />
+    <!--协调节点端口号，CI默认传入11810-->
+    <parameter name="SVCNAME"        value="${SVCNAME}" />
+    <!--公共CS名-->
+    <parameter name="CHANGEDPREFIX"  value="story_java_test" />
+    <!--用例创建节点预留端口号最小值-->
+    <parameter name="RSRVPORTBEGIN"  value="26000" />
+    <!--用例创建节点预留端口号最大值-->
+    <parameter name="RSRVPORTEND"    value="27000" />
+    <!--用例创建节点存放节点数据目录-->
+    <parameter name="RSRVNODEDIR"    value="/opt/sequoiadb/database/" />
+    <!--用例存放临时文件的目录-->
+    <parameter name="WORKDIR"        value="/tmp/javatest" />
+
+    <listeners>
+        <listener class-name="com.sequoiadb.testcommon.TimePrinterListener"/>
+    </listeners>
+
+    <test name="normaltest" parallel="classes" thread-count="5">
+        <classes>
+            <class name="com.sequoiadb.split.Split10501"/>
+            <class name="com.sequoiadb.split.Split10505"/>
+            <class name="com.sequoiadb.split.Split10499"/>
+        </classes>
+    </test>
+   
+</suite>
+   

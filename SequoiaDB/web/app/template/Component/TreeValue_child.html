@@ -1,0 +1,6 @@
+﻿<div ng-repeat="field in items track by $index">
+   <div class="JsontTreeValueBox" ng-if="field.type=='Object'">{{'{ ' + field.val.length + ' fields }'}}</div>
+   <div class="JsontTreeValueBox" ng-if="field.type=='Array'">{{'Array(' + field.val.length + ')'}}</div>
+   <div class="JsontTreeValueBox Ellipsis" ng-style="{width: Setting.width + 'px' }" ng-if="field.type!='Object' && field.type!='Array'">{{field.val}}</div>
+   <div ng-if="field.isOpen && (field.type=='Object' || field.type=='Array')" ng-eval="items = field.val;" ng-include="'./app/template/Component/TreeValue_child.html'"></div>
+</div>

@@ -1,0 +1,6 @@
+<tpc-c>
+<step exec="1" parameter="props.pg">runDatabaseBuild.sh</step>
+<step exec="1" parameter="props.pg">runBenchmark.sh</step>
+<step exec="0" parameter="props.pg">runDatabaseDestroy.sh</step>
+<step exec="1" parameter="props.pg">generateReport.sh</step>
+</tpc-c>

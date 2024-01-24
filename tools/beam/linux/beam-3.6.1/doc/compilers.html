@@ -1,0 +1,470 @@
+<html>
+<head>
+  <title>BEAM: Compiler Emulation</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">BEAM Compiler Emulation</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Contents:</h1>
+
+</p>
+<p>
+  <ul>
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#supported">Supported Compilers</a></li>
+  <ul>
+    <li><a href="#use_beam_prefixcc">Use --beam::prefixcc</li>
+    <li><a href="#use_beam_configure">Use beam_configure</li>
+    <li><a href="#manual">Manual Configuration</li>
+  </ul>
+</ul>
+
+</p>
+<p>
+<hr />
+
+<a name="intro"></a><h1>Introduction</h1>
+
+
+</p>
+<p>
+Before BEAM can parse C, C++, or Java code correctly, BEAM needs to know
+what compiler is used. There are a few different ways to specify
+information about your compiler to BEAM so that BEAM can parse your
+code successfully.
+</p>
+<p>
+Emulating a compiler entails:
+<ul>
+ <li>understanding the command line flags
+ <li>using the appropriate built-in macro definitions
+ <li>using the same storage layout for built-in datatypes
+ <li>processing configuration files, if any
+</ul>
+</p>
+<p>
+Please note that, in general, it is not possible to emulate a compiler
+100% accurately for several reasons. 
+First, not all compiler extensions are documented. And we cannot model
+what we do not know.
+Secondly, some extensions would require changes to the compiler frontend
+that are too intrusive and therefore cannot be made safely or with 
+reasonable effort.
+Thirdly, in some instances the provided documentation for the
+compiler is out of date or inaccurate. 
+</p>
+<p>
+Listed below is a table of the compilers that BEAM supports, along
+with the preferred method of configuring and invoking BEAM for
+code that is normally built using that compiler.
+</p>
+<p>
+Each compiler also has a list of alternative methods that can be used
+if the recommended method is not working or is not ideal for your
+situation.
+</p>
+<p>
+<hr />
+
+<a name="supported"></a><h1>Supported Compilers</h1>
+
+
+</p>
+<p>
+<table>
+ <tr>
+  <th>Compiler</th>
+  <th width="75%">Recommended Method</th>
+  <th>Alternate Methods</th>
+ </tr>
+</p>
+<p>
+<!-- gcc -->
+ <tr>
+  <td><a href="emul-gcc.html">GNU Compiler Collection (gcc, g++)</a></td>
+  <td>
+    <a href="#use_beam_prefixcc">Use <span class="option">--beam::prefixcc</span></a>
+</p>
+<p>
+<pre class="example">
+beam_compile --beam::prefixcc gcc -c foo.c -DMACRO
+</pre>
+
+</p>
+<p>
+  </td>
+  <td><a href="#use_beam_configure">Use <span class="command">beam_configure</span></a></td>
+ </tr>
+</p>
+<p>
+<!-- vac -->
+ <tr>
+  <td><a href="emul-xlc.html">IBM VisualAge C/C++ 5.x and higher (xlc, xlC)</a></td>
+  <td>
+    <a href="#use_beam_prefixcc">Use <span class="option">--beam::prefixcc</span></a>
+</p>
+<p>
+<pre class="example">
+beam_compile --beam::prefixcc xlc -c foo.c -DMACRO
+</pre>
+
+</p>
+<p>
+  </td>
+  <td><a href="#use_beam_configure">Use <span class="command">beam_configure</span></a></td>
+ </tr>
+</p>
+<p>
+<!-- xlc -->
+ <tr>
+  <td><a href="emul-xlc.html">IBM VisualAge C/C++ below 5.x (xlc, xlC)</a></td>
+  <td>
+    <a href="#use_beam_configure">Use <span class="command">beam_configure</span></a>
+</p>
+<p>
+<pre class="example">
+# One-time setup
+perl beam_configure --c   icc -o xlc_c_config.tcl
+perl beam_configure --cpp icc -o xlc_cpp_config.tcl
+
+# Load those files with each invocation of BEAM
+beam_compile --beam::compiler=xlc_c_config.tcl \
+             --beam::compiler=xlc_cpp_config.tcl \
+             -c foo.c -DMACRO
+</pre>
+
+</p>
+<p>
+  </td>
+  <td></td>
+ </tr>
+</p>
+<p>
+<!-- msvc -->
+ <tr>
+  <td><a href="emul-msvc.html">Microsoft Visual C/C++ (cl)</a></td>
+  <td>
+    <a href="#use_beam_prefixcc">Use <span class="option">--beam::prefixcc</span></a>
+</p>
+<p>
+<pre class="example">
+beam_compile --beam::prefixcc cl -c foo.c -DMACRO
+</pre>
+
+</p>
+<p>
+  </td>
+  <td><a href="#use_beam_configure">Use <span class="command">beam_configure</span></a></td>
+ </tr>
+</p>
+<p>
+<!-- javac -->
+ <tr>
+  <td><a href="java_ref.html">IBM and Sun Java Compilers (javac)</a></td>
+  <td>
+    <a href="#use_beam_prefixcc">Use <span class="option">--beam::prefixcc</span></a>
+</p>
+<p>
+<pre class="example">
+beam_compile --beam::prefixcc javac Foo.java
+</pre>
+
+</p>
+<p>
+  </td>
+  <td><a href="#use_beam_configure">Use <span class="command">beam_configure</span></a></td>
+ </tr>
+</p>
+<p>
+<!-- vacwin -->
+ <tr>
+  <td><a href="emul-vacwin.html">IBM VisualAge C/C++ for Windows (icc)</a></td>
+  <td>
+    <a href="#use_beam_configure">Use <span class="command">beam_configure</span></a>
+</p>
+<p>
+<pre class="example">
+# One-time setup
+perl beam_configure --c   icc -o vacwin_c_config.tcl \
+                                 --compile_flag=&quot;/C+&quot; \
+                                 --preproc_flag=&quot;/Pd+&quot; \
+                                 --bin_flag=&quot;/Fe%s&quot;
+
+perl beam_configure --cpp icc -o vacwin_cpp_config.tcl \
+                                 --compile_flag=&quot;/C+&quot; \
+                                 --preproc_flag=&quot;/Pd+&quot; \
+                                 --bin_flag=&quot;/Fe%s&quot;
+
+
+# Load those files with each invocation of BEAM
+beam_compile --beam::compiler=vacwin_c_config.tcl \
+             --beam::compiler=vacwin_cpp_config.tcl \
+             -c foo.c -DMACRO
+</pre>
+
+</p>
+<p>
+  </td>
+  <td></td>
+ </tr>
+</p>
+<p>
+<!-- icc -->
+ <tr>
+  <td><a href="emul-icc.html">Intel C/C++ (icc)</a></td>
+  <td>
+    <a href="#use_beam_configure">Use <span class="command">beam_configure</span></a>
+</p>
+<p>
+<pre class="example">
+# One-time setup
+perl beam_configure --c   icc -o icc_c_config.tcl
+perl beam_configure --cpp icc -o icc_cpp_config.tcl
+
+# Load those files with each invocation of BEAM
+beam_compile --beam::compiler=icc_c_config.tcl \
+             --beam::compiler=icc_cpp_config.tcl \
+             -c foo.c -DMACRO
+</pre>
+
+</p>
+<p>
+  </td>
+  <td></td>
+ </tr>
+</p>
+<p>
+<!-- zosvac -->
+ <tr>
+  <td>z/OS vac</td>
+  <td>
+    <a href="#use_beam_configure">Use <span class="command">beam_configure</span></a>
+</p>
+<p>
+<pre class="example">
+# One-time setup
+beam_configure --c   xlc -o xlc_c_config.tcl
+beam_configure --cpp xlC -o xlc_cpp_config.tcl
+
+# Load those files with each invocation of BEAM
+beam_compile --beam::compiler=xlc_c_config.tcl \
+             --beam::compiler=xlc_cpp_config.tcl \
+             -c foo.c -DMACRO
+</pre>
+
+</p>
+<p>
+  </td>
+  <td></td>
+ </tr>
+</p>
+<p>
+<!-- sCC2010 -->
+ <tr>
+  <td><a href="emul-sCC2010.html">sCC</a></td>
+  <td>
+    Load BEAM's built-in configuration
+</p>
+<p>
+<pre class="example">
+beam_compile --beam::compiler=beam_sCC2010_config foo.c
+</pre>
+
+</p>
+<p>
+  </td>
+  <td></td>
+ </tr>
+</p>
+<p>
+<!-- cxlc400 -->
+ <tr>
+  <td><a href="emul-cxlc400.html">cxlc400 and cxlC400</a></td>
+  <td>
+    Load BEAM's built-in configuration
+</p>
+<p>
+<pre class="example">
+beam_compile --beam::compiler=beam_cxlc400_config foo.c
+</pre>
+
+</p>
+<p>
+  </td>
+  <td></td>
+ </tr>
+</p>
+<p>
+<!-- misc -->
+ <tr>
+  <td>All other compilers</td>
+  <td>
+    Try <a href="#use_beam_configure"><span class="command">beam_configure</span></a> and if that
+    doesn't work, <a href="#manual">manually configure your compiler</a>.
+  </td>
+  <td></td>
+ </tr>
+</p>
+<p>
+</table>
+</p>
+<p>
+<hr />
+
+<a name="use_beam_prefixcc"></a><h2>Use --beam::prefixcc</h2>
+
+
+</p>
+<p>
+Starting with version 3.5.0, BEAM supports the automatic configuration of many
+compilers listed above. Simply pass <span class="option">--beam::prefixcc</span> followed by
+your normal compiler invocation and BEAM will handle the rest.
+</p>
+<pre class="example">
+beam_compile --beam::prefixcc gcc -c foo.c -DMACRO
+</pre>
+<p>
+
+For more information, see the documentation for <a href="beam_compile.html#beam::prefixcc">--beam::prefixcc</a>.
+</p>
+<p>
+<hr />
+
+<a name="use_beam_configure"></a><h2>Use beam_configure</h2>
+
+
+</p>
+<p>
+BEAM comes with a program called <span class="command">beam_configure</span> that can
+generate configuration files for you. Once you have them generated, you
+simply need to load them into BEAM via the <span class="option">--beam::compiler=</span>
+option.
+</p>
+<pre class="example">
+# One-time setup
+beam_configure --c   gcc -o gcc_c_config.tcl
+beam_configure --cpp g++ -o gcc_cpp_config.tcl
+
+# Load those files with each invocation of BEAM
+beam_compile --beam::compiler=gcc_c_config.tcl \
+             --beam::compiler=gcc_cpp_config.tcl \
+             -c foo.c -DMACRO
+</pre>
+<p>
+
+Or, for Java:
+</p>
+<pre class="example">
+# One-time setup
+beam_configure --java javac -o java_config.tcl
+
+# Load that file with each invocation of BEAM
+beam_compile --beam::compiler=java_config.tcl Foo.java
+</pre>
+<p>
+
+For more information, see the <a href="beam_configure.html">beam_configure</a>
+and <a href="compiler_configuration.html">compiler configuration</a> documentation.
+</p>
+<p>
+<hr />
+
+<a name="manual"></a><h2>Manual Configuration</h2>
+
+
+</p>
+<p>
+Some compilers aren't supported by BEAM yet, and <span class="command">beam_configure</span>
+may not be able to figure everything out. If that is the case for your
+compiler, you will need to create your own <span class="term">compiler configuration file</span>.
+See our <a href="compiler_configuration.html#manual">manual instructions</a> for
+information on how to get started.
+</p>
+<p>
+Once you've written your compiler configuration file, you must load
+it into BEAM when you run:
+</p>
+<pre class="example">
+beam_compile --beam::compiler=my_config.tcl -c foo.c -DMACRO
+</pre>
+<p>
+
+We are happy to assist but it would speed up the process if you could do some
+investigative work upfront. Can you run <span class="command">beam_configure</span>? Does it
+succeed? If so, can you run BEAM on a simple C/C++ file that uses headers such
+as <span class="code">&lt;iostream&gt;</span> or <span class="code">&lt;stdio.h&gt;</span>? Perhaps you can even change
+<span class="command">beam_configure</span> to handle your compiler. 
+</p>
+<p>
+Eventually, you will need our help to write a command line mapper. 
+That is not documented in detail because it happens so rarely that
+the effort to write good documentation is not warranted. Simply send
+a note to the <a href="mailto:beam-user@edamail.fishkill.ibm.com">BEAM users mailing list</a> and we'll get back to you.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+<html>
+<head>
+  <title>BEAM: Microsoft Visual C/C++ Emulation</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Details of Microsoft Visual C/C++ Emulation</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Status</h1>
+
+Emulation for Microsoft Visual C/C++ is in beta mode. We do not have
+sufficient code bases at our disposal to do serious testing.
+</p>
+<p>
+The provided emulation is based on Visual C/C++ 8. If you're using a
+different version or a different compiler altogether, you should run
+<a href="beam_configure.html">beam_configure</a> to generate a
+configuration file for your specific installation.  For example, to
+generate configuration files for a different version of MSVC, you
+would need to do the following: 
+</p>
+<pre class="example">
+perl beam_configure --c cl.exe -o msvc_c_config.tcl 
+perl beam_configure --cpp cl.exe -o msvc_cpp_config.tcl
+</pre>
+<p>
+
+Then you could load this configuration instead of the BEAM MSVC
+configuration by passing those two generated files to
+<span class="command">beam_compile</span> using the <span class="option">--beam::compiler</span>
+command line option.
+</p>
+<p>
+Note that you will need Perl installed if you need to run
+<span class="command">beam_configure</span>. Details about obtaining and
+installing Perl are on our <a href="windows.html">Windows page</a>.
+</p>
+<p>
+<h1>Include Directories</h1>
+
+In order for BEAM to properly emulate your compiler, you will need
+to run it in the same environment in which you run your compiler.
+Specifically, when executing from the command line, MSVC uses the
+paths listed in the <span class="env">INCLUDE</span> environment variable to
+search for header files. When running with the MSVC configuration,
+BEAM will do the same. So in order for BEAM to find the same header
+files as MSVC, you will need to set the <span class="env">INCLUDE</span>
+environment variable the same way you do when running the compiler.
+</p>
+<p>
+To set up the proper shell environment for running MSVC from the
+command line, you can run the batch file included with the compiler
+called <span class="file">vcvarsall.bat</span> located by default in
+<span class="file">C:\Program Files\Microsoft Visual Studio 8\VC</span>.
+</p>
+<p>
+If you have installed Microsoft's Platform SDK, you can additionally
+run the <span class="file">SetEnv.Cmd</span> script located in the SDK's install
+directory.
+</p>
+<p>
+<h1>Command-line Flags</h1>
+
+Please see the file <span class="file">tcl/beam_map_msvc_flags.tcl</span>
+in your BEAM installation. 
+</p>
+<p>
+<h1>Predefined Macros</h1>
+
+The list of predefined macros can be found in these files in your
+BEAM installation:
+<ul>
+<li><span class="file">tcl/beam_msvc_c_config.tcl</span>
+<li><span class="file">tcl/beam_msvc_cpp_config.tcl</span>
+</ul>
+Search for 'predefined_macro'.
+</p>
+<p>
+<h1>Response files</h1>
+
+Response file handling is described on the <a href="atfile.html">@file</a> page.
+</p>
+<p>
+<h1>Limitations</h1>
+
+<ul>
+<li>Although the language extensions for 'near' and 'far' pointers are 
+recognized and acccepted, the size for those pointers is assumed to be the 
+same as the one specified for <span class="var">target_sizeof_pointer</span> in the 
+<a href="compiler_configuration.html">compiler configuration file</a>.
+</p>
+<p>
+</ul>
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

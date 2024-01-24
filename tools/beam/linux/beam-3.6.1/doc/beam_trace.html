@@ -1,0 +1,354 @@
+<html>
+<head>
+  <title>BEAM: Build Tracing</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Build Tracing</h1>
+<hr/>
+
+</p>
+<p>
+<h1>Contents:</h1>
+
+</p>
+<p>
+<ul>
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#running">Running beam_trace</a></li>
+  <li><a href="#custom">Custom trace scripts</a></li>
+  <li><a href="#howitworks">How beam_trace works</a></li>
+  <li><a href="#supported">Supported Platforms</a></li>
+  <li><a href="#supported_compilers">Supported Compilers</a></li>
+  <li><a href="#limitations">Limitations</a></li>
+  <li><a href="#ant">How to trace ant</a></li>
+  <li><a href="#feedback">Give us Feedback</a></li>
+</ul>
+
+</p>
+<p>
+<a name="intro"></a><h1>Introduction</h1>
+
+
+</p>
+<p>
+      Projects that wish to use BEAM must integrate BEAM into
+      their build environment. This usually requires a build
+      expert to modify the build machinery so that BEAM can
+      be invoked at the appropriate time and with the correct
+      command-line arguments.
+</p>
+<p>
+      BEAM has a solution to this problem. For
+      <a href="#supported">supported platforms</a>, BEAM can
+      automatically trace your build for you. This means that
+      BEAM will analyze all of the source code that you are
+      compiling, with <span class="strong">no changes to your build system</span>.
+</p>
+<p>
+      If your build is smart enough to only recompile those
+      source files that have changed since the previous build,
+      then <span class="command">beam_trace</span> will only analyze those
+      same modified files. Using <span class="command">beam_trace</span>
+      with incremental builds is very beneficial.
+</p>
+<p>
+      This magic is possible due to the <span class="command">beam_trace</span>
+      command. This command can watch almost any build and
+      will invoke a script whenever programs are spawned off.
+      If a script is used that invokes <span class="command">beam_compile</span>
+      at the appropriate time, then BEAM can automatically
+      analyze a project simply by tracing the build.
+</p>
+<p>
+<a name="running"></a><h1>Running beam_trace</h1>
+
+
+</p>
+<p>
+      The <span class="command">beam_trace</span> program takes in a set of BEAM
+      options followed by a double-hyphen (<span class="val">--</span>) and the
+      command you want to invoke.
+</p>
+<pre class="example">
+beam_trace --beam::complaint_file=/tmp/beam.out -- make all
+</pre>
+<p>
+
+      All of the BEAM-specific options need to go before the <span class="val">--</span>,
+      and your normal build command and build options go after the
+      <span class="val">--</span>.
+</p>
+<p>
+      Whenever your build invokes a <a href="#supported_compilers">supported compiler</a>, <span class="command">beam_trace</span> will run BEAM
+      for you automatically.
+</p>
+<p>
+      Be sure to give at least a complaint file for BEAM to write to.
+      Due to the nature of <span class="command">beam_trace</span>, BEAM itself will
+      not be able to write to STDOUT.
+</p>
+<p>
+      You can pass any other BEAM options you would like. If you
+      are tracing Java builds, we recommend you include the
+      <span class="option">--beam::skip_cmdline_files_if_analyzed</span> option,
+      since Java compilers we've tested with invoke themselves
+      twice on the source file; without this option, BEAM would
+      analyze the file twice as well, leading to slower builds.
+</p>
+<p>
+<a name="custom"></a><h1>Custom trace scripts</h1>
+
+
+</p>
+<p>
+      The default action of <span class="command">beam_trace</span> is to run BEAM
+      whenever a supported compiler is seen.
+</p>
+<p>
+      You can override this behavior by providing your own script
+      that <span class="command">beam_trace</span> will run whenever a process is
+      executed during your build. This script can do whatever you
+      would like it to.
+</p>
+<p>
+      We have an example script which also looks for compiler
+      invocations and runs BEAM so you have a starting point to
+      work from.
+</p>
+<p>
+      <ol>
+        <li>
+          Copy <a href="beam_trace_example.pl">doc/beam_trace_example.pl</a>
+          from your BEAM install directory to some permanent location. It 
+          will need to be accessible from your build.
+        </li>
+        <li>
+          Edit the top of your copy of the trace script.
+          It is well-commented, and should provide direction.
+        </li>
+        <li>
+          Run <span class="command">beam_trace</span> with your trace script:
+</p>
+<pre class="example">
+beam_trace --beam::complaint_file=/tmp/beam.out beam_trace_example.pl -- make all
+</pre>
+<p>
+
+          In real life, you want to replace <span class="command">make all</span> with whatever
+          your build command is.
+        </li>
+      </ol>
+</p>
+<p>
+<a name="howitworks"></a><h1>How beam_trace works</h1>
+
+
+</p>
+<p>
+      The <span class="command">beam_trace</span> command watches any process
+      you run (the <span class="term">target process</span>). Any time the target process
+      runs a sub-command (a <span class="term">target sub-process</span>), the 
+      <span class="command">beam_trace</span> command will invoke the specified
+      trace script. If a trace script isn't given, <span class="command">beam_trace</span>
+      uses BEAM's built-in <span class="command">beam_trace_dispatch</span> program,
+      which runs BEAM for you automatically.
+</p>
+<p>
+      The trace script is invoked with the target sub-process's
+      command line as arguments.
+      The environment is the same as the environment in which
+      the target process will execute, with the following exceptions:
+</p>
+<p>
+      <ul>
+        <li>STDIN is redirected from /dev/null</li>
+        <li>STDOUT is redirected to /dev/null</li>
+      </ul>
+</p>
+<p>
+      That means that the trace script cannot read from STDIN and it
+      cannot write to STDOUT.
+      This is so that the trace script doesn't interfere with the
+      normal execution of the target sub-process. Any messages
+      should be written to STDERR or /dev/tty, depending on what
+      you are doing.
+</p>
+<p>
+      The script itself is not traced by <span class="command">beam_trace</span>,
+      but the target sub-process will be, so that recursive command
+      invocations are all traced by the trace script.
+</p>
+<p>
+      Any BEAM options that were given to the <span class="command">beam_trace</span>
+      command will end up in the <span class="env">BEAM_TRACE_OPTS</span> environment
+      variable, encoded as a <a href="http://www.json.org">JSON</a>
+      list.
+</p>
+<p>
+      Different trace scripts can do different things. We provide
+      an <a href="beam_trace_example.pl">example trace script</a>
+      that will invoke BEAM, but the possibilities are limitless.
+</p>
+<p>
+<a name="supported"></a><h1>Supported Platforms</h1>
+
+
+</p>
+<p>
+      Currently, the <span class="command">beam_trace</span> program is supported
+      on the following systems and executables:
+</p>
+<p>
+      <ul>
+        <li>32-bit and 64-bit Linux-x86</li>
+        <li>32-bit and 64-bit Linux-s390</li>
+        <li>32-bit and 64-bit Linux-ppc</li>
+      </ul>
+</p>
+<p>
+<a name="supported_compilers"></a><h1>Supported Compilers</h1>
+
+
+</p>
+<p>
+      If you are using our default tracing, we support the
+      following compilers:
+</p>
+<p>
+      <ul>
+       <li>GCC</li>
+       <li>IBM or Sun Java SDK</li>
+      </ul>
+</p>
+<p>
+      If you write your own <a href="#custom">custom trace script</a>,
+      then you can use any compiler you would like.
+</p>
+<p>
+<a name="limitations"></a><h1>Limitations</h1>
+
+
+</p>
+<p>
+      The <span class="command">beam_trace</span> program uses <span class="var">LD_PRELOAD</span>
+      to trace target processes and target sub-processes. This means
+      that the following processes cannot be traced:
+</p>
+<p>
+      <ul>
+        <li>Programs statically linked against libc</li>
+        <li>Programs that don't have ELF headers</li>
+        <li>Programs that don't invoke other programs as separate
+            processes (like <a href="#ant">ant</a>)</li>
+      </ul>
+</p>
+<p>
+      These limitations exist because <span class="command">beam_trace</span> uses the
+      ELF header to decide whether or not the child program can be
+      traced. If the program has no ELF header, the <span class="command">beam_trace</span>
+      program doesn't know how to trace it, and will fail to do so.
+</p>
+<p>
+<a name="ant"></a><h1>How to trace ant</h1>
+
+
+</p>
+<p>
+      The <span class="command">beam_trace</span> program won't work on <span class="command">ant</span>
+      by default because <span class="command">ant</span> doesn't execute the Java
+      compiler as a separate process. Instead, <span class="command">ant</span> loads the
+      Java compiler in-core and processes the source files directly.
+</p>
+<p>
+      If you modify <span class="command">ant</span> so that it executes the Java compiler
+      as a separate process, <span class="command">beam_trace</span> can trace <span class="command">ant</span>
+      builds directly. Directions on how to do this are in the
+      <a href="http://ant.apache.org/manual/Tasks/javac.html">ant documentation</a>.
+      See the <span class="code">fork</span> attribute.
+</p>
+<p>
+      As an alternative, you can use <a href="ant_ref.html">BEAM's ant plugin</a>
+      to integrate BEAM into <span class="command">ant</span> builds directly.
+</p>
+<p>
+<a name="feedback"></a><h1>Give us Feedback</h1>
+
+
+</p>
+<p>
+      This is a relatively new technology for BEAM, so we would
+      like to hear about your experience with it. If you come
+      across problems, or a build system that it doesn't seem
+      to work with, please let us know. We also want to hear
+      about your success stories, so speak up if it is working
+      well for you.
+</p>
+<p>
+      Come drop us a line on our 
+      <a href="mailto:beam-user@edamail.fishkill.ibm.com">mailing list</a>
+      and we'll be happy to help.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>

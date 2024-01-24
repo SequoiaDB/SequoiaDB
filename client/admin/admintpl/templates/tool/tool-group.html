@@ -1,0 +1,149 @@
+		<div id="tool">
+			<div class="navbar navbar-default" role="banner" style="border-bottom:#D2D2D2 solid 1px;">
+				<div class="navbar-header">
+					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+						<span class="sr-only">Toggle navigation2</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a href="#" class="navbar-brand">工具栏</a>
+				</div>
+				<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="#" title="连接" onclick="showconnectmanager();"><img src="images/link.png"></a>
+						</li>
+						<li>
+							<a href="#" title="刷新" onclick="tool_refresh_all(location);"><img src="images/refresh.png"></a>
+						</li>
+				{{$showid = 0}}
+				{{foreach $globalvar_tool_button as $child}}
+					{{if $child["showid"] neq ""}}
+						<li id="{{$child["showid"]}}{{$showid}}" style="display:none;">
+						{{$showid = $showid + 1}}
+					{{else}}
+						<li>
+					{{/if}}
+							<a href="#">
+					{{if $child["type"] eq 1}}
+								<div  data-toggle="modal" data-target="#myModal1" onclick='{{$child["common"]}}'><img src="./images/{{$child["pic"]}}" title="{{$child["name"]}}"/></div>
+					{{elseif $child["type"] eq 2}}
+								<div onclick='{{$child["common"]}}'><img src="./images/{{$child["pic"]}}" title="{{$child["name"]}}"/></div>
+					{{/if}}
+							</a>
+						</li>
+				{{/foreach}}
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="tb-group-title"></h4>
+				</div>
+				<div class="modal-body">
+				{{$showid = 0}}
+				{{foreach $globalvar_tool_parameter as $child}}
+					<div class="row" id="{{$child["showid"]}}{{$showid}}" style="margin-top:5px;">
+					{{if $child["type"] eq 1}}
+						<div class="col-md-4">{{$child["name_title"]}}</div>
+						<div class="col-md-8">
+							{{if $child["input"] eq "text"}}
+							<textarea id="{{$child["inputid"]}}" class="form-control" rows="3" placeholder="{{$child["placeholder"]}}"></textarea>
+							{{elseif $child["input"] eq "input"}}
+							<input id="{{$child["inputid"]}}" type="text" class="form-control" placeholder="{{$child["placeholder"]}}">
+							{{/if}}
+						</div>
+					{{elseif $child["type"] eq 2}}
+						<div class="col-md-4">{{$child["name_title"]}}</div>
+						<div class="col-md-8">
+							<select id="{{$child["inputid"]}}">
+								<option value="4096" selected="selected">4096</option>
+								<option value="8192">8192</option>
+								<option value="16384">16384</option>
+								<option value="32768">32768</option>
+								<option value="65536">65536</option>
+							</select>
+						</div>
+					{{elseif $child["type"] eq 3}}
+						<div class="col-md-4">{{$child["name_title"]}}</div>
+						<div class="col-md-8">
+							<div class="checkbox">
+  								<label>
+									<input type="checkbox" id="{{$child["inputid"]}}" value="">{{$child["placeholder"]}}
+								</label>
+							</div>
+						</div>
+					{{elseif $child["type"] eq 4}}
+						<div class="alert alert-warning"><strong>{{$child["name_title"]}}</strong> {{$child["placeholder"]}}</div>
+					{{/if}}
+					{{$showid = $showid + 1}}
+					</div>
+				{{/foreach}}
+					<div id="tool_group_respond" style="margin-top:5px;"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" onclick="ajaxsendgroupcommon();">确认</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+
+$('#myModal1').on('hide.bs.modal', function ()
+{
+	getleftlist( "pictree", "group" ) ;
+})
+
+function show_group_tool_1( isstart )
+{
+	{{$showid = 0}}
+	{{foreach $globalvar_tool_button as $child}}
+		{{if $child["pic"] eq "groupplay.png"}}
+			showandhidetool( "tool_button_{{$showid}}", !isstart ) ;
+			{{$showid = $showid + 1}}
+		{{elseif $child["pic"] eq "groupstop.png"}}
+			showandhidetool( "tool_button_{{$showid}}", isstart ) ;
+			{{$showid = $showid + 1}}
+		{{else}}
+			{{if $child["dependence"] eq "group"}}
+				showandhidetool( "tool_button_{{$showid}}", true ) ;
+				{{$showid = $showid + 1}}
+			{{elseif $child["dependence"] eq "node"}}
+				showandhidetool( "tool_button_{{$showid}}", false ) ;
+				{{$showid = $showid + 1}}
+			{{/if}}
+		{{/if}}
+	{{/foreach}}
+}
+
+function show_group_tool_2( isstart )
+{
+	{{$showid = 0}}
+	{{foreach $globalvar_tool_button as $child}}
+		{{if $child["pic"] eq "nodeplay.png"}}
+			showandhidetool( "tool_button_{{$showid}}", !isstart ) ;
+			{{$showid = $showid + 1}}
+		{{elseif $child["pic"] eq "nodestop.png"}}
+			showandhidetool( "tool_button_{{$showid}}", isstart ) ;
+			{{$showid = $showid + 1}}
+		{{else}}
+			{{if $child["dependence"] eq "group"}}
+				showandhidetool( "tool_button_{{$showid}}", false ) ;
+				{{$showid = $showid + 1}}
+			{{elseif $child["dependence"] eq "node"}}
+				showandhidetool( "tool_button_{{$showid}}", true ) ;
+				{{$showid = $showid + 1}}
+			{{/if}}
+		{{/if}}
+	{{/foreach}}
+}
+</script>
+    <div id="index" style="padding-left:20px;padding-right:50px;">

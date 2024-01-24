@@ -1,0 +1,173 @@
+<div ng-controller="Monitor.Preview.Index.Ctrl" ng-container="{}">
+   <div style="background:#F4F4F4;" ng-container="{height:57}">
+      <div class="nav-new">
+         <div ng-click="GotoNodeList()">{{autoLanguage("节点")}}</div>
+         <div ng-click="GotoResources()">{{autoLanguage("资源")}}</div>
+         <div ng-click="GotoHostList()">{{autoLanguage("主机")}}</div>
+      </div>
+   </div>
+   <div style="padding:10px 15px;" ng-container="{offsetY:-60}">
+      <div style="background-color:#f0f0f0;" ng-container="{height:2}"></div>
+      <div class="well Ellipsis" style="margin-top:10px;">
+         <i class="fa fa-circle" ng-if="DBStatus" ng-style="{'normal':{'color':'#00CC66'},'warning':{'color':'#F9A937'},'error':{'color':'#D9534F'}}[DBStatus]"></i>&nbsp;<span style="font-weight:bold;color:#006699;">{{ModuleName}}</span>&nbsp;
+         <span>{{ErrorMsg}}</span>
+      </div>
+      <div ng-container="{offsetY:-60,marginTop:10,marginBottom:10}">
+         <div style="min-height:206px;font-size:90%;" ng-container="{height:'70%',marginTop:10}">
+            <!--主机信息-->
+            <div style="float:left;" ng-container="{width:'32%',offsetY:-10}">
+               <div style="padding:0 10px 10px 0;font-weight:bold;">{{autoLanguage("主机信息")}}</div>
+               <div style="padding:10px;border:1px solid #ddd;overflow-y:auto;color:#666;" ng-container="{offsetY:-27}">
+                  <table class="table loosen">
+                     <tr>
+                        <td style="width:40%;font-weight:bold;">{{autoLanguage("主机数")}}</td>
+                        <td style="width:60%;">
+                           <a class="Ellipsis linkButton" ng-if="SysConfig['Edition'] == 'Enterprise'" ng-click="GotoHostList()">{{HostNum}}</a>
+                           <span ng-if="SysConfig['Edition'] != 'Enterprise'">{{HostNum}}</span>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">{{autoLanguage("磁盘数")}}</td>
+                        <td>{{DiskNum}}</td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">CPU</td>
+                        <td>
+                           <div style="width:100%;height:22px;" progress-bar="charts.Host.CPU"></div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">Memory</td>
+                        <td>
+                           <div style="width:100%;height:22px;" progress-bar="charts.Host.Memory"></div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style="font-weight:bold;">Disk</td>
+                        <td>
+                           <div style="width:100%;height:22px;" progress-bar="charts.Host.Disk"></div>
+                        </td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+            <!--存储集群信息-->
+            <div style="float:left;min-width:430px;" ng-container="{width:'68%',offsetX:-10,offsetY:-10,marginLeft:10}">
+               <div style="padding:0 10px 10px 0;font-weight:bold;">{{autoLanguage("存储集群信息")}}</div>
+               <div style="padding:10px;border:1px solid #ddd;overflow-y:auto;color:#666;position:relative;" ng-container="{offsetY:-27}">
+                  <div style="float:left;width:210px;">
+                     <table class="table loosen" style="width:210px;">
+                        <tr>
+                           <td style="width:55%;font-weight:bold;">{{autoLanguage("发行版本")}}</td>
+                           <td style="width:45%;">
+                              <div class="Ellipsis">
+                                 <span ng-if="SysConfig['Edition'] == 'Enterprise'">{{autoLanguage("企业版")}}</span>
+                                 <span ng-if="SysConfig['Edition'] != 'Enterprise'">{{autoLanguage("社区版")}}</span>
+                              </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="width:55%;font-weight:bold;">{{autoLanguage("数据库版本")}}</td>
+                           <td style="width:45%;">
+                              <div class="Ellipsis">
+                                 <span>
+                                    {{moduleInfo['version']}}
+                                 </span>
+                              </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="font-weight:bold;">{{autoLanguage("部署模式")}}</td>
+                           <td>
+                              <div class="Ellipsis ">{{ModuleMode}}</div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="font-weight:bold;">{{autoLanguage("会话数")}}</td>
+                           <td>
+                              <div class="Ellipsis">
+                                 <a class="linkButton" ng-click="GotoSessions()">{{moduleInfo['sessions']}}</a>
+                              </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="font-weight:bold;">{{autoLanguage("域数")}}</td>
+                           <td>
+                              <div class="Ellipsis">
+                                 <a class="linkButton" ng-if="ModuleMode != 'standalone'" ng-click="GotoDomains()">{{moduleInfo['domains']}}</a>
+                                 <span ng-if=" ModuleMode == 'standalone'">{{moduleInfo['domains']}}</span>
+                              </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="font-weight:bold;">{{autoLanguage("分区组数")}}</td>
+                           <td>
+                              <div class="Ellipsis">
+                                 <a class="linkButton" ng-if="ModuleMode != 'standalone'" ng-click="GotoGroups()">{{moduleInfo['groups']}}</a>
+                                 <span ng-if="ModuleMode == 'standalone'">{{moduleInfo['groups']}}</span>
+                              </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="font-weight:bold;">{{autoLanguage("节点数")}}</td>
+                           <td>
+                              <div class="Ellipsis">
+                                 <a class="linkButton" ng-if="ModuleMode != 'standalone'" ng-click="GotoNodeList()">{{moduleInfo['nodes']}}</a>
+                                 <span ng-if="ModuleMode == 'standalone'">{{moduleInfo['nodes']}}</span>
+                              </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="font-weight:bold;">{{autoLanguage("集合数")}}</td>
+                           <td>
+                              <div class="Ellipsis">
+                                 <a class="linkButton" ng-click="GotoDatabase()">{{moduleInfo['cl']}}</a>
+                              </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="font-weight:bold;">{{autoLanguage("记录数")}}</td>
+                           <td>
+                              <div class="Ellipsis">
+                                 <a class="linkButton" ng-click="GotoDatabase()">{{moduleInfo['records']}}</a>
+                              </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td style="font-weight:bold;">{{autoLanguage("Lob数")}}</td>
+                           <td>
+                              <div class="Ellipsis">
+                                 <a class="linkButton" ng-click="GotoDatabase()">{{moduleInfo['lobs']}}</a>
+                              </div>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+                  <!--图表选择-->
+                  <div style="min-height:150px;max-width:900px;float:left;" ng-container="{offsetX:-230,height:'90%'}">
+                     <div style="max-width:940px;max-height:350px;" ng-container="{}" create-chart="charts.Module"></div>
+                  </div>
+                  <div class="clear-float"></div>
+               </div>
+            </div>
+            <div class="clear-float"></div>
+         </div>
+         <div style="position:relative;border:1px solid #C8D2DC;overflow-y:auto;" scroll-bottom ng-container="{marginTop:10,height:'30%',offsetY:-10}">
+            <div class="alarm alarm-success" ng-if="ErrResult.length == 0 && DBStatus">
+               <i class="fa fa-check-circle" style="font-size:120%;padding-right:15px;"></i>
+               {{sprintf(autoLanguage( '? [success] - ? 正常运行中。' ), Time, ModuleName)}}
+            </div>
+            <div ng-repeat="line in ErrResult track by $index" ng-if="ErrResult.length > 0 && DBStatus">
+               <div class="alarm alarm-danger" ng-if="line['type'] == 'error'" >
+                  <i class="fa fa-exclamation-circle" style="color:#D1554B;font-size:120%;padding-right:15px;"></i>
+                  {{line['info']}}
+               </div>
+               <div class="alarm alarm-warning" ng-if="line['type'] == 'warning'">
+                  <i class="fa fa-question-circle" style="color:#F9A937;padding-right:15px;font-size:120%;"></i>
+                  {{line['info']}}
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

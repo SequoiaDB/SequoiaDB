@@ -1,0 +1,4 @@
+tar -zxvf sysstat-10.3.1.tar.gz
+cd sysstat-10.3.1
+./configure
+make && make install

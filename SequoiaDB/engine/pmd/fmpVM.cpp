@@ -1,0 +1,58 @@
+/*******************************************************************************
+
+
+   Copyright (C) 2023-present SequoiaDB Ltd.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+   Source File Name = fmpVM.cpp
+
+   Descriptive Name =
+
+   When/how to use:
+
+   Dependencies: N/A
+
+   Restrictions: N/A
+
+   Change Activity:
+   defect Date        Who Description
+   ====== =========== === ==============================================
+          06/19/2013  YW  Initial Draft
+
+   Last Changed =
+
+*******************************************************************************/
+
+#include "fmpVM.hpp"
+#include "fmpDef.hpp"
+
+_fmpVM::_fmpVM()
+:_contextID( -1 ),
+ _ok(FALSE)
+{
+
+}
+
+_fmpVM::~_fmpVM()
+{
+
+}
+
+INT32 _fmpVM::init( const BSONObj &param )
+{
+   _param = param ;
+   return SDB_OK ;
+}
+

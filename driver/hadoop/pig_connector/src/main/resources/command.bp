@@ -1,0 +1,12 @@
+A = load 'sequoia://192.168.20.111:40000/hadoopInputCS/hadoopInputC' using com.sequoia.pig.SequoiaLoader('name:chararray, age:chararray');
+dump A;
+
+A = load 'info.txt';
+store A into 'result';
+
+A = load 'info.txt';
+store A into 'sequoia://192.168.20.111:40000/pigOutCs/pigOutC' using com.sequoia.pig.SequoiaWriter('');
+
+A = load 'sequoia://192.168.20.111:40000/hadoopInputCS/hadoopInputC' using com.sequoia.pig.SequoiaLoader('name:chararray, age:chararray');
+store A into 'sequoia://192.168.20.111:40000/pigOutCs/pigOutC' using com.sequoia.pig.SequoiaWriter('name:chararray');
+

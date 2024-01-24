@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@param ${java.driver.jar} : The path where the java.driver.jar is -->
+<!--@param ${javac.base.dir} : The path where the javac.base.dir is -->
+<!--@param ${root.dir} : The path where the ${WORKSPACE}/sequoiadb/driver/hadoop/hive -->
+
+<!--Don't need to set-->
+<!--@param ${open.source.hive_connector.filename} : build with apache hive 0.12 hive-exec.jar -->
+<!--Don't need to set-->
+<!--@param ${cdh.hive_connector.filename} : build with cloudera cdh5.0.0-beta-2 hive0.12 hive-exec-cdh-5.0.0-beta-2.jar -->
+
+<project name="ant-sdbtasks" default="jar" basedir=".">
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="./lib/ant-contrib.jar" />
+			<pathelement location="C:\Users\chenzichuan\Desktop\driver\java\ant-contrib.jar" />
+		</classpath>
+	</taskdef>
+
+	<property name="root.dir" value="." />
+	<property name="java.driver.jar" value="${basedir}/../../java/sequoiadb.jar" />
+	<property name="javac.base.dir" value="../../../" />
+
+	<property name="open.source.target.dir" value="${root.dir}/build_open_source" />
+	<property name="cdh.target.dir" value="${root.dir}/build_cdh" />
+	<property name="open.source.hive_connector.filename" value="hive-sequoiadb-apache.jar" />
+	<property name="cdh.hive_connector.filename" value="hive-sequoiadb-cdh-5.0.0-beta-2.jar" />
+	
+	<property name="source.dir" value="${root.dir}/src" />
+	<property name="library.dir" value="${root.dir}/lib" />
+
+	<target name="clean" depends="">
+		<delete dir="${open.source.target.dir}" />
+		<delete dir="${cdh.target.dir}" />
+	</target>
+
+	<target name="compile" depends="clean">
+		<mkdir dir="${cdh.target.dir}" />
+		<mkdir dir="${open.source.target.dir}" />
+
+		<javac srcdir="${source.dir}" destdir="${open.source.target.dir}" debug="on" classpath="" fork="yes">
+			<classpath>
+				<fileset dir="${library.dir}" includes="*.jar" excludes="hive-exec-0.12.0-cdh5.0.0-beta-2.jar" />
+				<pathelement location="${java.driver.jar}"/>
+			</classpath>
+		</javac>
+		
+		<javac srcdir="${source.dir}" destdir="${cdh.target.dir}" debug="on" classpath="" fork="yes">
+			<classpath>
+				<fileset dir="${library.dir}" includes="*.jar" excludes="hive-exec-0.12.0.jar" />
+				<pathelement location="${java.driver.jar}"/>
+			</classpath>
+		</javac>
+		
+	</target>
+
+	<target name="jar" depends="compile">
+		<tstamp>
+			<format property="tstamp" pattern="dd/MM/yyy HH:mm:ss" />
+		</tstamp>
+
+		<jar file="${root.dir}/${open.source.hive_connector.filename}">
+			<manifest>
+				<attribute name="Version" value="1.0" />
+				<attribute name="Build-Timestamp" value="${tstamp}" />
+			</manifest>
+			<fileset dir="${open.source.target.dir}" includes="**/*" />
+		</jar>
+		
+		<jar file="${root.dir}/${cdh.hive_connector.filename}">
+			<manifest>
+				<attribute name="Version" value="1.0" />
+				<attribute name="Build-Timestamp" value="${tstamp}" />
+			</manifest>
+			<fileset dir="${cdh.target.dir}" includes="**/*" />
+		</jar>
+	</target>
+</project>

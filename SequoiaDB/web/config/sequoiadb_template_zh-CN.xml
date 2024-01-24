@@ -1,0 +1,104 @@
+<DeployModList type="array">
+   <FILLER>
+      <DeployMod>distribution</DeployMod>
+      <WebName>集群模式</WebName>
+      <BusinessType>sequoiadb</BusinessType>
+      <Property type="array">
+         <FILLER>
+            <Name>replicanum</Name>
+            <Type>int</Type>
+            <Default>3</Default>
+            <Valid>1,3,5,7</Valid>
+            <Display>select box</Display>
+            <Edit>true</Edit>
+            <Desc>数据拷贝数</Desc>
+            <Level>0</Level>
+            <WebName>副本数</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>datagroupnum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1-</Valid>
+            <Display>edit box</Display>
+            <Edit>true</Edit>
+            <Desc>数据分区组的数量</Desc>
+            <Level>0</Level>
+            <WebName>分区组数</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>catalognum</Name>
+            <Type>int</Type>
+            <Default>3</Default>
+            <Valid>1,3,5,7</Valid>
+            <Display>select box</Display>
+            <Edit>true</Edit>
+            <Desc>编目节点的数量</Desc>
+            <Level>0</Level>
+            <WebName>编目节点数</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>coordnum</Name>
+            <Type>int</Type>
+            <Default>0</Default>
+            <Valid>0-993</Valid>
+            <Display>edit box</Display>
+            <Edit>true</Edit>
+            <Desc>协调节点的数量，填0则所有主机都安装一个协调节点</Desc>
+            <Level>0</Level>
+            <WebName>协调节点数</WebName>
+         </FILLER>
+      </Property>
+   </FILLER>
+   <FILLER>
+      <DeployMod>standalone</DeployMod>
+      <WebName>独立模式</WebName>
+      <BusinessType>sequoiadb</BusinessType>
+      <Property type="array">
+         <FILLER>
+            <Name>replicanum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1</Valid>
+            <Display>select box</Display>
+            <Edit>false</Edit>
+            <Desc>数据拷贝数</Desc>
+            <Level>0</Level>
+            <WebName>副本数</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>datagroupnum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1</Valid>
+            <Display>edit box</Display>
+            <Edit>false</Edit>
+            <Desc>数据分区组的数量</Desc>
+            <Level>0</Level>
+            <WebName>分区组数</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>catalognum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1</Valid>
+            <Display>select box</Display>
+            <Edit>false</Edit>
+            <Desc>编码节点的数量</Desc>
+            <Level>0</Level>
+            <WebName>编目节点数</WebName>
+         </FILLER>
+         <FILLER>
+            <Name>coordnum</Name>
+            <Type>int</Type>
+            <Default>1</Default>
+            <Valid>1</Valid>
+            <Display>edit box</Display>
+            <Edit>false</Edit>
+            <Desc>协调节点的数量，填0则所有主机都安装一个协调节点</Desc>
+            <Level>0</Level>
+            <WebName>协调节点数</WebName>
+         </FILLER>
+      </Property>
+   </FILLER>
+</DeployModList>

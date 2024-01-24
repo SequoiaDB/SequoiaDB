@@ -1,0 +1,28 @@
+fixDataCommitLSN.js
+
+修复数据集合 DataCommitLSN 为 -1 的情况
+
+- 对于分区键包含 _id 字段的集合，尝试为某一个记录临时增加 __TEMP_FIELD__SYSDUMMY 字段，之后删除该临时字段
+- 对于分区键不包含 _id 字段的集合，尝试插入一条 _id 字段为 SYSDUMMY 的临时记录，之后删除该临时记录
+- 最终执行 db.sync() 持久化修复 DataCommitLSN
+
+- 使用方法
+
+  sdb -e "var db = new Sdb( 'localhost', 50000 ) ;" -f fixDataCommitLSN.js
+
+- testMode: 尝试修复一个数据组中的一个集合，默认：false
+
+  sdb -e "var db = new Sdb( 'localhost, 50000 ) ; var testMode = true ;" -f fixDataCommitLSN.js
+
+- onErrContinue: 跳过错误，继续修复下一个数据集合，默认：false
+
+  sdb -e "var db = new Sdb( 'localhost', 50000 ) ; var onErrContinue = true ;" -f fixDataCommitLSN.js
+
+- dummyKey: 修复时使用的键值，默认：SYSDUMMY
+
+  sdb -e "var db = new Sdb( 'localhost', 50000 ) ; var dummyKey = \"ANOTHER_DUMMY_KEY\"" -f fixDataCommitLSN.js
+
+- verbose: 打印详细信息，默认：false
+
+  sdb -e "var db = new Sdb( 'localhost', 50000 ) ; var verbose = true ;" -f fixDataCommitLSN.js
+

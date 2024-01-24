@@ -1,0 +1,388 @@
+#!/bin/bash
+
+#Data collection script for general SequoiaDB perf and hang issues on LINUX
+#This script is only collecting data for LOCAL nodes
+#
+#*********************WARNING********************WARNING************************
+#  This script should be run only at the request of SequoiaDB support.
+#  It can cause significant performance degradation, especially on busy
+#  systems with a high number of active connections
+#*******************************************************************************
+#
+# run as sdbadmin user
+#   all data will be dumped to the current directory
+#   This script should NOT be run as a cron job.
+#
+# NOTE: elapsed time could be taken from few mintues to hours,
+#       in many cases the time will be within 5 minutes unless the system is
+#       under extremely heavy load or experiencing hangs for deadlatches,
+#       the script may hang.
+#
+# Data will be collected for the database provided as connection URL.
+# Snapshot and database configuration data will be collected by default.
+# Additional information will be collected only if the arguments are provided.
+CURDIR=`/bin/pwd`
+if [ -f /etc/default/sequoiadb ]
+then
+   . /etc/default/sequoiadb
+   INSTALLDIR=$INSTALL_DIR
+else
+   INSTALLDIR=`dirname $0`
+   cd ${INSTALLDIR?}
+   INSTALLDIR=`/bin/pwd`
+   cd ${INSTALLDIR?}
+   INSTALLDIR=`dirname ${INSTALLDIR?}`
+fi
+
+LOCALCONFIGDIR="${INSTALLDIR?}/conf/local"
+BINDIR="${INSTALLDIR?}/bin"
+cd ${CURDIR?}
+
+# function to print usage
+function printUsage
+{
+   echo "Usage: sdbperfcol [-h] [-u <username> -p <password>] [-l 0|1|2] -s <port1>,<port2> ..."
+   echo "-u         user name"
+   echo "-p         password"
+   echo "-l         service level, 0 for lowest, 2 for highest. Default: 0"
+   echo "-s         list of database service names, separated by comma"
+   echo "-h         show this help"
+   exit
+}
+
+USERNAME=""
+PASSWORD=""
+SERVICENAME=""
+SERVICELEVEL="0"
+
+# parse arguments
+while getopts ":u:p:s:l:h" option;
+do
+   case $option in
+      u)
+         # collect username
+         USERNAME=$OPTARG
+         ;;
+      p)
+         # collect password
+         PASSWORD=$OPTARG
+         ;;
+      s)
+         # collect local service name
+         SERVICENAME=$OPTARG
+         ;;
+      l)
+         # service level, 0 for lowest, 2 for highest
+         SERVICELEVEL=$OPTARG
+         ;;
+      h)
+         printUsage
+         exit
+         ;;
+      *)
+         printUsage
+         exit
+         ;;  
+   esac
+done
+
+# sanity check for service level
+if [ ${SERVICELEVEL?} != "0" ] && [ ${SERVICELEVEL?} != "1" ] && [ ${SERVICELEVEL?} != "2" ] ;
+then
+   echo "Invalid service level: ${SERVICELEVEL?}"
+   printUsage
+   exit
+fi
+
+NUMSERVICELEVEL=$((SERVICELEVEL))
+
+# convert service name into list
+DBLISTSIZE=0
+DATABASELIST=$(echo $SERVICENAME | tr "," "\n")
+
+# perform sanity check for database service name and do count
+for x in $DATABASELIST
+do
+   # construct the sdb.conf path for the given node
+   FILENAME="${LOCALCONFIGDIR?}/$x/sdb.conf"
+   # verify the existance of file
+   if [ -f ${FILENAME?} ];
+   then
+      echo "Collect perf data for node ${x?}"
+   else
+      echo "Node ${x?} does not exist"
+      # exit if the file does not exist
+      exit
+   fi
+   # increase count for total database list
+   let DBLISTSIZE=DBLISTSIZE+1
+done
+
+# if there's no database service specified, let's give error and exit
+if [ ${DBLISTSIZE?} -eq 0 ]
+then
+   echo "At least one database port need to be provided."
+   printUsage
+   exit
+fi
+
+# print warning message
+echo ""
+echo "***************WARNING***************WARNING***************"
+echo "This script should be run only at the request of"
+echo "SequoiaDB support.  It can cause significant performance"
+echo "degradation, especially on busy systems with a high number"
+echo "of active connections"
+echo "***********************************************************"
+echo ""
+echo "You have 10 seconds to cancel this cript with Ctrl-C"
+sleep 10
+
+# create local directory
+# dir for operating system configurations
+mkdir OSCONFIG >> sdbperfcol.log 2>&1
+# dir for sequoiadb configurations
+mkdir SDBCONFIG >> sdbperfcol.log 2>&1
+# dir for operating system performance data
+mkdir OSSNAPS >> sdbperfcol.log 2>&1
+# dir for sequoiadb performance data
+mkdir SDBSNAPS >> sdbperfcol.log 2>&1
+# dir for operating system trace
+mkdir OSTRACE >> sdbperfcol.log 2>&1
+# dir for sequoiadb trace
+mkdir SDBTRACE >> sdbperfcol.log 2>&1
+
+# tar and compress the output directories and rename with current timestamp
+# remove the directories once the tar completed successfully
+# the file should be remain in the current directory
+function tarfiles
+{
+   # tar the files
+   tar -cvf sdbperfcol.out.tar OSCONFIG SDBCONFIG OSSNAPS SDBSNAPS \
+            OSTRACE SDBTRACE sdbperfcol.* 2>&1
+   # if the tar success, let's remove the directories
+   if [ $? -eq 0 ] ; then
+      echo "removing directories... "
+      rm -Rf OSCONFIG SDBCONFIG OSSNAPS SDBSNAPS OSTRACE SDBTRACE
+   fi
+   # get the current timestamp
+   datestamp=`date +"%m%d"`.`date +"%H%M"`
+   # rename the file with current timestamp
+   mv sdbperfcol.out.tar sdbperfcol.$datestamp.tar
+   # zip the file
+   gzip sdbperfcol.$datestamp.tar
+   # echo informational messages
+   echo "output files have been tarred and compressed into sdbperfcol.$datestamp.tar.gz" `date` | tee -a sdbperfcol.log
+   echo ""
+   echo "This file should be sent to SequoiaDB support for further analyze"
+   echo "Thank you"
+   echo ""
+}
+
+# if ctrl-c happened during the execution, it will trigger the script to
+# tar up files and exit
+trap "echo Please allow a few minutes for cleanup ; \
+      tarfiles; exit" 1 2
+
+#ANNONCEMENT
+echo "If at any time during the execution of this script, the duration"
+echo "exceeds the maximum suggested time, issue Ctrl-C to cancel"
+echo "This script will then clean up, dump any active sdb trace,"
+echo "and tar up output files. Please allow 3-5 minutes for this task"
+echo ""
+echo ""
+sleep 5
+
+
+#OS CONFIG INFO
+echo "started OS CONFIG info" `date` | tee -a sdbperfcol.log
+echo "should complete in less than one minute"
+uname -a > OSCONFIG/machine.cfg 2>&1
+ipcs -l >> OSCONFIG/machine.cfg 2>&1
+ls -l /dev >> OSCONFIG/machine.cfg 2>&1
+rpm -qa > OSCONFIG/rpm_qa.txt 2>&1
+dmesg > OSCONFIG/dmesg.txt 2>&1
+mkdir -p OSCONFIG/proc/sys/vm 2>&1
+cp /proc/sys/vm/* OSCONFIG/proc/sys/vm 2>/dev/null
+echo "finished OS CONFIG info" `date` | tee -a sdbperfcol.log
+echo "" | tee -a sdbperfcol.log
+
+#SDB CONFIG INFO
+echo "starting basic SequoiaDB CONFIG info" `date` | tee -a sdbperfcol.log
+echo "should complete in less than one minute"
+# current dir should always be <install path>/bin, we need to collect
+# configuration files at <install path>/conf/local/<port>/sdb.conf
+for x in $DATABASELIST
+do
+   # construct the sdb.conf path for the given node
+   FILENAME="${LOCALCONFIGDIR?}/$x/sdb.conf"
+   # verify the existance of file
+   cp ${FILENAME?} SDBCONFIG/sdb.conf.$x 2>&1
+done
+# get SequoiaDB database version
+${INSTALLDIR?}/bin/sequoiadb --version > SDBCONFIG/sdb.version 2>&1
+echo "finished basic SequoiaDB CONFIG info" `date` | tee -a sdbperfcol.log
+echo "" | tee -a sdbperfcol.log
+
+#OS MONITOR info 1
+echo "start first iteration of OS monitor info" `date` | tee -a sdbperfcol.log
+echo "should complete in less than 2 minutes"
+uptime > OSSNAPS/netstat.1 2>&1
+netstat -v >> OSSNAPS/netstat.1 2>&1
+uptime > OSSNAPS/nfsstat.1 2>&1
+nfsstat >> OSSNAPS/nfsstat.1 2>&1
+uptime > OSSNAPS/vmstat.1 2>&1
+vmstat 1 10 >> OSSNAPS/vmstat.1 2>&1
+uptime > OSSNAPS/swapon.1 2>&1
+swapon -s >> OSSNAPS/swapon.1 2>&1
+uptime > OSSNAPS/free.1 2>&1
+free >> OSSNAPS/free.1 2>&1
+uptime > OSSNAPS/pself.1 2>&1
+ps -elf | sort +5 -rn >> OSSNAPS/pself.1 2>&1
+top -b -n 1 > OSSNAPS/top.b 2>&1
+uptime > OSSNAPS/ipcs.1 2>&1
+ipcs -a >> OSSNAPS/ipcs.1 2>&1
+echo "finished first iteration of OS monitor info" `date` | tee -a sdbperfcol.log
+echo "" | tee -a sdbperfcol.log
+sleep 30
+
+#OS MONITOR info 2
+echo "start second iteration of OS monitor info" `date` | tee -a sdbperfcol.log
+echo "should complete in less than 2 minutes"
+uptime > OSSNAPS/netstat.2 2>&1
+netstat -v >> OSSNAPS/netstat.2 2>&1
+uptime > OSSNAPS/nfsstat.2 2>&1
+nfsstat >> OSSNAPS/nfsstat.2 2>&1
+uptime > OSSNAPS/vmstat.2 2>&1
+vmstat 1 10 >> OSSNAPS/vmstat.2 2>&1
+uptime > OSSNAPS/swapon.2 2>&1
+swapon -s >> OSSNAPS/swapon.2 2>&1
+uptime > OSSNAPS/free.2 2>&1
+free >> OSSNAPS/free.2 2>&1
+uptime > OSSNAPS/pself.2 2>&1
+ps -elf | sort +5 -rn >> OSSNAPS/pself.2 2>&1
+top -b -n 1 > OSSNAPS/top.b 2>&1
+uptime > OSSNAPS/ipcs.2 2>&1
+ipcs -a >> OSSNAPS/ipcs.2 2>&1
+echo "finished second iteration of OS monitor info" `date` | tee -a sdbperfcol.log
+echo "" | tee -a sdbperfcol.log
+
+#DB Monitor info
+echo "start SequoiaDB monitor info" `date` | tee -a sdbperfcol.log
+echo "should complete in less than 2 minutes for each database service"
+# loop for each database
+for x in $DATABASELIST
+do
+   # create snapshot file
+   uptime > SDBSNAPS/snapshot.$x 2>&1
+   # connect to database
+   ${BINDIR?}/sdb "var db=new Sdb('localhost', $x, '${USERNAME?}', '${PASSWORD?}')"
+   # make sure connection is established
+   if [ $? -ne 0 ] ;
+   then
+      echo "Unable to connect to service $x" >> SDBSNAPS/snapshot.$x 2>&1
+   else
+      # each database collect 5 snapshots
+      for i in 1 2 3 4 5
+      do
+         echo "[$i]Shards: " `date` >> SDBSNAPS/list_shards.$x 2>&1
+         ${BINDIR?}/sdb "db.listShards()" >> SDBSNAPS/list_shards.$x 2>&1
+         echo "[$i]Context Snapshot: " `date` >> SDBSNAPS/snapshot_context.$x 2>&1
+         ${BINDIR?}/sdb "db.snapshot(SDB_SNAP_CONTEXTS)" >> SDBSNAPS/snapshot_context.$x 2>&1
+         echo "[$i]Session Snapshot: " `date` >> SDBSNAPS/snapshot_session.$x 2>&1
+         ${BINDIR?}/sdb "db.snapshot(SDB_SNAP_SESSIONS)" >> SDBSNAPS/snapshot_session.$x 2>&1
+         echo "[$i]Database Snapshot: " `date` >> SDBSNAPS/snapshot_database.$x 2>&1
+         ${BINDIR?}/sdb "db.snapshot(SDB_SNAP_DATABASE)" >> SDBSNAPS/snapshot_database.$x 2>&1
+         echo "[$i]System Snapshot: " `date` >> SDBSNAPS/snapshot_system.$x 2>&1
+         ${BINDIR?}/sdb "db.snapshot(SDB_SNAP_SYSTEM)" >> SDBSNAPS/snapshot_system.$x 2>&1
+         echo "[$i]Collection Snapshot:" `date` >> SDBSNAPS/snapshot_collection.$x 2>&1
+         ${BINDIR?}/sdb "db.snapshot(SDB_SNAP_COLLECTIONS)" >> SDBSNAPS/snapshot_collection.$x 2>&1
+         echo "[$i]CollectionSpace Snapshot:" `date` >> SDBSNAPS/snapshot_collectionspace.$x 2>&1
+         ${BINDIR?}/sdb "db.snapshot(SDB_SNAP_COLLECTIONSPACES)" >> SDBSNAPS/snapshot_collectionspace.$x 2>&1
+         sleep 10
+      done
+      ${BINDIR?}/sdb "quit"
+   fi
+done
+echo "finished SequoiaDB monitor info" `date` | tee -a sdbperfcol.log
+echo "" | tee -a sdbperfcol.log
+
+# SERVICE LEVEL 1 or higher
+# STACK
+if [ $NUMSERVICELEVEL -gt 0 ] ;
+then
+   # STACK
+   echo "start SequoiaDB stack collection" `date` | tee -a sdbperfcol.log
+   echo "should complete in less than 3 minutes for each database service"
+   for x in $DATABASELIST
+   do
+      echo "Collecting first iteration of call stack for $x" | tee -a sdbperfcol.log
+      kill -23 `ps -elf | grep "sequoiadb($x)" | grep -v grep | awk '{print $4}'`
+      sleep 30
+      echo "Collecting second iteration of call stack for $x" | tee -a sdbperfcol.log
+      kill -23 `ps -elf | grep "sequoiadb($x)" | grep -v grep | awk '{print $4}'`
+      sleep 30
+      echo "Collecting third iteration of call stack for $x" | tee -a sdbperfcol.log
+      kill -23 `ps -elf | grep "sequoiadb($x)" | grep -v grep | awk '{print $4}'`
+      # wait for getconfig to be implemented in database engine, before collecting
+      # trap files from diaglog directory
+   done
+   echo "finished SequoiaDB stack collection" `date` | tee -a sdbperfcol.log
+   echo "" | tee -a sdbperfcol.log
+fi
+
+# SERVICE LEVEL 2 or higher
+# STRACE + Database Trace
+if [ $NUMSERVICELEVEL -gt 1 ] ;
+then
+   echo "start strace collection" `date` | tee -a sdbperfcol.log
+   echo "should complete in less than 2 minutes for each database service"
+   for x in $DATABASELIST
+   do
+      echo "Collecting starce for $x" | tee -a sdbperfcol.log
+      PID=`ps -elf | grep "sequoiadb($x)" | grep -v grep | awk '{print $4}'`
+      strace -f -tt -T -o OSTRACE/strace.$x.out -p $PID &
+      SPID=$!
+      sleep 60
+      kill -15 $SPID
+   done
+   echo "finished strace collection" `date` | tee -a sdbperfcol.log
+   echo "" | tee -a sdbperfcol.log
+
+   echo "start SequoiaDB trace collection" `date` | tee -a sdbperfcol.log
+   echo "should complete in less than 2 minutes for each database service"
+   for x in $DATABASELIST
+   do
+      echo "Collecting database trace for $x" | tee -a sdbperfcol.log
+      # connect to database
+      ${BINDIR?}/sdb "var db=new Sdb('localhost', $x, '${USERNAME?}', '${PASSWORD?}')"
+      # make sure connection is established
+      if [ $? -ne 0 ] ;
+      then
+         echo "Unable to connect to service $x" > SDBTRACE/trace.$x 2>&1
+      else
+         # each database collect trace for 60 seconds
+         ${BINDIR?}/sdb "db.traceOn(1000000000)" > SDBTRACE/trace.$x 2>&1
+         sleep 60
+         ${BINDIR?}/sdb "db.traceOff(\"${CURDIR?}/SDBTRACE/trc.$x.dmp\")" >> SDBTRACE/trace.$x 2>&1
+         ${BINDIR?}/sdb "quit"
+      fi
+   done
+   echo "finished SequoiaDB trace collection" `date` | tee -a sdbperfcol.log
+   echo "" | tee -a sdbperfcol.log
+
+   echo "start SequoiaDB trace format" `date` | tee -a sdbperfcol.log
+   for x in $DATABASELIST
+   do
+      if [ -f SDBTRACE/trc.$x.dmp ] ;
+      then
+         echo "Format database trace for $x" | tee -a sdbperfcol.log
+         ${BINDIR?}/sdb "traceFmt(SDB_TRACE_FLW,\"${CURDIR?}/SDBTRACE/trc.$x.dmp\",\"${CURDIR?}/SDBTRACE/trc.$x.flw\")" >> SDBTRACE/trace.$x 2>&1
+         ${BINDIR?}/sdb "traceFmt(SDB_TRACE_FMT,\"${CURDIR?}/SDBTRACE/trc.$x.dmp\",\"${CURDIR?}/SDBTRACE/trc.$x.fmt\")" >> SDBTRACE/trace.$x 2>&1
+      fi
+   done
+   echo "finished SequoiaDB trace format" `date` | tee -a sdbperfcol.log
+   echo "" | tee -a sdbperfcol.log
+fi
+
+tarfiles

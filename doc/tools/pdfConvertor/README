@@ -1,0 +1,23 @@
+Note:
+
+In Linux environment, need to increase the limit of number of open files, please
+set nofile items via limit.conf or sysctl.
+
+We use wkhtmlpdf to generate the pdf document from html
+
+1. The html document should be utf-8 encoding
+2. The wkhtmlpdf could contain cover.html, header.html and footer.html, each of them could be a html
+2.1 The global style of those htmls could be controled by css. In this case is pdf_global.css
+2.2 The version of document in those htmls {{version}} will be replaced by scons autogen program
+2.3 The tags below could be added to the those htmls:
+    'frompage', 'topage', 'page', 'webpage', 'section', 'subsection', 'subsubsection'
+    The wkhtmlpdf will replace them automatically, please see the javascript function subst() in footer.html
+3. The wkhtmlpdf could generate toc with <H?> tags in document html
+3.1 The style and item number of toc could be controled toc.xsl and pdf_global.css (Please see TOC part in pdf_global.css)
+
+$root/tools/pdfConvertor/tools/$platform/wkhtmltox/bin/$wkhtmltopdf --page-size A4 --dpi 300 --enable-smart-shrinking \
+--load-error-handling ignore --encoding utf-8 --user-style-sheet $root/tools/pdfConvertor/src/pdf_global.css \
+--footer-html $root/tools/pdfConvertor/src/footer.html --header-html $root/tools/pdfConvertor/src/header_tmp.html \
+--page-offset -1 cover $root/tools/pdfConvertor/src/cover_tmp.html \
+toc --xsl-style-sheet $root/tools/pdfConvertor/src/toc.xsl \
+$root/build/mid/build.html $root/build/output/$outputFileName.pdf

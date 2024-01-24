@@ -1,0 +1,143 @@
+<html>
+<head>
+  <title>BEAM: Ignoring Stub Functions</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrap">
+
+<table class="center">
+
+<td id="left">
+  <img src="images/logo.png" /><br />
+  <ul id="navlist">
+    <li id="navtitle">Information</li>
+    <li><a href="whatis.html">What is BEAM</a></li>
+    <li><a href="impatient.html">BEAM for the Impatient</a></li>
+    <li><a href="links.html">Links</a></li>
+    <li><a href="myths.html">Myths</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="sitemap.html">Sitemap</a></li>
+
+    <li id="navtitle">New Stuff</li>
+    <li><a href="beam_trace.html">Build Tracing</a></li>
+    <li><a href="windows.html">Windows Port</a></li>
+    <li><a href="java.html">Java Support</a></li>
+    <li><a href="eclipse/index.html">Eclipse Plug-in</a></li>
+
+    <li id="navtitle">Releases</li>
+    <li><a href="install.html">Download</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="history.html">History</a></li>
+
+    <li id="navtitle">Documentation</li>
+    <li><a href="quick.html">Quick start guide</a></li>
+    <li><a href="install.html">Installation Instructions</a></li>
+    <li><a href="customize.html">BEAM Customization</a></li>
+    <li><a href="compilers.html">Compiler Emulation</a></li>
+    <li><a href="build.html">Build Integration Guide</a></li>
+    <li><a href="builtin.html">Built-in Checks</a></li>
+    <li><a href="parms.html">Built-in Parameters </a></li>
+    <li><a href="attributes.html">Function Attributes</a></li>
+    <li><a href="reference.html">Reference Docs</a></li>
+    <li><a href="appnotes.html">Application Notes</a></li>
+    <li><a href="faq.html">FAQ</a>
+
+    <li id="navtitle">Contact</li>
+    <li><a href="mailing-lists.html">Mailing Lists</a></li>
+    <li><a href="http://spacedog.fishkill.ibm.com/beambugz/bugreport.cgi">Report a bug</a></li>
+  </ul>
+</td>
+
+<td id="right">
+<p>
+
+</p>
+<p>
+
+</p>
+<p>
+<h1 class="title">Ignoring Stub Functions</h1>
+<hr/>
+
+</p>
+<p>
+You may have a function which currently does nothing,
+but will have meaningful functionality in the future.
+There may be many places in your code where you call that 
+function, and BEAM is telling you that the calls are useless.
+</p>
+<pre class="example">
+int foo(int a)
+{
+  return 0;
+}
+
+void f()
+{
+  if (!foo(23)) {
+    foo(42);
+  }
+}
+</pre>
+<p>
+
+For this code BEAM may issue these complaints
+</p>
+<pre class="example">
+-- WARNING3     /*not used*/     &gt;&gt;&gt;WARNING3_foo_a683cc652b606
+&quot;t.c&quot;, line 3: parameter `a' is never used
+
+
+-- MISTAKE5     /*constant condition*/     &gt;&gt;&gt;MISTAKE5_f_c442a0aa7c705c49
+&quot;t.c&quot;, line 10: The expression `foo(23)' is false whenever evaluated
+
+
+-- MISTAKE1     /*no effect*/     &gt;&gt;&gt;MISTAKE1_f_e65304e51505
+&quot;t.c&quot;, line 11: Statement has no effect
+</pre>
+<p>
+
+You may want to suppress all these complaints because
+you know the implementation of foo() it is going to change.
+</p>
+<p>
+You can suppress the WARNING3 by adding "foo" to the 
+<a href="parms.html">list of disabled functions</a>, for example,
+</p>
+<pre class="example">
+set beam::disabled_functions &quot;foo&quot;
+</pre>
+<p>
+
+But that will not suppress the MISTAKE5 or MISTAKE1. 
+The recommended way of suppressing those is by providing 
+a <a href="attributes.html">function attribute</a> for foo().
+Ideally that attribute would tell BEAM the intended future functionality.
+(When figuring out the side-effects of a function, an attribute
+takes precedence over actual implementation.)
+</p>
+<p>
+In addition, MISTAKE1 is suppressed for calls to "stub" functions.
+A stub function can be recognized in two way.
+If you use comments to tell your colleagues that a function is yet 
+to be implemented,
+<a href="parms.html#beam::stub_function_comment">tell BEAM about those comments</a>.
+In addition, BEAM may 
+<a href="parms.html#beam::stub_function_contents">recognize automatically</a>
+some almost empty function as stub functions.
+</p>
+<p>
+Of course, all these complaints may also be suppressed using one of the 
+<a href="innocent.html">generic methods</a>.
+</p>
+
+</td>
+
+</table>
+
+</div>
+
+</body>
+</html>
