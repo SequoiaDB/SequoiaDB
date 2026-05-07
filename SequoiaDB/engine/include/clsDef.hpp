@@ -91,7 +91,7 @@ namespace engine
       CLS_BEAT_STATUS_ALIVE = 1,
    } ;
 
-   const UINT32 CLS_BEAT_ID_OVERTURN_WINDOW = 2 ^ 31 ;
+   const UINT32 CLS_BEAT_ID_OVERTURN_WINDOW = ( 1 << 31 ) ;
 
    enum CLS_GROUP_ROLE
    {
