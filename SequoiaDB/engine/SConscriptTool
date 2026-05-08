@@ -833,7 +833,9 @@ sdbseadapter = toolEnv.Program("sdbseadapter",
 
 if linux64:
     Import("fuse_lib")
-    sequoiafs = toolEnv.Program("sequoiafs",
+    sequoiaFSEnv = toolEnv.Clone()
+    sequoiaFSEnv.Append( LINKFLAGS=" -no-pie " )
+    sequoiafs = sequoiaFSEnv.Program("sequoiafs",
         sequoiaFSFiles,
         LIBDEPS=["bson", "oss", "pd", "util", "pmd", "client", "clientcpp", "mon", fuse_lib],
         _LIBDEPS='$_LIBDEPS_OBJS' )
