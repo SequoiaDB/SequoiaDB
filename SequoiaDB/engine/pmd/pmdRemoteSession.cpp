@@ -298,6 +298,10 @@ namespace engine
       {
          pRsp->routeID.value = _nodeID.value ;
       }
+      else if ( MSG_INVALID_ROUTEID == pRsp->routeID.value )
+      {
+         pRsp->routeID.value = _nodeID.value ;
+      }
 
       clearReplyInfo() ;
 
