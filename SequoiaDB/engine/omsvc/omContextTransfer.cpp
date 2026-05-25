@@ -170,6 +170,10 @@ namespace engine
          PD_LOG( PDERROR, "received failure message:flag=%d", flag ) ;
          goto error ;
       }
+      else if ( -1 == contextID )
+      {
+         _originalContextID = -1 ;
+      }
 
       for ( i = 0 ; i < objVec.size() ; i++ )
       {
