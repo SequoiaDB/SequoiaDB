@@ -42,9 +42,9 @@
     "v2.6": "6e33a9696038695676aa9d6649d48a15a480d75d", 
     "v7.0": "93f27a9e91890dccfaf1d263ad8d53d8d30f7a4c", 
     "v5.6": "f64673f4465de6b625165d5a5a9bfc37a82dc60a", 
-    "master": "5a2c4412f22e5bc7c3fad5d849fbba8e50f5b35c", 
+    "master": "783dcc6ab3f342e4596594156644f95a2fe3de4c", 
     "v5.0": "01c5d4b9c299fa816aecb52fd419ff922df2af67", 
-    "v5.8": "1fd74e6cd9d22dc76770ad8a52b9ad0eedb61313", 
+    "v5.8": "b939e37ae016fdf309c865b1e573ed498021e6b3", 
     "schema": "371845de36f833e207898325c2fa42d0e1b5c3cd", 
     "v6.0": "b204775ca554b680778ff3e8eadd0114b4b2e75e", 
     "v2.8-cmbc": "222a7f8d9f463ac290f7c21a16b75718451599d3", 
@@ -59,5 +59,5 @@
     "v3.2.4": "f1bfa058ea28235b09d54c0592703bb6d37348fe", 
     "v3.2.1": "fad2ec9c4577fb0fb91df49412eea082e9014feb"
   }, 
-  "last_sync": "2026-06-15T19:49:12.287647"
+  "last_sync": "2026-06-16T03:58:46.385526"
 }
