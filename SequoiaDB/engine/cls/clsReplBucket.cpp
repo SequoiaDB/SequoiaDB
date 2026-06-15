@@ -823,8 +823,7 @@ namespace engine
 
                      _dataBucket[ index ]->pop() ;
 
-                     if ( LOG_TYPE_DUMMY ==
-                           ( (dpsLogRecordHeader *)pData )->_type )
+                     if ( LOG_TYPE_DUMMY == ( (dpsLogRecordHeader *)pData )->_type )
                      {
                         // dummy record, no need to process further
                         // skip it
@@ -842,6 +841,16 @@ namespace engine
                      // wait failed, should not pop this record
                      ret = FALSE ;
                   }
+               }
+               else if ( DPS_INVALID_LSN_OFFSET != waitOffset &&
+                         LOG_TYPE_DUMMY == ( (dpsLogRecordHeader *)pData )->_type )
+               {
+                  // wait lsn no need to process further, skip it
+                  _dataBucket[ index ]->pop() ;
+                  _totalCount.dec() ;
+                  _allCount.dec() ;
+                  _memPool.release( pData, len ) ;
+                  continue ;
                }
                else
                {
