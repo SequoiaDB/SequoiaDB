@@ -121,8 +121,10 @@ namespace exprt
                                     "format as <field>[,<field>,...] for single collection, " \
                                     "or format as <csName>.<clName>:<field>[,<field>,...] for each collection " \
                                     "when specify multi collections"
-   #define EXPLAIN_FLOATFMT         "float format, default: '%.16g', input 'db2' is '%+.14E', " \
-                                    "format %[+][.precision](f|e|E|g|G) ( float only )"
+   #define EXPLAIN_FLOATFMT         "float format, default: '%.16g'; " \
+                                    "input 'full' uses shortest round-trip text; " \
+                                    "input 'db2' is '%+.14E'; " \
+                                    "other format %[+][.precision](f|e|E|g|G) ( float only )"
    #define EXPLAIN_REPLACE          "whether to overwrite the output file"
 
    //json
@@ -338,6 +340,7 @@ namespace exprt
                               _errorStop     (FALSE),
                               _useSSL        (FALSE),
                               _fileLimit     (DEFAULT_FILELIMIT),
+                              _fullPrecision (FALSE),
                               _replace       (FALSE),
                               _skip          (0),
                               _limit         (-1),
@@ -1382,10 +1385,19 @@ namespace exprt
       if( _has( OPTION_FLOATFMT ) )
       {
          _floatFmt = _get<string>( OPTION_FLOATFMT ) ;
+         if ( 0 == ossStrcasecmp( _floatFmt.c_str(), "full" ) )
+         {
+            _fullPrecision = TRUE ;
+         }
+         else
+         {
+            _fullPrecision = FALSE ;
+         }
       }
       else
       {
          _floatFmt = "%.16g" ;
+         _fullPrecision = FALSE ;
       }
 
       _replace = _has( OPTION_REPLACE ) ;

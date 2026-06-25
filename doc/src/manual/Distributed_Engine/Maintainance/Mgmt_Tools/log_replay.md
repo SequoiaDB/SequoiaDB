@@ -2,7 +2,7 @@
     日志重放工具
     
 
-sdbreplay 是 SequoiaDB 巨杉数据库的日志重放工具，用于重放已经[归档][log_archive]的同步日志。用户可以在其他集群或节点重复执行日志重放工具，以实现不同集群间的数据同步。
+sdbreplay 是 SequoiaDB 巨杉数据库的日志重放工具，用于重放已经[归档][log_archive]的同步日志或复制日志。用户可以在其他集群或节点重复执行日志重放工具，以实现不同集群间的数据同步。
 
 ##基本功能##
 
@@ -30,7 +30,6 @@ sdbreplay 是 SequoiaDB 巨杉数据库的日志重放工具，用于重放已�
 >- 归档日志 LSN 不连续时重放工具会报错退出
 >- 通过 status 选项指定状态文件，可以从上次退出的地方继续重放，不指定时每次从第一个归档文件开始重放
 >- 未重放的归档日志文件发生了移动操作后，移动文件不会被重放；已重放的归档日志文件发生了移动操作，重放工具会回滚移动文件中的日志操作
->- 不支持回滚 truncatecl 操作，回滚时遇到 truncatecl 操作会报错退出
 >- 在后台执行时可以通过 kill -15 的方式停止进程
 >- 复制日志是幂等的，同一条日志多次重放结果不变
 >- 归档重放过程中，如果在集合上执行 split 操作，通过协调节点重放到同一个集群时可能会丢失数据。因为 split 的源复制组在数据迁移到目标复制组后会删除本地相应数据，并生成删除日志；而目标复制组接收数据后生成插入日志。如果目标复制组的归档日志先被重放而后源复制组的归档日志才被重放，那么迁移的那部分数据重放时先插入后被删除，导致数据丢失。此时可以通过再次重放目标复制组的归档日志来重新插入丢失的数据
@@ -93,12 +92,13 @@ outputconf 是以 json 格式表示的，用于设置输出格式的配置文件
 |tables.source|string|源表名|
 |tables.target|string|目标表名|
 |fields|array[obj]|字段映射关系|
-|fields.fieldType|string|字段类型，取值如下：<br> "ORIGINAL_TIME"：复制日志生成时间 <br> "AUTO_OP"：操作标识串，如 I:insert、D:delete、B:before update、A:after update <br> "CONST_STRING"：常量字符串 <br> "MAPPING_STRING"：映射原始记录中的字符串 <br> "MAPPING_INT"：映射原始记录中的int类型字段 <br> "MAPPING_LONG"：映射原始记录中的long类型字段 <br> "MAPPING_DECIMAL"：映射原始记录中的 decimal 类型字段 <br> "MAPPING_TIMESTAMP"：映射原始记录中的时间戳字段 |
+|fields.fieldType|string|字段类型，取值如下：<br> "ORIGINAL_TIME"：复制日志生成时间 <br> "AUTO_OP"：操作标识串，如 I:insert、D:delete、B:before update、A:after update、T:truncate 集合 <br> "CONST_STRING"：常量字符串 <br> "MAPPING_STRING"：映射原始记录中的字符串 <br> "MAPPING_INT"：将源字段强制转换为 int32 后导出（规则同 `$cast` 到 int32），支持 NumberInt/NumberLong/NumberDecimal 互转 <br> "MAPPING_LONG"：将源字段强制转换为 int64 后导出（规则同 `$cast` 到 int64），支持 NumberInt/NumberLong/NumberDecimal 互转 <br> "MAPPING_DECIMAL"：将源字段强制转换为 decimal 后导出（规则同 `$cast` 到 decimal），支持 NumberInt/NumberLong/NumberDecimal 互转 <br> "MAPPING_TIMESTAMP"：映射原始记录中的时间戳字段 <br> "MAPPING_DOUBLE"：映射原始记录中的浮点类型字段，源类型支持 NumberDouble，以及可转为 double 的 NumberInt/NumberLong；导出格式由 fields.floatFmt 控制，省略时默认使用最短可还原十进制（同 `"full"`，与 sdbexprt 一致，像整数的值带 `.0`）；`NaN` 导出为空串（若配置了 defaultValue 则输出该值），`Inf`/`-Inf` 导出为空串（不使用 defaultValue） <br> "MAPPING_DATE"：映射原始记录中的日期类型字段，输出为 `YYYY-MM-DD` 格式（如 `2000-01-01`） <br> "MAPPING_BINARY"：映射原始记录中的 BinData 字段，仅导出 Base64 字符串（如 `AAAABAA=`），不导出 `$type` 子类型 |
 |fields.doubleQuote|boolean|value 是否带双引号，默认为 true|
+|fields.floatFmt|string|仅 fieldType 为 "MAPPING_DOUBLE" 时有效。省略或取值为 `"full"` 时使用最短可还原十进制（与 sdbexprt `--floatfmt full` 一致：像整数的 double 会带 `.0` 后缀；`\|val\|≤2^53` 的整数走定点，更大值按 `%g` 风格可能用科学计数）；取值为 `"db2"` 时等价于 `%+.14E`；亦可指定 printf 浮点格式（形如 `%[+][.Precision]Type`，Type 为 f\|e\|E\|g\|G，如 `%.16g`）。非法取值将导致配置解析失败|
 |fields.constValue|string|fieldType 为"CONST_STRING"时使用，表示常量的值|
 |fields.source|string|源字段名|
 |fields.target|string|目标字段名|
-|fields.defaultValue|string|默认值，当源字段名不存在时，输出默认值，而不是报错；仅支持映射字段（以 MAPPING_ 开头的字段类型）|
+|fields.defaultValue|string|默认值，仅支持映射字段（以 MAPPING_ 开头的字段类型）。当源字段不存在时输出该值而不是报错；对 MAPPING_DOUBLE，源值为 `NaN` 时也会输出该值（`Inf`/`-Inf` 仍为空串）|
 
 outputconf 示例如下：
 
@@ -139,6 +139,13 @@ $cat output.conf
          doubleQuote: false
        },
        {
+         source: "c",
+         target: "column_double",
+         fieldType: "MAPPING_DOUBLE",
+         doubleQuote: true,
+         floatFmt: "full"
+       },
+       {
          source: "_id",
          target: "column3",
          fieldType: "MAPPING_STRING"
@@ -153,19 +160,61 @@ $cat output.conf
 
 ```lang-bash
 $cat SDB_db1_1000_dbName_tableName_0000000001_384_201904291212.csv
-"2019-04-10 14.52.17.551928","0","D","a4",b4,"5cad8cc8da342dfe37a40e84"
-"2019-04-10 14.52.17.553750","0","I","a1",b1111,"5cac3850da342dfe37a40eee"
-"2019-04-10 14.52.17.553820","0","B","a1",b1111,"5cac3850da342dfe37a40eee"
-"2019-04-10 14.52.17.553820","0","A","a1",b22,"5cac3850da342dfe37a40eee"
+"2019-04-10 14.52.17.551928","0","D","a4",b4,"2.718281828","5cad8cc8da342dfe37a40e84"
+"2019-04-10 14.52.17.553750","0","I","a1",b1111,"2.718281828","5cac3850da342dfe37a40eee"
+"2019-04-10 14.52.17.553820","0","B","a1",b1111,"2.718281828","5cac3850da342dfe37a40eee"
+"2019-04-10 14.52.17.553820","0","A","a1",b22,"-1.5","5cac3850da342dfe37a40eee"
 ```
 
 >**Note:**
 >
-> 第一条为删除操作，删除记录{"_id": {"$oid": "5cad8cc8da342dfe37a40e84"}, "a": "a4", "b": "b4"}
+> 第一条为删除操作，删除记录{"_id": {"$oid": "5cad8cc8da342dfe37a40e84"}, "a": "a4", "b": "b4", "c": 2.718281828}
 >
-> 第二条为插入操作，插入记录{"a": "a1", "b": "b1111"}
+> 第二条为插入操作，插入记录{"a": "a1", "b": "b1111", "c": 2.718281828}
 >
-> 第三、四条为更新操作，更新前记录为：{"_id": {"$oid": "5cac3850da342dfe37a40eee"}, "a": "a1", "b": "b1111"}，更新后操作为：{"_id": {"$oid": "5cac3850da342dfe37a40eee"}, "a": "a1", "b": "b22"}
+> 第三、四条为更新操作，更新前记录为：{"_id": {"$oid": "5cac3850da342dfe37a40eee"}, "a": "a1", "b": "b1111", "c": 2.718281828}，更新后操作为：{"_id": {"$oid": "5cac3850da342dfe37a40eee"}, "a": "a1", "b": "b22", "c": -1.5}
+>
+> 当集合执行 truncate 操作时，CSV 导出会生成一条 **T** 行，该行除 `ORIGINAL_TIME`、`AUTO_OP`、`CONST_STRING` 等控制字段外，映射字段固定为空串（不使用 `defaultValue`）。
+
+MAPPING_DOUBLE 导出示例如下：
+
+## double -> string
+
+### 默认情况（省略 floatFmt，同 `"full"`）
+
+```lang-bash
+2.718281828 -> 2.718281828
+99.99       -> 99.99
+100         -> 100.0
+0           -> 0.0
+0.123456789 -> 0.123456789
+4.9e-324    -> 5e-324
+±1.7e308    -> ±1.7e+308
+```
+
+### 指定 fields.floatFmt:"%.16g"
+
+```lang-bash
+99.99       -> 99.98999999999999
+1e-4        -> 0.0001
+1e-5        -> 1e-05
+```
+
+### 指定 fields.floatFmt:"%.4f"
+
+```lang-bash
+99.99       -> 99.9900
+1e-4        -> 0.0001
+1e-5        -> 0.0000
+```
+
+### 指定 fields.floatFmt:"db2"（等价 %+.14E）
+
+```lang-bash
+99.99       -> +9.99900000000000E+01
+1e-4        -> +1.00000000000000E-04
+1e-5        -> +1.00000000000000E-05
+```
 
 ##示例##
 

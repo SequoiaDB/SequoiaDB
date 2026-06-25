@@ -6,6 +6,7 @@ Import("aix")
 Import("windows")
 Import("ssllib_file")
 Import("ssllib_file1")
+Import("ryu_lib")
 Import("mergeStaticLibrary")
 Import("release")
 Import("debugBuild")
@@ -65,7 +66,7 @@ clientCLibFiles = [
 
 #Shared Library
 if aix:
-    dllLib = dllLibEnv.SharedLibrary('sdbc', [clientCLibFiles, ssllib_file1, ssllib_file])
+    dllLib = dllLibEnv.SharedLibrary('sdbc', [clientCLibFiles, ssllib_file1, ssllib_file, ryu_lib])
     dllLibEnv.Install( '#/client/lib', dllLib )
 elif linux:
     dllLib = dllLibEnv.SharedLibrary('sdbc', clientCLibFiles)
@@ -84,7 +85,7 @@ dir = ''
 def merge(target, source = None, env = staticLibEnv):
     pureLib = dir + '/libstaticpuresdbc.a'
     staticLib = dir + '/libstaticsdbc.a'
-    mergeStaticLibrary(staticLib, aix, ssllib_file, ssllib_file1, pureLib)
+    mergeStaticLibrary(staticLib, aix, ssllib_file, ssllib_file1, ryu_lib, pureLib)
     staticLibEnv.Install( '#/client/lib/', staticLib )
 
 if linux or aix:

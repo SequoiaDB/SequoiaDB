@@ -30,10 +30,13 @@
 *******************************************************************************/
 #include "rplField.hpp"
 #include "../bson/bson.hpp"
+#include "../bson/lib/base64.h"
 #include "ossUtil.hpp"
 #include "rplConfDef.hpp"
 #include "rplUtil.hpp"
+#include <sstream>
 #include <string>
+#include <cmath>
 
 using namespace std ;
 using namespace bson;
@@ -318,16 +321,10 @@ namespace replay
    INT32 rplIntField::_getValue( const BSONElement &ele, string &value )
    {
       INT32 rc = SDB_OK ;
-      stringstream ss ;
-      if ( ele.type() != NumberInt )
-      {
-         rc = SDB_INVALIDARG ;
-         PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
-                      _sFieldName, ele.type(), rc ) ;
-      }
 
-      ss << ele.numberInt() ;
-      value = ss.str() ;
+      rc = rplCastNumberToString( ele, NumberInt, value ) ;
+      PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
+                   _sFieldName, ele.type(), rc ) ;
 
    done:
       return rc ;
@@ -363,16 +360,10 @@ namespace replay
    INT32 rplLongField::_getValue( const BSONElement &ele, string &value )
    {
       INT32 rc = SDB_OK ;
-      stringstream ss ;
-      if ( ele.type() != NumberLong && ele.type() != NumberInt )
-      {
-         rc = SDB_INVALIDARG ;
-         PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
-                      _sFieldName, ele.type(), rc ) ;
-      }
 
-      ss << ele.numberLong() ;
-      value = ss.str() ;
+      rc = rplCastNumberToString( ele, NumberLong, value ) ;
+      PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
+                   _sFieldName, ele.type(), rc ) ;
 
    done:
       return rc ;
@@ -408,25 +399,10 @@ namespace replay
    INT32 rplDecimalField::_getValue( const BSONElement &ele, string &value )
    {
       INT32 rc = SDB_OK ;
-      bsonDecimal decimal ;
-      if ( !ele.isNumber() || ele.type() == NumberDouble )
-      {
-         rc = SDB_INVALIDARG ;
-         PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
-                      _sFieldName, ele.type(), rc ) ;
-      }
 
-      if ( ele.type() == NumberDecimal )
-      {
-         decimal = ele.numberDecimal() ;
-         value = decimal.toString() ;
-      }
-      else
-      {
-         stringstream ss ;
-         ss << ele.numberLong() ;
-         value = ss.str() ;
-      }
+      rc = rplCastNumberToString( ele, NumberDecimal, value ) ;
+      PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
+                   _sFieldName, ele.type(), rc ) ;
 
    done:
       return rc ;
@@ -480,6 +456,210 @@ namespace replay
 
       rplTimeIncToString( timer, inc, timeStr ) ;
       value = timeStr ;
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   rplDoubleField::rplDoubleField()
+   : _fullPrecision( TRUE ),
+     _floatFmt( RPL_FLOATFMT_DEFAULT )
+   {
+   }
+
+   rplDoubleField::~rplDoubleField()
+   {
+   }
+
+   INT32 rplDoubleField::init( const BSONObj &fieldConf )
+   {
+      INT32 rc = SDB_OK ;
+      const CHAR *floatFmt = NULL ;
+
+      rc = rplMappingField::init( fieldConf ) ;
+      PD_RC_CHECK( rc, PDERROR, "Failed to init rplDoubleField, rc = %d",
+                   rc ) ;
+
+      floatFmt = fieldConf.getStringField( RPL_CONF_NAME_FIELD_FLOATFMT ) ;
+      if ( NULL == floatFmt || '\0' == floatFmt[0] )
+      {
+         /* Default: Ryu shortest round-trip (same as floatFmt:"full") */
+         _fullPrecision = TRUE ;
+         _floatFmt = RPL_FLOATFMT_DEFAULT ;
+      }
+      else if ( 0 == ossStrcmp( floatFmt, RPL_FLOATFMT_FULL ) )
+      {
+         _fullPrecision = TRUE ;
+         _floatFmt = RPL_FLOATFMT_DEFAULT ;
+      }
+      else if ( 0 == ossStrcmp( floatFmt, RPL_FLOATFMT_DB2 ) )
+      {
+         _fullPrecision = FALSE ;
+         _floatFmt = RPL_FLOATFMT_DB2_VALUE ;
+      }
+      else
+      {
+         rc = rplCheckFloatFmt( floatFmt ) ;
+         PD_RC_CHECK( rc, PDERROR, "%s(%s) is invalid, rc = %d",
+                      RPL_CONF_NAME_FIELD_FLOATFMT, floatFmt, rc ) ;
+         _fullPrecision = FALSE ;
+         _floatFmt = floatFmt ;
+      }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   EN_FieldType rplDoubleField::getFieldType() const
+   {
+      return MAPPING_DOUBLE ;
+   }
+
+   INT32 rplDoubleField::_getValue( const BSONElement &ele, string &value )
+   {
+      INT32 rc = SDB_OK ;
+      FLOAT64 dVal = 0.0 ;
+
+      if ( ele.type() == NumberDouble )
+      {
+         dVal = ele.Double() ;
+      }
+      else if ( ele.type() == NumberInt )
+      {
+         dVal = (FLOAT64)ele.Int() ;
+      }
+      else if ( ele.type() == NumberLong )
+      {
+         dVal = (FLOAT64)ele.Long() ;
+      }
+      else
+      {
+         rc = SDB_INVALIDARG ;
+         PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
+                      _sFieldName, ele.type(), rc ) ;
+      }
+
+      if ( std::isinf( dVal ) )
+      {
+         value.clear() ;
+         goto done ;
+      }
+
+      if ( std::isnan( dVal ) )
+      {
+         if ( _hasDefaultValue )
+         {
+            value = _defaultValue ;
+         }
+         else
+         {
+            value.clear() ;
+         }
+         goto done ;
+      }
+
+      rplDoubleToString( dVal, _fullPrecision, _floatFmt.c_str(), value ) ;
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   rplDateField::rplDateField()
+   {
+   }
+
+   rplDateField::~rplDateField()
+   {
+   }
+
+   INT32 rplDateField::init( const BSONObj &fieldConf )
+   {
+      INT32 rc = SDB_OK ;
+      rc = rplMappingField::init( fieldConf ) ;
+      PD_RC_CHECK( rc, PDERROR, "Failed to init rplDateField, rc = %d",
+                   rc ) ;
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   EN_FieldType rplDateField::getFieldType() const
+   {
+      return MAPPING_DATE ;
+   }
+
+   INT32 rplDateField::_getValue( const BSONElement &ele, string &value )
+   {
+      INT32 rc = SDB_OK ;
+      if ( ele.type() != Date )
+      {
+         rc = SDB_INVALIDARG ;
+         PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
+                      _sFieldName, ele.type(), rc ) ;
+      }
+
+      rplDateToString( (INT64)ele.Date().millis, value ) ;
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   rplBinaryField::rplBinaryField()
+   {
+   }
+
+   rplBinaryField::~rplBinaryField()
+   {
+   }
+
+   INT32 rplBinaryField::init( const BSONObj &fieldConf )
+   {
+      INT32 rc = SDB_OK ;
+      rc = rplMappingField::init( fieldConf ) ;
+      PD_RC_CHECK( rc, PDERROR, "Failed to init rplBinaryField, rc = %d",
+                   rc ) ;
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   EN_FieldType rplBinaryField::getFieldType() const
+   {
+      return MAPPING_BINARY ;
+   }
+
+   INT32 rplBinaryField::_getValue( const BSONElement &ele, string &value )
+   {
+      INT32 rc = SDB_OK ;
+      INT32 len = 0 ;
+      const CHAR *data = NULL ;
+
+      if ( ele.type() != BinData )
+      {
+         rc = SDB_INVALIDARG ;
+         PD_RC_CHECK( rc, PDERROR, "Invalid field type(%s:%d), rc = %d",
+                      _sFieldName, ele.type(), rc ) ;
+      }
+
+      // Export BinData payload only as Base64; ignore BSON subtype ($type).
+      data = ele.binDataClean( len ) ;
+      if ( NULL == data || len <= 0 )
+      {
+         value = "" ;
+         goto done ;
+      }
+
+      value = base64::encode( data, len ) ;
 
    done:
       return rc ;

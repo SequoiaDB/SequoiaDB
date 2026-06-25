@@ -45,7 +45,6 @@ namespace replay
    #define RPL_CONF_NAME_DELIMITER          "delimiter"
    #define RPL_CONF_NAME_TABLES             "tables"
 
-   // table
    #define RPL_CONF_NAME_SOURCE             "source"
    #define RPL_CONF_NAME_TARGET             "target"
    #define RPL_CONF_NAME_FIELDS             "fields"
@@ -55,6 +54,13 @@ namespace replay
    #define RPL_CONF_NAME_FIELD_DEFAULTVALUE "defaultValue"
    #define RPL_CONF_NAME_FIELD_CONSTVALUE   "constValue"
    #define RPL_CONF_NMAE_FIELD_DOUBLEQUOTE  "doubleQuote"
+   // omit floatFmt for default Ryu shortest (same as "full");
+   // "full" explicit; "db2" for %+.14E; otherwise printf float format
+   #define RPL_CONF_NAME_FIELD_FLOATFMT       "floatFmt"
+   #define RPL_FLOATFMT_FULL                  "full"
+   #define RPL_FLOATFMT_DB2                   "db2"
+   #define RPL_FLOATFMT_DEFAULT               "%.16g"
+   #define RPL_FLOATFMT_DB2_VALUE             "%+.14E"
 
    // RPL_CONF_NAME_DELIMITER defalut value
    #define RPL_CONF_DEFAULT_DELIMITER       ","
@@ -67,6 +73,9 @@ namespace replay
    #define RPL_FIELD_TYPE_MAPPING_TIMESTAMP "MAPPING_TIMESTAMP"
    #define RPL_FIELD_TYPE_MAPPING_LONG      "MAPPING_LONG"
    #define RPL_FIELD_TYPE_MAPPING_STRING    "MAPPING_STRING"
+   #define RPL_FIELD_TYPE_MAPPING_DOUBLE    "MAPPING_DOUBLE"
+   #define RPL_FIELD_TYPE_MAPPING_DATE      "MAPPING_DATE"
+   #define RPL_FIELD_TYPE_MAPPING_BINARY    "MAPPING_BINARY"
    #define RPL_FIELD_TYPE_CONST_STRING      "CONST_STRING"
    #define RPL_FIELD_TYPE_OUTPUT_TIME       "OUTPUT_TIME"
    #define RPL_FIELD_TYPE_AUTO_OP           "AUTO_OP"

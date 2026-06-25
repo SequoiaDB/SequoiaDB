@@ -64,7 +64,8 @@ namespace replay
                                   const UINT64 &opTimeMicroSecond,
                                   const UINT32 &logWriteMod ) = 0 ;
 
-      virtual INT32 truncateCL( const CHAR *clFullName, UINT64 lsn ) = 0 ;
+      virtual INT32 truncateCL( const CHAR *clFullName, UINT64 lsn,
+                                  const UINT64 &opTimeMicroSecond ) = 0 ;
 
       virtual INT32 pop( const CHAR *clFullName, UINT64 lsn, INT64 logicalID,
                          INT8 direction ) = 0 ;

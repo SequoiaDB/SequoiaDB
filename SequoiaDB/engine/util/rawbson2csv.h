@@ -53,6 +53,12 @@ SDB_EXTERN_C_START
 
 SDB_EXPORT void setCsvPrecision( const CHAR *pFloatFmt ) ;
 
+/* Enable (TRUE) or disable (FALSE) full-precision double formatting for CSV.
+ * When enabled, finite doubles use ossDoubleToFullPrecisionString; NaN/Inf
+ * keep the existing literal-string behavior. Default is FALSE.
+ */
+SDB_EXPORT void setCsvFullPrecision( BOOLEAN enable ) ;
+
 SDB_EXPORT void setPrintfLog( void (*pFun)( const CHAR *pFunc,
                                             const CHAR *pFile,
                                             UINT32 line,

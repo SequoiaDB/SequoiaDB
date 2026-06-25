@@ -304,6 +304,7 @@ error:
 }
 
 static CHAR _precision[20] = "%.16g" ;
+static BOOLEAN _fullPrecision = FALSE ;
 
 void setJsonPrecision( const CHAR *pFloatFmt )
 {
@@ -314,6 +315,11 @@ void setJsonPrecision( const CHAR *pFloatFmt )
       strncpy( _precision, pFloatFmt, length ) ;
       _precision[ length ] = 0 ;
    }
+}
+
+void setJsonFullPrecision( BOOLEAN enable )
+{
+   _fullPrecision = enable ;
 }
 
 /*
@@ -1682,15 +1688,26 @@ static BOOLEAN bsonConvertJson ( CHAR **pbuf,
             z = valNum;
             if ( valNum == z )
             {
+               if ( _fullPrecision )
+               {
+                  if ( ossDoubleToFullPrecisionString(
+                          valNum, temp, BSON_TEMP_SIZE_512 ) < 0 )
+                  {
+                     return FALSE ;
+                  }
+               }
+               else
+               {
 #ifdef WIN32
-               _snprintf ( temp,
-                           BSON_TEMP_SIZE_512,
-                           _precision, bson_iterator_double( &i ) ) ;
+                  _snprintf ( temp,
+                              BSON_TEMP_SIZE_512,
+                              _precision, bson_iterator_double( &i ) ) ;
 #else
-               snprintf ( temp,
-                          BSON_TEMP_SIZE_512,
-                          _precision, bson_iterator_double( &i ) ) ;
+                  snprintf ( temp,
+                             BSON_TEMP_SIZE_512,
+                             _precision, bson_iterator_double( &i ) ) ;
 #endif
+               }
                bsonConvertJsonRawConcat ( pbuf, left, temp, FALSE ) ;
                CHECK_LEFT ( left )
 

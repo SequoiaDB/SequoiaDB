@@ -23,15 +23,31 @@ var rtCmd = null;
 function isSdbReplayEnable ()
 {
    var cursor = db.snapshot( SDB_SNAP_CONFIGS, { "role": "data" } );
-   var configs = cursor.current().toObj();
-   if( configs.logwritemod !== "full" || configs.logtimeon !== "TRUE"
-      || configs.archiveon !== "TRUE" || configs.archivetimeout > 10 )
+   var found = false;
+   var lastConfigs = null;
+   while ( cursor.next() )
    {
-      cursor.close();
+      var configs = cursor.current().toObj();
+      if ( configs.role !== "data" || typeof ( configs.NodeName ) == "undefined" )
+      {
+         continue;
+      }
+      lastConfigs = configs;
+      if ( configs.logwritemod === "full" && configs.logtimeon === "TRUE"
+         && configs.archiveon === "TRUE" && configs.archivetimeout <= 10 )
+      {
+         found = true;
+         break;
+      }
+   }
+   cursor.close();
+   if ( !found )
+   {
+      var cfg = lastConfigs || {};
       throw new Error( "isSdbReplayEnable fail,[judge the sdbreplay is enable, data node conf as follows]" +
          "[logwritemod:full, logtimeon:TRUE, archiveon:TRUE, archivetimeout <= 10]" +
-         "[logwritemod:" + configs.logwritemod + ", logtimeon:" + configs.logtimeon
-         + ", archiveon:" + configs.archiveon + ", archivetimeout:" + configs.archivetimeout + "]" );
+         "[logwritemod:" + cfg.logwritemod + ", logtimeon:" + cfg.logtimeon
+         + ", archiveon:" + cfg.archiveon + ", archivetimeout:" + cfg.archivetimeout + "]" );
    }
 }
 
@@ -64,25 +80,109 @@ function getRemoteCmd ( groupName )
 @e.g:
   var rc = cmd.run('/opt/sequoiadb/bin/sdbreplay --type replica --path /home/sequoiadb/database/data/11850/replicalog/ --filter \'{CL:["cs.cl"],OP:["insert","update","delete"]}\' --outputconf /opt/test_sdbreplay/conf/sdbreplay.conf --status /opt/test_sdbreplay/1.status')
 **************************************************** */
-function execSdbReplay ( rtCmd, groupName, clNameArr, type, confPath, statusPath, daemon, watch, filter )
+function buildSdbReplayFilterBody ( clNameArr )
+{
+   var clList = [];
+   for( var i = 0; i < clNameArr.length; i++ )
+   {
+      clList.push( '"' + clNameArr[i] + '"' );
+   }
+   return '{CL: [' + clList.join( ', ' ) + '], OP: ["insert", "update", "delete"] }';
+}
+
+function getSdbReplayFilterBody ( filter, clNameArr )
+{
+   if( typeof ( filter ) == "undefined" )
+   {
+      return buildSdbReplayFilterBody( clNameArr );
+   }
+   if( filter.length >= 2 && filter.charAt( 0 ) == "'" && filter.charAt( filter.length - 1 ) == "'" )
+   {
+      filter = filter.substring( 1, filter.length - 1 );
+   }
+   return filter;
+}
+
+function shellEscapeSingleQuoted ( str )
+{
+   return str.replace( /'/g, "'\\''" );
+}
+
+// Count CSV data rows; supports AUTO_OP with/without doubleQuote (I, / "I",)
+// and custom delimiter (e.g. "I"|"test" in sdbreplay_18505)
+function countCsvDataRowsForCl ( rtCmd, dir, clName )
+{
+   var cmd = "grep -h -c -E '^(\"?[IABDT]\"?.|[IABDT],)' " + dir + "*" + clName + "*.csv 2>/dev/null"
+      + " | awk '{s+=$1} END{print s+0}' || true";
+   var out = rtCmd.run( cmd ).split( "\n" )[0];
+   var lineCnt = parseInt( out, 10 );
+   if( isNaN( lineCnt ) )
+   {
+      lineCnt = 0;
+   }
+   if( lineCnt == 0 )
+   {
+      var fallback = "awk 'NF>0{c++} END{print c+0}' " + dir + "*" + clName + "*.csv 2>/dev/null"
+         + " | awk '{s+=$1} END{print s+0}' || true";
+      out = rtCmd.run( fallback ).split( "\n" )[0];
+      lineCnt = parseInt( out, 10 );
+      if( isNaN( lineCnt ) )
+      {
+         lineCnt = 0;
+      }
+   }
+   return lineCnt;
+}
+
+function listCsvFilesForCl ( rtCmd, dir, clName )
+{
+   var cmd = "ls " + dir + " | grep " + clName + " | grep '\\.csv$' | grep -v '\\.tmp$' | sort || true";
+   var fileList = rtCmd.run( cmd ).split( "\n" );
+   var csvFiles = [];
+   for( var i = 0; i < fileList.length; i++ )
+   {
+      if( fileList[i].indexOf( ".csv" ) >= 0 )
+      {
+         csvFiles.push( fileList[i] );
+      }
+   }
+   return csvFiles;
+}
+
+function readCsvDataLinesForCl ( rtCmd, dir, clName )
+{
+   var csvFiles = listCsvFilesForCl( rtCmd, dir, clName );
+   if( csvFiles.length == 0 )
+   {
+      return [];
+   }
+   var actDataArr = [];
+   for( var i = 0; i < csvFiles.length; i++ )
+   {
+      var lines = rtCmd.run( "cat " + dir + csvFiles[i] ).split( "\n" );
+      for( var j = 0; j < lines.length; j++ )
+      {
+         if( lines[j] !== "" )
+         {
+            actDataArr.push( lines[j] );
+         }
+      }
+   }
+   return actDataArr;
+}
+
+function execSdbReplayWithRetry ( rtCmd, groupName, clNameArr, type, confPath, statusPath, daemon, watch, filter, minCsvRows )
 {
    var confName = clNameArr[0] + ".conf";
    var statusName = clNameArr[0] + ".status";
-   var tmpCLNameArr = [];
-   for( i = 0; i < clNameArr.length; i++ )
-   {
-      var tmpCLName = '\"' + clNameArr[i] + '\"';
-      tmpCLNameArr.push( tmpCLName );
-   }
    if( typeof ( confPath ) == "undefined" ) { confPath = tmpFileDir + confName; }
    if( typeof ( statusPath ) == "undefined" ) { statusPath = tmpFileDir + statusName; }
    if( typeof ( type ) == "undefined" ) { type = "archive"; }  //archive is the main user scenario.
    if( typeof ( daemon ) == "undefined" ) { daemon = false; }
    if( typeof ( watch ) == "undefined" ) { watch = false; }
-   if( typeof ( filter ) == "undefined" )
-   {
-      filter = '\'{CL: [' + tmpCLNameArr + '], OP: ["insert", "update", "delete"] }\'';
-   }
+   if( typeof ( minCsvRows ) == "undefined" ) { minCsvRows = 1; }
+
+   var filterBody = getSdbReplayFilterBody( filter, clNameArr );
 
    // ready file
    var dbPath = getMasterDBPath( groupName );
@@ -98,57 +198,140 @@ function execSdbReplay ( rtCmd, groupName, clNameArr, type, confPath, statusPath
 
    installDir = getInstallDir(rtCmd._remote._host);
 
-   var command = installDir + 'bin/sdbreplay'
+   var command = 'FILTER=\'' + shellEscapeSingleQuoted( filterBody ) + '\'; '
+      + installDir + 'bin/sdbreplay'
       + ' --type ' + type
       + ' --path ' + logPath
-      + ' --filter ' + filter
+      + ' --filter "$FILTER"'
       + ' --outputconf ' + confPath
       + ' --status ' + statusPath
       + ' --daemon ' + daemon
       + ' --watch ' + watch;
    println("command: "+command);
 
-   var totalRetryTimes = 200;
+   var totalRetryTimes = ( type === "replica" ) ? 30 : 30;
    var currentRetryTimes = 0;
    var clName = clNameArr[0].split( "." )[1];
-   var lsCommand = "ls " + tmpFileDir + " | grep " + clName + " | grep csv";
+   var rcLS = "";
+   var prevLineCnt = -1;
+   var smallBatchRowThreshold = 50;
 
-   //重放前对之前的操作进行刷盘
-   db.sync();
+   try
+   {
+      db.sync();
+   }
+   catch( e )
+   {
+      println( "db.sync warning: " + e );
+   }
+
+   if( type === "replica" )
+   {
+      sleep( 8000 );
+   }
+   else if( type === "archive" )
+   {
+      sleep( 12000 );
+   }
+
    while( true )
    {
-      var rcSdbreplay = rtCmd.run( "cd " + tmpFileDir + "; " + command );
-      var rcLS;
-      try
+      rtCmd.run( "cd " + tmpFileDir + "; rm -f *" + clName + "*.csv *" + clName + "*.status || true" );
+      rtCmd.run( "cd " + tmpFileDir + "; " + command + " || true" );
+      var waitTmp = 0;
+      while( waitTmp < 100 )
       {
-         rcLS = rtCmd.run( lsCommand ).split( "\n" )[0];
-         break;
-      } catch( e )
-      {
-         currentRetryTimes++;
-         sleep( 100 );
-         rtCmd.run( "cd " + tmpFileDir + "; rm *" + clName + "*.status" );
-         if( currentRetryTimes >= totalRetryTimes )
+         var tmpOut = rtCmd.run( "ls " + tmpFileDir + " | grep " + clName + " | grep '\\.tmp$' || true" );
+         if( tmpOut.indexOf( ".tmp" ) < 0 )
          {
-            throw new Error( "Failed to get csv file, after retry " + currentRetryTimes + "." );
+            break;
          }
+         sleep( 100 );
+         waitTmp++;
+      }
+      var csvFiles = listCsvFilesForCl( rtCmd, tmpFileDir, clName );
+      var lineCnt = 0;
+      if( csvFiles.length > 0 )
+      {
+         rcLS = csvFiles[0];
+         lineCnt = countCsvDataRowsForCl( rtCmd, tmpFileDir, clName );
+         if( lineCnt == 0 )
+         {
+            lineCnt = readCsvDataLinesForCl( rtCmd, tmpFileDir, clName ).length;
+         }
+         var ready = false;
+         if( lineCnt >= minCsvRows )
+         {
+            if( minCsvRows > 1 )
+            {
+               ready = true;
+            }
+            else if( type === "archive" )
+            {
+               ready = true;
+            }
+            else if( lineCnt > 0 && lineCnt <= smallBatchRowThreshold )
+            {
+               ready = true;
+            }
+            else if( lineCnt > 0 && prevLineCnt >= 0 && lineCnt == prevLineCnt )
+            {
+               ready = true;
+            }
+         }
+         prevLineCnt = lineCnt;
+         if( ready )
+         {
+            println( "sdbreplay csv ready, rows=" + lineCnt + ", files=" + csvFiles.length
+               + ", retry=" + currentRetryTimes + ", type=" + type );
+            break;
+         }
+         rtCmd.run( "cd " + tmpFileDir + "; rm -f *" + clName + "*.csv *" + clName + "*.status || true" );
+      }
+      println( "sdbreplay retry " + currentRetryTimes + ", csv_rows=" + lineCnt
+         + ", csv_files=" + csvFiles.length + ", type=" + type );
+      currentRetryTimes++;
+      var retrySleep = 2000;
+      if( type === "archive" && lineCnt == 0 )
+      {
+         retrySleep = 3000 + currentRetryTimes * 500;
+         if( retrySleep > 8000 )
+         {
+            retrySleep = 8000;
+         }
+      }
+      sleep( retrySleep );
+      if( currentRetryTimes >= totalRetryTimes )
+      {
+         throw new Error( "Failed to get csv file, after retry " + currentRetryTimes
+            + ", last csv rows=" + prevLineCnt + ", type=" + type
+            + ". Check archiveon/archivetimeout on data node." );
       }
    }
 
-   return rcSdbreplay;
+   return rcLS;
+}
+
+function execSdbReplay ( rtCmd, groupName, clNameArr, type, confPath, statusPath, daemon, watch, filter, minCsvRows )
+{
+   return execSdbReplayWithRetry( rtCmd, groupName, clNameArr, type, confPath,
+      statusPath, daemon, watch, filter, minCsvRows );
 }
 
 /* ****************************************************
 @description: config the output csv file
     fieldType:
-        ORIGINAL_TIME��
-        AUTO_OP��
-        CONST_STRING��
-        MAPPING_STRING��
-        MAPPING_INT��
-        MAPPING_LONG��
-        MAPPING_DECIMAL��
+        ORIGINAL_TIME
+        AUTO_OP
+        CONST_STRING
+        MAPPING_STRING
+        MAPPING_INT
+        MAPPING_LONG
+        MAPPING_DECIMAL
         MAPPING_TIMESTAMP
+        MAPPING_DOUBLE
+        MAPPING_DATE
+        MAPPING_BINARY
 **************************************************** */
 function readyOutputConfFile ( rtCmd, groupName, csName, clName, fieldType, delimiter )
 {
@@ -182,7 +365,10 @@ function getOutputConfFile ( rtCmd, csName, clName, confName )
         MAPPING_INT��
         MAPPING_LONG��
         MAPPING_DECIMAL��
-        MAPPING_TIMESTAMP
+        MAPPING_TIMESTAMP，
+        MAPPING_DOUBLE，
+        MAPPING_DATE，
+        MAPPING_BINARY
 **************************************************** */
 function configOutputConfFile ( rtCmd, groupName, csName, clName, fieldType, delimiter )
 {
@@ -206,13 +392,16 @@ function configOutputConfFile ( rtCmd, groupName, csName, clName, fieldType, del
 **************************************************** */
 function checkCsvFile ( rtCmd, clName, expDataArr )
 {
+   var csvFiles = listCsvFilesForCl( rtCmd, tmpFileDir, clName );
+   if( csvFiles.length == 0 )
+   {
+      throw new Error( "csv file not found for " + clName );
+   }
 
-   var csvFileName = rtCmd.run( "ls " + tmpFileDir + " | grep " + clName + " | grep csv" ).split( "\n" )[0];
-   var csvFilePath = tmpFileDir + csvFileName;
-
-   var actDataArr = rtCmd.run( "cat " + csvFilePath ).split( "\n" );
+   sleep( 500 );
+   var actDataArr = readCsvDataLinesForCl( rtCmd, tmpFileDir, clName );
    println("actDataArr: "+actDataArr.length+", expDataArr: "+expDataArr.length);
-   for( i = 0; i < actDataArr.length; i++ )
+   for( var i = 0; i < expDataArr.length; i++ )
    {
       assert.equal( actDataArr[i], expDataArr[i] );
    }
@@ -275,7 +464,7 @@ function getInstallDir ( hostname )
 **************************************************** */
 function initTmpDir ( rtCmd )
 {
-   rtCmd.run( "rm -rf " + tmpFileDir + "*.*" );
+   rtCmd.run( "rm -rf " + tmpFileDir + "*" );
    rtCmd.run( "mkdir -p " + tmpFileDir );
 }
 
@@ -320,7 +509,7 @@ function backupFile ( rtCmd, clName )
    rtCmd.run( "mkdir -p " + targetPath );
 
    // list all files in the current path
-   var lsCommand = "ls " + tmpFileDir + " | grep " + clName + " | grep csv";
+   var lsCommand = "ls " + tmpFileDir + " | grep " + clName + " | grep '\\.csv$' | grep -v '\\.tmp$' || true";
    try {
       var fileNames = rtCmd.run( lsCommand ).split( "\n" );
    } catch ( e ) {

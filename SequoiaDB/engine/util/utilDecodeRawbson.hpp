@@ -76,7 +76,8 @@ public:
                BOOLEAN includeRegex,
                BOOLEAN kickNull,
                BOOLEAN isStrict,
-               const CHAR *pFloatFmt ) ;
+               const CHAR *pFloatFmt,
+               BOOLEAN fullPrecision = FALSE ) ;
 
    INT32 parseFields( CHAR *pFields, INT32 size ) ;
 
