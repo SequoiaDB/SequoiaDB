@@ -61,6 +61,7 @@
 #define CSV_STR_INFINITY2_LEN (sizeof(CSV_STR_INFINITY2)-1)
 
 static CHAR _precision[20] = "%.16g" ;
+static BOOLEAN _fullPrecision = FALSE ;
 
 static void local_time ( time_t *Time, struct tm *TM )
 {
@@ -325,7 +326,24 @@ INT32 _appendValue( const CHAR *delChar, INT32 delCharSize, bson_iterator *pIt,
          tmpDouble = doubleNum;
          if ( doubleNum == tmpDouble )
          {
-            tempSize = ossSnprintf ( doubleTmpBuf, 512, _precision, doubleNum ) ;
+            if ( _fullPrecision )
+            {
+               tempSize = ossDoubleToFullPrecisionString( doubleNum,
+                                                         doubleTmpBuf,
+                                                         512 ) ;
+               if ( tempSize < 0 )
+               {
+                  rc = SDB_SYS ;
+                  UTIL_RAW2BSON_PRINTF_LOG(
+                     "Failed to format double with full precision" ) ;
+                  goto error ;
+               }
+            }
+            else
+            {
+               tempSize = ossSnprintf ( doubleTmpBuf, 512, _precision,
+                                        doubleNum ) ;
+            }
             rc = _appendString( delChar, delCharSize, TRUE, doubleTmpBuf, tempSize,
                                 ppBuffer, pCSVSize ) ;
             if ( rc )
@@ -768,6 +786,11 @@ void setCsvPrecision( const CHAR *pFloatFmt )
       ossStrncpy( _precision, pFloatFmt, length ) ;
       _precision[ length ] = 0 ;
    }
+}
+
+void setCsvFullPrecision( BOOLEAN enable )
+{
+   _fullPrecision = enable ;
 }
 
 void setPrintfLog( void (*pFun)( const CHAR *pFunc,

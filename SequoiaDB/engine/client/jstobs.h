@@ -135,6 +135,12 @@ SDB_EXPORT BOOLEAN json2bson3( const CHAR *pJson, CJSON_MACHINE *pMachine,
 
 SDB_EXPORT void setJsonPrecision( const CHAR *pFloatFmt ) ;
 
+/* Enable (TRUE) or disable (FALSE) full-precision double formatting for JSON.
+ * When enabled, finite doubles use ossDoubleToFullPrecisionString; NaN/Inf
+ * keep the existing literal-string behavior. Default is FALSE.
+ */
+SDB_EXPORT void setJsonFullPrecision( BOOLEAN enable ) ;
+
 /** \fn BOOLEAN bsonToJson ( CHAR *buffer, INT32 bufsize, const bson *b,
                              BOOLEAN toCSV, BOOLEAN skipUndefined)
     \brief Bson converts to json.

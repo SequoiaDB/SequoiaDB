@@ -345,6 +345,8 @@ mdocml_dir = join(thirdparty_dir, 'mdocml' )
 mdocml_lib_dir = join(mdocml_dir, 'lib')
 lz4_dir = join(thirdparty_dir, 'lz4')
 lz4_lib_dir = join(lz4_dir, 'lib')
+ryu_dir = join(thirdparty_dir, 'ryu')
+ryu_lib_dir = join(ryu_dir, 'lib')
 zlib_dir = join(thirdparty_dir, 'zlib')
 zlib_lib_dir = join(zlib_dir, 'lib')
 snappy_dir = join(thirdparty_dir, 'snappy')
@@ -825,7 +827,7 @@ env.Append(
 CPPPATH=[join(engine_dir,'include'),join(engine_dir,'client'),
          join(ssl_dir,'include'),join(lz4_dir,'include'),join(zlib_dir,'./'),
          join(snappy_dir,'include'),join(gtest_dir,'include'),
-         pcre_dir, boost_dir, ssh2_dir] )
+         pcre_dir, boost_dir, ssh2_dir, ryu_dir] )
 
 env.Append( CPPDEFINES=["__STDC_LIMIT_MACROS", "HAVE_CONFIG_H", "BOOST_THREAD_HAS_CONDATTR_SET_CLOCK_MONOTONIC"] )
 env.Append( CPPDEFINES=[ "SDB_DLL_BUILD" ] )
@@ -837,10 +839,11 @@ if guess_os is not None:
     ssl_lib_dir = join(ssl_lib_dir, platform_dir, build_dir)
     zlib_lib_dir = join(zlib_lib_dir, platform_dir, build_dir)
     lz4_lib_dir = join(lz4_lib_dir, platform_dir, build_dir)
+    ryu_lib_dir = join(ryu_lib_dir, platform_dir, build_dir)
     snappy_lib_dir = join(snappy_lib_dir, platform_dir, build_dir)
     intel_decimal_lib_dir = join(intel_decimal_lib_dir, platform_dir, build_dir)
     env.Append(EXTRALIBPATH=[boost_lib_dir, ssl_lib_dir, zlib_lib_dir,
-                             lz4_lib_dir, snappy_lib_dir, intel_decimal_lib_dir])
+                             lz4_lib_dir, ryu_lib_dir, snappy_lib_dir, intel_decimal_lib_dir])
     # use project-related spidermonkey library
     if usesm:
         try:
@@ -933,9 +936,9 @@ if guess_os == "linux":
     # Or there will be two same openssl symbol existing in one mysqld program
     # in case of mysqld building openssl in.
     if hasNoLinkSSL == False:
-        env.Append(LIBS=['ssl', 'crypto', 'lz4', 'zlib', 'snappy'])
+        env.Append(LIBS=['ssl', 'crypto', 'lz4', 'ryu', 'zlib', 'snappy'])
     else:
-        env.Append(LIBS=['lz4', 'zlib', 'snappy'])
+        env.Append(LIBS=['lz4', 'ryu', 'zlib', 'snappy'])
 
     ssllib_file = join(ssl_lib_dir, 'libcrypto.a')
     ssllib_file1 = join(ssl_lib_dir, 'libssl.a')
@@ -951,9 +954,10 @@ if guess_os == "linux":
     # mdocml
     if usemdocml:
         mdocml_lib = join(mdocml_lib_dir, 'libmdocml.a')
-    # lz4, zlib and snappy
+    # lz4, ryu, zlib and snappy
     zlib_lib = join(zlib_lib_dir, 'libzlib.a')
     lz4_lib = join(lz4_lib_dir, 'liblz4.a')
+    ryu_lib = join(ryu_lib_dir, 'libryu.a')
     snappy_lib = join(snappy_lib_dir, 'libsnappy.a')
 
     nix = True
@@ -983,11 +987,12 @@ elif guess_os == "win32":
 
     # SSL
     # env.Append( LIBS=['ssleay32', 'libeay32', 'liblz4', 'libzlib', 'libsnappy'])
-    env.Append( LIBS=['libcrypto', 'libssl', 'liblz4', 'libzlib', 'libsnappy'])
+    env.Append( LIBS=['libcrypto', 'libssl', 'liblz4', 'libryu', 'libzlib', 'libsnappy'])
     ssllib_file = join(ssl_lib_dir, 'libcrypto.lib')
     ssllib_file1 = join(ssl_lib_dir, 'libssl.lib')
     zlib_lib = join(zlib_lib_dir, 'libzlib.lib')
     lz4_lib = join(lz4_lib_dir, 'liblz4.lib')
+    ryu_lib = join(ryu_lib_dir, 'libryu.lib')
     snappy_lib = join(snappy_lib_dir, 'libsnappy.lib')
 
     # UNICODE
@@ -1076,10 +1081,11 @@ elif guess_os == 'aix':
       env.Append( CPPDEFINES=[ "XP_UNIX" ] )
       env.Append( LIBS=['js_static'] )
 
-   # lz4, zlib and snappy
-   env.Append( LIBS=['lz4', 'zlib', 'snappy'] )
+   # lz4, ryu, zlib and snappy
+   env.Append( LIBS=['lz4', 'ryu', 'zlib', 'snappy'] )
    zlib_lib = join(zlib_lib_dir, 'libzlib.a')
    lz4_lib = join(lz4_lib_dir, 'liblz4.a')
+   ryu_lib = join(ryu_lib_dir, 'libryu.a')
    snappy_lib = join(snappy_lib_dir, 'libsnappy.a')
 else:
     platform_valid = False
@@ -1279,6 +1285,7 @@ Export("ssllib_file")
 Export("ssllib_file1")
 Export("zlib_lib")
 Export("lz4_lib")
+Export("ryu_lib")
 Export("snappy_lib")
 if usemdocml:
    Export("mdocml_lib")
@@ -1300,7 +1307,8 @@ Export("intel_decimal_lib_dir")
 
 print("Begin to build thirdparty...")
 thirdpartyEnv.SConscript('thirdparty/SConscript', exports=["boost_lib_dir",
-                         "ssl_lib_dir", "zlib_lib_dir", "lz4_lib_dir", "snappy_lib_dir",
+                         "ssl_lib_dir", "zlib_lib_dir", "lz4_lib_dir", "ryu_lib_dir",
+                         "snappy_lib_dir",
                          "sm_lib_dir", "mdocml_lib_dir", "fuse_lib_dir", "intel_decimal_lib_dir"], duplicate=False)
 
 if not has_option("noautogen"):

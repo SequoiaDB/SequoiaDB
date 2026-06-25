@@ -20,6 +20,7 @@ Import("hasTool")
 
 Import("zlib_lib")
 Import("lz4_lib")
+Import("ryu_lib")
 Import("snappy_lib")
 
 def add_exe( v ):
@@ -1012,7 +1013,7 @@ authtest = env.Object('authtest', gtestMainFile)
 
 if hasEngine:
    engine = env.Program("sequoiadb", pmdMain,
-         LIBDEPS=["qgm","bar","rest","dps","cat","coord","cls",snappy_lib,lz4_lib,zlib_lib,"pcre","bson","oss","bps","ixm","pmd","pd","util","rtn","msg","dms","mth","opt","mon", "net", "sql", "auth","mig", "aggr", "spd", "omsvc"],
+         LIBDEPS=["qgm","bar","rest","dps","cat","coord","cls",snappy_lib,lz4_lib,ryu_lib,zlib_lib,"pcre","bson","oss","bps","ixm","pmd","pd","util","rtn","msg","dms","mth","opt","mon", "net", "sql", "auth","mig", "aggr", "spd", "omsvc"],
          _LIBDEPS='$_LIBDEPS_OBJS' )
 
    env.Install( '#/bin', engine )
@@ -1168,11 +1169,11 @@ if hasTestcase:
 # Tools
 if hasTool:
    sdbrestore = env.Program("sdbrestore", sdbrestoreFiles,
-          LIBDEPS=["qgm","bar","rest","cat","coord",snappy_lib,lz4_lib,zlib_lib,"cls","pcre","oss","pd","pmd","mig","rtn","msg","ixm","dms","bps","bson","mth","opt","util","mon","dps","net", "sql","auth", "aggr", "spd", "omsvc"],
+          LIBDEPS=["qgm","bar","rest","cat","coord",snappy_lib,lz4_lib,ryu_lib,zlib_lib,"cls","pcre","oss","pd","pmd","mig","rtn","msg","ixm","dms","bps","bson","mth","opt","util","mon","dps","net", "sql","auth", "aggr", "spd", "omsvc"],
           _LIBDEPS='$_LIBDEPS_OBJS' )
 
    sdbdmsdump = env.Program("sdbdmsdump", sdbdmsdumpMain,
-         LIBDEPS=["qgm","bar","rest","cat","coord",snappy_lib,lz4_lib,zlib_lib,"util","cls","pcre","oss","pd","pmd","mig","rtn","msg","ixm","dms","bps","bson","mth","opt","mon","dps","net", "sql","auth", "aggr","spd", "omsvc"],
+         LIBDEPS=["qgm","bar","rest","cat","coord",snappy_lib,lz4_lib,ryu_lib,zlib_lib,"util","cls","pcre","oss","pd","pmd","mig","rtn","msg","ixm","dms","bps","bson","mth","opt","mon","dps","net", "sql","auth", "aggr","spd", "omsvc"],
          _LIBDEPS='$_LIBDEPS_OBJS' )
 # Install testcases
 if hasTestcase:

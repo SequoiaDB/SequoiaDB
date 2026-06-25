@@ -30,10 +30,15 @@
 *******************************************************************************/
 #include "rplUtil.hpp"
 #include "ossUtil.hpp"
+#include "ossTypes.h"
 #include "dpsDef.hpp"
 #include "pd.hpp"
+#include "../bson/bson.hpp"
+#include "../bson/bsonDecimal.h"
+#include <sstream>
 
 using namespace std ;
+using namespace bson ;
 
 namespace replay
 {
@@ -153,6 +158,220 @@ namespace replay
                     timestamp.microtm ) ;
 
       timeStr = szTimestmpStr ;
+   }
+
+   void rplDateToString( INT64 millis, string &dateStr )
+   {
+      CHAR szDateStr[ 16 ] = { 0 } ;
+      struct tm tmpTm ;
+      time_t timer = (time_t)( millis / 1000 ) ;
+
+      ossLocalTime( timer, tmpTm ) ;
+      ossSnprintf( szDateStr, sizeof( szDateStr ),
+                   "%04d-%02d-%02d",
+                   tmpTm.tm_year + 1900,
+                   tmpTm.tm_mon + 1,
+                   tmpTm.tm_mday ) ;
+      dateStr = szDateStr ;
+   }
+
+   INT32 rplCheckFloatFmt( const CHAR *pFloatFmt )
+   {
+      INT32 rc = SDB_OK ;
+
+      if ( NULL == pFloatFmt )
+      {
+         goto done ;
+      }
+
+      if ( '%' != pFloatFmt[0] )
+      {
+         rc = SDB_INVALIDARG ;
+         PD_LOG( PDERROR,
+                 "floatFmt is invalid, format is %%[+][.Precision]Type" ) ;
+         goto error ;
+      }
+
+      ++pFloatFmt ;
+
+      if ( '+' == pFloatFmt[0] )
+      {
+         ++pFloatFmt ;
+      }
+
+      if ( '.' == pFloatFmt[0] )
+      {
+         ++pFloatFmt ;
+         for ( ; pFloatFmt[0] >= '0' && pFloatFmt[0] <= '9' ; ++pFloatFmt )
+         {
+         }
+      }
+
+      if ( 'f' != pFloatFmt[0] && 'e' != pFloatFmt[0] && 'E' != pFloatFmt[0]
+           && 'g' != pFloatFmt[0] && 'G' != pFloatFmt[0] )
+      {
+         rc = SDB_INVALIDARG ;
+         PD_LOG( PDERROR, "floatFmt is invalid, type is f|e|E|g|G" ) ;
+         goto error ;
+      }
+
+      ++pFloatFmt ;
+
+      if ( 0 != pFloatFmt[0] )
+      {
+         rc = SDB_INVALIDARG ;
+         PD_LOG( PDERROR,
+                 "floatFmt is invalid, format is %%[+][.Precision]Type" ) ;
+         goto error ;
+      }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
+   void rplDoubleToString( FLOAT64 val, BOOLEAN fullPrecision,
+                           const CHAR *floatFmt, string &outStr )
+   {
+      CHAR buf[ 512 ] = { 0 } ;
+      INT32 len = -1 ;
+
+      if ( fullPrecision )
+      {
+         len = ossDoubleToFullPrecisionString( val, buf, (INT32)sizeof( buf ) ) ;
+      }
+      else
+      {
+         SDB_ASSERT( NULL != floatFmt, "floatFmt should not be NULL" ) ;
+         len = (INT32)ossSnprintf( buf, sizeof( buf ), floatFmt, val ) ;
+         if ( len < 0 || len >= (INT32)sizeof( buf ) )
+         {
+            len = -1 ;
+         }
+      }
+
+      if ( len >= 0 )
+      {
+         outStr = buf ;
+      }
+      else
+      {
+         outStr.clear() ;
+      }
+   }
+
+   INT32 rplCastNumberToString( const BSONElement &ele, BSONType targetType,
+                                string &outStr )
+   {
+      INT32 rc = SDB_OK ;
+      stringstream ss ;
+      bsonDecimal decimal ;
+
+      if ( NumberInt != ele.type() && NumberLong != ele.type()
+           && NumberDecimal != ele.type() )
+      {
+         return SDB_INVALIDARG ;
+      }
+
+      switch ( targetType )
+      {
+      case NumberInt :
+      {
+         INT32 i = 0 ;
+         if ( NumberInt == ele.type() )
+         {
+            i = ele.Int() ;
+         }
+         else if ( NumberLong == ele.type() )
+         {
+            INT64 l = ele.Long() ;
+            if ( l > OSS_SINT32_MAX_LL || l < OSS_SINT32_MIN_LL )
+            {
+               i = 0 ;
+            }
+            else
+            {
+               i = ( INT32 )l ;
+            }
+         }
+         else
+         {
+            INT64 l = 0 ;
+            rc = ele.Decimal().toLong( &l ) ;
+            if ( SDB_OK != rc )
+            {
+               goto error ;
+            }
+            if ( l > OSS_SINT32_MAX_LL || l < OSS_SINT32_MIN_LL )
+            {
+               i = 0 ;
+            }
+            else
+            {
+               i = ( INT32 )l ;
+            }
+         }
+         ss << i ;
+         outStr = ss.str() ;
+         break ;
+      }
+      case NumberLong :
+      {
+         INT64 l = 0 ;
+         if ( NumberLong == ele.type() )
+         {
+            l = ele.Long() ;
+         }
+         else if ( NumberInt == ele.type() )
+         {
+            l = ( INT64 )ele.Int() ;
+         }
+         else
+         {
+            rc = ele.Decimal().toLong( &l ) ;
+            if ( SDB_OK != rc )
+            {
+               goto error ;
+            }
+         }
+         ss << l ;
+         outStr = ss.str() ;
+         break ;
+      }
+      case NumberDecimal :
+      {
+         if ( NumberDecimal == ele.type() )
+         {
+            outStr = ele.Decimal().toString() ;
+         }
+         else if ( NumberLong == ele.type() )
+         {
+            rc = decimal.fromLong( ele.Long() ) ;
+            if ( SDB_OK != rc )
+            {
+               goto error ;
+            }
+            outStr = decimal.toString() ;
+         }
+         else
+         {
+            rc = decimal.fromInt( ele.Int() ) ;
+            if ( SDB_OK != rc )
+            {
+               goto error ;
+            }
+            outStr = decimal.toString() ;
+         }
+         break ;
+      }
+      default:
+         rc = SDB_INVALIDARG ;
+         break ;
+      }
+
+   error:
+      return rc ;
    }
 
    void rplTimeIncToString( time_t &timer, UINT32 inc, string &timeStr )

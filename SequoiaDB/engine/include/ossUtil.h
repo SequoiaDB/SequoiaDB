@@ -136,6 +136,26 @@ INT32 ossStrToBoolean(const CHAR* pString, BOOLEAN* pBoolean);
 UINT32 ossHash ( const CHAR *data, INT32 len ) ;
 UINT32 ossHashFileName ( const CHAR *fileName ) ;
 
+/*
+ * Full-precision double to string via Ryu shortest round-trip, then
+ * reformatted with %g-like rules: use fixed decimal when
+ * -4 <= exp < significant_digits; otherwise keep scientific notation
+ * (lowercase 'e', signed exponent, at least 2 exponent digits).
+ *
+ * Integers in [-2^53, 2^53] use %lld fixed form (not pure %g) so values
+ * such as 1e15 become "1000000000000000.0" while 1e16 becomes "1e+16";
+ * that style jump at 2^53 is intentional for readability.
+ * Integer-looking results (no '.'/'e'/'E') append ".0" to match sdbexprt
+ * float-literal style (e.g. 100 -> "100.0"). Callers that already append
+ * ".0" when missing a marker remain correct (no double suffix).
+ *
+ * NaN/Inf yield an empty string with return 0; callers that need literals
+ * or DB2 empty/default semantics should filter specials before calling.
+ * +/-0.0 both yield "0.0" (signbit of -0.0 is dropped by design).
+ * On failure (return < 0), buf contents are undefined.
+ */
+INT32 ossDoubleToFullPrecisionString( FLOAT64 val, CHAR *buf, INT32 bufSize ) ;
+
 // Wrapper of mktime. Supports automatic DST(daylight saving time) corrention.
 time_t ossMkTime ( struct tm *timePtr ) ;
 

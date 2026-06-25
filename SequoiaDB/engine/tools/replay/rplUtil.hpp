@@ -33,7 +33,10 @@
 
 #include "ossTypes.hpp"
 #include "ossUtil.hpp"
+#include "../bson/bsontypes.h"
 #include <string>
+
+namespace bson { class BSONElement; }
 
 using namespace std ;
 
@@ -74,6 +77,17 @@ namespace replay
                              INT32 newSecond ) ;
 
    void rplTimestampToString( ossTimestamp &timestamp, string &timeStr ) ;
+
+   void rplDateToString( INT64 millis, string &dateStr ) ;
+
+   INT32 rplCheckFloatFmt( const CHAR *pFloatFmt ) ;
+
+   void rplDoubleToString( FLOAT64 val, BOOLEAN fullPrecision,
+                           const CHAR *floatFmt, string &outStr ) ;
+
+   INT32 rplCastNumberToString( const bson::BSONElement &ele,
+                                bson::BSONType targetType,
+                                string &outStr ) ;
 
    void rplTimeIncToString( time_t &timer, UINT32 inc, string &timeStr ) ;
 }

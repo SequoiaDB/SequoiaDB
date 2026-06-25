@@ -237,7 +237,8 @@ namespace replay
       goto done ;
    }
 
-   INT32 rplSdbOutputter::truncateCL( const CHAR *clFullName, UINT64 lsn )
+   INT32 rplSdbOutputter::truncateCL( const CHAR *clFullName, UINT64 lsn,
+                                      const UINT64 &opTimeMicroSecond )
    {
       INT32 rc = SDB_OK ;
       sdbCollection cl ;

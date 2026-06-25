@@ -36,6 +36,7 @@
 #include "pd.hpp"
 #include "dpsArchiveFile.hpp"
 #include "dpsOp2Record.hpp"
+#include "dpsLogRecord.hpp"
 #include "oss.h"
 #include "ossEDU.hpp"
 #include "../bson/bsonobj.h"
@@ -951,6 +952,7 @@ namespace replay
       const dpsLogRecordHeader& header = *(const dpsLogRecordHeader*)log;
       sdbCollection cl;
       const CHAR *fullName = NULL;
+      UINT64 microSeconds = 0;
 
       SDB_ASSERT(LOG_TYPE_CL_TRUNC == header._type, "not trunc cl log");
 
@@ -964,7 +966,24 @@ namespace replay
          goto error;
       }
 
-      rc = _outputter->truncateCL(fullName, header._lsn);
+      {
+         dpsLogRecord record;
+         rc = record.load( log );
+         if ( SDB_OK != rc )
+         {
+            PD_LOG( PDERROR, "Failed to load truncate log record[%lld], rc=%d",
+                    header._lsn, rc ) ;
+            goto error ;
+         }
+
+         UINT64 *timePtr = record.getTime() ;
+         if ( NULL != timePtr )
+         {
+            microSeconds = *timePtr ;
+         }
+      }
+
+      rc = _outputter->truncateCL(fullName, header._lsn, microSeconds);
       if (SDB_OK != rc)
       {
          PD_LOG(PDERROR, "Failed to truncate collection[%s], lsn[%lld], rc=%d",

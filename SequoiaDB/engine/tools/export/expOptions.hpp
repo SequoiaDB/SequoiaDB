@@ -106,6 +106,7 @@ namespace exprt
       inline BOOLEAN withId()             const { return _withId ; }
       inline EXP_FILE_FORMAT type()       const { return _type ; }
       inline const string &floatFmt()     const { return _floatFmt ; }
+      inline BOOLEAN fullPrecision()      const { return _fullPrecision ; }
       inline BOOLEAN replace()            const { return _replace ; }
 
       inline const vector<string> &fieldsList() const
@@ -159,6 +160,7 @@ namespace exprt
       UINT64               _fileLimit ;
       vector<string>       _fields ;
       string               _floatFmt ;
+      BOOLEAN              _fullPrecision ;
       BOOLEAN              _replace ;
 
       /* single collection */

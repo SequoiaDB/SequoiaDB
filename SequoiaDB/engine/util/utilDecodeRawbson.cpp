@@ -185,7 +185,8 @@ INT32 utilDecodeBson::init( utilBuffBuilderBase *buffBuilder,
                             BOOLEAN includeRegex,
                             BOOLEAN kickNull,
                             BOOLEAN isStrict,
-                            const CHAR *pFloatFmt )
+                            const CHAR *pFloatFmt,
+                            BOOLEAN fullPrecision )
 {
    INT32 rc = SDB_OK ;
 
@@ -200,23 +201,34 @@ INT32 utilDecodeBson::init( utilBuffBuilderBase *buffBuilder,
       goto error ;
    }
 
-   if( pFloatFmt != NULL )
+   if ( fullPrecision )
    {
-      if( ossStrncmp( pFloatFmt, "db2", 3 ) == 0 )
+      setCsvFullPrecision( TRUE ) ;
+      setJsonFullPrecision( TRUE ) ;
+   }
+   else
+   {
+      setCsvFullPrecision( FALSE ) ;
+      setJsonFullPrecision( FALSE ) ;
+
+      if( pFloatFmt != NULL )
       {
-         setCsvPrecision( "%+.14E" ) ;
-         setJsonPrecision( "%+.14E" ) ;
-      }
-      else
-      {
-         rc = _checkFormat( pFloatFmt ) ;
-         if( rc )
+         if( ossStrncmp( pFloatFmt, "db2", 3 ) == 0 )
          {
-            PD_LOG ( PDERROR, "failed to parse format" ) ;
-            goto error ;
+            setCsvPrecision( "%+.14E" ) ;
+            setJsonPrecision( "%+.14E" ) ;
          }
-         setCsvPrecision( pFloatFmt ) ;
-         setJsonPrecision( pFloatFmt ) ;
+         else
+         {
+            rc = _checkFormat( pFloatFmt ) ;
+            if( rc )
+            {
+               PD_LOG ( PDERROR, "failed to parse format" ) ;
+               goto error ;
+            }
+            setCsvPrecision( pFloatFmt ) ;
+            setJsonPrecision( pFloatFmt ) ;
+         }
       }
    }
 

@@ -33,6 +33,7 @@
 
 #include "oss.hpp"
 #include "rplOutputter.hpp"
+#include "rplUtil.hpp"
 #include <string>
 #include <map>
 
@@ -49,6 +50,9 @@ namespace replay
       MAPPING_DECIMAL   = 2,
       MAPPING_LONG      = 3,
       MAPPING_TIMESTAMP = 4,
+      MAPPING_DOUBLE    = 5,
+      MAPPING_DATE      = 6,
+      MAPPING_BINARY    = 7,
 
       CONST_STRING      = 100, // const string value
       OUTPUT_TIME       = 101,    // output time
@@ -217,6 +221,46 @@ namespace replay
    public:
       rplTimestampField() ;
       ~rplTimestampField() ;
+
+   public:
+      INT32 init( const BSONObj &fieldConf ) ;
+      EN_FieldType getFieldType() const ;
+      INT32 _getValue( const BSONElement &ele, string &value ) ;
+   } ;
+
+   class rplDoubleField : public rplMappingField
+   {
+   public:
+      rplDoubleField() ;
+      ~rplDoubleField() ;
+
+   public:
+      INT32 init( const BSONObj &fieldConf ) ;
+      EN_FieldType getFieldType() const ;
+      INT32 _getValue( const BSONElement &ele, string &value ) ;
+
+   private:
+      BOOLEAN _fullPrecision ;
+      string  _floatFmt ;
+   } ;
+
+   class rplDateField : public rplMappingField
+   {
+   public:
+      rplDateField() ;
+      ~rplDateField() ;
+
+   public:
+      INT32 init( const BSONObj &fieldConf ) ;
+      EN_FieldType getFieldType() const ;
+      INT32 _getValue( const BSONElement &ele, string &value ) ;
+   } ;
+
+   class rplBinaryField : public rplMappingField
+   {
+   public:
+      rplBinaryField() ;
+      ~rplBinaryField() ;
 
    public:
       INT32 init( const BSONObj &fieldConf ) ;

@@ -1,0 +1,9 @@
+Ryu (https://github.com/ulfjack/ryu) - minimal d2s sources for shortest double-to-string.
+Licensed under Apache-2.0 or Boost-1.0. See LICENSE-* files.
+Only ryu/d2s.c and its headers are vendored for SequoiaDB.
+
+Build (same as lz4/snappy):
+  From repo root, thirdparty/SConscript compiles via:
+    cd thirdparty/ryu && scons
+  Output: stage/lib/libryu.a (or .lib), then archived to
+    lib/<platform>/<debug|release>/libryu.a

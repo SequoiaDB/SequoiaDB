@@ -51,6 +51,7 @@
 #include "Psapi.h"
 #endif
 #include <sstream>
+#include <math.h>
 
 // Wrapper of localtime, convert a time value and correct for the local time
 // zone. The input pTime represents the seconds elapsed since the Epoch,

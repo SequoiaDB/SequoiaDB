@@ -53,6 +53,7 @@ namespace replay
    const CHAR RPL_DB2LOAD_OP_DELETE[] = "D" ;
    const CHAR RPL_DB2LOAD_OP_UPDATE_BEFORE[] = "B" ;
    const CHAR RPL_DB2LOAD_OP_UPDATE_AFTER[] = "A" ;
+   const CHAR RPL_DB2LOAD_OP_TRUNCATE[] = "T" ;
 
    static INT32 _ossFilterFiles( const string &dirPath, vector<string> &vecFiles,
                                  pcrecpp::RE &re, UINT32 deep ) ;
@@ -361,6 +362,77 @@ namespace replay
       goto done ;
    }
 
+   INT32 rplDB2LoadOutputter::_generateControlRecord(
+         const CHAR *clFullName, const CHAR *OP,
+         const UINT64 &opTimeMicroSecond, const CHAR **outDBName,
+         const CHAR **outTableName, string &strOut )
+   {
+      INT32 rc = SDB_OK ;
+      FIELD_VECTOR * fieldVector = NULL ;
+      stringstream ss ;
+      rplFieldMapping *fieldMapping = NULL ;
+      FIELD_VECTOR::iterator iter ;
+
+      fieldMapping = _tableMapping.getFieldMapping( clFullName ) ;
+      if ( NULL == fieldMapping )
+      {
+         rc = SDB_INVALIDARG ;
+         PD_RC_CHECK( rc, PDERROR, "Tablemapping(%s) is not exist, rc = %d",
+                      clFullName, rc ) ;
+      }
+
+      fieldVector = fieldMapping->getFieldVector() ;
+      iter = fieldVector->begin() ;
+      while ( iter != fieldVector->end() )
+      {
+         if ( iter != fieldVector->begin() )
+         {
+            ss << _delimiter ;
+         }
+
+         rplField *info = *iter ;
+
+         if ( info->isNeedDoubleQuote() )
+         {
+            ss << "\"" ;
+         }
+
+         if ( info->getFieldType() == AUTO_OP )
+         {
+            ss << OP ;
+         }
+         else if ( info->getFieldType() == ORIGINAL_TIME )
+         {
+            string timeStr ;
+            ossTimestamp timestamp = ossMicrosecondsToTimestamp(
+                                                          opTimeMicroSecond ) ;
+            rplTimestampToString( timestamp, timeStr ) ;
+            ss << timeStr ;
+         }
+         else
+         {
+            // Truncate T row: mapping fields from empty object always export empty.
+            ss << "" ;
+         }
+
+         if ( info->isNeedDoubleQuote() )
+         {
+            ss << "\"" ;
+         }
+
+         iter++ ;
+      }
+
+      *outDBName = fieldMapping->getTargetDBName() ;
+      *outTableName = fieldMapping->getTargetTableName() ;
+      strOut = ss.str() ;
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
    INT32 rplDB2LoadOutputter::deleteRecord( const CHAR *clFullName, UINT64 lsn,
                                             const BSONObj &oldObj,
                                             const UINT64 &opTimeMicroSecond )
@@ -432,10 +504,28 @@ namespace replay
       goto done ;
    }
 
-   INT32 rplDB2LoadOutputter::truncateCL( const CHAR *clFullName, UINT64 lsn )
+   INT32 rplDB2LoadOutputter::truncateCL( const CHAR *clFullName, UINT64 lsn,
+                                          const UINT64 &opTimeMicroSecond )
    {
-      PD_LOG( PDERROR, "Truncate cl(%s) is not supported", clFullName ) ;
-      return SDB_OPTION_NOT_SUPPORT ;
+      INT32 rc = SDB_OK ;
+      string strOut ;
+      const CHAR *dbName = NULL ;
+      const CHAR *tableName = NULL ;
+
+      rc = _generateControlRecord( clFullName, RPL_DB2LOAD_OP_TRUNCATE,
+                                   opTimeMicroSecond, &dbName, &tableName,
+                                   strOut ) ;
+      PD_RC_CHECK( rc, PDERROR, "Failed to generate truncate record(%s), "
+                   "rc = %d", clFullName, rc ) ;
+
+      rc = _recordWriter->writeRecord( dbName, tableName, lsn, strOut.c_str() ) ;
+      PD_RC_CHECK( rc, PDERROR, "Failed to write record(%s), rc = %d",
+                   strOut.c_str(), rc ) ;
+
+   done:
+      return rc ;
+   error:
+      goto done ;
    }
 
    INT32 rplDB2LoadOutputter::pop( const CHAR *clFullName, UINT64 lsn,

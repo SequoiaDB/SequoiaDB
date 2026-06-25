@@ -159,6 +159,18 @@ namespace replay
       {
          fieldInfo = SDB_OSS_NEW rplTimestampField() ;
       }
+      else if ( ossStrcmp( tFieldType, RPL_FIELD_TYPE_MAPPING_DOUBLE ) == 0 )
+      {
+         fieldInfo = SDB_OSS_NEW rplDoubleField() ;
+      }
+      else if ( ossStrcmp( tFieldType, RPL_FIELD_TYPE_MAPPING_DATE ) == 0 )
+      {
+         fieldInfo = SDB_OSS_NEW rplDateField() ;
+      }
+      else if ( ossStrcmp( tFieldType, RPL_FIELD_TYPE_MAPPING_BINARY ) == 0 )
+      {
+         fieldInfo = SDB_OSS_NEW rplBinaryField() ;
+      }
       else if ( ossStrcmp( tFieldType, RPL_FIELD_TYPE_CONST_STRING ) == 0 )
       {
          fieldInfo = SDB_OSS_NEW rplConstStringField() ;

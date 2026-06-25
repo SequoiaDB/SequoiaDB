@@ -44,6 +44,9 @@
 #include "ossUtil.h"
 #include "ossMem.h"
 #include "oss.h"
+#include "ryu/ryu.h"
+#include <math.h>
+#include <float.h>
 #if defined (_LINUX) || defined ( _AIX )
 #include <locale.h>
 #endif
@@ -144,6 +147,384 @@ size_t ossSnprintf(char* pBuffer, size_t iLength, const char* pFormat, ...)
       n=iLength-1;
    pBuffer[n]='\0';
    return n;
+}
+
+// C-safe special-value checks (NaN compares unequal to itself; Inf is
+// outside the finite double range and NaN fails both range comparisons)
+static BOOLEAN _ossDoubleIsNaNOrInf( FLOAT64 val )
+{
+   return ( val != val ) || ( val > DBL_MAX ) || ( val < -DBL_MAX ) ;
+}
+
+/*
+ * Convert Ryu d2s scientific text (e.g. "9.999E1", "1E-7") to %g-like
+ * general format: fixed decimal when -4 <= X < P (P = significant digits,
+ * X = scientific exponent); otherwise scientific with lowercase 'e',
+ * explicit sign, and at least two exponent digits (glibc %g style).
+ * On failure (return < 0), buf may hold an unterminated partial write and
+ * must be treated as undefined by the caller.
+ */
+static INT32 _ossRyuSciToGeneral( const CHAR *ryuSci,
+                                  CHAR *buf,
+                                  INT32 bufSize )
+{
+   BOOLEAN neg = FALSE ;
+   const CHAR *p = NULL ;
+   CHAR digits[ 24 ] ;
+   INT32 ndigits = 0 ;
+   INT32 expX = 0 ;
+   BOOLEAN expNeg = FALSE ;
+   INT32 outLen = 0 ;
+   INT32 i = 0 ;
+   INT32 intLen = 0 ;
+   INT32 leadZeros = 0 ;
+   INT32 fracEnd = 0 ;
+   INT32 expAbs = 0 ;
+   INT32 expDigits = 0 ;
+   INT32 tmp = 0 ;
+
+   if ( NULL == ryuSci || NULL == buf || bufSize <= 0 )
+   {
+      return -1 ;
+   }
+
+   p = ryuSci ;
+   if ( '-' == *p )
+   {
+      neg = TRUE ;
+      ++p ;
+   }
+
+   if ( *p < '0' || *p > '9' )
+   {
+      return -1 ;
+   }
+   digits[ndigits++] = *p++ ;
+
+   if ( '.' == *p )
+   {
+      ++p ;
+      while ( *p >= '0' && *p <= '9' )
+      {
+         if ( ndigits >= (INT32)sizeof( digits ) )
+         {
+            return -1 ;
+         }
+         digits[ndigits++] = *p++ ;
+      }
+   }
+
+   if ( 'E' != *p && 'e' != *p )
+   {
+      return -1 ;
+   }
+   ++p ;
+
+   if ( '-' == *p )
+   {
+      expNeg = TRUE ;
+      ++p ;
+   }
+   else if ( '+' == *p )
+   {
+      ++p ;
+   }
+
+   if ( *p < '0' || *p > '9' )
+   {
+      return -1 ;
+   }
+   while ( *p >= '0' && *p <= '9' )
+   {
+      /* Guard against signed overflow on hostile/non-Ryu input; IEEE
+       * double exponents are far below this threshold. */
+      if ( expX > 100000 )
+      {
+         return -1 ;
+      }
+      expX = expX * 10 + ( *p - '0' ) ;
+      ++p ;
+   }
+   if ( '\0' != *p )
+   {
+      return -1 ;
+   }
+   if ( expNeg )
+   {
+      expX = -expX ;
+   }
+
+   /* ISO C %g: fixed iff -4 <= X < P */
+   if ( expX >= -4 && expX < ndigits )
+   {
+      if ( neg )
+      {
+         if ( outLen + 1 >= bufSize )
+         {
+            return -1 ;
+         }
+         buf[outLen++] = '-' ;
+      }
+
+      if ( expX >= 0 )
+      {
+         intLen = expX + 1 ;
+         for ( i = 0 ; i < intLen ; ++i )
+         {
+            if ( outLen + 1 >= bufSize )
+            {
+               return -1 ;
+            }
+            if ( i < ndigits )
+            {
+               buf[outLen++] = digits[i] ;
+            }
+            else
+            {
+               /* Defensive: unreachable for Ryu input because the fixed
+                * branch requires expX < ndigits, so intLen <= ndigits. */
+               buf[outLen++] = '0' ;
+            }
+         }
+         if ( intLen < ndigits )
+         {
+            if ( outLen + 1 >= bufSize )
+            {
+               return -1 ;
+            }
+            buf[outLen++] = '.' ;
+            for ( i = intLen ; i < ndigits ; ++i )
+            {
+               if ( outLen + 1 >= bufSize )
+               {
+                  return -1 ;
+               }
+               buf[outLen++] = digits[i] ;
+            }
+            /* Defensive trim: Ryu shortest mantissa has no trailing zeros;
+             * kept in case reformatting ever introduced them. */
+            fracEnd = outLen - 1 ;
+            while ( fracEnd >= 0 && '0' == buf[fracEnd] )
+            {
+               --fracEnd ;
+            }
+            if ( fracEnd >= 0 && '.' == buf[fracEnd] )
+            {
+               --fracEnd ;
+            }
+            outLen = fracEnd + 1 ;
+         }
+      }
+      else
+      {
+         /* 0.00...digits */
+         leadZeros = -expX - 1 ;
+         if ( outLen + 2 >= bufSize )
+         {
+            return -1 ;
+         }
+         buf[outLen++] = '0' ;
+         buf[outLen++] = '.' ;
+         for ( i = 0 ; i < leadZeros ; ++i )
+         {
+            if ( outLen + 1 >= bufSize )
+            {
+               return -1 ;
+            }
+            buf[outLen++] = '0' ;
+         }
+         for ( i = 0 ; i < ndigits ; ++i )
+         {
+            if ( outLen + 1 >= bufSize )
+            {
+               return -1 ;
+            }
+            buf[outLen++] = digits[i] ;
+         }
+         /* Defensive trim: see comment on the expX >= 0 fractional path. */
+         fracEnd = outLen - 1 ;
+         while ( fracEnd >= 0 && '0' == buf[fracEnd] )
+         {
+            --fracEnd ;
+         }
+         if ( fracEnd >= 0 && '.' == buf[fracEnd] )
+         {
+            --fracEnd ;
+         }
+         outLen = fracEnd + 1 ;
+      }
+
+      if ( outLen + 1 > bufSize )
+      {
+         return -1 ;
+      }
+      buf[outLen] = '\0' ;
+      return outLen ;
+   }
+
+   /* Scientific notation (glibc %g style) */
+   if ( neg )
+   {
+      if ( outLen + 1 >= bufSize )
+      {
+         return -1 ;
+      }
+      buf[outLen++] = '-' ;
+   }
+   if ( outLen + 1 >= bufSize )
+   {
+      return -1 ;
+   }
+   buf[outLen++] = digits[0] ;
+   if ( ndigits > 1 )
+   {
+      if ( outLen + 1 >= bufSize )
+      {
+         return -1 ;
+      }
+      buf[outLen++] = '.' ;
+      for ( i = 1 ; i < ndigits ; ++i )
+      {
+         if ( outLen + 1 >= bufSize )
+         {
+            return -1 ;
+         }
+         buf[outLen++] = digits[i] ;
+      }
+   }
+   if ( outLen + 1 >= bufSize )
+   {
+      return -1 ;
+   }
+   buf[outLen++] = 'e' ;
+   if ( outLen + 1 >= bufSize )
+   {
+      return -1 ;
+   }
+   buf[outLen++] = ( expX < 0 ) ? '-' : '+' ;
+   expAbs = ( expX < 0 ) ? -expX : expX ;
+   expDigits = 1 ;
+   tmp = expAbs ;
+   while ( tmp >= 10 )
+   {
+      tmp /= 10 ;
+      ++expDigits ;
+   }
+   if ( expDigits < 2 )
+   {
+      expDigits = 2 ;
+   }
+   if ( outLen + expDigits >= bufSize )
+   {
+      return -1 ;
+   }
+   for ( i = expDigits - 1 ; i >= 0 ; --i )
+   {
+      buf[outLen + i] = (CHAR)( '0' + ( expAbs % 10 ) ) ;
+      expAbs /= 10 ;
+   }
+   outLen += expDigits ;
+   buf[outLen] = '\0' ;
+   return outLen ;
+}
+
+/*
+ * If buf holds an integer-looking decimal (no '.'/'e'/'E'), append ".0"
+ * so the text matches sdbexprt float-literal style.
+ */
+static INT32 _ossEnsureFloatLiteral( CHAR *buf, INT32 outLen, INT32 bufSize )
+{
+   INT32 i = 0 ;
+
+   if ( NULL == buf || outLen <= 0 || outLen >= bufSize )
+   {
+      return -1 ;
+   }
+
+   for ( i = 0 ; i < outLen ; ++i )
+   {
+      if ( '.' == buf[i] || 'e' == buf[i] || 'E' == buf[i] )
+      {
+         return outLen ;
+      }
+   }
+
+   if ( outLen + 2 >= bufSize )
+   {
+      return -1 ;
+   }
+   buf[outLen++] = '.' ;
+   buf[outLen++] = '0' ;
+   buf[outLen] = '\0' ;
+   return outLen ;
+}
+
+INT32 ossDoubleToFullPrecisionString( FLOAT64 val, CHAR *buf, INT32 bufSize )
+{
+   INT32 rc = 0 ;
+   INT64 iVal = 0 ;
+   CHAR ryuBuf[ 32 ] = { 0 } ;
+   /* 2^53: every integer in [-intExactMax, intExactMax] is exactly
+    * representable in IEEE-754 binary64. Prefer %lld fixed form here for
+    * readability; beyond this range (or non-integers) use Ryu + %g-like
+    * rules, so format style can jump across the boundary (e.g. 1e15 vs
+    * 1e16). */
+   const FLOAT64 intExactMax = 9007199254740992.0 ;
+
+   if ( NULL == buf || bufSize <= 0 )
+   {
+      return -1 ;
+   }
+
+   if ( _ossDoubleIsNaNOrInf( val ) )
+   {
+      buf[0] = '\0' ;
+      return 0 ;
+   }
+
+   /* +/-0.0 both compare equal to 0.0; drop signbit and emit "0.0". */
+   if ( 0.0 == val )
+   {
+      if ( bufSize < 4 )
+      {
+         return -1 ;
+      }
+      buf[0] = '0' ;
+      buf[1] = '.' ;
+      buf[2] = '0' ;
+      buf[3] = '\0' ;
+      return 3 ;
+   }
+
+   if ( val >= -intExactMax && val <= intExactMax
+        && val == floor( val ) )
+   {
+      iVal = (INT64)val ;
+      if ( (FLOAT64)iVal == val )
+      {
+         rc = (INT32)ossSnprintf( buf, (size_t)bufSize,
+                                  OSS_LL_PRINT_FORMAT, iVal ) ;
+         if ( rc < 0 || rc >= bufSize )
+         {
+            return -1 ;
+         }
+         return _ossEnsureFloatLiteral( buf, rc, bufSize ) ;
+      }
+   }
+
+   /* Ryu shortest scientific, then %g-like fixed/scientific selection */
+   d2s_buffered( val, ryuBuf ) ;
+   rc = _ossRyuSciToGeneral( ryuBuf, buf, bufSize ) ;
+   if ( rc < 0 )
+   {
+      /* Fallback should be rare; keep a conservative printf path */
+      rc = (INT32)ossSnprintf( buf, (size_t)bufSize, "%.17g", val ) ;
+      if ( rc < 0 || rc >= bufSize )
+      {
+         return -1 ;
+      }
+   }
+   return _ossEnsureFloatLiteral( buf, rc, bufSize ) ;
 }
 
 BOOLEAN ossIsInteger( const CHAR *pStr )

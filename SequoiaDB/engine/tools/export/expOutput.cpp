@@ -48,7 +48,8 @@ namespace exprt
                              _options.includeRegex(),
                              _options.kickNull(),
                              _options.strict(),
-                             _options.floatFmt().c_str() ) ;
+                             _options.floatFmt().c_str(),
+                             _options.fullPrecision() ) ;
       if ( SDB_OK != rc )
       {
          PD_LOG ( PDERROR, "Failed to int the _decodeBson, rc = %d", rc ) ;

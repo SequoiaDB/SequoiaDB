@@ -72,7 +72,8 @@ namespace replay
                           const UINT64 &opTimeMicroSecond,
                           const UINT32 &logWriteMod ) ;
 
-      INT32 truncateCL( const CHAR *clFullName, UINT64 lsn ) ;
+      INT32 truncateCL( const CHAR *clFullName, UINT64 lsn,
+                        const UINT64 &opTimeMicroSecond ) ;
 
       INT32 pop( const CHAR *clFullName, UINT64 lsn, INT64 logicalID,
                  INT8 direction ) ;

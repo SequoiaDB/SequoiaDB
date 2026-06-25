@@ -6,6 +6,7 @@ Import("aix")
 Import("windows")
 Import("ssllib_file")
 Import("ssllib_file1")
+Import("ryu_lib")
 Import("mergeStaticLibrary")
 Import("release")
 Import("debugBuild")
@@ -90,7 +91,7 @@ dir = ''
 def merge(target, source = None, env = staticLibEnv):
     pureLib = dir + '/libstaticpuresdbcpp.a'
     mergeStaticLib = dir + '/libstaticsdbcpp.a'
-    mergeStaticLibrary( mergeStaticLib, aix, ssllib_file, ssllib_file1, pureLib )
+    mergeStaticLibrary( mergeStaticLib, aix, ssllib_file, ssllib_file1, ryu_lib, pureLib )
     staticLibEnv.Install( '#/client/lib/', mergeStaticLib )
 
 if linux or aix:
@@ -111,7 +112,7 @@ elif windows:
 
 #Shared Library
 if aix:
-    dllLib = dllLibEnv.SharedLibrary('sdbcpp', [clientCPPLibFiles, ssllib_file1, ssllib_file])
+    dllLib = dllLibEnv.SharedLibrary('sdbcpp', [clientCPPLibFiles, ssllib_file1, ssllib_file, ryu_lib])
     dllLibEnv.Install( '#/client/lib/', dllLib )
 elif linux:
     dllLib = dllLibEnv.SharedLibrary('sdbcpp', clientCPPLibFiles)
