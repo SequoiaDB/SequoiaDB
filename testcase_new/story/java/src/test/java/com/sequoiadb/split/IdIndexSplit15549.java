@@ -31,6 +31,11 @@ import com.sequoiadb.testcommon.SdbThreadBase;
  */
 
 public class IdIndexSplit15549 extends SdbTestBase {
+    private static final int RECORD_COUNT = 50000;
+    private static final int SPLIT_PERCENT = 90;
+    private static final int SPLIT_BOUNDARY = RECORD_COUNT
+            * ( 100 - SPLIT_PERCENT ) / 100;
+
     private Sequoiadb sdb = null;
     private String clName = "cl_15549";
     private List< String > groupNames;
@@ -80,6 +85,7 @@ public class IdIndexSplit15549 extends SdbTestBase {
             while ( doTimes < timeOut ) {
                 BasicBSONObject matcher = new BasicBSONObject();
                 matcher.put( "Name", csName + "." + clName );
+                matcher.put( "TaskType", 0 );
                 matcher.put( "Status", new BasicBSONObject( "$ne", 9 ) );
                 cursor = db.listTasks( matcher, null, null, null );
                 if ( cursor.hasNext() ) {
@@ -111,8 +117,12 @@ public class IdIndexSplit15549 extends SdbTestBase {
                 Assert.fail( splitThread.getErrorMsg() );
             }
 
-            checkData( 4500, "{sk:{$gte:500,$lt:5000}}", desGroup );
-            checkData( 500, "{sk:{$gte:0,$lt:500}}", srcGroup );
+            checkData( RECORD_COUNT - SPLIT_BOUNDARY,
+                    "{sk:{$gte:" + SPLIT_BOUNDARY + ",$lt:" + RECORD_COUNT
+                            + "}}",
+                    desGroup );
+            checkData( SPLIT_BOUNDARY,
+                    "{sk:{$gte:0,$lt:" + SPLIT_BOUNDARY + "}}", srcGroup );
         } catch ( BaseException e ) {
             throw e;
         } finally {
@@ -141,7 +151,7 @@ public class IdIndexSplit15549 extends SdbTestBase {
     private void insertData( DBCollection cl ) {
         // TODO Auto-generated method stub
         List< BSONObject > list = new ArrayList< BSONObject >();
-        for ( int i = 0; i < 5000; i++ ) {
+        for ( int i = 0; i < RECORD_COUNT; i++ ) {
             BSONObject obj = ( BSONObject ) JSON.parse( "{sk:" + i + "}" );
             list.add( obj );
         }
@@ -158,7 +168,7 @@ public class IdIndexSplit15549 extends SdbTestBase {
             try {
                 db = new Sequoiadb( coordUrl, "", "" );
                 cl = db.getCollectionSpace( csName ).getCollection( clName );
-                cl.split( srcGroup, desGroup, 90 );
+                cl.split( srcGroup, desGroup, SPLIT_PERCENT );
             } catch ( BaseException e ) {
                 throw e;
             } finally {
