@@ -211,7 +211,7 @@ namespace engine
          }
 
          record.set( &( page._oid ), page._sequence, 0,
-                     page._len, NULL ) ;
+                     page._len, NULL, _su->lob()->hashType() ) ;
          rc = _su->lob()->read( record, _mbContext,
                                 cb, mb->writePtr(), read ) ;
          if ( SDB_OK != rc )

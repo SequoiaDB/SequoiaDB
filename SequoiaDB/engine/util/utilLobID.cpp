@@ -35,6 +35,9 @@
 #include "pd.hpp"
 #include "pdTrace.hpp"
 #include "utilLobID.hpp"
+#include "ossUtil.hpp"
+#include "../bson/lib/md5.hpp"
+#include "../bson/lib/md5.h"
 
 #include <sstream>
 
@@ -42,6 +45,88 @@ using namespace std ;
 
 namespace engine
 {
+   /// CRC32C ( Castagnoli ) reflected polynomial
+   #define UTIL_CRC32C_POLY   ( 0x82F63B78 )
+
+   /*
+      CRC32C lookup table. Wrapped in a type with a non-trivial constructor
+      so that the function local static below gets C++11's thread-safe
+      one-time initialization ( a hand-rolled bool guard would race ).
+   */
+   struct _utilCrc32cTable
+   {
+      UINT32 _t[ 256 ] ;
+      _utilCrc32cTable()
+      {
+         for ( UINT32 i = 0 ; i < 256 ; ++i )
+         {
+            UINT32 crc = i ;
+            for ( UINT32 j = 0 ; j < 8 ; ++j )
+            {
+               crc = ( crc & 1 ) ? ( ( crc >> 1 ) ^ UTIL_CRC32C_POLY )
+                                 : ( crc >> 1 ) ;
+            }
+            _t[ i ] = crc ;
+         }
+      }
+   } ;
+
+   static const UINT32* utilGetCrc32cTable()
+   {
+      /// C++11: initialization of a local static is thread-safe
+      static const _utilCrc32cTable s_table ;
+      return s_table._t ;
+   }
+
+   UINT32 utilLobHash( const BYTE *oid,
+                       UINT32 sequence,
+                       UTIL_LOB_HASH_TYPE hashType )
+   {
+      UINT32 hashValue = 0 ;
+
+      if ( UTIL_LOB_HASH_MD5 == hashType )
+      {
+         md5_state_t st ;
+         md5::md5digest digest ;
+         UINT32 i = 0 ;
+
+         md5_init( &st ) ;
+         md5_append( &st, ( const md5_byte_t * )oid, UTIL_LOBID_ARRAY_LEN ) ;
+         md5_append( &st, ( const md5_byte_t * )( &sequence ),
+                     sizeof( sequence ) ) ;
+         md5_finish( &st, digest ) ;
+
+         /// take digest[1..4], same as clsPartition
+         while ( i++ < 4 )
+         {
+            hashValue |= ( ( UINT32 )digest[ i ] << ( 32 - 8 * i ) ) ;
+         }
+      }
+      else
+      {
+         /// legacy djb2, keep the same result as the old
+         /// DMS_LOB_GET_HASH_FROM_BLK macro
+         hashValue = ossHash( oid, UTIL_LOBID_ARRAY_LEN,
+                              ( const BYTE * )( &sequence ),
+                              sizeof( sequence ) ) ;
+      }
+
+      return hashValue ;
+   }
+
+   UINT32 utilCrc32c( const void *data, UINT32 len )
+   {
+      const UINT32 *table = utilGetCrc32cTable() ;
+      const BYTE *p = ( const BYTE * )data ;
+      UINT32 crc = 0xFFFFFFFF ;
+
+      for ( UINT32 i = 0 ; i < len ; ++i )
+      {
+         crc = table[ ( crc ^ p[ i ] ) & 0xFF ] ^ ( crc >> 8 ) ;
+      }
+
+      return crc ^ 0xFFFFFFFF ;
+   }
    // number is Odd or not in one byte
    INT32 _utilLobID::_isOddArray[256] = {
       0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,

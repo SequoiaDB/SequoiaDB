@@ -249,7 +249,8 @@ namespace engine
          goto error ;
       }
 
-      record.set( &getOID(), DMS_LOB_META_SEQUENCE, 0, len, NULL ) ;
+      record.set( &getOID(), DMS_LOB_META_SEQUENCE, 0, len, NULL,
+                  _su->lob()->hashType() ) ;
 
       /// read whole the meta page
       rc = _su->lob()->read( record, _mbContext, cb, buf, readLen ) ;
@@ -389,7 +390,8 @@ namespace engine
             goto error ;
          }
 
-         record.set( &getOID(), DMS_LOB_META_SEQUENCE, 0, len, NULL ) ;
+         record.set( &getOID(), DMS_LOB_META_SEQUENCE, 0, len, NULL,
+                  _su->lob()->hashType() ) ;
 
          rc = _su->lob()->read( record, _mbContext, cb, buf, readLen ) ;
          if ( SDB_OK == rc )
@@ -572,7 +574,8 @@ namespace engine
                   tuple.tuple.columns.sequence,
                   tuple.tuple.columns.offset,
                   tuple.tuple.columns.len,
-                  tuple.data ) ;
+                  tuple.data,
+                  _su->lob()->hashType() ) ;
 
       // write or update to dms
       if ( orUpdate )
@@ -653,7 +656,8 @@ namespace engine
       PD_RC_CHECK( rc, PDERROR, "Database is not writable, rc = %d", rc ) ;
 
       record.set( &getOID(), t.columns.sequence, t.columns.offset,
-                  t.columns.len, ( const CHAR * )tuple.data ) ;
+                  t.columns.len, ( const CHAR * )tuple.data,
+                  _su->lob()->hashType() ) ;
 
       if ( DMS_LOB_META_SEQUENCE == t.columns.sequence &&
            SDB_HAS_LOBWRITE_MODE(_getMode()) &&
@@ -898,7 +902,8 @@ namespace engine
                   tuple.tuple.columns.sequence,
                   tuple.tuple.columns.offset,
                   tuple.tuple.columns.len,
-                  tuple.data ) ;
+                  tuple.data,
+                  _su->lob()->hashType() ) ;
       rc = _su->lob()->read( record, _mbContext, cb,
                              buf, len ) ;
       if ( SDB_OK != rc )
@@ -930,7 +935,7 @@ namespace engine
       while ( 0 < num )
       {
          --num ;
-         piece.set( &getOID(), num, 0, 0, NULL ) ;
+         piece.set( &getOID(), num, 0, 0, NULL, _su->lob()->hashType() ) ;
          rc = _su->lob()->remove( piece, _mbContext, cb,
                                   _getDPSCB() ) ;
          if ( SDB_OK != rc )
@@ -1174,7 +1179,8 @@ namespace engine
                      itr->tuple.columns.sequence,
                      itr->tuple.columns.offset,
                      itr->tuple.columns.len,
-                     itr->data ) ;
+                     itr->data,
+                     _su->lob()->hashType() ) ;
          rc = _su->lob()->remove( record, _mbContext, cb,
                                   _getDPSCB() ) ;
          if ( SDB_OK != rc )

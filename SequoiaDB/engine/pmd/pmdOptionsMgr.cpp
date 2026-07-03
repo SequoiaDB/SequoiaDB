@@ -1948,6 +1948,7 @@ done:
       ossMemset( _krcbLobMetaPath, 0, OSS_MAX_PATHSIZE + 1 ) ;
       ossMemset( _auditMaskStr, 0, sizeof( _auditMaskStr ) ) ;
       ossMemset( _ftMaskStr, 0, sizeof( _ftMaskStr ) ) ;
+      ossMemset( _lobChecksumMaskStr, 0, sizeof( _lobChecksumMaskStr ) ) ;
       ossMemset( _memDebugMaskStr, 0, sizeof( _memDebugMaskStr ) ) ;
       ossMemset( _monGroupMaskStr, 0, sizeof( _monGroupMaskStr ) ) ;
       ossMemset( _serviceMaskStr, 0, sizeof( _serviceMaskStr ) ) ;
@@ -1989,6 +1990,7 @@ done:
       _auditFileNum        = 0 ;
       _auditMask           = 0 ;
       _ftMask              = PMD_FT_MASK_DFT ;
+      _lobChecksumMask     = PMD_LOB_CHECKSUM_WRITE ;
       _ftConfirmPeriod     = PMD_FT_CACL_INTERVAL_DFT ;
       _ftConfirmRatio      = PMD_FT_CACL_RATIO_DFT ;
       _ftLevel             = FT_LEVEL_SEMI ;
@@ -2189,6 +2191,10 @@ done:
       // --ftmask
       rdxString( pEX, PMD_OPTION_FT_MASK, _ftMaskStr, sizeof(_ftMaskStr),
                  FALSE, PMD_CFG_CHANGE_RUN, PMD_FT_MASK_DFT_STR ) ;
+      // --lobdatachecksum
+      rdxString( pEX, PMD_OPTION_LOB_DATA_CHECKSUM, _lobChecksumMaskStr,
+                 sizeof( _lobChecksumMaskStr ), FALSE, PMD_CFG_CHANGE_RUN,
+                 PMD_LOB_CHECKSUM_DFT_STR ) ;
       // --ftconfirmperiod
       rdxUInt( pEX, PMD_OPTION_FT_CONFIRM_PERIOD, _ftConfirmPeriod,
                FALSE, PMD_CFG_CHANGE_RUN, PMD_FT_CACL_INTERVAL_DFT ) ;
@@ -2816,6 +2822,58 @@ done:
       return getResult () ;
    }
 
+   /*
+      Parse lob data checksum mask string ( e.g. "write|read" ) into mask.
+      An empty string means checksum disabled. Return SDB_INVALIDARG on any
+      unknown token.
+   */
+   static INT32 pmdString2LobChecksumMask( const CHAR *pStr, UINT32 &mask )
+   {
+      INT32 rc = SDB_OK ;
+      mask = PMD_LOB_CHECKSUM_NONE ;
+
+      if ( NULL == pStr || 0 == pStr[ 0 ] )
+      {
+         goto done ;
+      }
+
+      {
+         ossPoolString str( pStr ) ;
+         ossPoolString::size_type begin = 0 ;
+         while ( begin < str.size() )
+         {
+            ossPoolString::size_type pos = str.find( '|', begin ) ;
+            ossPoolString token = ( ossPoolString::npos == pos ) ?
+                                  str.substr( begin ) :
+                                  str.substr( begin, pos - begin ) ;
+            if ( token == "write" )
+            {
+               mask |= PMD_LOB_CHECKSUM_WRITE ;
+            }
+            else if ( token == "read" )
+            {
+               mask |= PMD_LOB_CHECKSUM_READ ;
+            }
+            else if ( !token.empty() )
+            {
+               rc = SDB_INVALIDARG ;
+               goto error ;
+            }
+
+            if ( ossPoolString::npos == pos )
+            {
+               break ;
+            }
+            begin = pos + 1 ;
+         }
+      }
+
+   done:
+      return rc ;
+   error:
+      goto done ;
+   }
+
    INT32 _pmdOptionsMgr::postLoaded ( PMD_CFG_STEP step )
    {
       INT32 rc = SDB_OK ;
@@ -2905,6 +2963,18 @@ done:
                    << endl ;
          _ftMask = PMD_FT_MASK_DFT ;
          ossStrncpy( _ftMaskStr, PMD_FT_MASK_DFT_STR, sizeof( _ftMaskStr ) ) ;
+         _invalidConfNum++ ;
+      }
+
+      // lob data checksum mask check
+      if ( SDB_OK != pmdString2LobChecksumMask( _lobChecksumMaskStr,
+                                               _lobChecksumMask ) )
+      {
+         std::cerr << PMD_OPTION_LOB_DATA_CHECKSUM << " value error, use default"
+                   << endl ;
+         _lobChecksumMask = PMD_LOB_CHECKSUM_WRITE ;
+         ossStrncpy( _lobChecksumMaskStr, PMD_LOB_CHECKSUM_DFT_STR,
+                     sizeof( _lobChecksumMaskStr ) ) ;
          _invalidConfNum++ ;
       }
 

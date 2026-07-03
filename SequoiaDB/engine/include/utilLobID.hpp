@@ -46,6 +46,31 @@ using namespace std ;
 namespace engine
 {
    /*
+      Lob bucket hash algorithm type. The caller ( dms ) maps the lobm file
+      version to one of these types, so that util does not depend on dms
+      version constants.
+   */
+   enum UTIL_LOB_HASH_TYPE
+   {
+      UTIL_LOB_HASH_DJB2 = 0,  /// legacy, for old lobm files
+      UTIL_LOB_HASH_MD5        /// md5 based, same as coord clsPartition
+   } ;
+
+   /*
+      Calculate the lob bucket hash from oid( 12 bytes ) and sequence.
+      UTIL_LOB_HASH_DJB2: keep the same result as the old ossHash algorithm.
+      UTIL_LOB_HASH_MD5 : md5( oid ++ sequence ), identical to clsPartition.
+   */
+   UINT32 utilLobHash( const BYTE *oid,
+                       UINT32 sequence,
+                       UTIL_LOB_HASH_TYPE hashType ) ;
+
+   /*
+      CRC32C ( Castagnoli ) checksum, used to verify lob data page validity.
+   */
+   UINT32 utilCrc32c( const void *data, UINT32 len ) ;
+
+   /*
       _utilLobID define
    */
 

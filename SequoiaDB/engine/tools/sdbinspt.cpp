@@ -80,6 +80,7 @@ namespace fs = boost::filesystem ;
 #define OPTION_NUMPAGE      "numpage"
 #define OPTION_SHOW_CONTENT "record"
 #define OPTION_ONLY_META    "meta"
+#define OPTION_CRCCHECK     "crccheck"
 #define OPTION_JUDGE_BALANCE "balance"
 #define OPTION_REPAIRE      "repaire"
 #define OPTION_RECOVER      "recover"
@@ -127,6 +128,7 @@ namespace fs = boost::filesystem ;
        ( COMMANDS_STRING(OPTION_NUMPAGE, ",n"), boost::program_options::value<SINT32>(), "number of pages, take effect when valid <pagestart>" ) \
        ( COMMANDS_STRING(OPTION_SHOW_CONTENT, ",p"), boost::program_options::value<string>(), "display data/index content (true/false), default: false" ) \
        ( OPTION_ONLY_META, boost::program_options::value<string>(), "inspect only meta(Header, SME, MME) (true/false), default:false" ) \
+       ( COMMANDS_STRING(OPTION_CRCCHECK, ",C"), boost::program_options::value<string>(), "verify lob data page crc when inspect lob, slower, default: false" ) \
        ( OPTION_MAX_FILESZ, boost::program_options::value<SINT32>(), "the max size (MB) for a output file, range:[10,524288], default: 500" ) \
        ( OPTION_FORCE, "force dump all invalid mb, delete list and index list and so on, default:false" )
 
@@ -495,6 +497,8 @@ namespace
     BOOLEAN gDumpLob                                     = FALSE;
     UINT32  gLobdPageSize                                = 0;
     UINT32  gLobmPageSize                                = 0;
+    /// lobm header version, decides the lob bucket hash algorithm
+    UINT32  gLobmVersion                                 = DMS_LOB_CUR_VERSION;
     UINT32  gSequence                                    = 0;
     BOOLEAN gExistLobs                                   = FALSE;
 
@@ -520,6 +524,7 @@ namespace
     BOOLEAN gInitMME                                     = FALSE ;
     BOOLEAN gShowRecordContent                           = FALSE ;
     BOOLEAN gOnlyMeta                                    = FALSE ;
+    BOOLEAN gCrcCheck                                    = FALSE ;
     BOOLEAN gForce                                       = FALSE ;
     BOOLEAN gReachEnd                                    = FALSE ;
     BOOLEAN gHitError                                    = FALSE ;
@@ -1369,6 +1374,10 @@ INT32 resolveArgument ( po::options_description &desc, INT32 argc, CHAR **argv )
    {
       ossStrToBoolean( vm[OPTION_ONLY_META].as<string>().c_str(), &gOnlyMeta ) ;
    }
+   if ( vm.count( OPTION_CRCCHECK ) )
+   {
+      ossStrToBoolean( vm[OPTION_CRCCHECK].as<string>().c_str(), &gCrcCheck ) ;
+   }
 
    /* deprecated
    if ( vm.count( OPTION_JUDGE_BALANCE) )
@@ -1695,6 +1704,13 @@ void clearBuffer ()
 }
 
 // inspect SU's header
+/// map the lobm header version to the lob bucket hash algorithm
+static UTIL_LOB_HASH_TYPE gLobHashType ()
+{
+   return ( gLobmVersion >= DMS_LOB_VERSION_3 ) ?
+          UTIL_LOB_HASH_MD5 : UTIL_LOB_HASH_DJB2 ;
+}
+
 INT32 inspectLobmHeader ( OSSFILE &file, INT64 fileSize, SINT32 &err )
 {
    INT32 rc       = SDB_OK ;
@@ -1709,6 +1725,9 @@ INT32 inspectLobmHeader ( OSSFILE &file, INT64 fileSize, SINT32 &err )
       ++err ;
       goto error ;
    }
+
+   /// remember the version to choose the bucket hash algorithm later
+   gLobmVersion = ( ( const dmsStorageUnitHeader * )headerBuffer )->_version ;
    // attempt to format, note if len is gBufferSize - 1, that means we write to
    // end of buffer, which represents the current buffer size is not sufficient,
    // then clearly we should attempt to realloc buffer and format again
@@ -3457,6 +3476,11 @@ void inspectCollectionLob( OSSFILE &lobmFile, UINT32 pageSize,
    dmsLobDataMapBlk blk ;
    MAP_CL_PAGES::iterator it ;
    MAP_PAGES::iterator itMap ;
+   /// page crc check counters
+   UINT64 crcPass       = 0 ;
+   UINT64 crcFail       = 0 ;
+   UINT64 crcSkip       = 0 ;
+   CHAR  *lobdCrcBuf    = NULL ;
 
    UINT64 beginTime = 0 ;
    UINT64 endTime = 0 ;
@@ -3507,6 +3531,54 @@ void inspectCollectionLob( OSSFILE &lobmFile, UINT32 pageSize,
             ++gMBStat._totalLobs ;
          }
 
+         /// verify the data page crc when the blk carries a full crc.
+         /// crc verification is opt-in ( --crccheck true ): it reads back
+         /// every data page and recomputes crc, which is much slower than a
+         /// plain inspect, so keep it off by default.
+         /// guard _dataLen against the page size: inspect may run on a
+         /// corrupt file, a bad _dataLen must not overflow the read buffer
+         /// ( such a blk is already flagged by inspectDmsLobDataMapBlk ).
+         if ( gCrcCheck && !gOnlyMeta && blk.isCrcValid() &&
+              blk._dataLen > 0 && blk._dataLen <= gLobdPageSize )
+         {
+            if ( NULL == lobdCrcBuf )
+            {
+               lobdCrcBuf = ( CHAR * )SDB_OSS_MALLOC( gLobdPageSize ) ;
+               if ( NULL == lobdCrcBuf )
+               {
+                  rc = SDB_OOM ;
+                  dumpPrintf( "*** Error: Failed to alloc lobd crc buffer" OSS_NEWLINE ) ;
+                  ++err ;
+                  goto error ;
+               }
+            }
+            rc = readData( &gLobdFile,
+                           DMS_HEADER_SZ + (INT64)gLobdPageSize * beginPageID,
+                           blk._dataLen, lobdCrcBuf, FALSE, "lobd crc" ) ;
+            if ( rc )
+            {
+               ++err ;
+               goto error ;
+            }
+            UINT32 actualCrc = utilCrc32c( lobdCrcBuf, blk._dataLen ) ;
+            if ( actualCrc == blk._crc )
+            {
+               ++crcPass ;
+            }
+            else
+            {
+               ++crcFail ;
+               ++err ;
+               dumpPrintf( "*** Error: Lob data page(%d) crc mismatch, "
+                           "expect[0x%08x] actual[0x%08x] dataLen[%u]" OSS_NEWLINE,
+                           beginPageID, blk._crc, actualCrc, blk._dataLen ) ;
+            }
+         }
+         else if ( gCrcCheck && !gOnlyMeta )
+         {
+            ++crcSkip ;
+         }
+
          if ( gOnlyMeta )
          {
             ++beginPageID ;
@@ -3547,6 +3619,11 @@ void inspectCollectionLob( OSSFILE &lobmFile, UINT32 pageSize,
    }
 
 done:
+   if ( NULL != lobdCrcBuf )
+   {
+      SDB_OSS_FREE( lobdCrcBuf ) ;
+      lobdCrcBuf = NULL ;
+   }
    endTime = ossGetCurrentMilliseconds() ;
    if ( endTime > beginTime )
    {
@@ -3578,12 +3655,28 @@ done:
                   "    Total Lob Pages   : %u" OSS_NEWLINE
                   "    Total Lob Size    : %llu" OSS_NEWLINE
                   "    Lob Usage Rate    : %.2f%%" OSS_NEWLINE
-                  "    Total Lobs        : %llu" OSS_NEWLINE OSS_NEWLINE,
+                  "    Total Lobs        : %llu" OSS_NEWLINE,
                   clId,
                   gMBStat._totalLobPages,
                   gMBStat._totalLobSize,
                   lobUsageRate * 100,
                   gMBStat._totalLobs ) ;
+
+      if ( !gOnlyMeta )
+      {
+         if ( gCrcCheck )
+         {
+            dumpPrintf( "    Page CRC Check    : Pass %llu, Fail %llu, "
+                        "NoCRC %llu" OSS_NEWLINE,
+                        crcPass, crcFail, crcSkip ) ;
+         }
+         else
+         {
+            dumpPrintf( "    Page CRC Check    : skipped "
+                        "(use --crccheck true)" OSS_NEWLINE ) ;
+         }
+      }
+      dumpPrintf( OSS_NEWLINE ) ;
    }
    else
    {
@@ -4353,10 +4446,8 @@ error :
 #define DMS_LOB_GET_HASH_FROM_BLK( blk, hash )\
         do\
         {\
-           const BYTE *d1 = (blk)->_oid ;\
-           const BYTE *d2 = ( const BYTE * )( &( (blk)->_sequence ) ) ;\
-           (hash) = ossHash( d1, sizeof( (blk)->_oid ),\
-                             d2, sizeof( (blk)->_sequence ) ) ;\
+           (hash) = utilLobHash( (blk)->_oid, (blk)->_sequence,\
+                                 gLobHashType() ) ;\
         } while( FALSE )
 
 static dmsLobDataMapBlk* _getLobBlk( ossMmapFile &lobmMapFile, UINT32 pageID )
@@ -4713,7 +4804,7 @@ void recoverCollectionLob( OSSFILE &lobmFile, UINT32 pageSize,
             {
                dmsLobRecord record ;
                record.set( ( const bson::OID* )pBlk->_oid, pBlk->_sequence, 0,
-                           pBlk->_dataLen, NULL ) ;
+                           pBlk->_dataLen, NULL, gLobHashType() ) ;
                /// add page to bucket
                DMS_LOB_GET_HASH_FROM_BLK( pBlk, __hash ) ;
                testBucketNo = _getLobBucketByHash( __hash ) ;
@@ -5177,7 +5268,7 @@ INT32 dumpLobmMeta( OSSFILE &file, UINT32 pageId, CHAR *pageBuf, UINT32 pageSize
 retry_dmsLobDataMapBlk:
 
    len = dmsDump::dumpDmsLobDataMapBlk( pageId, blk, gBuffer, gBufferSize, NULL,
-                                        gDumpType, pageSize ) ;
+                                        gDumpType, pageSize, gLobHashType() ) ;
    if ( (UINT32)len >= gBufferSize -1 )
    {
       // if our buffer is not large enough, let's allocate more memory and
@@ -5714,7 +5805,7 @@ INT32 parseLobmBMEAndPages( OSSFILE &lobmFile, UINT32 pageSize, UINT32 maxPages,
       nextPageID = blk._nextPageInBucket ;
 
       /// calc hash code and bucket id
-      bucketID = dmsStorageLob::getBucketID(  blk ) ;
+      bucketID = dmsStorageLob::getBucketID(  blk, gLobHashType() ) ;
 
       if ( DMS_LOB_INVALID_PAGEID == prevPageID )
       {

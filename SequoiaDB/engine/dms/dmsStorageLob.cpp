@@ -58,14 +58,6 @@ namespace engine
    #define DMS_LOB_PAGE_IN_USED( page )\
            ( DMS_SME_ALLOCATED == getSME()->getBitMask( page ) )
 
-   #define DMS_LOB_GET_HASH_FROM_BLK( blk, hash )\
-           do\
-           {\
-              const BYTE *d1 = (blk)->_oid ;\
-              const BYTE *d2 = ( const BYTE * )( &( (blk)->_sequence ) ) ;\
-              (hash) = ossHash( d1, sizeof( (blk)->_oid ),\
-                                d2, sizeof( (blk)->_sequence ) ) ;\
-           } while( FALSE )
 
    /*
       _dmsStorageLob implement
@@ -92,6 +84,8 @@ namespace engine
       _dmsData->_attachLob( this ) ;
       _isRename = FALSE ;
       _dataSegmentSize = 0 ;
+      /// default to current version, refreshed from header in _onOpened
+      _hashVersion = DMS_LOB_CUR_VERSION ;
    }
 
    _dmsStorageLob::~_dmsStorageLob()
@@ -124,10 +118,10 @@ namespace engine
       _path = NULL ;
    }
 
-   UINT32 _dmsStorageLob::getBucketID( const _dmsLobDataMapBlk &blk )
+   UINT32 _dmsStorageLob::getBucketID( const _dmsLobDataMapBlk &blk,
+                                       UTIL_LOB_HASH_TYPE hashType )
    {
-      UINT32 hashCode = 0 ;
-      DMS_LOB_GET_HASH_FROM_BLK( &blk, hashCode ) ;
+      UINT32 hashCode = utilLobHash( blk._oid, blk._sequence, hashType ) ;
       return _getBucket( hashCode ) ;
    }
 
@@ -557,7 +551,7 @@ namespace engine
       UINT32 readSz = 0 ;
       dmsLobRecord piece ;
       piece.set( &oid, DMS_LOB_META_SEQUENCE, 0,
-                 sizeof( meta ), NULL ) ;
+                 sizeof( meta ), NULL, hashType() ) ;
       rc = read( piece, mbContext, cb,
                  ( CHAR * )( &meta ), readSz ) ;
       if ( SDB_OK == rc )
@@ -601,7 +595,7 @@ namespace engine
       PD_TRACE_ENTRY( SDB__DMSSTORAGELOB_WRITELOBMETA ) ;
       dmsLobRecord piece ;
       piece.set( &oid, DMS_LOB_META_SEQUENCE, 0,
-                 sizeof( meta ), ( const CHAR * )( &meta ) ) ;
+                 sizeof( meta ), ( const CHAR * )( &meta ), hashType() ) ;
       if ( isNew )
       {
          rc = write( piece, mbContext, cb, dpsCB ) ;
@@ -984,6 +978,21 @@ namespace engine
          blk->setOld() ;
       }
 
+      /// Maintain the page crc. Only a full overwrite ( from offset 0 that
+      /// covers the whole valid content ) can be checksummed without an
+      /// extra read; any other partial update changes the page content, so
+      /// the crc must be cleared to avoid a stale value ( see design ).
+      if ( pmdGetOptionCB()->lobChecksumWriteOn() &&
+           0 == record._offset && record._dataLen >= orgBlkLen &&
+           NULL != record._data && record._dataLen > 0 )
+      {
+         blk->setCrc( utilCrc32c( record._data, record._dataLen ) ) ;
+      }
+      else
+      {
+         blk->clearCrc() ;
+      }
+
       mbContext->mbStat()->addTotalLobSize( pageIncSize ) ;
 
       _incWriteRecord() ;
@@ -1304,6 +1313,10 @@ namespace engine
       DMS_LOB_PAGEID page = DMS_LOB_INVALID_PAGEID ;
       BOOLEAN locked = FALSE ;
       utilCacheContext cContext ;
+      /// crc verify is done after submit ( data filled in buf ), so capture
+      /// the expected crc under mb lock here
+      BOOLEAN verifyCrc = FALSE ;
+      UINT32  expectCrc = 0 ;
 
       if ( _needDelayOpen )
       {
@@ -1355,6 +1368,21 @@ namespace engine
 #if defined (_DEBUG)
       SDB_ASSERT( DMS_LOB_PAGE_IN_USED( page ), "must be used" ) ;
 #endif
+      /// A whole page read ( offset 0, len == page data len ) with a valid
+      /// page crc can be verified. Capture the expected crc under lock.
+      if ( pmdGetOptionCB()->lobChecksumReadOn() && 0 == record._offset )
+      {
+         dmsExtRW extRW = extent2RW( page, mbContext->mbID() ) ;
+         extRW.setNothrow( TRUE ) ;
+         const _dmsLobDataMapBlk *blk = extRW.readPtr<_dmsLobDataMapBlk>() ;
+         if ( blk && blk->isCrcValid() &&
+              record._dataLen == blk->_dataLen )
+         {
+            verifyCrc = TRUE ;
+            expectCrc = blk->_crc ;
+         }
+      }
+
       _pCacheUnit->prepareRead( page, record._offset, record._dataLen,
                                 cb, cContext ) ;
       rc = cContext.read( buf, record._offset, record._dataLen, cb ) ;
@@ -1372,6 +1400,19 @@ namespace engine
       }
       /// submit the read data
       readLen = cContext.submit( cb ) ;
+      /// verify page crc after data is filled into buf
+      if ( SDB_OK == rc && verifyCrc && readLen == record._dataLen )
+      {
+         UINT32 actualCrc = utilCrc32c( buf, readLen ) ;
+         if ( actualCrc != expectCrc )
+         {
+            PD_LOG( PDERROR, "Lob data page crc mismatch, piece[%s], page[%d], "
+                    "len[%u], expect[0x%08x], actual[0x%08x]",
+                    record.toString().c_str(), page, readLen,
+                    expectCrc, actualCrc ) ;
+            rc = SDB_DMS_CORRUPTED_EXTENT ;
+         }
+      }
       PD_TRACE_EXITRC( SDB__DMSSTORAGELOB_READ, rc ) ;
       return rc ;
    error:
@@ -1444,11 +1485,23 @@ namespace engine
       blk->_prevPageInBucket = DMS_LOB_INVALID_PAGEID ;
       blk->_nextPageInBucket = DMS_LOB_INVALID_PAGEID ;
       blk->setRemoved() ;
+      /// crc is (re)generated below when checksum is enabled, clear it
+      /// first so a reused page never carries a stale crc
+      blk->clearCrc() ;
+
+      /// A new page written from offset 0 holds the whole valid content
+      /// [0, _dataLen) in record._data, so the crc can be computed without
+      /// any extra read ( see design: only checksum fully written pages ).
+      if ( pmdGetOptionCB()->lobChecksumWriteOn() &&
+           0 == record._offset && NULL != record._data &&
+           record._dataLen > 0 )
+      {
+         blk->setCrc( utilCrc32c( record._data, record._dataLen ) ) ;
+      }
 
 #if defined (_DEBUG)
       {
-         UINT32 __hash = 0 ;
-         DMS_LOB_GET_HASH_FROM_BLK( blk, __hash ) ;
+         UINT32 __hash = _calcHash( *blk ) ;
          if ( __hash != record._hash )
          {
             dmsLobDataMapBlk memBlk ;
@@ -1850,8 +1903,7 @@ namespace engine
 
 #if defined (_DEBUG)
          {
-            UINT32 __hash = 0 ;
-            DMS_LOB_GET_HASH_FROM_BLK( blk, __hash ) ;
+            UINT32 __hash = _calcHash( *blk ) ;
             UINT32 testBucketNo = _getBucket( __hash ) ;
             if ( testBucketNo != bucketNumber )
             {
@@ -2161,6 +2213,10 @@ namespace engine
       BOOLEAN needFlushMME = FALSE ;
       UINT16 i = 0 ;
       dmsMBStatInfo *pMBStat = NULL ;
+
+      /// cache the lobm version ( like _pageSize ), so the hash hot path
+      /// does not need to read the mmap header
+      _hashVersion = getHeader()->_version ;
 
       i = _dmsData->_nextUsedMBSlot( 0 ) ;
       while ( DMS_INVALID_MBID != i )
@@ -2670,8 +2726,15 @@ namespace engine
       /// flush MME
       _dmsData->flushMME( TRUE ) ;
 
-      /// update the header
-      _dmsHeader->_version = DMS_LOB_CUR_VERSION ;
+      /// update the header. Only upgrade an old file to VERSION_2 ( which
+      /// still uses the djb2 hash ). Never relabel an old djb2 file as
+      /// VERSION_3 ( md5 ), and never downgrade a VERSION_3 file, otherwise
+      /// the bucket hash algorithm would mismatch the existing buckets.
+      if ( _dmsHeader->_version < DMS_LOB_VERSION_2 )
+      {
+         _dmsHeader->_version = DMS_LOB_VERSION_2 ;
+         _hashVersion = _dmsHeader->_version ;
+      }
       flushHeader( TRUE ) ;
 
    done:
@@ -2747,9 +2810,9 @@ namespace engine
             {
                dmsLobRecord record ;
                record.set( ( const bson::OID* )blk->_oid, blk->_sequence, 0,
-                           blk->_dataLen, NULL ) ;
+                           blk->_dataLen, NULL, hashType() ) ;
                /// add page to bucket
-               DMS_LOB_GET_HASH_FROM_BLK( blk, __hash ) ;
+               __hash = _calcHash( *blk ) ;
                testBucketNo = _getBucket( __hash ) ;
                rc = _push2Bucket( testBucketNo, current, NULL, *blk, &record ) ;
                if ( rc )
@@ -2789,10 +2852,13 @@ namespace engine
          ++current ;
       }
 
-      /// update the header
+      /// update the header. An old file rebuilt here was hashed with djb2,
+      /// so only upgrade it to VERSION_2 ( still djb2 ), never to VERSION_3
+      /// ( md5 ). A VERSION_3 file keeps its version and md5 hash.
       if ( _dmsHeader->_version <= DMS_LOB_VERSION_1 )
       {
-         _dmsHeader->_version = DMS_LOB_CUR_VERSION ;
+         _dmsHeader->_version = DMS_LOB_VERSION_2 ;
+         _hashVersion = _dmsHeader->_version ;
       }
       flushMeta( TRUE ) ;
 
@@ -2973,8 +3039,7 @@ namespace engine
       }
       else
       {
-         UINT32 __hash1 = 0 ;
-         DMS_LOB_GET_HASH_FROM_BLK( blk, __hash1 ) ;
+         UINT32 __hash1 = _calcHash( *blk ) ;
          bucketNumber = _getBucket( __hash1 ) ;
       }
 

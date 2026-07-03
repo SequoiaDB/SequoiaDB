@@ -17,7 +17,7 @@ sdbdmsdump 是 SequoiaDB 巨杉数据库的数据文件检查工具，用于检�
 语法规则
 ----
 ```lang-text
-sdbdmsdump <--action | -a arg> [--dbpath | -d arg] [--output | -o arg] [ --dumpdata |-t arg] [--dumpindex | -i arg] [--dumplob | -b arg] [--record | -p arg]
+sdbdmsdump <--action | -a arg> [--dbpath | -d arg] [--output | -o arg] [ --dumpdata |-t arg] [--dumpindex | -i arg] [--dumplob | -b arg] [--crccheck | -C arg] [--record | -p arg]
 
 sdbdmsdump <--action | -a arg> [--dbpath | -d arg] [--output | -o arg] [ --csname | -c arg] [--dumpdata | -t arg]
 
@@ -49,6 +49,7 @@ sdbdmsdump --version | -v
 | --dumpdata  | -t   | 指定操作数据文件（取值为 true 或 false），默认值为 false                                 |
 | --dumpindex | -i   | 指定操作索引文件（取值为 true 或 false），默认值为 false                                 |
 | --dumplob   | -b   | 指定操作 Lob 文件（取值为 true 或者 false），默认值为 false                              |
+| --crccheck  | -C   | inspect 操作时，是否校验 Lob 数据页 CRC（取值为 true 或 false），默认值为 false。<br> 开启后会逐页回读 Lob 数据文件并重算 CRC 进行比对，耗时明显高于普通 inspect，故默认关闭，需要时显式开启。仅在 `--dumplob true` 且 `--action inspect`（或 all）时生效 |
 | --pagestart | -s   | dump操作时，指定起始数据页，默认为 -1                                                    |
 | --numpage   | -n   | dump操作时，指定数据页数量，默认值为 1；当指定 -s 参数为非负值时，该参数生效             |
 | --record    | -p   | dump操作时，指定显示格式化输出数据或索引内容（取值为 true 或 false），默认值为 false     |
@@ -290,6 +291,7 @@ sdbdmsdump --version | -v
        Total Lob Size    : 2614220545
        Lob Usage Rate    : 36.39%
        Total Lobs        : 17500
+       Page CRC Check    : skipped (use --crccheck true)
 
      Inspect Space Management Extent:
      Inspect Space Management Extent Done Succeed   [0.00 s]
@@ -304,6 +306,33 @@ sdbdmsdump --version | -v
      Free Tail Size  : 60.25 (MB)
      Total Free Size : 60.25 (MB)
    ```
+
+   其中 "Page CRC Check" 反映 Lob 数据页 CRC 校验结果。默认不校验，显示为 `skipped (use --crccheck true)`；仅当增加 `--crccheck true` 时才逐页比对，此时显示 `Pass N, Fail M, NoCRC K`（`Pass` 为校验通过页数，`Fail` 为校验失败页数，`NoCRC` 为未携带 CRC 而跳过的页数，如老版本数据、非全写页）。
+
+* 在上例基础上增加 `--crccheck true` 开启 Lob 数据页 CRC 校验，用于检测数据页是否损坏
+
+   ```lang-bash
+   $ sdbdmsdump -d /opt/sequoiadb/database/data/11830 -o outputlob.txt -c sample -a inspect -b true -C true
+   ```
+
+   校验通过时，"Page CRC Check" 显示各类页数统计；若存在损坏页，则每个损坏页额外打印一条明细，并计入 `Fail`，同时该集合的检测结果记录为 "Done with Errors"，显示内容可能如下：
+
+   ```lang-text
+     Inspect Lob for collection [0 : employee]
+   *** Error: Lob data page(1036) crc mismatch, expect[0x1a2b3c4d] actual[0x5e6f7a8b] dataLen[262144]
+     Inspect Lob for collection Done with Errors: 1   [0.85 s]
+       ++++ The collection lob info ++++
+       Collection ID     : 0
+       Total Lob Pages   : 27407
+       Total Lob Size    : 2614220545
+       Lob Usage Rate    : 36.39%
+       Total Lobs        : 17500
+       Page CRC Check    : Pass 25647, Fail 1, NoCRC 1759
+   ```
+
+   > **Note:**
+   >
+   > `expect` 为 Lob 元数据（lobm）中记录的 CRC，`actual` 为当前数据页（lobd）重算得到的 CRC，`dataLen` 为参与计算的数据长度。二者不一致说明数据页或其 CRC 记录已损坏。
 
 * 指定数据文件目录 `/opt/sequoiadb/database/data/11830`，指定集合空间 sample 设定操作数据文件，指定操作为“dump”将数据页格式化并输出至 `datadump.txt` 文件
 
@@ -603,7 +632,13 @@ sdbdmsdump --version | -v
     MB Id          : 0
     Status         : DMS_LOB_PAGE_NORMAL (0)
     New Flag       : DMS_LOB_PAGE_NEW (1)
-   ``` 
+    CRC Flag       : DMS_LOB_PAGE_CRC_FULL (1)
+    CRC            : 0x1a2b3c4d
+   ```
+
+   > **Note:**
+   >
+   > "CRC Flag" 表示该数据页的 CRC 状态：`DMS_LOB_PAGE_CRC_FULL` 表示整页写入并携带 CRC，`DMS_LOB_PAGE_CRC_NONE` 表示未携带 CRC（如老版本数据、非全写页）。仅当为 `DMS_LOB_PAGE_CRC_FULL` 时才输出 "CRC" 值。dump 操作仅展示 CRC 记录，不进行校验；如需校验请使用 `--action inspect --crccheck true`。
 
    如要该页为大对象的第0个分片，则会将大对象元数据进行输出，类似如下：
 

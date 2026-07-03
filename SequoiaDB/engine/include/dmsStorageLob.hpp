@@ -94,7 +94,17 @@ namespace engine
       _dmsStorageLobData* getLobData() { return &_data ; }
       utilCacheUnit* getCacheUnit() { return _pCacheUnit ; }
 
-      static UINT32 getBucketID( const _dmsLobDataMapBlk &blk ) ;
+      /// lobm file version, cached from header ( like _pageSize ), used to
+      /// select the lob bucket hash algorithm without touching the mmap header
+      OSS_INLINE UINT32 hashVersion() const { return _hashVersion ; }
+      OSS_INLINE UTIL_LOB_HASH_TYPE hashType() const
+      {
+         return ( _hashVersion >= DMS_LOB_VERSION_3 ) ?
+                UTIL_LOB_HASH_MD5 : UTIL_LOB_HASH_DJB2 ;
+      }
+
+      static UINT32 getBucketID( const _dmsLobDataMapBlk &blk,
+                                 UTIL_LOB_HASH_TYPE hashType ) ;
 
    public:
       INT32 open( const CHAR *path,
@@ -280,6 +290,12 @@ namespace engine
          return &_vecBucketLacth[ bucketID % DMS_BUCKETS_LATCH_SIZE ] ;
       }
 
+      /// calculate the hash of a blk using this file's hash algorithm
+      OSS_INLINE UINT32 _calcHash( const _dmsLobDataMapBlk &blk ) const
+      {
+         return utilLobHash( blk._oid, blk._sequence, hashType() ) ;
+      }
+
       INT32 _push2Bucket( UINT32 bucket, DMS_LOB_PAGEID pageId,
                           pmdEDUCB *cb,
                           _dmsLobDataMapBlk &blk,
@@ -345,6 +361,8 @@ namespace engine
 
       BOOLEAN                       _isRename ;
       UINT32                        _dataSegmentSize ;
+      /// cache of header _version, not use header ( like _pageSize )
+      UINT32                        _hashVersion ;
    } ;
    typedef class _dmsStorageLob dmsStorageLob ;
 

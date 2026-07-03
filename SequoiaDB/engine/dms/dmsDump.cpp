@@ -2256,7 +2256,8 @@ UINT32 _dmsDump::dumpDmsLobData( CHAR *inBuf, UINT32 inSize,
 
 UINT32 _dmsDump::dumpDmsLobDataMapBlk( UINT32 pageID, dmsLobDataMapBlk *blk, CHAR * outBuf,
                                        UINT32 outSize, CHAR * addrPrefix,
-                                       UINT32 options, UINT32 pageSize)
+                                       UINT32 options, UINT32 pageSize,
+                                       UTIL_LOB_HASH_TYPE hashType )
 {
    SDB_ASSERT( blk, "blk can't be null" ) ;
    SDB_ASSERT( outBuf, "outBuf can't be null" ) ;
@@ -2287,7 +2288,7 @@ UINT32 _dmsDump::dumpDmsLobDataMapBlk( UINT32 pageID, dmsLobDataMapBlk *blk, CHA
    {
       const char *tag = NULL ;
       len += ossSnprintf(outBuf + len, outSize -len, "Lobm dmsLobDataMapBlk (%u):" OSS_NEWLINE, pageID );
-      UINT32 bucketID = dmsStorageLob::getBucketID( *blk ) ;
+      UINT32 bucketID = dmsStorageLob::getBucketID( *blk, hashType ) ;
       bson::OID oid;
       ossMemcpy(&oid, blk->_oid, DMS_LOB_OID_LEN) ;
       len += ossSnprintf(outBuf + len, outSize -len,  " BucketID       : %u" OSS_NEWLINE, bucketID ) ;
@@ -2304,6 +2305,14 @@ UINT32 _dmsDump::dumpDmsLobDataMapBlk( UINT32 pageID, dmsLobDataMapBlk *blk, CHA
 
       tag = blk->isNew()? "DMS_LOB_PAGE_NEW":"DMS_LOB_PAGE_OLD";
       len += ossSnprintf(outBuf + len, outSize - len, " New Flag       : %s (%u)" OSS_NEWLINE, tag, blk->_newFlag ) ;
+
+      tag = ( DMS_LOB_PAGE_CRC_FULL == blk->_crcFlag ) ?
+            "DMS_LOB_PAGE_CRC_FULL" : "DMS_LOB_PAGE_CRC_NONE" ;
+      len += ossSnprintf(outBuf + len, outSize - len, " CRC Flag       : %s (%u)" OSS_NEWLINE, tag, blk->_crcFlag ) ;
+      if ( DMS_LOB_PAGE_CRC_FULL == blk->_crcFlag )
+      {
+         len += ossSnprintf(outBuf + len, outSize - len, " CRC            : 0x%08x" OSS_NEWLINE, blk->_crc ) ;
+      }
    }
 
    len += ossSnprintf ( outBuf + len, outSize - len, OSS_NEWLINE ) ;

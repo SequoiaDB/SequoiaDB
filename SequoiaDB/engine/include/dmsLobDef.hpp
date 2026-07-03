@@ -40,6 +40,7 @@
 #include "dms.hpp"
 #include "ossUtil.hpp"
 #include "pd.hpp"
+#include "utilLobID.hpp"
 #include "../bson/bson.hpp"
 
 namespace engine
@@ -50,7 +51,9 @@ namespace engine
    typedef SINT32 DMS_LOB_PAGEID ;
 
    #define DMS_LOB_VERSION_1                 1
-   #define DMS_LOB_CUR_VERSION               2
+   #define DMS_LOB_VERSION_2                 2
+   #define DMS_LOB_VERSION_3                 3
+   #define DMS_LOB_CUR_VERSION               DMS_LOB_VERSION_3
    #define DMS_LOB_META_SEQUENCE             0
 
    #define DMS_LOB_COMPLETE                  1
@@ -119,14 +122,14 @@ namespace engine
                 UINT32 sequence,
                 UINT32 offset,
                 UINT32 dataLen,
-                const CHAR *data )
+                const CHAR *data,
+                UTIL_LOB_HASH_TYPE hashType )
       {
          _oid = oid ;
          _sequence = sequence ;
          _offset = offset ;
-         _hash = ossHash( ( const BYTE * )_oid->getData(), 12,
-                          ( const BYTE * )( &_sequence ),
-                          sizeof( _sequence ) ) ;
+         _hash = utilLobHash( ( const BYTE * )_oid->getData(),
+                              _sequence, hashType ) ;
          _dataLen = dataLen ;
          _data = data ;
          return ;
@@ -259,6 +262,10 @@ namespace engine
    #define DMS_LOB_PAGE_FLAG_NEW             ( 1 )
    #define DMS_LOB_PAGE_FLAG_OLD             ( 0 )
 
+   /// data page crc state stored in _dmsLobDataMapBlk._crcFlag
+   #define DMS_LOB_PAGE_CRC_NONE            ( 0 )  /// no valid crc
+   #define DMS_LOB_PAGE_CRC_FULL           ( 1 )  /// crc covers [0, _dataLen)
+
    /*
       _dmsLobDataMapBlk define
    */
@@ -274,7 +281,9 @@ namespace engine
       UINT16         _mbID ;
       BYTE           _status ;
       BYTE           _newFlag ;
-      CHAR           _pad2[24];  /// sizeof( _dmsLobDataMapBlk ) == 64B
+      UINT32         _crc ;       /// data page crc32c, valid when _crcFlag FULL
+      BYTE           _crcFlag ;   /// DMS_LOB_PAGE_CRC_*
+      CHAR           _pad2[19];  /// sizeof( _dmsLobDataMapBlk ) == 64B
 
       _dmsLobDataMapBlk()
       {
@@ -295,6 +304,8 @@ namespace engine
          _mbID = DMS_INVALID_MBID ;
          _status = DMS_LOB_PAGE_REMOVED ;
          _newFlag = DMS_LOB_PAGE_FLAG_NEW ;
+         _crc = 0 ;
+         _crcFlag = DMS_LOB_PAGE_CRC_NONE ;
       }
 
       BOOLEAN isUndefined() const
@@ -327,6 +338,21 @@ namespace engine
          return _newFlag == DMS_LOB_PAGE_FLAG_NEW ? TRUE : FALSE ;
       }
       void setOld() { _newFlag = DMS_LOB_PAGE_FLAG_OLD ;}
+
+      BOOLEAN isCrcValid() const
+      {
+         return _crcFlag == DMS_LOB_PAGE_CRC_FULL ? TRUE : FALSE ;
+      }
+      void setCrc( UINT32 crc )
+      {
+         _crc = crc ;
+         _crcFlag = DMS_LOB_PAGE_CRC_FULL ;
+      }
+      void clearCrc()
+      {
+         _crc = 0 ;
+         _crcFlag = DMS_LOB_PAGE_CRC_NONE ;
+      }
 
       BOOLEAN equals( const BYTE *oid, UINT32 sequence ) const
       {

@@ -714,7 +714,8 @@ namespace engine
          BOOLEAN withData = ( SDB_LOB_MODE_READ == _mode && !_reopened ) ?
                             TRUE : FALSE ;
 
-         record.set( &_oid, DMS_LOB_META_SEQUENCE, 0, len, NULL ) ;
+         record.set( &_oid, DMS_LOB_META_SEQUENCE, 0, len, NULL,
+                     _su->lob()->hashType() ) ;
 
          rc = _extendBuf( len * 2 ) ;
          if ( rc )
@@ -842,7 +843,8 @@ namespace engine
             UINT32 len = DMS_LOB_META_LENGTH ;
             dmsLobRecord record ;
 
-            record.set( &_oid, DMS_LOB_META_SEQUENCE, 0, len, NULL ) ;
+            record.set( &_oid, DMS_LOB_META_SEQUENCE, 0, len, NULL,
+                     _su->lob()->hashType() ) ;
 
             rc = _extendBuf( len ) ;
             if ( rc )

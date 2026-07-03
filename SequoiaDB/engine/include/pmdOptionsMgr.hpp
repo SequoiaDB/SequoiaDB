@@ -64,6 +64,14 @@ namespace engine
    #define PMD_MAX_SHORT_STR_LEN       ( 32 )
    #define PMD_MAX_LOGMOD_STR_LEN      ( 32 )
 
+   #define PMD_NET_COMPRESSOR_MAX_STR_LENGTH   ( 6 )
+
+   /// lob data page checksum mask ( PMD_OPTION_LOB_DATA_CHECKSUM )
+   #define PMD_LOB_CHECKSUM_NONE       ( 0x00000000 )
+   #define PMD_LOB_CHECKSUM_WRITE      ( 0x00000001 )
+   #define PMD_LOB_CHECKSUM_READ       ( 0x00000002 )
+   #define PMD_LOB_CHECKSUM_DFT_STR    "write"
+
    enum PMD_CFG_STEP
    {
       PMD_CFG_STEP_INIT       = 0,           // initialize
@@ -649,6 +657,17 @@ namespace engine
          OSS_INLINE BOOLEAN isTraceOn() const { return _traceOn ; }
          OSS_INLINE UINT32 traceBuffSize() const { return _traceBufSz ; }
          OSS_INLINE BOOLEAN useDirectIOInLob() const { return _directIOInLob ; }
+         OSS_INLINE UINT32 lobChecksumMask() const { return _lobChecksumMask ; }
+         OSS_INLINE BOOLEAN lobChecksumWriteOn() const
+         {
+            return OSS_BIT_TEST( _lobChecksumMask, PMD_LOB_CHECKSUM_WRITE ) ?
+                   TRUE : FALSE ;
+         }
+         OSS_INLINE BOOLEAN lobChecksumReadOn() const
+         {
+            return OSS_BIT_TEST( _lobChecksumMask, PMD_LOB_CHECKSUM_READ ) ?
+                   TRUE : FALSE ;
+         }
          OSS_INLINE BOOLEAN sparseFile() const { return _sparseFile ; }
          OSS_INLINE UINT8 weight() const { return (UINT8)_weight ; }
          OSS_INLINE BOOLEAN authEnabled() const { return _auth ; }
@@ -793,6 +812,7 @@ namespace engine
          CHAR        _prefConstraint[ PMD_MAX_LONG_STR_LEN + 1 ] ;
          CHAR        _auditMaskStr[ PMD_MAX_LONG_STR_LEN + 1 ] ;
          CHAR        _ftMaskStr[ PMD_MAX_LONG_STR_LEN + 1 ] ;
+         CHAR        _lobChecksumMaskStr[ PMD_MAX_LONG_STR_LEN + 1 ] ;
          CHAR        _memDebugMaskStr[ PMD_MAX_LONG_STR_LEN + 1 ] ;
          CHAR        _monGroupMaskStr[ PMD_MAX_LONG_STR_LEN + 1 ] ;
          CHAR        _serviceMaskStr[ PMD_MAX_LONG_STR_LEN + 1 ] ;
@@ -833,6 +853,7 @@ namespace engine
          INT32       _auditFileNum ;
          UINT32      _auditMask ;
          UINT32      _ftMask ;
+         UINT32      _lobChecksumMask ;
          UINT32      _ftConfirmPeriod ;
          UINT32      _ftConfirmRatio ;
          INT32       _ftLevel ;

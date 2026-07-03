@@ -254,7 +254,8 @@ namespace engine
                                              UINT32 outSize,
                                              CHAR * addrPrefix,
                                              UINT32 options,
-                                             UINT32 pageSize);
+                                             UINT32 pageSize,
+                                             UTIL_LOB_HASH_TYPE hashType );
       private:
          static UINT32 _dumpExtentHeaderComm( const dmsExtent *extent,
                                               CHAR *outBuf, UINT32 outSize ) ;

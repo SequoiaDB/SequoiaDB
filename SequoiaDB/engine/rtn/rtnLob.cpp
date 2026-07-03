@@ -972,7 +972,8 @@ namespace engine
          goto error ;
       }
 
-      record.set( &oid, sequence, offset, len, data ) ;
+      record.set( &oid, sequence, offset, len, data,
+                  lobEnv.getSU()->lob()->hashType() ) ;
       rc = lobEnv.getSU()->lob()->write( record, lobEnv.getMBContext(),
                                          cb, dpsCB ) ;
 
@@ -1021,7 +1022,8 @@ namespace engine
          goto error ;
       }
 
-      record.set( &oid, sequence, offset, len, data ) ;
+      record.set( &oid, sequence, offset, len, data,
+                  lobEnv.getSU()->lob()->hashType() ) ;
       rc = lobEnv.getSU()->lob()->writeOrUpdate( record, lobEnv.getMBContext(),
                                                  cb, dpsCB, hasUpdated ) ;
 
@@ -1159,7 +1161,8 @@ namespace engine
          goto error ;
       }
 
-      record.set( &oid, sequence, offset, len, np ) ;
+      record.set( &oid, sequence, offset, len, np,
+                  lobEnv.getSU()->lob()->hashType() ) ;
       rc = lobEnv.getSU()->lob()->read( record, lobEnv.getMBContext(), cb,
                                         data, read ) ;
       if ( SDB_OK != rc )
@@ -1199,7 +1202,8 @@ namespace engine
          goto error ;
       }
 
-      record.set( &oid, sequence, 0, 0, NULL ) ;
+      record.set( &oid, sequence, 0, 0, NULL,
+                  lobEnv.getSU()->lob()->hashType() ) ;
       rc = lobEnv.getSU()->lob()->remove( record, lobEnv.getMBContext(), cb,
                                           dpsCB, onlyRemoveNewPiece, pOldData ) ;
       if ( SDB_OK != rc )
@@ -1315,7 +1319,7 @@ namespace engine
       }
 
       record.set( &oid, sequence, offset,
-                  len, data ) ;
+                  len, data, lobEnv.getSU()->lob()->hashType() ) ;
 
       rc = lobEnv.getSU()->lob()->update( record, lobEnv.getMBContext(), cb,
                                           dpsCB ) ;
