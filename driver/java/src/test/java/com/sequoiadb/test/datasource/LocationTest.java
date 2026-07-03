@@ -97,8 +97,8 @@ public class LocationTest {
     @Before
     public void setUp() {
         netConfig = new ConfigOptions();
-        netConfig.setConnectTimeout(100);
-        netConfig.setMaxAutoConnectRetryTime(200);
+        netConfig.setConnectTimeout(1000);
+        netConfig.setMaxAutoConnectRetryTime(1000);
 
         options = new DatasourceOptions();
         options.setMaxCount(10);
@@ -139,6 +139,10 @@ public class LocationTest {
     }
 
     private void createDSWithLocation(String location) throws Exception {
+        if (ds != null) {
+            ds.close();
+            ds = null;
+        }
         List<String> addrLst = new ArrayList<>();
         addrLst.add(node1.getNodeName());
         ds = createDS(addrLst, location, options);
