@@ -25,7 +25,10 @@ function test ()
 
    commDropCS( db, csName, true, "clean before test" );
    commCreateCS( db, csName, true, "create cs" );
-   var cl = commCreateCL( db, csName, clName, {}, false, true, "create cl" );
+   // ReplSize:0 全节点同步复制,putLob 返回时各副本已落盘(否则备节点 CS
+   // 文件可能因复制回放滞后未创建,后续 sdbdmsdump 会报 -4)
+   var cl = commCreateCL( db, csName, clName, { "ReplSize": 0 },
+                          false, true, "create cl" );
 
    try
    {
