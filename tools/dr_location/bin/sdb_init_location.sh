@@ -21,7 +21,8 @@ Commands:
 Options:
     -h, --help          Show help message
     -c, --conf <file>   Specify config file, default config/config.js
-    -f, --file <file>   Specify location file in check or init mode
+    -f, --file <file>   Specify location file in 'check' or 'init' mode
+    -q, --quiet         Do not output the result file from 'show' mode
 
 Examples:
     sdb_init_location.sh
@@ -48,8 +49,17 @@ function main() {
     local params=""
     local quiet="false"
 
-    while [[ $# -gt 0 ]]; do
-        case $1 in
+    # 解析命令行参数
+    TEMP=$(getopt -o hc:f:q: \
+        --long help,conf:,file:,quiet \
+        -n "$0" -- "$@")
+    if [ $? != 0 ]; then
+        show_help
+        exit 1
+    fi
+    eval set -- "$TEMP"
+    while true; do
+        case "$1" in
             -h|--help)
                 show_help
                 exit 0
@@ -66,6 +76,21 @@ function main() {
                 quiet=true
                 shift
                 ;;
+            --)
+                shift
+                break
+                ;;
+            *)
+                echo "Unknown option: $1"
+                show_help
+                return 1
+                ;;
+        esac
+    done
+
+    # 解析子命令（剩余位置参数）
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
             show)
                 command="show"
                 shift
@@ -79,7 +104,7 @@ function main() {
                 shift
                 ;;
             *)
-                echo "Unknown option: $1"
+                echo "Unknown command: $1"
                 show_help
                 return 1
                 ;;
@@ -88,7 +113,6 @@ function main() {
 
     test ! -f "$PROJECT_ROOT/lib/common.sh" && echo "[ERROR] Failed to load $PROJECT_ROOT/lib/common.sh" && return 1
     source "$PROJECT_ROOT/lib/common.sh"
-    echo $sdb_shell
 
     # 构建参数列表，用 ; 分隔
     local cmd="var scriptDir=\"$SCRIPT_DIR\""
@@ -98,16 +122,26 @@ function main() {
         cmd="$cmd; var mode=\"show\""
     fi
     
-    cmd="$cmd; var projectRoot=\"$PROJECT_ROOT\"; var quiet=$quiet"
+    cmd="$cmd; var quiet=$quiet"
     if [ -n "$configJs" ]; then
-        cmd="$cmd; var configJs=\"$configJs\""
+        # 拼入绝对路径
+        if [[ "$configJs" == /* ]]; then
+            cmd="$cmd; var configJs=\"$configJs\""
+        else
+            cmd="$cmd; var configJs=\"$SCRIPT_DIR/$configJs\""
+        fi
     fi
     if [ -n "$file" ]; then
         if [ "$command" == "show" ]; then
             echo "[ERROR] -f, --file can only use in check or init mode"
             return 1
         fi
-        cmd="$cmd; var locationFile=\"$file\""
+        # 拼入绝对路径
+        if [[ "$file" == /* ]]; then
+            cmd="$cmd; var locationFile=\"$file\""
+        else
+            cmd="$cmd; var locationFile=\"$SCRIPT_DIR/$file\""
+        fi
     fi
 
     $sdb_shell -f "$PROJECT_ROOT/bin/main.js" -e "$cmd"

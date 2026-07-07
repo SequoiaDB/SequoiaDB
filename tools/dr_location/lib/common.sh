@@ -12,6 +12,14 @@ if [[ "" != "$locations" && "" != "$hostnames" ]]; then
     exit 1
 fi
 
+# 指定 domain 时必须指定 -l,--location 或 -H,--hostname
+if [[ -n "$domains" && ! -n "$file" ]]; then
+    if [[ ! -n "$locations" && ! -n "$hostnames" ]]; then
+        echo '[ERROR] Cannot specify only "-d,--domain" without specifying "-H,--hostname" or "-l,--location"'
+        exit 1
+    fi
+fi
+
 # 获取 sdb shell
 if [ -f /etc/default/sequoiadb ]; then
     # 从 default 文件获取

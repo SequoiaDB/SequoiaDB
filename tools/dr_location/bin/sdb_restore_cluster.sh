@@ -34,8 +34,17 @@ EOF
 function main() {
     local configJs=""
 
-    while [[ $# -gt 0 ]]; do
-        case $1 in
+    # 解析命令行参数
+    TEMP=$(getopt -o hc: \
+        --long help,conf: \
+        -n "$0" -- "$@")
+    if [ $? != 0 ]; then
+        show_help
+        exit 1
+    fi
+    eval set -- "$TEMP"
+    while true; do
+        case "$1" in
             -h|--help)
                 show_help
                 exit 0
@@ -44,10 +53,14 @@ function main() {
                 configJs="$2"
                 shift 2
                 ;;
+            --)
+                shift
+                break
+                ;;
             *)
                 echo "Unknown option: $1"
                 show_help
-                exit 1
+                return 1
                 ;;
         esac
     done
@@ -58,7 +71,12 @@ function main() {
     # 构建参数列表，用 ; 分隔
     local cmd="var scriptDir=\"$SCRIPT_DIR\"; var mode=\"restore\""
     if [ -n "$configJs" ]; then
-        cmd="$cmd; var configJs=\"$configJs\""
+        # 拼入绝对路径
+        if [[ "$configJs" == /* ]]; then
+            cmd="$cmd; var configJs=\"$configJs\""
+        else
+            cmd="$cmd; var configJs=\"$SCRIPT_DIR/$configJs\""
+        fi
     fi
 
     $sdb_shell -f "$PROJECT_ROOT/bin/main.js" -e "$cmd"
