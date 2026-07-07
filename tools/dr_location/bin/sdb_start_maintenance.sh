@@ -19,8 +19,8 @@ Commands:
 Options:
     -h, --help                 Show help message
     -c, --conf <file>          Specify config file, default config/config.js
-    -l, --location <location>  Location(s) with the specified CriticalMode enabled, cannot be used with -H,--hostname
-    -H, --hostname <host>      Hostname(s) with the specified CriticalMode enabled, cannot be used with -l,--location
+    -l, --location <location>  Location(s) with the specified MaintenanceMode enabled, cannot be used with -H,--hostname
+    -H, --hostname <host>      Hostname(s) with the specified MaintenanceMode enabled, cannot be used with -l,--location
     -d, --domain <domain>      Filter the data groups within the specify domain(s)
     -f, --file <file>          Specify node information file, ignore other command-line node args
 
@@ -44,7 +44,7 @@ Others:
         host1
         host2
 
-        [doamin]
+        [domain]
         domain1
         domain2
 EOF
@@ -58,8 +58,17 @@ function main() {
     local domains=""
     local file=""
 
-    while [[ $# -gt 0 ]]; do
-        case $1 in
+    # 解析命令行参数
+    TEMP=$(getopt -o hc:l:H:d:f: \
+        --long help,conf:,location:,hostname:,domain:,file: \
+        -n "$0" -- "$@")
+    if [ $? != 0 ]; then
+        show_help
+        exit 1
+    fi
+    eval set -- "$TEMP"
+    while true; do
+        case "$1" in
             -h|--help)
                 show_help
                 exit 0
@@ -84,6 +93,10 @@ function main() {
                 file="$2"
                 shift 2
                 ;;
+            --)
+                shift
+                break
+                ;;
             *)
                 echo "Unknown option: $1"
                 show_help
@@ -92,16 +105,34 @@ function main() {
         esac
     done
 
+    if [[ ! -n "$locations" && ! -n "$hostnames" && ! -n "$file" ]]; then
+        echo "[ERROR] No target to start MaintenanceMode"
+        exit 1
+    fi
+
     test ! -f "$PROJECT_ROOT/lib/common.sh" && echo "[ERROR] Failed to load $PROJECT_ROOT/lib/common.sh" && return 1
     source "$PROJECT_ROOT/lib/common.sh"
 
     # 构建参数列表，用 ; 分隔
     local cmd="var scriptDir=\"$SCRIPT_DIR\"; var mode=\"start_maintenance\""
-    cmd="$cmd; var projectRoot=\"$PROJECT_ROOT\"; var configJs=\"$configJs\""
+
+    if [ -n "$configJs" ]; then
+        # 拼入绝对路径
+        if [[ "$configJs" == /* ]]; then
+            cmd="$cmd; var configJs=\"$configJs\""
+        else
+            cmd="$cmd; var configJs=\"$SCRIPT_DIR/$configJs\""
+        fi
+    fi
 
     if [ -n "$file" ]; then
         # 忽略其他命令行配置
-        cmd="$cmd; var tagertFile=\"$file\""
+        # 拼入绝对路径
+        if [[ "$file" == /* ]]; then
+            cmd="$cmd; var targetFile=\"$file\""
+        else
+            cmd="$cmd; var targetFile=\"$SCRIPT_DIR/$file\""
+        fi
     else
         if [ -n "$locations" ]; then
             locationArray=(`echo "$locations" | sed 's/,/ /g'`)

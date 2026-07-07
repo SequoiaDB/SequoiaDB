@@ -265,7 +265,7 @@ cp config/config.js.sample config/config.js
 
 | 参数名 | 描述 |
 | ------ | ---- |
-| sdbCoord | 协调节点地址。可以为字符串，例如 `"sdbserver1:11810"`；也可以为字符串数组 |
+| sdbCoord | 协调节点地址。可以为字符串，例如 `"sdbserver1:11810"` |
 | sdbUser | 登录 SequoiaDB 集群的用户名。如果数据库未开启鉴权，可以不填 |
 | sdbPassword | 登录 SequoiaDB 集群的密码。如果数据库未开启鉴权，可以不填 |
 | sdbToken | 密文文件鉴权使用的 token。不使用密文文件鉴权时可以不填 |
@@ -322,6 +322,7 @@ initLocationObject = {
 | -h, --help | 显示帮助信息 |
 | -c, --conf | 指定配置文件，默认为 `config/config.js` |
 | -f, --file | 指定 Location 信息文件。指定后，`check` 和 `init` 将以该文件作为期望配置 |
+| -q, --quiet | 工具执行 `show` 后会默认打印集群信息到屏幕，指定后将不再打印 |
 
 #### 操作步骤
 
@@ -389,7 +390,6 @@ initLocationObject = {
    `check` 只展示差异，不修改集群。输出内容包括：
 
    - 主机 Location 差异
-   - 节点 Location 差异
    - ActiveLocation 差异
 
    如果存在差异，工具会生成 `output/check.out` 保存检查结果；如果配置完全一致，则提示检查通过。
@@ -446,8 +446,8 @@ host3
 | `[Abnormal: Empty Location Host]` | 异常信息：当前集群中未配置 Location 的主机 |
 | `[Abnormal: Mixed Location Info]` | 异常信息：节点 Location 与主机多数派不一致 |
 | `[Abnormal: Primary Node Not In ActiveLocation]` | 异常信息：主节点不在 ActiveLocation 中 |
-| `[Abnormal: Mixed GroupMode Info]` | 异常信息：主机中仅个别节点开启了 GroupMode |
-| `[Abnormal: Empty Location Host]` | 异常信息：未配置 Location 的主机 |
+| `[Abnormal: Node Not In GroupMode]` | 异常信息：主机处于 GroupMode 时，主机中未开启 GroupMode 的节点 |
+| `[Abnormal: Group Not In GroupMode]` | 异常信息：Location 处于 GroupMode 时，Location 中未开启 GroupMode 的组 |
 
 #### check 命令输出说明
 

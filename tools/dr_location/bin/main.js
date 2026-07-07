@@ -2,7 +2,7 @@
 
 // 在文件开头加载配置文件
 if (typeof configJs !== 'undefined' && "" != configJs) {
-    import(scriptDir + "/" + configJs);
+    import(configJs);
 } else {
     import('../config/config.js');
 }
@@ -146,7 +146,9 @@ function listGroupModes() {
         println("Error in db.list(SDB_LIST_GROUPMODES): " + e);
         throw e;
     } finally {
-        cursor.close();
+        if (null != cursor) {
+            cursor.close();
+        }
     }
     return result;
 }
@@ -163,7 +165,9 @@ function listGroups() {
         println("Error in db.list(SDB_LIST_GROUPS): " + e);
         throw e;
     } finally {
-        cursor.close();
+        if (null != cursor) {
+            cursor.close();
+        }
     }
     return result;
 }
@@ -227,7 +231,9 @@ function getNodeInfo() {
         println("Error getting node info from $SNAPSHOT_DB: " + getLastErrObj());
         throw e;
     } finally {
-        cursor.close();
+        if (null != cursor) {
+            cursor.close();
+        }
     }
     return result;
 }
@@ -251,7 +257,9 @@ function getGroupModeInfo() {
         println("Error getting group mode info from SDB_LIST_GROUPMODES: " + getLastErrObj());
         throw e;
     } finally {
-        cursor.close();
+        if (null != cursor) {
+            cursor.close();
+        }
     }
     return result;
 }
@@ -343,92 +351,123 @@ function reelect(reelectLevel) {
     return true;
 }
 
-// 检查节点状态
-function checkNodes(mode) {
+// 获取节点状态
+function getNodeHealthInfo() {
     try {
-        var hasError = false;
-        var filter = {};
-        if (mode === "maintenance") {
-            filter = { GroupMode: "maintenance" };
-        } else if (mode === "critical") {
-            filter = { GroupMode: "critical" };
-        }
+        // 记录每个 Location / HostName 下是否有故障节点
+        var nodeHealthInfo = {};
+        var errHosts = [];
 
-        // 处理主机与节点关系，后面用于判断主机上所有节点是否都处于某种状态
-        var nodeInfo = getNodeInfo();
-        var groupNodeObj = handleNodeInfo(nodeInfo, false);
-        var groupModeCursor = db.list(SDB_LIST_GROUPMODES, filter);
-        var groupModeInfo = [];
-        while (groupModeCursor.next()) {
-            var current = groupModeCursor.current().toObj();
-            if ("" != current.GroupMode) {
-                for (let i = 0; i < current.Properties.length; i++) {
-                    groupModeInfo.push({GroupMode: current.GroupMode, GroupName: current.GroupName, Properties: current.Properties[i].NodeName});
-                }
-            }
-        }
-        groupModeCursor.close();
-
-        if (0 < groupModeInfo.length) {
-            // 检查节点状态
-            var healthCursor = db.snapshot(SDB_SNAP_HEALTH,{},{NodeName:"",Status:"",ServiceStatus:"",DataStatus:""});
-            var healthInfo = {};
-            while (healthCursor.next()) {
-                var current = healthCursor.current().toObj();
-                if (undefined != current.ErrNodes) {
-                    for (let i = 0; i < current.ErrNodes.length; i++) {
-                        healthInfo[current.ErrNodes[i].NodeName] = {Status: current.ErrNodes[i].Flag, ServiceStatus: current.ErrNodes[i].Flag, DataStatus: current.ErrNodes[i].Flag, GroupName: current.ErrNodes[i].GroupName};
-                    }
-                } else {
-                    var nodename = current.NodeName;
-                    healthInfo[nodename] = {Status: current.Status, ServiceStatus: current.ServiceStatus, DataStatus: current.DataStatus};
-                }
-            }
-            healthCursor.close();
-
-            var passGroup = [];
-            for (let i = 0; i < groupModeInfo.length; i++) {
-                var nodeName = groupModeInfo[i].NodeName;
-                if (nodeName) {
-                    // 检查单个节点状态
-                    if (undefined == healthInfo[nodeName]) {
-                        println('[ERROR] Cannot find node "' + nodeName + '" health info');
-                        hasError = true;
-                    } else if ("Normal" != healthInfo[nodeName].Status || ! healthInfo[nodeName].ServiceStatus || "Normal" != healthInfo[nodeName].DataStatus) {
-                        println('[ERROR] Node "' + nodeName + '" error, Status: ' + healthInfo[nodeName].Status + " ServiceStatus: " + healthInfo[nodeName].ServiceStatus + " DataStatus: " + healthInfo[nodeName].DataStatus);
-                        hasError = true;
-                    }
-                } else {
-                    // 检查该 group 下所有节点的状态
-                    var groupName = groupModeInfo[i].GroupName;
-                    var checkNodeArray = groupNodeObj[groupName];
-
-                    if (-1 != passGroup.indexOf(groupName)) {
-                        continue;
-                    } else{
-                        passGroup.push(groupName);
-                    }
-
-                    if (undefined == checkNodeArray) {
-                        println('[ERROR] Cannot find groupName "' + groupName + '" health info');
-                        hasError = true;
+        // 检查并统计节点状态
+        var cursor = db.exec('select NodeName,HostName,Location,ServiceStatus,Status from $SNAPSHOT_DB');
+        while (cursor.next()) {
+            var current = cursor.current().toObj();
+            if (undefined != current.ErrNodes) {
+                for (let i = 0; i < current.ErrNodes.length; i++) {
+                    var nodename = current.ErrNodes[i].NodeName;
+                    var hostname = nodename.split(':')[0];
+                    if (nodeHealthInfo[hostname]) {
+                        nodeHealthInfo[hostname].push({NodeName: nodename, Status: current.ErrNodes[i].Flag, ServiceStatus: current.ErrNodes[i].Flag});
                     } else {
-                        for (let j in checkNodeArray) {
-                            nodeName = checkNodeArray[j];
-                            if ("Normal" != healthInfo[nodeName].Status || ! healthInfo[nodeName].ServiceStatus || "Normal" != healthInfo[nodeName].DataStatus) {
-                                println('[ERROR] Node "' + nodeName + '" error, Status: ' + healthInfo[nodeName].Status + " ServiceStatus: " + healthInfo[nodeName].ServiceStatus + " DataStatus: " + healthInfo[nodeName].DataStatus);
-                                hasError = true;
-                            }
+                        nodeHealthInfo[hostname] = [{NodeName: nodename, Status: current.ErrNodes[i].Flag, ServiceStatus: current.ErrNodes[i].Flag}];
+                    }
+                    // 无法获取 location 信息（需要从 catalog 中获取）
+                    errHosts.push(hostname);
+                }
+            } else {
+                if ("Normal" != current.Status || ! current.ServiceStatus) {
+                    var nodename = current.NodeName;
+                    var hostname = current.HostName;
+                    var location = current.Location;
+                    if (nodeHealthInfo[hostname]) {
+                        nodeHealthInfo[hostname].push({NodeName: nodename, Status: current.Status, ServiceStatus: current.ServiceStatus});
+                    } else {
+                        nodeHealthInfo[hostname] = [{NodeName: nodename, Status: current.Status, ServiceStatus: current.ServiceStatus}];
+                    }
+                    if (null != location && "" != location) {
+                        if (nodeHealthInfo[location]) {
+                            nodeHealthInfo[location] = {NodeName: nodename, Status: current.Status, ServiceStatus: current.ServiceStatus};
+                        } else {
+                            nodeHealthInfo[location] = {NodeName: nodename, Status: current.Status, ServiceStatus: current.ServiceStatus};
                         }
                     }
                 }
             }
         }
-        return !hasError;
+        cursor.close();
+
+        cursor = db.exec('select NodeName,HostName,Location,ServiceStatus,Status from $SNAPSHOT_DB where GroupName = "SYSCatalogGroup"');
+        while (cursor.next()) {
+            var current = cursor.current().toObj();
+            if (undefined != current.ErrNodes) {
+                for (let i = 0; i < current.ErrNodes.length; i++) {
+                    var nodename = current.ErrNodes[i].NodeName;
+                    var hostname = nodename.split(':')[0];
+                    if (nodeHealthInfo[hostname]) {
+                        nodeHealthInfo[hostname].push({NodeName: nodename, Status: current.ErrNodes[i].Flag, ServiceStatus: current.ErrNodes[i].Flag});
+                    } else {
+                        nodeHealthInfo[hostname] = [{NodeName: nodename, Status: current.ErrNodes[i].Flag, ServiceStatus: current.ErrNodes[i].Flag}];
+                    }
+                    // 无法获取 location 信息（需要从 catalog 中获取）
+                    errHosts.push(hostname);
+                }
+            } else {
+                if ("Normal" != current.Status || ! current.ServiceStatus) {
+                    var nodename = current.NodeName;
+                    var hostname = current.HostName;
+                    var location = current.Location;
+                    if (nodeHealthInfo[hostname]) {
+                        nodeHealthInfo[hostname].push({NodeName: nodename, Status: current.Status, ServiceStatus: current.ServiceStatus});
+                    } else {
+                        nodeHealthInfo[hostname] = [{NodeName: nodename, Status: current.Status, ServiceStatus: current.ServiceStatus}];
+                    }
+                    if (null != location && "" != location) {
+                        if (nodeHealthInfo[location]) {
+                            nodeHealthInfo[location] = {NodeName: nodename, Status: current.Status, ServiceStatus: current.ServiceStatus};
+                        } else {
+                            nodeHealthInfo[location] = {NodeName: nodename, Status: current.Status, ServiceStatus: current.ServiceStatus};
+                        }
+                    }
+                }
+            }
+        }
+        cursor.close();
     } catch (e) {
-        println("Error checking nodes: " + getLastErrObj());
+        println("[ERROR] Failed to get node health info from coord: " + getLastErrObj());
         throw e;
     }
+
+    // 从 catalog 系统表中获取 errHosts location 信息
+    try {
+        if (0 < errHosts.length) {
+            var cata = connCatalog();
+            var locationInfo = {};
+            cursor = cata.exec('select Group from SYSCAT.SYSNODES split by Group');
+            while (cursor.next()) {
+                var current = cursor.current().toObj();
+                var location = current.Group.Location;
+                var hostname = current.Group.HostName;
+                if (-1 != errHosts.indexOf(hostname)) {
+                    if (locationInfo[location] && -1 == locationInfo[location].indexOf(hostname)) {
+                        locationInfo[location].push(hostname);
+                    } else {
+                        locationInfo[location] = [hostname];
+                    }
+                }
+            }
+            cursor.close();
+            nodeHealthInfo["_location"] = locationInfo; 
+        }
+    } catch (e) {
+        println("[ERROR] Failed to get node health info from catalog: " + getLastErrObj());
+        throw e;
+    } finally {
+        if (null != cata) {
+            cata.close();
+        }
+    }
+
+    return nodeHealthInfo;
 }
 
 // 关闭所有 MaintenanceMode
@@ -539,7 +578,7 @@ function checkClusterHealth() {
                 }
                 hasError = true;
             } else if ("Normal" != current.Status || ! current.ServiceStatus || "Normal" != current.DataStatus) {
-                println('[ERROR] Node "' + nodeName + '" error, Status: ' + current.Status + " ServiceStatus: " + current.ServiceStatus + " DataStatus: " + current.DataStatus);
+                println('[ERROR] Node "' + current.NodeName + '" error, Status: ' + current.Status + " ServiceStatus: " + current.ServiceStatus + " DataStatus: " + current.DataStatus);
                 hasError = true;
             }
         }
@@ -586,7 +625,7 @@ function checkHostExist(host, nodeInfo) {
 // 读取节点信息文件
 function readNodeFileOnInit(filePath) {
     if (!filePath) {
-        throw new Error("[ERROR] File can not be empty found");
+        throw new Error("[ERROR] File can not be empty found: " + filePath);
     }
 
     try {
@@ -606,7 +645,9 @@ function readNodeFileOnInit(filePath) {
     var content = "";
     var index = "";
     var hostObj = {};
-
+    var curActiveLocation = "";
+    var flag = false;
+    
     try {
         while (content = file.readLine()) {
             var line = content.trim();
@@ -616,7 +657,14 @@ function readNodeFileOnInit(filePath) {
                 index = line.indexOf("(active)");
                 if (-1 != index) {
                     line = line.substring(0, index);
-                    activeLocation = line;
+                    if ("" == curActiveLocation) {
+                        curActiveLocation = line;
+                        activeLocation = line;
+                    } else {
+                        // 存在多个 activeLocation，文件有误
+                        println("\n[ERROR] ActiveLocation duplicate in file: " + filePath);
+                        throw new Error("[ERROR] ActiveLocation duplicate in file: " + filePath);
+                    }
                 }
                 currentLocation = line;
                 if (null == info[line]) {
@@ -632,14 +680,14 @@ function readNodeFileOnInit(filePath) {
                 index = index == -1 ? line.indexOf("(Partial-Critical-Maintenance)") : index;
                 if (-1 != index) {
                     line = line.substring(0, index);
-                    activeLocation = line;
                 }
                 if (null == hostObj[line]) {
                     info[currentLocation].push(line);
                     hostObj[line] = 1;
+                    flag = true;
                 } else {
-                    println("\n[ERROR] Host " + line + " duplicate in file");
-                    throw new Error("[ERROR] Host " + line + " duplicate in file");
+                    println("\n[ERROR] Host " + line + " duplicate in file: " + filePath);
+                    throw new Error("[ERROR] Host " + line + " duplicate in file: " + filePath);
                 }
             }
         }
@@ -651,7 +699,18 @@ function readNodeFileOnInit(filePath) {
     } finally {
         file.close();
     }
-    return info;
+
+    if ("" == curActiveLocation) {
+        // 文件中未设置 activeLocation
+        activeLocation = "";
+    }
+
+    if (flag) {
+        return info;
+    } else {
+        // 文件没有有效内容
+        return null;
+    }
 }
 
 // 读取节点信息文件
@@ -681,6 +740,7 @@ function readNodeFileOnMode(filePath) {
 
     var currentSection = "";
     var content = "";
+    var flag = false;
 
     try {
         while (content = file.readLine()) {
@@ -714,6 +774,7 @@ function readNodeFileOnMode(filePath) {
                     info.domains.push(line);
                 }
                 info.count++;
+                flag = true;
             }
         }
     } catch (e) {
@@ -725,7 +786,12 @@ function readNodeFileOnMode(filePath) {
         file.close();
     }
 
-    return info;
+    if (flag) {
+        return info;
+    } else {
+        // 文件没有有效内容（location/hostname）
+        return null;
+    }
 }
 
 // 检查 location 是否开启了 MaintenanceMode
@@ -770,7 +836,7 @@ function checkHostInMaintenance(checkHost, groupModeInfo, nodeInfo) {
                 }
             } else {
                 for (let k in nodeInfo) {
-                    if (location == nodeInfo[k].Location && hostName == nodeInfo[k].HostName) {
+                    if (location == nodeInfo[k].Location && checkHost == nodeInfo[k].HostName) {
                         return true;
                     }
                 }
@@ -791,12 +857,14 @@ function checkLocationInCritical(checkLocation, groupModeInfo, nodeInfo) {
             var nodeName = properties[j].NodeName;
             var location = properties[j].Location;
             if (null != nodeName) {
-                var hostName = nodeName.split(':')[0];
-                for (let k in nodeInfo) {
-                    if (hostName == nodeInfo[k].HostName && checkLocation == nodeInfo[k].Location) {
-                        return true;
-                    }
-                }
+                // var hostName = nodeName.split(':')[0];
+                // for (let k in nodeInfo) {
+                //     if (hostName == nodeInfo[k].HostName && checkLocation == nodeInfo[k].Location) {
+                //         return true;
+                //     }
+                // }
+                // 针对 hostname 开启的 critical，指定这个 host 所在的 location 为目标无法关闭 critical，所以不能返回 true
+                continue ;
             } else if (location == checkLocation){
                 return true;
             }
@@ -959,15 +1027,20 @@ function validateParameters() {
             case 'stop_maintenance':
             case 'start_critical':
             case 'stop_critical':
-                // 如果提供了 tagertFile 参数，验证文件存在并读取文件内容
-                if (typeof tagertFile !== 'undefined' && tagertFile) {
-                    nodeTargetInfo = readNodeFileOnMode(scriptDir + '/' + tagertFile);
-                    println(JSON.stringify(nodeTargetInfo));
-                    if (typeof nodeTargetInfo !== 'undefined' && nodeTargetInfo.locations.length != 0 && nodeTargetInfo.hostnames.length != 0) {
-                        errors.push("[ERROR] [location] and [hostname] cannot be used at the same time in the file \"" + tagertFile + "\"");
-                    }
+                // 如果提供了 targetFile 参数，验证文件存在并读取文件内容
+                if (typeof targetFile !== 'undefined' && targetFile) {
+                    nodeTargetInfo = readNodeFileOnMode(targetFile);
                     if (!nodeTargetInfo || typeof nodeTargetInfo != 'object') {
-                        errors.push("[ERROR] Node information file '" + scriptDir + '/' + tagertFile + "' not found or invalid");
+                        errors.push("[ERROR] Node information file '" + targetFile + "' not found or invalid");
+                    } else {
+                        if (nodeTargetInfo.locations && nodeTargetInfo.hostnames) {
+                            if (nodeTargetInfo.locations.length != 0 && nodeTargetInfo.hostnames.length != 0) {
+                                errors.push("[ERROR] [location] and [hostname] cannot be used at the same time in the file \"" + targetFile + "\"");
+                            }
+                            if (nodeTargetInfo.domains && nodeTargetInfo.locations.length == 0 && nodeTargetInfo.hostnames.length == 0 && nodeTargetInfo.domains.length != 0) {
+                                errors.push("[ERROR] [domain] cannot be used without [location] or [hostname] in the file \"" + targetFile + "\"");
+                            }
+                        }
                     }
                 }
                 break;
@@ -1025,11 +1098,15 @@ function validateParameters() {
     }
 
     if (typeof maxKeepTime === 'undefined' || typeof maxKeepTime !== 'number') {
-        errors.push("Parameter maxKeepTime must be in [1, 10080]");
+        errors.push("Parameter maxKeepTime must be number");
     }
 
     if (maxKeepTime < 1 || maxKeepTime > 10080) {
-        errors.push("Parameter maxKeepTime must be number");
+        errors.push("Parameter maxKeepTime must be in [1, 10080]");
+    }
+
+    if (maxKeepTime <= minKeepTime) {
+        errors.push("Parameter maxKeepTime must be greater than minKeepTime");
     }
 
     if (typeof enforce === 'undefined' || typeof enforce !== 'boolean') {
@@ -1552,7 +1629,7 @@ function handleCheckInfoToOutputArray(locationAnalyzeInfo, listGroupInfo, nodeIn
     var unknownHost = [];
 
     // ------------- 处理异常主机 location（与配置不同） 表格 -------------
-    var checkInfosheet = {"title": "[Diff: Host Location]", "head": [["HostName", "CurrentLoation", "ExpectLocation"]], "content": []};
+    var checkInfosheet = {"title": "[Diff: Host Location]", "head": [["HostName", "CurrentLocation", "ExpectLocation"]], "content": []};
     var currentLocation = {};
     var configLocation = {};
 
@@ -1617,7 +1694,7 @@ function handleCheckInfoToOutputArray(locationAnalyzeInfo, listGroupInfo, nodeIn
     var currentActiveLocation = locationAnalyzeInfo.ActiveLocation;
     var configActiveLocation = activeLocation;
 
-    if (null != currentActiveLocation && 'string' === typeof currentActiveLocation) {
+    if ("" != configActiveLocation && null != currentActiveLocation && 'string' === typeof currentActiveLocation) {
         checkInfosheet = {"title": "[Diff: ActiveLocation]", "head": [["", "CurrentActiveLoation", "ExpectActiveLocation"]], "content": []};
         if (currentActiveLocation != configActiveLocation) {
             // 集群 activeLocation 与配置不一致
@@ -1625,7 +1702,7 @@ function handleCheckInfoToOutputArray(locationAnalyzeInfo, listGroupInfo, nodeIn
         } else {
             // 一致
         }
-    } else if (null != currentActiveLocation && Array.isArray(currentActiveLocation)) {
+    } else if ("" != configActiveLocation && null != currentActiveLocation && Array.isArray(currentActiveLocation)) {
         // 集群中存在多个 activeLocation
         checkInfosheet = {"title": "[Diff: ActiveLocation]", "head": [["GroupName", "CurrentActiveLoation", "ExpectActiveLocation"]], "content": []};
         var checkGroup = {};
@@ -1653,6 +1730,55 @@ function handleCheckInfoToOutputArray(locationAnalyzeInfo, listGroupInfo, nodeIn
         outputArray.push(checkInfosheet);
     }
     return outputArray;
+}
+
+// 通过本机 coord 节点配置文件获取 catalog 节点，逐个尝试连接，直到连接上一个
+function connCatalog() {
+    var coord = sdbCoord.split(':')[1];
+    try {
+        var oma = new Oma("localhost", sdbCm);
+        var catalogaddr = JSON.parse(oma.getNodeConfigs(coord)).catalogaddr;
+    } catch (e) {
+        println("[ERROR] Failed to get catalogaddr from " + coord + " config file: " + getLastErrObj());
+        throw e;
+    }
+
+    var addrArray = catalogaddr.split(",");
+    var cata;
+    var nodeName = "";
+    if (0 == addrArray.length) {
+        println("[ERROR] Failed to get catalogaddr from " + coord + " config file");
+        throw new Error("[ERROR] Failed to get catalogaddr from " + coord + " config file");
+    }
+    for (let i in addrArray) {
+        try {
+            var cipherUser = "";
+            nodeName = addrArray[i];
+            var cataHost = nodeName.split(':')[0];
+            var cataPort = parseInt(nodeName.split(':')[1]) - 3;
+            if ('' != sdbCipherFile) {
+                if ('' != sdbToken) {
+                    cipherUser = new CipherUser(sdbUser).token(sdbToken).cipherFile(sdbCipherFile);
+                } else {
+                    cipherUser = new CipherUser(sdbUser).cipherFile(sdbCipherFile);
+                }
+                cata = new Sdb(cataHost, cataPort, cipherUser);
+            } else {
+                cata = new Sdb(cataHost, cataPort, sdbUser, sdbPassword);
+            }
+        } catch (e) {
+            if (-79 != e) {
+                println("[ERROR] Failed to connect catalog node " + nodeName + " -> " + cataHost + ":" + cataPort + ": " + getLastErrObj());
+                throw e;
+            }
+        }
+    }
+
+    if ("" == nodeName && null != cata) {
+        println("[ERROR] Failed to connect catalog in " + catalogaddr);
+        throw new Error("[ERROR] Failed to connect catalog in " + catalogaddr);
+    }
+    return cata;
 }
 
 // 对没有主节点的编目组进行强制升主，持续时间与 maxKeepTime 相同
@@ -1886,7 +2012,7 @@ function executeCheck() {
         println("ok");
 
         // activeLocation 发生改变，并且切主参数不是 1 或者 2，打屏提醒用户
-        if (locationAnalyzeInfo.ActiveLocation != activeLocation && (1 != reelectLevel && 2 != reelectLevel)) {
+        if ("" != activeLocation && locationAnalyzeInfo.ActiveLocation != activeLocation && (1 != reelectLevel && 2 != reelectLevel)) {
             println("   [WARNING] Cluster activeLocation will be changed: \"" + locationAnalyzeInfo.ActiveLocation + "\" -> \"" + activeLocation + "\", but reelectLevel does not in [1, 2], it will not reelect caused by activeLocation after \"init\"");
         }
 
@@ -2166,16 +2292,13 @@ function executeStopMaintenance() {
     var hostnamesCount = 0;
     var haveTarget = false;
 
-    // 检查节点状态（如果指定了 --check）
+    // 获取节点状态（如果指定了 --check）
     if (typeof check === 'boolean' && check) {
-        println("Checking node status before stopping MaintenanceMode ... ");
-        if (!checkNodes("maintenance")) {
-            println(separator);
-            println("[ERROR] Some nodes are not OK, cannot stop MaintenanceMode");
-            println(separator);
-            throw new Error("Some nodes are not OK, cannot stop MaintenanceMode");
-        }
-        println("Node status check passed - all nodes are OK");
+        print("Collecting node health info before stopping MaintenanceMode ... ");
+        var healthInfo = getNodeHealthInfo();
+        println("ok");
+    } else {
+        healthInfo = {};
     }
 
     if (nodeTargetInfo && nodeTargetInfo.domains && nodeTargetInfo.domains.length > 0) {
@@ -2199,6 +2322,11 @@ function executeStopMaintenance() {
             // 检查该 location 是否存在开启 maintenancemode 的目标，有才关闭，没有则跳过
             var rc = checkLocationInMaintenance(location, groupModeInfo, nodeInfo);
             if (rc) {
+                if (healthInfo._location && healthInfo._location[location]) {
+                    // 存在故障节点，报错退出
+                    println("[ERROR] There are faulty hosts in \"" + location + "\": " + JSON.stringify(healthInfo._location[location]));
+                    throw new Error("[ERROR] Some nodes are not ok, cannot not stop MaintenanceMode");
+                }
                 println("  Stopping MaintenanceMode for Location: " + location);
                 try {
                     if (0 < domainArray.length) {
@@ -2220,6 +2348,11 @@ function executeStopMaintenance() {
         for (let i in locations) {
             var rc = checkLocationInMaintenance(locations[i], groupModeInfo, nodeInfo);
             if (rc) {
+                if (healthInfo._location && healthInfo._location[locations[i]]) {
+                    // 存在故障节点，报错退出
+                    println("[ERROR] There are faulty hosts in \"" + locations[i] + "\": " + JSON.stringify(healthInfo._location[locations[i]]));
+                    throw new Error("[ERROR] Some nodes are not ok, cannot not stop MaintenanceMode");
+                }
                 try {
                     println("  Stopping MaintenanceMode for Location: " + locations[i]);
                     if (0 < domainArray.length) {
@@ -2243,6 +2376,11 @@ function executeStopMaintenance() {
             var host = nodeTargetInfo.hostnames[i];
             var rc = checkHostInMaintenance(host, groupModeInfo, nodeInfo);
             if (rc) {
+                if (healthInfo[host] && 0 < healthInfo[host].length) {
+                    // 存在故障节点，报错退出
+                    println("[ERROR] There are faulty nodes in \"" + host + "\": " + JSON.stringify(healthInfo[host]));
+                    throw new Error("[ERROR] Some nodes are not ok, cannot not stop MaintenanceMode");
+                }
                 println("  Stopping MaintenanceMode for Host: " + host);
                 try {
                     if (0 < domainArray.length) {
@@ -2264,6 +2402,11 @@ function executeStopMaintenance() {
         for (let i in hostnames) {
             var rc = checkHostInMaintenance(hostnames[i], groupModeInfo, nodeInfo);
             if (rc) {
+                if (healthInfo[hostnames[i]] && 0 < healthInfo[hostnames[i]].length) {
+                    // 存在故障节点，报错退出
+                    println("[ERROR] There are faulty nodes in \"" + hostnames[i] + "\": " + JSON.stringify(healthInfo[hostnames[i]]));
+                    throw new Error("[ERROR] Some nodes are not ok, cannot not stop MaintenanceMode");
+                }
                 println("  Stopping MaintenanceMode for Host: " + hostnames[i]);
                 try {
                     if (0 < domainArray.length) {
@@ -2286,6 +2429,11 @@ function executeStopMaintenance() {
     if (!haveTarget && 0 == domainArray.length) {
         // 没有指定目标，检查如果集群存在 MaintenanceMode，则全部停止
         println("  Stopping MaintenanceMode for cluster");
+        for (let i in healthInfo) {
+            // 存在故障节点，报错退出
+            println("[ERROR] There are faulty nodes in cluster: " + JSON.stringify(healthInfo));
+            throw new Error("[ERROR] Some nodes are not ok, cannot not stop MaintenanceMode");
+        }
         try {
             maintenanceCount = stopAllMaintenanceMode();
             if (maintenanceCount > 0) {
@@ -2497,16 +2645,16 @@ function executeStopCritical() {
     var hostnamesCount = 0;
     var haveTarget = false;
 
-    // 检查节点状态（如果指定了 --check）
+    // 获取节点状态（如果指定了 --check）
     if (typeof check === 'boolean' && check) {
-        println("Checking node status before stopping CriticalMode ... ");
-        if (!checkNodes("critical")) {
-            println(separator);
-            println("[ERROR] Some nodes are not OK, cannot stop CriticalMode");
-            println(separator);
-            throw new Error("Some nodes are not OK, cannot stop CriticalMode");
+        print("Collecting node health info before stopping CriticalMode ... ");
+        var healthInfo = getNodeHealthInfo();
+        for (let i in healthInfo) {
+            // 存在故障节点，报错退出
+            println("\n[ERROR] There are faulty nodes in cluster: " + JSON.stringify(healthInfo));
+            throw new Error("[ERROR] Some nodes are not ok, cannot not stop CriticalMode");
         }
-        println("Node status check passed - all nodes are OK");
+        println("ok");
     }
 
     if (nodeTargetInfo && nodeTargetInfo.domains && nodeTargetInfo.domains.length > 0) {
@@ -2572,9 +2720,9 @@ function executeStopCritical() {
     if (nodeTargetInfo && nodeTargetInfo.hostnames && nodeTargetInfo.hostnames.length > 0) {
         for (var i = 0; i < nodeTargetInfo.hostnames.length; i++) {
             var host = nodeTargetInfo.hostnames[i];
-            println("  Stopping CriticalMode for Host: " + host);
             var rc = checkHostInCritical(host, groupModeInfo, nodeInfo);
             if (rc) {
+                println("  Stopping CriticalMode for Host: " + host);
                 try {
                     if (0 < domainArray.length) {
                         dc.stopCriticalMode({ HostName: host, Domain: domainArray});
