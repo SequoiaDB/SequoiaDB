@@ -432,13 +432,48 @@ namespace engine
       // get group by groupID
       if ( 0 != groupID )
       {
-         rc = catGetGroupObj( groupID, boGroupInfo, _pEduCB ) ;
+         // Catalog node downloads its own group info by nodeID.
+         if ( MSG_CAT_GRP_REQ == pMsg->opCode &&
+              CATALOG_GROUPID == groupID &&
+              0 != pGrpReq->id.columns.nodeID )
+         {
+            rc = catGetGroupObj( pGrpReq->id.columns.nodeID,
+                                 boGroupInfo, _pEduCB ) ;
+            if ( SDB_CLS_NODE_NOT_EXIST == rc )
+            {
+               INT32 orgRc = rc ;
+               BOOLEAN isDelay = FALSE ;
+
+               rc = _pCatCB->primaryCheck( _pEduCB, TRUE, isDelay ) ;
+               if ( isDelay )
+               {
+                  goto done ;
+               }
+               else if ( SDB_OK == rc )
+               {
+                  rc = orgRc ;
+               }
+               else
+               {
+                  PD_LOG( PDWARNING, "Node[%u] is not found on current "
+                          "catalog node, and current node is not primary, "
+                          "redirect to primary, rc: %d",
+                          pGrpReq->id.columns.nodeID, rc ) ;
+                  goto error ;
+               }
+            }
+         }
+         else
+         {
+            rc = catGetGroupObj( groupID, boGroupInfo, _pEduCB ) ;
+         }
       }
       // get group by groupName
       else
       {
          rc = catGetGroupObj( name, FALSE, boGroupInfo, _pEduCB ) ;
       }
+
       PD_RC_CHECK( rc, PDERROR, "Failed to get group info, rc: %d", rc ) ;
 
       // if catalog group, get primary node from replset
