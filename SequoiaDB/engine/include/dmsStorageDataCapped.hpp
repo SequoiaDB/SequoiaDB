@@ -91,12 +91,14 @@ namespace engine
       INT64 _maxSize ;
       INT64 _maxRecNum ;
       BOOLEAN _overwrite ;
+      UINT32 _reserved ;
 
       _dmsCappedCLOptions()
       {
          _maxSize = DMS_DFT_CAPPEDCL_SIZE ;
          _maxRecNum = DMS_DFT_CAPPEDCL_RECNUM ;
          _overwrite = FALSE ;
+         _reserved = 0 ;
       }
    } ;
    typedef _dmsCappedCLOptions dmsCappedCLOptions ;
