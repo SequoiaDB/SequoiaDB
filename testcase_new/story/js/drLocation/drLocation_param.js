@@ -67,7 +67,7 @@ function testMissingArguments ()
       var checkResult = drRun( "sdb_init_location.sh",
          ["check", initOptions[i]], 1 );
       drAssertFailure( checkResult );
-      drAssertContains( checkResult, "option requires an argument" );
+      drAssertContains( checkResult, "Usage:" );
    }
 
    var groupModeScripts = [
@@ -86,13 +86,13 @@ function testMissingArguments ()
          var result = drRun( groupModeScripts[scriptIndex],
             [groupModeOptions[optionIndex]], 1 );
          drAssertFailure( result );
-         drAssertContains( result, "option requires an argument" );
+         drAssertContains( result, "Usage:" );
       }
    }
 
    var restoreResult = drRun( "sdb_restore_cluster.sh", ["-c"], 1 );
    drAssertFailure( restoreResult );
-   drAssertContains( restoreResult, "option requires an argument" );
+   drAssertContains( restoreResult, "Usage:" );
 }
 
 function testStartWithNoMatchingTarget ()
