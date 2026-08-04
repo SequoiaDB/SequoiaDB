@@ -276,6 +276,26 @@ namespace engine
          goto error ;
       }
 
+      // get OnlyUpgradeMeta shoud locate the first, because when _onlyUpgradeMeta is true,
+      // will rebuild the _index object
+      rc = rtnGetBooleanElement( arg, IXM_FIELD_NAME_ONLY_UPGRADE_META, _onlyUpgradeMeta ) ;
+      if ( SDB_FIELD_NOT_EXIST == rc )
+      {
+         rc = SDB_OK ;
+      }
+      if ( rc )
+      {
+         PD_LOG ( PDERROR, "Failed to get field[%s] from match[%s]",
+                  IXM_FIELD_NAME_ONLY_UPGRADE_META, arg.toString().c_str() ) ;
+         goto error ;
+      }
+
+      if ( _onlyUpgradeMeta )
+      {
+         rc = rtnAddUniqueIDToIndexDef( _collectionName, hint, _index, _index ) ;
+         PD_RC_CHECK( rc, PDERROR, "Failed to add uniqueID to index def, rc: %d", rc ) ;
+      }
+
       // get global
       rc = rtnGetBooleanElement( _index, IXM_FIELD_NAME_GLOBAL,
                                  _isGlobal ) ;
@@ -366,25 +386,6 @@ namespace engine
          PD_LOG ( PDERROR, "Failed to get field[%s] from match[%s]",
                   FIELD_NAME_ASYNC, arg.toString().c_str() ) ;
          goto error ;
-      }
-
-      // get OnlyUpgradeMeta
-      rc = rtnGetBooleanElement( arg, IXM_FIELD_NAME_ONLY_UPGRADE_META, _onlyUpgradeMeta ) ;
-      if ( SDB_FIELD_NOT_EXIST == rc )
-      {
-         rc = SDB_OK ;
-      }
-      if ( rc )
-      {
-         PD_LOG ( PDERROR, "Failed to get field[%s] from match[%s]",
-                  IXM_FIELD_NAME_ONLY_UPGRADE_META, arg.toString().c_str() ) ;
-         goto error ;
-      }
-
-      if ( _onlyUpgradeMeta )
-      {
-         rc = rtnAddUniqueIDToIndexDef( _collectionName, hint, _index, _index ) ;
-         PD_RC_CHECK( rc, PDERROR, "Failed to add uniqueID to index def, rc: %d", rc ) ;
       }
 
    done:
