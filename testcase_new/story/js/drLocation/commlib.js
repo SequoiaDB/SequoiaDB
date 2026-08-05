@@ -668,3 +668,79 @@ function drDropReplicaGroup ( groupName )
    // The helper owns only the temporary replica group it created.
    db.removeRG( groupName );
 }
+
+function drGetGroupLocationState ( groupName )
+{
+   var state = { nodes: [], activeLocation: "" };
+   var cursor = db.list( SDB_LIST_GROUPS, { GroupName: groupName } );
+   try
+   {
+      if( !cursor.next() )
+         throw new Error( "Replica group not found: " + groupName );
+      var group = cursor.current().toObj();
+      state.activeLocation = group.ActiveLocation === undefined ? "" :
+         String( group.ActiveLocation );
+      var groupNodes = group.Group || [];
+      for( var i = 0; i < groupNodes.length; ++i )
+      {
+         var node = groupNodes[i];
+         var services = node.Service || [];
+         var serviceName = "";
+         for( var j = 0; j < services.length; ++j )
+         {
+            if( services[j].Type === 0 || services[j].Type === "0" )
+            {
+               serviceName = String( services[j].Name );
+               break;
+            }
+         }
+         state.nodes.push( {
+            hostName: String( node.HostName ),
+            serviceName: serviceName,
+            nodeName: String( node.HostName ) + ":" + serviceName,
+            location: node.Location === undefined ? "" : String( node.Location )
+         } );
+      }
+   }
+   finally
+   {
+      cursor.close();
+   }
+   return state;
+}
+
+function drAssertGroupLocationPlan ( groupName, plan, activeLocation )
+{
+   var state = drGetGroupLocationState( groupName );
+   var expected = {};
+   for( var location in plan )
+   {
+      if( location === "domains" || location === "domainMode" ) continue;
+      for( var i = 0; i < plan[location].length; ++i )
+         expected[plan[location][i]] = location;
+   }
+
+   for( var n = 0; n < state.nodes.length; ++n )
+   {
+      var node = state.nodes[n];
+      if( expected[node.hostName] === undefined ) continue;
+      if( node.location !== expected[node.hostName] )
+         throw new Error( "Group " + groupName + " host " + node.hostName +
+            " expected Location " + expected[node.hostName] + ", actual " +
+            node.location );
+   }
+
+   if( activeLocation !== undefined &&
+      state.activeLocation !== activeLocation )
+      throw new Error( "Group " + groupName + " expected ActiveLocation " +
+         activeLocation + ", actual " + state.activeLocation );
+}
+
+function drCollectGroupHosts ( groupName )
+{
+   var hosts = {};
+   var state = drGetGroupLocationState( groupName );
+   for( var i = 0; i < state.nodes.length; ++i )
+      hosts[state.nodes[i].hostName] = true;
+   return Object.keys( hosts ).sort();
+}

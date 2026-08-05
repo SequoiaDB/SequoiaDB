@@ -13,6 +13,7 @@
 - 识别未设置 Location、主机内 Location 不一致、主节点不在 ActiveLocation 等异常情况
 - 根据配置文件或工具生成的 Location 文件检查当前集群配置差异
 - 根据配置文件或 Location 文件批量设置主机 Location 和集群 ActiveLocation
+- 按 Domain 范围初始化 Location / ActiveLocation，或按 Domain 过滤 `show` 展示结果
 - 按 Location、主机或 Domain 开启/关闭 MaintenanceMode 和 CriticalMode
 - 检查集群节点状态，并在集群恢复正常后关闭全部 GroupMode
 - 根据 `reelectLevel` 配置执行切主分析和切主操作，使主节点分布符合当前运行状态
@@ -28,6 +29,7 @@
 | 新部署集群尚未设置 Location | 初始化 Location 和 ActiveLocation | `sdb_init_location.sh show/check/init` |
 | 已配置 Location，需要巡检 | 查看当前状态并检查是否与配置一致 | `sdb_init_location.sh show/check` |
 | 扩容、迁移或 Location 规划调整 | 修改配置后检查差异，再执行初始化 | `sdb_init_location.sh check/init` |
+| 仅需对部分 Domain 初始化或巡检 Location | 在 `initLocationObject` 中配置 `domains`/`domainMode` 后执行 | `sdb_init_location.sh init/show` |
 | 计划维护或部分节点异常，但集群仍可正常服务 | 对目标 Location 或主机开启 MaintenanceMode | `sdb_start_maintenance.sh` |
 | 中心故障、复制组无主或多数派不可用，需要容灾接管 | 对幸存 Location 或主机开启 CriticalMode | `sdb_start_critical.sh` |
 | 故障节点已恢复，需要解除指定 GroupMode | 按 Location、主机或文件关闭 GroupMode | `sdb_stop_maintenance.sh`、`sdb_stop_critical.sh` |
@@ -271,7 +273,7 @@ cp config/config.js.sample config/config.js
 | sdbToken | 密文文件鉴权使用的 token。不使用密文文件鉴权时可以不填 |
 | sdbCipherFile | 密文文件路径。不使用密文文件鉴权时可以不填 |
 | sdbCm | 本机 sdbcm 端口号，用于编目组无主时通过 Oma 获取本机编目节点并执行临时升主 |
-| initLocationObject | 期望的 Location 分布。key 为 Location 名称，value 为主机名数组 |
+| initLocationObject | 期望的 Location 分布。key 为 Location 名称，value 为主机名数组。另外可包含 `domains`（Domain 名称数组，默认为空）和 `domainMode`（`0` 为排除模式，`1` 为选择模式，默认 `1`），用于限制 `init`/`show` 的 Domain 作用范围 |
 | activeLocation | 期望设置的 ActiveLocation。为空字符串时，`init` 不修改 ActiveLocation |
 | reelectLevel | 执行 `init`、GroupMode 开关和 `restore` 后是否切主。取值为 0、1、2 时分别按 Maintenance/Critical、ActiveLocation、RunStatusWeight 级别执行切主分析；0、1、2 为向下包含关系，1 包含 0 的功能，2 包含 0 和 1 的功能；其他取值表示不切主 |
 | minKeepTime | MaintenanceMode 和 CriticalMode 运行最低窗口时间，取值范围[1, 10080]，单位分钟 |
@@ -288,9 +290,36 @@ initLocationObject = {
    ],
    "ShenZhen": [
       "host3"
-   ]
+   ],
+   // domains 为空时表示作用于整个集群；非空时配合 domainMode 限定 Domain 范围
+   "domains": [],
+   // 0: 排除模式（对 domains 以外的域生效）；1: 选择模式（仅对 domains 中的域生效，默认）
+   "domainMode": 1
 } ;
 ```
+
+按 Domain 初始化或过滤展示时，可配置为：
+
+```lang-javascript
+initLocationObject = {
+   "GuangZhou": [
+      "host1",
+      "host2"
+   ],
+   "ShenZhen": [
+      "host3"
+   ],
+   "domains": ["domain1"],
+   "domainMode": 1
+} ;
+```
+
+> **Note:**
+>
+> - `domains` 为空时，`init`/`show` 按集群范围处理，行为与未配置 Domain 时一致。
+> - `domainMode` 为 `1`（选择模式）时，仅对 `domains` 列表中的域生效；为 `0`（排除模式）时，对集群中除列表外的其它域生效。
+> - `domains` 中的 Domain 必须已存在于集群中，否则工具报错退出。
+> - 配置了非空 `domains` 后：`init` 调用 `dc.setLocation()` / `dc.setActiveLocation()` 时会传入 `Domain` 选项；`show` 会按 Domain 涉及的组、主机和节点过滤展示结果。若某主机上任意一个组属于目标 Domain，该主机的 Location 布局信息仍会完整展示。
 
 ### Location 初始化工具
 
@@ -298,9 +327,9 @@ initLocationObject = {
 
 | 子命令 | 描述 |
 | ------ | ---- |
-| show | 展示当前集群 Location、ActiveLocation、GroupMode 和异常信息，并生成 Location 信息文件 |
+| show | 展示当前集群 Location、ActiveLocation、GroupMode 和异常信息，并生成 Location 信息文件。若配置了非空 `domains`，按 Domain 过滤展示结果 |
 | check | 对比当前集群 Location 信息与配置文件或指定文件中的期望配置 |
-| init | 根据配置文件或指定文件设置集群 Location 信息 |
+| init | 根据配置文件或指定文件设置集群 Location 信息。若配置了非空 `domains`，仅在对应 Domain 范围内设置 Location / ActiveLocation |
 
 进行 Location 初始化必须满足如下条件：
 
@@ -371,6 +400,8 @@ initLocationObject = {
    - 当前 MaintenanceMode 或 CriticalMode 状态
    - 未设置 Location、主机内 Location 不一致、主节点不在 ActiveLocation 等异常信息
 
+   如果 `initLocationObject` 中配置了非空 `domains`，`show` 会按 Domain 过滤上述结果，并在输出中提示当前生效的 `domainMode` 与 domains 范围；未配置或 `domains` 为空时，提示作用范围为 cluster。
+
    同时，工具会在 `output` 目录下生成 `location.info` 文件。该文件可作为 `-f` 参数输入，用于后续 `check` 或 `init`。
 
    `show` 还会生成 `output/show.out`，用于保存本次展示结果。
@@ -408,8 +439,8 @@ initLocationObject = {
 
    `init` 会执行如下操作：
 
-   - 调用 `dc.setLocation(<hostname>, <location>)` 设置主机上节点的 Location
-   - 当 `activeLocation` 配置非空时，调用 `dc.setActiveLocation(<location>)` 设置集群 ActiveLocation
+   - 调用 `dc.setLocation(<hostname>, <location>)` 设置主机上节点的 Location；若配置了非空 `domains`，则传入 `{Domain: <domains>}`，仅对目标 Domain 内的数据组生效
+   - 当 `activeLocation` 配置非空时，调用 `dc.setActiveLocation(<location>)` 设置 ActiveLocation；若配置了非空 `domains`，同样传入 `{Domain: <domains>}`，避免影响域外复制组
    - 根据 `reelectLevel` 配置调用 `dc.reelectAnalyze()` 进行切主分析和切主
 
 6. 初始化完成后再次查看并检查集群状态。
@@ -434,6 +465,31 @@ host3
 
 表示 `GuangZhou` 是 `activeLocation` 包含 `host1,host2` 主机，`ShenZhen` 包含 `host3` 主机。
 用户可以根据实际规划修改该文件，然后通过 `-f` 参数指定该文件作为 `check` 或 `init` 的输入。
+
+如果希望在 `-f` 文件中限定 Domain 范围，可增加 `[domains(1)]` 或 `[domains(0)]` 段：
+
+```lang-text
+[domains(1)]
+domain1
+domain2
+
+[GuangZhou(active)]
+host1
+host2
+
+[ShenZhen]
+host3
+```
+
+其中：
+
+- `[domains(1)]`：选择模式，仅对列表中的 Domain 生效
+- `[domains(0)]`：排除模式，对列表以外的 Domain 生效
+- Domain 段中每一行填写一个 Domain 名称
+
+> **Note:**
+>
+> `-f` 文件中的 Location / Domain 配置会覆盖 `config.js` 中的 `initLocationObject` 与 `activeLocation`。Domain 段写法必须为 `[domains(0)]` 或 `[domains(1)]`，其它写法将报错。
 
 #### show 命令输出说明
 
@@ -465,8 +521,9 @@ host3
 
 - `activeLocation` 配置为空时，`init` 不会修改 ActiveLocation。
 
-- 使用 `-f` 参数时，文件中的 Location 配置优先于 `config.js` 中的配置。
+- 使用 `-f` 参数时，文件中的 Location / Domain 配置优先于 `config.js` 中的配置。
 
+- 配置非空 `domains` 后，`init` 仅修改目标 Domain 内数据组的 Location / ActiveLocation；`show` 仅展示与目标 Domain 相关的信息。排除模式生效后若没有剩余 Domain，工具会跳过 Domain 范围的 Location 更新，而不会回退为集群级修改。
 
 ### GroupMode 管理工具
 

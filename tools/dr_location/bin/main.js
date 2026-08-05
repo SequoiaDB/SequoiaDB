@@ -1,5 +1,11 @@
 // dr_location 工具 - 主入口文件
 
+// 是否按 domain 过滤 show 的展示信息
+var showFilterWithDomain = true;
+// domain 条件
+var domainList = [];
+var domainMode = 1;
+
 // 在文件开头加载配置文件
 if (typeof configJs !== 'undefined' && "" != configJs) {
     import(configJs);
@@ -130,6 +136,26 @@ function reelectAnalyze() {
     } catch (e) {
         println("Error in dc.reelectAnalyze(): " + e);
         throw e;
+    }
+    return result;
+}
+
+// 获取 SDB_LIST_DOMAINS 列表
+function listDomains() {
+    var cursor = null;
+    try {
+        var result = [];
+        cursor = db.list(SDB_LIST_DOMAINS);
+        while (cursor.next()) {
+            result.push(cursor.current().toObj());
+        }
+    } catch (e) {
+        println("Error in db.list(SDB_LIST_DOMAINS): " + e);
+        throw e;
+    } finally {
+        if (null != cursor) {
+            cursor.close();
+        }
     }
     return result;
 }
@@ -629,7 +655,7 @@ function readNodeFileOnInit(filePath) {
     }
 
     try {
-        if (!File.exist(filePath)) {
+        if (!File.exist(filePath)) {    
             println("[ERROR] File not found: " + filePath);
             throw new Error("[ERROR] File not found: " + filePath);
         }
@@ -642,6 +668,7 @@ function readNodeFileOnInit(filePath) {
 
     var info = {};
     var currentLocation = "";
+    var currentDomain = "";
     var content = "";
     var index = "";
     var hostObj = {};
@@ -652,7 +679,20 @@ function readNodeFileOnInit(filePath) {
         while (content = file.readLine()) {
             var line = content.trim();
             if (line === "") continue;
-            if (line[0] == "[" && line[line.length - 1] == "]") {
+            if (0 == line.indexOf("[domains") && line[line.length - 1] == "]") {
+                // 读取 domains 信息
+                if (line == "[domains(1)]") {
+                    info.domainMode = 1;
+                } else if (line == "[domains(0)]") {
+                    info.domainMode = 0;
+                } else {
+                    // 非 0 | 1, 异常
+                    println("\n[ERROR] The domainMode in file \"" + filePath + "\" can only be [domains(0)] or [domains(1)]");
+                    throw new Error("[ERROR] The domainMode in file \"" + filePath + "\" can only be [domains(0)] or [domains(1)]");
+                }
+                currentDomain = "domains";
+                currentLocation = "";
+            } else if (line[0] == "[" && line[line.length - 1] == "]") {
                 line = line.substring(1, line.length - 1);
                 index = line.indexOf("(active)");
                 if (-1 != index) {
@@ -667,10 +707,17 @@ function readNodeFileOnInit(filePath) {
                     }
                 }
                 currentLocation = line;
+                currentDomain = "";
                 if (null == info[line]) {
                     info[line] = [];
                 }
-            } else if (currentLocation) {
+            } else if ("" != currentDomain) {
+                if (null == info["domains"]) {
+                    info["domains"] = [line];
+                } else {
+                    info["domains"].push(line);
+                }
+            } else if ("" != currentLocation) {
                 // 去掉末尾的状态
                 index = line.indexOf("(Critical)");
                 index = index == -1 ? line.indexOf("(PartialCritical)") : index;
@@ -1081,8 +1128,38 @@ function validateParameters() {
         errors.push("Parameter sdbCm must be number");
     }
 
-    if (typeof initLocationObject === 'undefined' || typeof initLocationObject !== 'object') {
+    // 检查并提取里面的 domains 和 domainMode
+    if (null == initLocationObject || typeof initLocationObject === 'undefined' || typeof initLocationObject !== 'object') {
         errors.push("Parameter initLocationObject must be object");
+    } else {
+        if (Array.isArray(initLocationObject.domains)) {
+            domainList = initLocationObject.domains;
+        } else if (undefined !== initLocationObject.domains) {
+            errors.push("Parameter initLocationObject.domains must be array");
+        }
+        // domainMode 仅接受 0 | 1；未配置时保持默认值 1
+        if (undefined !== initLocationObject.domainMode) {
+            if (0 === initLocationObject.domainMode || 1 === initLocationObject.domainMode) {
+                domainMode = initLocationObject.domainMode;
+            } else {
+                errors.push("Parameter initLocationObject.domainMode must be in [0, 1]");
+            }
+        }
+        // domains 不为空时，domainMode 必须为 0 | 1（默认已是 1）
+        if (0 < domainList.length && 0 != domainMode && 1 != domainMode) {
+            errors.push("Parameter initLocationObject.domainMode must be in [0, 1] when initLocationObject.domains are not empty");
+        }
+
+        if (0 < domainList.length) {
+            delete initLocationObject.domains;
+            delete initLocationObject.domainMode;
+
+            // 必须包含其他 location 配置
+            let keys = Object.keys(initLocationObject);
+            if (0 == keys.length) {
+                errors.push("Parameter initLocationObject must be included location configure");
+            }
+        }
     }
 
     if (typeof activeLocation === 'undefined' || typeof activeLocation !== 'string') {
@@ -1165,6 +1242,260 @@ function outputLocationToFile(locationInfoObj, locationFile) {
         println("[ERROR] Failed to write file " + locationFile);
         throw e;
     }
+}
+
+// 检查 domain 是否在 listDomains 中出现
+function checkDomain(checkDomainList, domainInfo) {
+    for (let i in checkDomainList) {
+        let isFind = false;
+        for (let j in domainInfo) {
+            if (checkDomainList[i] == domainInfo[j].Name) {
+                isFind = true;
+            }
+        }
+        if (!isFind) {
+            // 未找到目标 domain，异常
+            println("[ERROR] Cannot find domain \"" + checkDomainList[i] + "\" in db.listDomains()");
+            throw new Error("[ERROR] Cannot find domain \"" + checkDomainList[i] + "\" in db.listDomains()");
+        }
+    }
+}
+
+// 排除模式处理 domains
+function excludeDomain(excludeDomainList, domainInfo) {
+    var result = [];
+    // 排除模式选择其他 domain
+    for (let i in domainInfo) {
+        let domain = domainInfo[i].Name;
+        let isFind = false;
+        for (let j in excludeDomainList) {
+            let checkDomain = excludeDomainList[j];
+            if (domain == checkDomain) {
+                isFind = true;
+                break;
+            }
+        }
+        if (!isFind) {
+            result.push(domain);
+        }
+    }
+    return result;
+}
+
+// 按 domain 过滤 show 的信息
+function filterShowInfoWithDomain(outputArray, nodeInfo, domainList, domainInfo) {
+    // 根据域统计涉及的组
+    var groupArray = [];
+    for (let i in domainList) {
+        for (let j in domainInfo) {
+            if (domainList[i] == domainInfo[j].Name) {
+                let groups = domainInfo[j].Groups;
+                if (!Array.isArray(groups)) {
+                    continue;
+                }
+                for (let k in groups) {
+                    if (-1 == groupArray.indexOf(groups[k].GroupName)) {
+                        groupArray.push(groups[k].GroupName);
+                    }
+                }
+            }
+        }
+    }
+
+    // 根据组统计涉及的节点
+    var nodeArray = [];
+    for (let i in groupArray) {
+        for (let j in nodeInfo) {
+            let group = nodeInfo[j].GroupName;
+            let node = nodeInfo[j].NodeName;
+            if (-1 != nodeArray.indexOf(node)) {
+                continue;
+            }
+
+            if (group == groupArray[i]) {
+                nodeArray.push(node);
+                continue;
+            }
+        }
+    }
+
+    // 根据组统计涉及的机器
+    var hostArray = [];
+    for (let i in groupArray) {
+        for (let j in nodeInfo) {
+            let group = nodeInfo[j].GroupName;
+            let host = nodeInfo[j].HostName;
+            if (-1 != hostArray.indexOf(host)) {
+                continue;
+            }
+
+            if (group == groupArray[i]) {
+                hostArray.push(host);
+                continue;
+            }
+        }
+    }
+
+    // 根据组统计涉及的 location
+    var locationArray = [];
+    for (let i in groupArray) {
+        for (let j in nodeInfo) {
+            let group = nodeInfo[j].GroupName;
+            let location = nodeInfo[j].Location;
+            if (-1 != locationArray.indexOf(location)) {
+                continue;
+            }
+
+            if (group == groupArray[i]) {
+                locationArray.push(location);
+                continue;
+            }
+        }
+    }
+
+    // 根据机器列表，过滤打印表格
+    for (let i = 0; i < outputArray.length; i++) {
+        let title = outputArray[i].title;
+        let head = outputArray[i].head;
+        let content = outputArray[i].content;
+        if ("[Location Layout Info]" == title) {
+            let array = [];
+            for (let j = 0; j < head[0].length; j++) {
+                array[j] = [];
+            }
+            for (let j in content) {
+                for (let k = 0; k < content[j].length; k++) {
+                    // 去掉末尾的状态
+                    let target = content[j][k];
+                    let index = target.indexOf("(Critical)");
+                    index = index == -1 ? target.indexOf("(PartialCritical)") : index;
+                    index = index == -1 ? target.indexOf("(Maintenance)") : index;
+                    index = index == -1 ? target.indexOf("(PartialMaintenance)") : index;
+                    index = index == -1 ? target.indexOf("(Critical-Maintenance)") : index;
+                    index = index == -1 ? target.indexOf("(Partial-Critical-Maintenance)") : index;
+                    if (-1 != index) {
+                        target = content[j][k].substring(0, index);
+                    }
+                    if (-1 != hostArray.indexOf(target)) {
+                        array[k].push(content[j][k]);
+                    }
+                }
+            }
+            content.splice(0, content.length);
+            for (let j in array) {
+                for (let k in array[j]) {
+                    if (null == content[k]) {
+                        content[k] = [array[j][k]];
+                    } else {
+                        content[k].push(array[j][k]); 
+                    }
+                }
+            }
+        } else if ("[GroupMode Runtime Info]" == title) {
+            let indexArray = [];
+            for (let j in content) {
+                let target = content[j][0];
+                if (0 == target.indexOf("Node: ")) {
+                    let sub_target = target.substring(6, target.length);
+                    if (-1 == nodeArray.indexOf(sub_target)) {
+                        indexArray.push(j);
+                    }
+                } else if (0 == target.indexOf("Host: ")) {
+                    let sub_target = target.substring(6, target.length);
+                    if (-1 == hostArray.indexOf(sub_target)) {
+                        indexArray.push(j);
+                    }
+                } else if (0 == target.indexOf("Location: ")) {
+                    let sub_target = target.substring(10, target.length);
+                    if (-1 == locationArray.indexOf(sub_target)) {
+                        indexArray.push(j);
+                    }
+                } else {
+                    throw new Error("[ERROR] Unknown target from outputArray: " + target);
+                }
+            }
+            for (let j = indexArray.length - 1; j >= 0; j--) {
+                content.splice(indexArray[j], 1);
+            }
+            if (0 == content.length) {
+                outputArray.splice(i, 1);
+                i--;
+            }
+        } else if ("[Abnormal: Mixed Location Info]" == title) {
+            let indexArray = [];
+            for (let j in content) {
+                if (-1 == nodeArray.indexOf(content[j][0])) {
+                    indexArray.push(j);
+                }
+            }
+            for (let j = indexArray.length - 1; j >= 0; j--) {
+                content.splice(indexArray[j], 1);
+            }
+            if (0 == content.length) {
+                outputArray.splice(i, 1);
+                i--;
+            }
+        } else if ("[Abnormal: Primary Node Not In ActiveLocation]" == title) {
+            let indexArray = [];
+            for (let j in content) {
+                if (-1 == nodeArray.indexOf(content[j][0])) {
+                    indexArray.push(j);
+                }
+            }
+            for (let j = indexArray.length - 1; j >= 0; j--) {
+                content.splice(indexArray[j], 1);
+            }
+            if (0 == content.length) {
+                outputArray.splice(i, 1);
+                i--;
+            }
+        } else if ("[Abnormal: Node Not In GroupMode]" == title) {
+            let indexArray = [];
+            for (let j in content) {
+                if (-1 == hostArray.indexOf(content[j][0])) {
+                    indexArray.push(j);
+                }
+            }
+            for (let j = indexArray.length - 1; j >= 0; j--) {
+                content.splice(indexArray[j], 1);
+            }
+            if (0 == content.length) {
+                outputArray.splice(i, 1);
+                i--;
+            }
+        } else if ("[Abnormal: Group Not In GroupMode]" == title) {
+            let array = content[0][1].split(',');
+            for (let j = array.length - 1; j >=0; j--) {
+                if (-1 == groupArray.indexOf(array[j])) {
+                    array.splice(j, 1);
+                }
+            }
+            if (0 < array.length) {
+                outputArray[i].content[0][1] = "" + array;
+            } else {
+                outputArray.splice(i, 1);
+                i--;
+            }
+        } else if ("[Abnormal: Empty Location Host]" == title) {
+            if ("ClusterLocation" == head[0][0]) {
+                let array = content[0][1].split(',');
+                for (let j = array.length - 1; j >=0; j--) {
+                    if (-1 == hostArray.indexOf(array[j])) {
+                        array.splice(j, 1);
+                    }
+                }
+                if (0 < array.length) {
+                    outputArray[i].content[0][1] = "" + array;
+                } else {
+                    outputArray.splice(i, 1);
+                    i--;
+                }
+            }
+        } else {
+            throw new Error("[ERROR] Unknown title from outputArray: " + title);
+        }
+    }
+    return outputArray;
 }
 
 // 处理 show 信息成可打印的数组
@@ -1315,7 +1646,6 @@ function handleShowInfoToOutputArray(locationAnalyzeInfo, groupModeInfo, reelect
             }
         }
     }
-
     
     if (0 < locationInfosheet.content.length) {
         // 输出到文件
@@ -1326,8 +1656,8 @@ function handleShowInfoToOutputArray(locationAnalyzeInfo, groupModeInfo, reelect
             throw e;
         }
     } else {
+        // 无 Location 布局信息时仍继续输出 GroupMode / 异常表，避免直接 return 丢掉运行中的 GroupMode
         outputArray.push({"title": "[Abnormal: Empty Location Host]", "head": [["Empty Location"]], "content": [["All Host"]]});
-        return outputArray;
     }
 
     // ------------- 处理 Mode Info 表格 -------------
@@ -1441,7 +1771,7 @@ function handleShowInfoToOutputArray(locationAnalyzeInfo, groupModeInfo, reelect
             if (null == curLocation) {
                 curLocation = nodeLocationObj[oldPrimary.split(":")[0]];
             }
-            abnormalInfosheet.content.push([oldPrimary, curLocation, activeLocation]);
+            abnormalInfosheet.content.push([oldPrimary, curLocation, "" + activeLocation]);
         }
         if (0 < abnormalInfosheet.content.length) {
             outputArray.push(abnormalInfosheet);
@@ -1958,6 +2288,25 @@ function executeShow() {
         var outputArray = handleShowInfoToOutputArray(locationAnalyzeInfo, groupModeInfo, reelectAnalyzeInfo, nodeInfo);
         println("ok");
 
+        // 按照 domain 过滤 show 的结果（只有机器上任意一个组在域中，整个机器的信息都会展示）
+        var appliedDomainFilter = false;
+        var domainsScope = [];
+        if (showFilterWithDomain && 0 < domainList.length) {
+            print("   Filter show information with domains ... ");
+            appliedDomainFilter = true;
+            domainsScope = [].concat(domainList);
+            var domainInfo = listDomains();
+            // 检查 domains 是否存在
+            checkDomain(domainList, domainInfo);
+            if (0 == domainMode) {
+                // 排除模式
+                domainList = excludeDomain(domainList, domainInfo);
+            }
+            // 过滤
+            outputArray = filterShowInfoWithDomain(outputArray, nodeInfo, domainList, domainInfo);
+            println("ok");
+        }
+
         // 打印 Location 信息
         outputSheet(outputArray, showFile);
         println("   Output location file: \"" + defaultLocationFile + "\"");
@@ -1967,6 +2316,12 @@ function executeShow() {
                 var cmd = new Cmd();
                 var result = cmd.run("cat " + showFile);
                 println(separator);
+                if (appliedDomainFilter) {
+                    println("[INFO] Apply domain mode: " + domainMode);
+                    println("[INFO] Apply domains scope: " + JSON.stringify(domainsScope));
+                } else {
+                    println("[INFO] Apply scope: cluster");
+                }
                 println("[INFO] Show file content:");
                 println(result);
                 println(separator);
@@ -2041,12 +2396,29 @@ function executeCheck() {
 function executeInit() {
     println("[INFO] Executing init command");
 
-    println("Configuration Summary:");
     var locations = initLocationObject;
     if (!locations || Object.keys(locations).length === 0) {
         throw new Error("initLocationObject is not configured in config.js");
     }
 
+    // 记录是否配置了 domain 过滤；排除模式可能使生效 domain 列表为空
+    var useDomainFilter = 0 < domainList.length;
+    var configuredDomains = [].concat(domainList);
+    if (useDomainFilter) {
+        var domainInfo = listDomains();
+        checkDomain(domainList, domainInfo);
+        println("   Domains: " + JSON.stringify(domainList));
+        println("   DomainMode: " + domainMode);
+        // 处理排除模式下的 domainList
+        if (0 == domainMode) {
+            domainList = excludeDomain(domainList, domainInfo);
+        }
+        if (0 == domainList.length) {
+            println("[WARNING] No domains selected after applying domainMode, skip Domain-scoped location update");
+        }
+    }
+
+    println("Configuration Summary:");
     println("   Total Locations: " + Object.keys(locations).length);
     for (var location in locations) {
         var hosts = locations[location];
@@ -2068,10 +2440,28 @@ function executeInit() {
                 var host = hosts[i];
                 println("   Setting location for host \"" + host + "\" -> \"" + location + "\"");
                 try {
-                    dc.setLocation(host, location);
+                    // 配置了 domain 过滤但生效列表为空时，不回退为集群级 setLocation
+                    if (useDomainFilter) {
+                        if (0 == domainList.length) {
+                            continue;
+                        }
+                        dc.setLocation(host, location, {Domain: domainList});
+                    } else {
+                        dc.setLocation(host, location);
+                    }
                     count++;
                 } catch (e) {
-                    println("[ERROR] Failed to set location for " + host + ": " + getLastErrObj());
+                    let errObj = JSON.parse(getLastErrObj());
+                    if (useDomainFilter) {
+                        // 忽略不在主机不包含域中组的-6错误
+                        if (-6 != errObj.errno || 0 != errObj.detail.indexOf("No group matches the speicfied host(")) {
+                            println("[ERROR] Failed to set location for " + host + ": " + JSON.stringify(errObj));
+                            println("[ERROR] Domain: " + JSON.stringify(domainList));
+                            println("[ERROR] Configured domains: " + JSON.stringify(configuredDomains));
+                        }
+                    } else {
+                        println("[ERROR] Failed to set location for " + host + ": " + JSON.stringify(errObj));
+                    }
                 }
             }
         }
@@ -2086,9 +2476,22 @@ function executeInit() {
     if (activeLocation && activeLocation !== "") {
         println("[INFO] Setting ActiveLocation: \"" + activeLocation + "\"");
         try {
-            var result = dc.setActiveLocation(activeLocation);
+            var result;
+            // 与 setLocation 一致：按 domain 范围设置 ActiveLocation，避免影响域外复制组
+            if (useDomainFilter) {
+                if (0 == domainList.length) {
+                    println("[WARNING] No domains selected after applying domainMode, skip Domain-scoped ActiveLocation update");
+                } else {
+                    result = dc.setActiveLocation(activeLocation, {Domain: domainList});
+                }
+            } else {
+                result = dc.setActiveLocation(activeLocation);
+            }
         } catch (e) {
             println("[ERROR] Failed to set active location: " + getLastErrObj());
+            if (useDomainFilter) {
+                println("[ERROR] Domain: " + JSON.stringify(domainList));
+            }
         }
 
         // 设置 ActiveLocation 成功，但 reelectLevel 不为 1 或者 2 ，提醒用户
