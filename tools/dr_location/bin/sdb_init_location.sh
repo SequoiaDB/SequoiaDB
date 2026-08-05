@@ -38,6 +38,14 @@ Others:
 
         [ShenZhen]
         host3
+
+        [domains(1)]
+        domain1
+        domain2
+
+    domains section:
+        [domains(1)]  select mode, only listed domains
+        [domains(0)]  exclude mode, all domains except listed
 EOF
 }
 
@@ -50,7 +58,7 @@ function main() {
     local quiet="false"
 
     # 解析命令行参数
-    TEMP=$(getopt -o hc:f:q: \
+    TEMP=$(getopt -o hc:f:q \
         --long help,conf:,file:,quiet \
         -n "$0" -- "$@")
     if [ $? != 0 ]; then

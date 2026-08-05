@@ -13,7 +13,12 @@ sdbCm = 11790
 // 配置集群 Location 信息
 // key 为 Location，value 为目标（只支持 hostname）
 // 将所有 value 的 Location 设置为 key
-// 可以读取 show 模式输出的文本文件格式作为输入
+// domains，指定 domain 列表，默认为空
+// domainMode，指定 domains 列表的处理方式:
+//    0 -> 排除模式，除列表外的域都设置/展示 location
+//    1 -> 选择模式，只为列表中的域设置/展示 location（默认）
+// domains 非空时：init 按 Domain 设置 Location/ActiveLocation；show 按 Domain 过滤展示
+// 可以读取 show 模式输出的文本文件格式作为输入（支持 [domains(0|1)] 段）
 // ========================================
 initLocationObject = {
     "location1": [
@@ -21,7 +26,9 @@ initLocationObject = {
     ],
     "location2": [
         "host11", "host12", "host13", "host14", "host15"
-    ]
+    ],
+    "domains": [],
+    "domainMode": 1
 };
 
 // 不为空时，使用 sdb_init_location.sh init 后将设置 activeLocation 为配置值
