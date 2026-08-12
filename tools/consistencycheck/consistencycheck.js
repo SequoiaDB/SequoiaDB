@@ -1908,11 +1908,14 @@ function checkMainClCanUpgradeIndexInfo()
          var sqlStr3 = "insert into " + TMP_CL_FULL_MAIN_CL_INDEX_CHECK_INFO + " select ClFullName,IndexName,max(IndexDataType) as IndexDataType,max(EnsureShardingIndex) as EnsureShardingIndex,max(SubClShardingKeys) as SubClShardingKeys,max(IndexDef) as IndexDef,max(SubCLCount) as SubCLCount, max(ShardingKey) as ShardingKey from " + TMP_CL_FULL_CACHE_INFO + " group by ClFullName,IndexName" ;
          db.execUpdate( sqlStr3 ) ;
 
-         var sqlStr4 = "delete from " + TMP_CL_FULL_MAIN_CL_INDEX_CHECK_INFO + " where IndexName='$id' or IndexName='$shard'"
+         var sqlStr4 = "delete from " + TMP_CL_FULL_MAIN_CL_INDEX_CHECK_INFO + " where ClFullName is null or IndexName is null" ;
          db.execUpdate( sqlStr4 ) ;
 
-         var sqlStr5 = "update " + TMP_CL_FULL_MAIN_CL_INDEX_CHECK_INFO + " set UpgradeIndexType='" + IDX_TYPE_CONSISTENT + "' where IndexDataType<>1" ;
+         var sqlStr5 = "delete from " + TMP_CL_FULL_MAIN_CL_INDEX_CHECK_INFO + " where IndexName='$id' or IndexName='$shard'"
          db.execUpdate( sqlStr5 ) ;
+
+         var sqlStr6 = "update " + TMP_CL_FULL_MAIN_CL_INDEX_CHECK_INFO + " set UpgradeIndexType='" + IDX_TYPE_CONSISTENT + "' where IndexDataType<>1" ;
+         db.execUpdate( sqlStr6 ) ;
       }
 
       println( "(" + step + "/" + STEP_NUM + ")End to check main collection index infos, spent time: " +
@@ -2249,6 +2252,7 @@ function writeNoNeedUpgradeIdxReport( noNeedIdxCount, dataIdxCheckInfoCl, mainId
       while ( rc.next() )
       {
          var obj = rc.current().toObj() ;
+         if (null == obj.ClFullName || null == obj.IndexName) { continue ; }
          writeCheckInfo( pad( id, idLen ) + " " +
                          pad( obj.ClFullName, maxClFullNameLength ) + " " +
                          pad( obj.IndexName, maxIndexNameLength ) + " " +
@@ -2266,6 +2270,7 @@ function writeNoNeedUpgradeIdxReport( noNeedIdxCount, dataIdxCheckInfoCl, mainId
       while ( rc.next() )
       {
          var obj = rc.current().toObj() ;
+         if (null == obj.ClFullName || null == obj.IndexName) { continue ; }
          writeCheckInfo( pad( id, idLen ) + " " +
                          pad( obj.ClFullName, maxClFullNameLength ) + " " +
                          pad( obj.IndexName, maxIndexNameLength ) + " " +
@@ -2283,6 +2288,7 @@ function writeNoNeedUpgradeIdxReport( noNeedIdxCount, dataIdxCheckInfoCl, mainId
       while ( rc.next() )
       {
          var obj = rc.current().toObj() ;
+         if (null == obj.ClFullName || null == obj.IndexName) { continue ; }
          writeCheckInfo( pad( id, idLen ) + " " +
                          pad( obj.ClFullName, maxClFullNameLength ) + " " +
                          pad( obj.IndexName, maxIndexNameLength ) + " " +
