@@ -256,6 +256,35 @@ public class SdbTransferTask extends TransferDataSwitchTaskBase {
         }
     }
 
+    private void correctCLTransferStatus(BSONObject clCataInfo) throws Exception {
+        String csCLName = BsonUtils.getStringChecked(clCataInfo, "Name");
+        SdbCLFullInfo sdbCLFullInfo = new SdbCLFullInfo(csCLName);
+        DataServiceWrapper targetSiteDataService = ScheduleServer.getInstance()
+                .getDataServiceWrapper(getTargetSite());
+        boolean isCLExist = false;
+        Sequoiadb targetSiteSdb = null;
+        try {
+            targetSiteSdb = targetSiteDataService.getConnection();
+            if (targetSiteSdb.isCollectionSpaceExist(sdbCLFullInfo.getCsName())) {
+                CollectionSpace cs = targetSiteSdb.getCollectionSpace(sdbCLFullInfo.getCsName());
+                isCLExist = cs.isCollectionExist(sdbCLFullInfo.getClName());
+            }
+        }
+        finally {
+            if (targetSiteSdb != null) {
+                targetSiteDataService.releaseConnection(targetSiteSdb);
+            }
+        }
+
+        if (isCLExist) {
+            return;
+        }
+
+        // 目标站点不存在集合，清空该集合的迁移状态，避免因目标站点上的集合被人为删除导致迁移状态残留
+        ScheduleServer.getInstance().cleanTransferStatus(getSourceSite(), getTargetSite(),
+                sdbCLFullInfo.getFullName());
+    }
+
     private void createSubClInTargetSite(Sequoiadb sourceSdb, BSONObject clCataInfo)
             throws Exception {
         String csCLName = BsonUtils.getStringChecked(clCataInfo, "Name");
@@ -534,6 +563,8 @@ public class SdbTransferTask extends TransferDataSwitchTaskBase {
         if (mainCLName != null && !mainCLName.isEmpty()) {
             transferMainCl(sourceSdb, mainCLName);
         }
+
+        correctCLTransferStatus(clCataInfo);
         createSubClInTargetSite(sourceSdb, clCataInfo);
 
         String clFullName = BsonUtils.getStringChecked(clCataInfo, "Name");
