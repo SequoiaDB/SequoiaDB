@@ -403,15 +403,12 @@ public abstract class TransferDataSwitchTaskBase extends ScheduleTaskBase {
         CollectionSnapshotRecord lastCollectionSnapshotRecord = ScheduleServer.getInstance()
                 .getLastCollectionSnapshotRecord(getSourceSite(), clFullName);
         if (lastCollectionSnapshotRecord == null) {
-            saveCLSnapshot(getSourceSite(), clFullName, null, currentSnapshots);
             return false;
         }
 
         boolean res = hasNewDataWrite(lastCollectionSnapshotRecord.getSnapshots(),
                 currentSnapshots);
         if (res) {
-            saveCLSnapshot(getSourceSite(), clFullName, lastCollectionSnapshotRecord,
-                    currentSnapshots);
             return false;
         }
 
@@ -422,7 +419,7 @@ public abstract class TransferDataSwitchTaskBase extends ScheduleTaskBase {
         long currentTime = System.currentTimeMillis();
         if (notWriteTimeThreshold > 0
                 && currentTime - lastRecordTime < notWriteTimeThreshold * 24 * 60 * 60 * 1000L) {
-            // 没有达到可迁移或数据切换的时间阈值
+            // 没有达到可数据切换的时间阈值
             return false;
         }
 
@@ -438,8 +435,6 @@ public abstract class TransferDataSwitchTaskBase extends ScheduleTaskBase {
             if (res) {
                 logger.info("has new data write in repairCheck, cl={}, lastRecordSnapshot={}, newSnapshots={}", clFullName,
                         lastCollectionSnapshotRecord, newSnapshots);
-                saveCLSnapshot(getSourceSite(), clFullName, lastCollectionSnapshotRecord,
-                        newSnapshots);
                 return false;
             }
             return true;
@@ -469,13 +464,7 @@ public abstract class TransferDataSwitchTaskBase extends ScheduleTaskBase {
             if (res) {
                 logger.info("has new data write in repairCheck, cl={}, lastRecordSnapshot={}, newSnapshots={}", clFullName,
                         lastCollectionSnapshotRecord, newSnapshots);
-                try {
-                    saveCLSnapshot(getSourceSite(), clFullName, lastCollectionSnapshotRecord,
-                            newSnapshots);
-                }
-                finally {
-                    SdbHelper.unSetClRepairCheck(collection);
-                }
+                SdbHelper.unSetClRepairCheck(collection);
                 return false;
             }
             return true;
@@ -502,9 +491,18 @@ public abstract class TransferDataSwitchTaskBase extends ScheduleTaskBase {
         if (lobSnapshotSame) {
             lobSnapshotEffective = lastCollectionSnapshotRecord.isLobSnapshotEffective();
         }
+        SaveCLSnapshotPreHandleRes saveCLSnapshotPreHandleRes = saveClSnapshotPreHandle(collectionName, recordSnapshotSame);
+        if (saveCLSnapshotPreHandleRes != null && saveCLSnapshotPreHandleRes.isClTruncated()) {
+            // 如果目标站点上的集合发生了 truncate，意味着 lob 需要重新迁移，这里直接标记 lob快照的有效性为 false
+            lobSnapshotEffective = false;
+        }
         ScheduleServer.getInstance().recordCollectionSnapshot(siteName, collectionName,
                 newSnapshots, recordSnapshotEffective, lobSnapshotEffective);
 
+    }
+
+    public SaveCLSnapshotPreHandleRes saveClSnapshotPreHandle(String clFullName, boolean recordSnapshotSame) throws Exception {
+        return null;
     }
 
     protected boolean compareLobSnapshot(BasicBSONList leftSnapshots,
@@ -572,7 +570,7 @@ public abstract class TransferDataSwitchTaskBase extends ScheduleTaskBase {
     }
 
     // 比对集合快照检查是否有新数据写入
-    private boolean hasNewDataWrite(BasicBSONList leftSnapshots, BasicBSONList rightSnapshots) {
+    protected boolean hasNewDataWrite(BasicBSONList leftSnapshots, BasicBSONList rightSnapshots) {
         if (clSnapshotEquals(leftSnapshots, rightSnapshots)) {
             return false;
         }
@@ -926,6 +924,17 @@ public abstract class TransferDataSwitchTaskBase extends ScheduleTaskBase {
 
         public void markInterrupted() {
             this.interrupted = true;
+        }
+    }
+
+    class SaveCLSnapshotPreHandleRes {
+        private boolean clTruncated = false;
+        public SaveCLSnapshotPreHandleRes(boolean clTruncated) {
+            this.clTruncated = clTruncated;
+        }
+
+        public boolean isClTruncated() {
+            return clTruncated;
         }
     }
 }

@@ -64,7 +64,7 @@ public class SdbSchedule_34380 extends SdbTestBase {
         scheduleUserEntity.setName( scheduleName );
         scheduleUserEntity.setDesc( scheduleName );
         scheduleUserEntity.setType( "transfer" );
-        scheduleUserEntity.setCron( "0/20 * * * * ?" );
+        scheduleUserEntity.setCron( "* * * * * ?" );
 
         BSONObject content = new BasicBSONObject();
         content.put( "source_site", sourceSite );

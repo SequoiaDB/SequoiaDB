@@ -53,6 +53,16 @@ import java.util.Set;
 
 public class SdbHelper {
     private static Logger logger = LoggerFactory.getLogger(SdbHelper.class);
+
+    public static void truncateCL(Sequoiadb sdb, String clFullName) {
+        if (isClExist(sdb, clFullName)) {
+            SdbCLFullInfo sdbCLFullInfo = new SdbCLFullInfo(clFullName);
+            sdb.getCollectionSpace(sdbCLFullInfo.getCsName())
+                    .getCollection(sdbCLFullInfo.getClName())
+                    .truncate(new BasicBSONObject("SkipRecycleBin", true));
+        }
+    }
+
     public static Set<String> getCSList(Sequoiadb sdb, List<String> csRegexList) {
         Set<String> res = new HashSet<>();
         String regexStr = String.join("|", csRegexList);

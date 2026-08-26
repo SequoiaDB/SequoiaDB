@@ -289,6 +289,10 @@ public class ScheduleServer {
         return taskDao.queryById(taskId);
     }
 
+    public void cleanTransferRecordStatus(String sourceSite, String targetSite, String clFullName) {
+        collectionTransferRecordStatusDao.delete(sourceSite, targetSite, clFullName, null);
+    }
+
     public void cleanTransferStatus(String sourceSite, String targetSite, String clFullName)
             throws Exception {
         ITransaction transaction = transactionFactory.createTransaction();

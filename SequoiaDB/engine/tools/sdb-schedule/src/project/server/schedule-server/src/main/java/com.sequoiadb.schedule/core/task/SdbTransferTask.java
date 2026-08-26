@@ -258,17 +258,13 @@ public class SdbTransferTask extends TransferDataSwitchTaskBase {
 
     private void correctCLTransferStatus(BSONObject clCataInfo) throws Exception {
         String csCLName = BsonUtils.getStringChecked(clCataInfo, "Name");
-        SdbCLFullInfo sdbCLFullInfo = new SdbCLFullInfo(csCLName);
         DataServiceWrapper targetSiteDataService = ScheduleServer.getInstance()
                 .getDataServiceWrapper(getTargetSite());
         boolean isCLExist = false;
         Sequoiadb targetSiteSdb = null;
         try {
             targetSiteSdb = targetSiteDataService.getConnection();
-            if (targetSiteSdb.isCollectionSpaceExist(sdbCLFullInfo.getCsName())) {
-                CollectionSpace cs = targetSiteSdb.getCollectionSpace(sdbCLFullInfo.getCsName());
-                isCLExist = cs.isCollectionExist(sdbCLFullInfo.getClName());
-            }
+            isCLExist = SdbHelper.isClExist(targetSiteSdb, csCLName);
         }
         finally {
             if (targetSiteSdb != null) {
@@ -281,8 +277,7 @@ public class SdbTransferTask extends TransferDataSwitchTaskBase {
         }
 
         // 目标站点不存在集合，清空该集合的迁移状态，避免因目标站点上的集合被人为删除导致迁移状态残留
-        ScheduleServer.getInstance().cleanTransferStatus(getSourceSite(), getTargetSite(),
-                sdbCLFullInfo.getFullName());
+        ScheduleServer.getInstance().cleanTransferStatus(getSourceSite(), getTargetSite(), csCLName);
     }
 
     private void createSubClInTargetSite(Sequoiadb sourceSdb, BSONObject clCataInfo)
@@ -584,43 +579,58 @@ public class SdbTransferTask extends TransferDataSwitchTaskBase {
                     maxExecTime, taskStartTime, getSourceSite(), getTargetSite(), sourceCL,
                     targetCL, deleteMoreLobInTarget, () -> running);
 
-            BasicBSONList clSnapshots = SdbHelper.getCLSnapshot(sourceSdb, clFullName);
+            BasicBSONList currentSnapshots = SdbHelper.getCLSnapshot(sourceSdb, clFullName);
+            if (currentSnapshots == null) {
+                throw new ScheduleSystemException(
+                        "failed to get collection snapshot, snapshot is null, cl=" + clFullName);
+            }
+
+            // 如果记录快照发生了变化，则需要重新迁移数据
+            if (needReTransferRecord(clFullName, currentSnapshots)) {
+                truncateCLDataAndCleanTransferStatus(clFullName);
+                ScheduleServer.getInstance().recordCollectionSnapshot(getSourceSite(), clFullName,
+                        currentSnapshots, false, false);
+            }
+
             boolean hasRecord = sourceCL.queryOne() != null;
             if (hasRecord) {
-                // 迁移记录需要设置不可写，这里检查是否超过指定时间没有数据写入
-                if (notDataWrite(sourceSdb, clFullName)) {
-                    if (!skipTransfer(sourceSdb, clFullName, recordSkipStrategy)) {
+                if (canTransferRecord(clFullName, currentSnapshots)) {
+                    // transfer record
+                    if (!skipTransfer(clFullName, currentSnapshots, recordSkipStrategy)) {
                         try {
                             // 迁移记录前，就先删掉自增字段
                             dropTargetClAutoInc(targetSiteSdb, targetCL);
                             boolean transferFinish = sdbCLTransferHelper.transferRecord();
                             if (transferFinish) {
                                 // 迁移完成，标记记录的快照是有效的
-                                ScheduleServer.getInstance().updateRecordSnapshotEffective(getSourceSite(), clFullName, true);
+                                ScheduleServer.getInstance()
+                                        .updateRecordSnapshotEffective(getSourceSite(), clFullName, true);
                             }
-                        }
-                        finally {
+                        } finally {
                             // 迁移记录结束，补上自增字段
                             addOrUpdateAutoInc(sourceSdb, targetSiteSdb, clFullInfo);
                         }
+                    } else {
+                        logger.debug(
+                                "the cl snapshot has not changed and effective, skip transfer record, sourceSite={}, clName={}",
+                                getSourceSite(), clFullName);
                     }
-                    else {
-                        logger.debug("the cl snapshot has not changed, skip transfer record, sourceSite={}, clName={}", getSourceSite(), clFullName);
-                    }
-                }
-                else {
+                } else {
+                    // 记录不符合迁移条件，标记中断
                     interruptionFlag.markInterrupted();
-                }
-                if (checkTimeout() || !running) {
-                    return;
                 }
             }
             else {
                 // 如果是没有记录的表，那么该表的记录快照始终标记为有效状态
-                updateOrSaveRecordEffective(clSnapshots, clFullName);
+                updateOrSaveRecordEffective(currentSnapshots, clFullName);
             }
 
-            if (!skipTransfer(sourceSdb, clFullName, lobSkipStrategy)) {
+            if (checkTimeout() || !running) {
+                return;
+            }
+
+            // transfer lob
+            if (!skipTransfer(clFullName, currentSnapshots, lobSkipStrategy)) {
                 boolean transferFinish = sdbCLTransferHelper.transferLob();
                 if (transferFinish) {
                     // 迁移完成，标记lob的快照是有效的
@@ -628,7 +638,7 @@ public class SdbTransferTask extends TransferDataSwitchTaskBase {
                 }
             }
             else {
-                logger.debug("the cl snapshot has not changed, skip transfer lob, sourceSite={}, clName={}", getSourceSite(), clFullName);
+                logger.debug("the cl snapshot has not changed and effective, skip transfer lob, sourceSite={}, clName={}", getSourceSite(), clFullName);
             }
         }
         finally {
@@ -638,40 +648,109 @@ public class SdbTransferTask extends TransferDataSwitchTaskBase {
         }
     }
 
-    private void updateOrSaveRecordEffective(BasicBSONList clSnapshots, String clFullName) throws Exception {
-        boolean updated = ScheduleServer.getInstance().updateRecordSnapshotEffective(getSourceSite(), clFullName, true);
-        // 没有更新，说明快照表没有该集合的快照记录，写入一条快照记录
+    private void updateOrSaveRecordEffective(BasicBSONList currentSnapshots, String clFullName)
+            throws Exception {
+        boolean updated = ScheduleServer.getInstance()
+                .updateRecordSnapshotEffective(getSourceSite(), clFullName, true);
+        // 没有更新，说明快照表没有该集合的快照记录，写入一条快照记录，同时标记 record 快照为有效
         if (!updated) {
-            ScheduleServer.getInstance()
-                    .recordCollectionSnapshot(getSourceSite(), clFullName, clSnapshots, true, false);
+            ScheduleServer.getInstance().recordCollectionSnapshot(getSourceSite(), clFullName,
+                    currentSnapshots, true, false);
         }
     }
 
-    private boolean skipTransfer(Sequoiadb sourceSdb, String clFullName, SnapshotSkipStrategy skipStrategy) throws Exception {
+    @Override
+    public SaveCLSnapshotPreHandleRes saveClSnapshotPreHandle(String clFullName, boolean recordSnapshotSame)
+            throws Exception {
+        if (recordSnapshotSame) {
+            return new SaveCLSnapshotPreHandleRes(false);
+        }
+        // 更新集合快照信息前，如果发现集合的记录快照发生变化，说明该集合的记录数据发生了变化，此时必须先将数据和记录的迁移状态清空
+        truncateCLDataAndCleanTransferStatus(clFullName);
+        return new SaveCLSnapshotPreHandleRes(true);
+    }
+
+    private void truncateCLDataAndCleanTransferStatus(String clFullName) throws Exception {
+        logger.info(
+                "the collection record snapshot is changed, truncate cl data, sourceSite={}, targetSite={}, clName={}",
+                getSourceSite(), getTargetSite(), clFullName);
+        truncateCLFromTarget(clFullName);
+        ScheduleServer.getInstance().cleanTransferRecordStatus(getSourceSite(), getTargetSite(),
+                clFullName);
+    }
+
+    private boolean canTransferRecord(String clFullName, BasicBSONList currentSnapshots) throws Exception {
+        int notWriteTimeThreshold = BsonUtils.getIntegerOrElse(getContent(),
+                FieldName.Schedule.FIELD_CONTENT_NO_WRITE_TIME_THRESHOLD, 30);
+
         CollectionSnapshotRecord lastCollectionSnapshotRecord = ScheduleServer.getInstance()
                 .getLastCollectionSnapshotRecord(getSourceSite(), clFullName);
         if (lastCollectionSnapshotRecord == null) {
-            BasicBSONList clSnapshots = SdbHelper.getCLSnapshot(sourceSdb, clFullName);
-            saveCLSnapshot(getSourceSite(), clFullName, null, clSnapshots);
+            saveCLSnapshot(getSourceSite(), clFullName, null, currentSnapshots);
+            // 当 <=0 时，说明不受限制，随时可以迁移
+            return notWriteTimeThreshold <= 0;
+        }
+
+        boolean res = hasNewDataWrite(lastCollectionSnapshotRecord.getSnapshots(),
+                currentSnapshots);
+        if (res) {
+            saveCLSnapshot(getSourceSite(), clFullName, lastCollectionSnapshotRecord,
+                    currentSnapshots);
             return false;
         }
-        if (skipStrategy.isSnapshotEffective(lastCollectionSnapshotRecord)) {
-            // 快照有效的情况下，检查最新一次快照是否变化，没变化就可以跳过
-            BasicBSONList clSnapshots = SdbHelper.getCLSnapshot(sourceSdb, clFullName);
-            if (clSnapshots == null) {
-                throw new ScheduleSystemException(
-                        "failed to get collection snapshot, snapshot is null, cl=" + clFullName);
-            }
-            // 最新快照没有变化，可以跳过迁移
-            if (skipStrategy.compareSnapshot(lastCollectionSnapshotRecord.getSnapshots(), clSnapshots)) {
-                return true;
-            }
-            // 最新快照有变化，不能跳过迁移，保存本次采集的快照
-            saveCLSnapshot(getSourceSite(), clFullName, lastCollectionSnapshotRecord, clSnapshots);
+
+        // 检查是否超过指定时间没有新数据写入
+        long lastRecordTime = lastCollectionSnapshotRecord.getLastRecordTime();
+        long currentTime = System.currentTimeMillis();
+        if (notWriteTimeThreshold > 0
+                && currentTime - lastRecordTime < notWriteTimeThreshold * 24 * 60 * 60 * 1000L) {
             return false;
+        }
+
+        return true;
+    }
+
+    private void truncateCLFromTarget(String clFullName) throws Exception {
+        DataServiceWrapper targetSiteDataService = ScheduleServer.getInstance()
+                .getDataServiceWrapper(getTargetSite());
+        Sequoiadb targetSiteSdb = null;
+        try {
+            targetSiteSdb = targetSiteDataService.getConnection();
+            SdbHelper.truncateCL(targetSiteSdb, clFullName);
+        }
+        finally {
+            if (targetSiteSdb != null) {
+                targetSiteDataService.releaseConnection(targetSiteSdb);
+            }
+        }
+    }
+
+    private boolean needReTransferRecord(String clFullName, BasicBSONList currentSnapshots) throws Exception {
+        CollectionSnapshotRecord lastCollectionSnapshotRecord = ScheduleServer.getInstance()
+                .getLastCollectionSnapshotRecord(getSourceSite(), clFullName);
+        if (lastCollectionSnapshotRecord == null) {
+            return false;
+        }
+
+        return !compareRecordSnapshot(lastCollectionSnapshotRecord.getSnapshots(), currentSnapshots);
+    }
+
+    private boolean skipTransfer(String clFullName, BasicBSONList currentSnapshots, SnapshotSkipStrategy skipStrategy) throws Exception {
+        CollectionSnapshotRecord lastCollectionSnapshotRecord = ScheduleServer.getInstance()
+                .getLastCollectionSnapshotRecord(getSourceSite(), clFullName);
+        if (lastCollectionSnapshotRecord == null) {
+            saveCLSnapshot(getSourceSite(), clFullName, null, currentSnapshots);
+            return false;
+        }
+        // 比对快照是否一致
+        //   一致：检查快照有效性，有效则跳过迁移，无效，则继续迁移
+        //  不一致：保存快照信息，标记快照无效，继续迁移
+        if (skipStrategy.compareSnapshot(lastCollectionSnapshotRecord.getSnapshots(), currentSnapshots)) {
+            return skipStrategy.isSnapshotEffective(lastCollectionSnapshotRecord);
         }
         else {
-            // 快照无效的情况下，不能跳过迁移
+            // 最新快照有变化，不能跳过迁移，保存本次采集的快照
+            saveCLSnapshot(getSourceSite(), clFullName, lastCollectionSnapshotRecord, currentSnapshots);
             return false;
         }
     }

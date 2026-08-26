@@ -118,9 +118,6 @@ public class SdbSchedule_34392 extends SdbTestBase {
                 sDB.getCollectionSpace( csName ).getCollection( subCLName ),
                 tDB.getCollectionSpace( csName ).getCollection( subCLName ) ) );
 
-        Assert.assertTrue(
-                TestUtils.isRepairCheck( sDB, csName + "." + subCLName ) );
-
         Assert.assertTrue( TestUtils.compareLobData(
                 sDB.getCollectionSpace( csName ).getCollection( mainCLName ),
                 tDB.getCollectionSpace( csName )
