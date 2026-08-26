@@ -150,7 +150,7 @@
                 {{ currentTask.content && currentTask.content.data_domain ? currentTask.content.data_domain : '不指定' }}
               </div>
               <div>
-                集合超过 {{ currentTask.content && currentTask.content.no_write_time_threshold || 0 }} 天没数据写入才迁移记录(集合将不可写)
+                集合超过 {{ currentTask.content && currentTask.content.no_write_time_threshold || 0 }} 天没数据写入才迁移记录
               </div>
               <div>
                 迁移创建时间超过 {{ currentTask.content && currentTask.content.cl_create_time_threshold || 0 }} 天的集合
@@ -338,7 +338,7 @@
                 </el-col>
 
                   <!-- 集合空间（精确匹配） -->
-                  
+
                 </el-row>
               </el-collapse-item>
             </el-collapse>
@@ -422,7 +422,7 @@ export default {
     getScheduleIntroduction(type) {
       switch (type) {
         case 'transfer':
-          return '迁移任务是将集合的数据从源站点迁移到目标站点(数据源集群)上，支持增量迁移 LOB 数据；不支持增量迁移记录数据，迁移记录数据时源集合将被设置为不可写状态！！！';
+          return '迁移任务是将集合的数据从源站点迁移到目标站点(数据源集群)上，支持增量迁移 LOB 数据；不支持增量迁移记录数据，每次变更记录数据，都将全量迁移记录数据！！！';
         case 'data_switch':
           return '数据切换任务是将已经迁移到目标站点(数据源集群)的集合，通过数据源关联的方式，将源集合的数据访问切换到数据源集群上；在这个过程中，源集合将被重命名，重命名的格式为 {clName}_data_switch_bak_{time}';
         case 'clean':

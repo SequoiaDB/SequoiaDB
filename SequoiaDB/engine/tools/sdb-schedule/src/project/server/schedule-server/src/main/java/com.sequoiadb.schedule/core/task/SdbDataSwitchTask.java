@@ -323,6 +323,7 @@ public class SdbDataSwitchTask extends TransferDataSwitchTaskBase {
                     e);
         }
 
+        // 隐藏开关，默认关闭，用于是否检查数据一致性
         Boolean checkDataConsistent = BsonUtils.getBooleanOrElse(getContent(),
                 FieldName.Schedule.FIELD_CONTENT_CHECK_DATA_CONSISTENT, false);
 

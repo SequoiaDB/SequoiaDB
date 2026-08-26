@@ -114,6 +114,9 @@ public class SdbCLTransferHelper {
         logger.info("start transferring records.sourceSite={}, targetSite={}, cl={}, taskId={}",
                 sourceSite, targetSite, sourceCL.getFullName(), taskId);
         try {
+            if (sourceCL.queryOne() == null) {
+                return true;
+            }
             return doTransferRecord();
         }
         catch (Exception e) {

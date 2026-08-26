@@ -168,7 +168,7 @@
                 {{ currentRecord.content && currentRecord.content.data_domain ? currentRecord.content.data_domain : '不指定' }}
               </div>
               <div>
-                {{ currentRecord.type === 1 ? '集合超过' : '切换' }} {{ currentRecord.content && currentRecord.content.no_write_time_threshold || 0 }} {{ currentRecord.type === 1 ? '天没数据写入才迁移记录(集合将不可写)' : '天没数据写入且已完成迁移的集合' }}
+                {{ currentRecord.type === 1 ? '集合超过' : '切换' }} {{ currentRecord.content && currentRecord.content.no_write_time_threshold || 0 }} {{ currentRecord.type === 1 ? '天没数据写入才迁移记录' : '天没数据写入且已完成迁移的集合' }}
               </div>
               <div>
                 {{ currentRecord.type === 1 ? '迁移' : '切换' }}创建时间超过 {{ currentRecord.content && currentRecord.content.cl_create_time_threshold || 0 }} 天的集合
@@ -339,7 +339,7 @@
                 </el-col>
 
                   <!-- 集合空间（精确匹配） -->
-                  
+
                 </el-row>
               </el-collapse-item>
             </el-collapse>

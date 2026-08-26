@@ -105,9 +105,6 @@ public class SdbSchedule_34404 extends SdbTestBase {
                 sDB.getCollectionSpace( csName ).getCollection( subCLName ),
                 tDB.getCollectionSpace( csName ).getCollection( subCLName ) ) );
 
-        Assert.assertTrue(
-                TestUtils.isRepairCheck( sDB, csName + "." + subCLName ) );
-
         BusinessApiFactory.Schedule.delete( id );
     }
 
