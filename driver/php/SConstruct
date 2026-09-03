@@ -16,6 +16,8 @@ boost_lib_dir = join(boost_dir, 'lib')
 ssl_dir = join(root_dir, '../../thirdparty/crypto/openssl-1.1.1o')
 ssl_include = join(ssl_dir, 'include')
 ssl_lib_dir = join(ssl_dir, 'lib')
+ryu_dir = join(root_dir, '../../thirdparty/ryu')
+ryu_lib_dir = join(ryu_dir, 'lib')
 
 options = {}
 options_topass = {}
@@ -195,17 +197,19 @@ if guess_os == "win32":
         winLibString = "ws2_32.lib kernel32.lib advapi32.lib psapi.lib dbghelp.lib user32.lib gdi32.lib winspool.lib comdlg32.lib sdbcpp.lib"
     else:
         if phpedition.split( '.' )[0] == '7':
-            winLibString = "ws2_32.lib kernel32.lib advapi32.lib psapi.lib dbghelp.lib user32.lib gdi32.lib winspool.lib comdlg32.lib php7ts.lib ssleay32.lib libeay32.lib"
+            winLibString = "ws2_32.lib kernel32.lib advapi32.lib psapi.lib dbghelp.lib user32.lib gdi32.lib winspool.lib comdlg32.lib php7ts.lib ssleay32.lib libeay32.lib libryu.lib"
         else:
-            winLibString = "ws2_32.lib kernel32.lib advapi32.lib psapi.lib dbghelp.lib user32.lib gdi32.lib winspool.lib comdlg32.lib php5ts.lib ssleay32.lib libeay32.lib"
+            winLibString = "ws2_32.lib kernel32.lib advapi32.lib psapi.lib dbghelp.lib user32.lib gdi32.lib winspool.lib comdlg32.lib php5ts.lib ssleay32.lib libeay32.lib libryu.lib"
         if guess_arch == "ia64":
             env.Append( LIBPATH=[join(lib_dir,'win64')] )
             env.Append( LIBPATH=[join(ssl_lib_dir,'win64')] )
+            env.Append( LIBPATH=[join(ryu_lib_dir,'win64')] )
         else:
             env.Append( LIBPATH=[join(lib_dir,'win32')] )
             env.Append( CPPDEFINES=[ "_USE_32BIT_TIME_T=1"])
             env.Append( LIBPATH=[join(boost_lib_dir,'win32', build_type)] )
             env.Append( LIBPATH=[join(ssl_lib_dir,'win32', build_type)] )
+            env.Append( LIBPATH=[join(ryu_lib_dir,'win32', build_type)] )
 
     if guess_ver == "10":
         env.Append( CPPPATH=[ "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include",
@@ -257,16 +261,19 @@ elif guess_os == "linux":
         env.Append( LIBPATH="/lib64")
         env.Append( LIBPATH=[join(boost_lib_dir,'linux64', build_type)] )
         env.Append( LIBPATH=[join(ssl_lib_dir,'linux64', build_type)] )
+        env.Append( LIBPATH=[join(ryu_lib_dir,'linux64', build_type)] )
     elif guess_arch == "arm64":
         env.Append( LIBPATH="/usr/lib64")
         env.Append( LIBPATH="/lib64")
         env.Append( LIBPATH=[join(boost_lib_dir,'armlinux64', build_type)] )
         env.Append( LIBPATH=[join(ssl_lib_dir,'armlinux64', build_type)] )
+        env.Append( LIBPATH=[join(ryu_lib_dir,'armlinux64', build_type)] )
     elif guess_arch == "ia32":
         env.Append( LIBPATH="/usr/lib")
         env.Append( LIBPATH="/lib")
         env.Append( LIBPATH=[join(boost_lib_dir,'linux32', build_type)] )
         env.Append( LIBPATH=[join(ssl_lib_dir,'linux32', build_type)] )
+        env.Append( LIBPATH=[join(ryu_lib_dir,'linux32', build_type)] )
     elif guess_arch == 'ppc64':
         if phpedition.split( '.' )[0] == '7':
             env.Append ( CPPDEFINES=[ "WORDS_BIGENDIAN" ] )
@@ -275,18 +282,21 @@ elif guess_os == "linux":
         env.Append( LIBPATH="/lib64")
         env.Append( LIBPATH=[join(boost_lib_dir,'ppclinux64', build_type)] )
         env.Append( LIBPATH=[join(ssl_lib_dir,'ppclinux64', build_type)] )
+        env.Append( LIBPATH=[join(ryu_lib_dir,'ppclinux64', build_type)] )
     elif guess_arch == 'ppc64le':
         env.Append( CPPDEFINES=[ "SDB_LITTLE_ENDIAN" ] )
         env.Append( LIBPATH="/usr/lib64")
         env.Append( LIBPATH="/lib64")
         env.Append( LIBPATH=[join(boost_lib_dir,'ppclelinux64', build_type)] )
         env.Append( LIBPATH=[join(ssl_lib_dir,'ppclelinux64', build_type)] )
+        env.Append( LIBPATH=[join(ryu_lib_dir,'ppclelinux64', build_type)] )
     if testBuild or clienttestBuild :
        winLibString = "sdbcpp"
        env.Append( LIBS=Split(winLibString) )
     else:
        env.Append( LIBS=['ssl'] )
        env.Append( LIBS=['crypto'] )
+       env.Append( LIBS=['ryu'] )
     if debugBuild:
         env.Append( CPPFLAGS=" -O0 -fstack-protector")
         env['ENV']['GLIBCXX_FORCE_NEW']=1
@@ -298,7 +308,7 @@ if testBuild or clienttestBuild :
     ext_dir = join(root_dir, 'ext')
     env.Append( CPPPATH=[root_dir,client_include,boost_dir]  )
 else:
-    env.Append( CPPPATH=[main_dir, TSRM_dir, Zend_dir, root_dir, driver_include, class_include, source_dir,ext_dir,client_include,boost_dir,common_include_dir,bson_include_dir,ssl_include]  )
+    env.Append( CPPPATH=[main_dir, TSRM_dir, Zend_dir, root_dir, driver_include, class_include, source_dir,ext_dir,client_include,boost_dir,common_include_dir,bson_include_dir,ssl_include,ryu_dir]  )
 
 Export("env")
 Export("root_dir")
