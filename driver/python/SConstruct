@@ -25,6 +25,8 @@ boost_dir = join(root_dir, path + 'thirdparty/boost')
 ssl_dir = join(root_dir, path + 'thirdparty/crypto/openssl-1.1.1o')
 ssl_include = join(ssl_dir, 'include')
 ssl_lib_dir = join(ssl_dir, 'lib')
+ryu_dir = join(root_dir, path + 'thirdparty/ryu')
+ryu_lib_dir = join(ryu_dir, 'lib')
 
 options = {}
 options_topass = {}
@@ -197,7 +199,7 @@ if guess_os == "win32":
     winLibString = "ws2_32.lib kernel32.lib advapi32.lib Psapi.lib"
     winLibString += " user32.lib gdi32.lib winspool.lib comdlg32.lib shell32.lib ole32.lib oleaut32.lib "
     winLibString += " odbc32.lib odbccp32.lib uuid.lib dbghelp.lib "
-    winLibString += " ssleay32.lib libeay32.lib"
+    winLibString += " ssleay32.lib libeay32.lib libryu.lib"
 
     env.Append(LIBS=Split(winLibString))
     env.Append(CPPDEFINES=["_UNICODE"])
@@ -205,9 +207,11 @@ if guess_os == "win32":
 
     if guess_arch == "ia64":
         env.Append(LIBPATH=[join(ssl_lib_dir, 'win64', build_type)])
+        env.Append(LIBPATH=[join(ryu_lib_dir, 'win64', build_type)])
     else:
         env.Append(CPPDEFINES=["_USE_32BIT_TIME_T=1"])
         env.Append(LIBPATH=[join(ssl_lib_dir, 'win32', build_type)])
+        env.Append(LIBPATH=[join(ryu_lib_dir, 'win32', build_type)])
 
     env.Append(CPPDEFINES=["_CRT_RAND_S"])
     env.Append(CPPFLAGS=" /EHsc /W3 ")
@@ -235,29 +239,35 @@ elif guess_os == "linux":
     env.Append(CPPFLAGS="-ggdb -pthread")
     env.Append(LIBS=['ssl'])
     env.Append(LIBS=['crypto'])
+    env.Append(LIBS=['ryu'])
     env.Append(LINKFLAGS=" -pthread")
     if guess_arch == "ia64":
         env.Append(LIBPATH="/usr/lib64")
         env.Append(LIBPATH="/lib64")
         env.Append(LIBPATH=[join(ssl_lib_dir, 'linux64', build_type)])
+        env.Append(LIBPATH=[join(ryu_lib_dir, 'linux64', build_type)])
     elif guess_arch == "ia32":
         env.Append(LIBPATH="/usr/lib")
         env.Append(LIBPATH="/lib")
         env.Append(LIBPATH=[join(ssl_lib_dir, 'linux32', build_type)])
+        env.Append(LIBPATH=[join(ryu_lib_dir, 'linux32', build_type)])
     if guess_arch == "arm64":
         env.Append(LIBPATH="/usr/lib64")
         env.Append(LIBPATH="/lib64")
         env.Append(LIBPATH=[join(ssl_lib_dir, 'armlinux64', build_type)])
+        env.Append(LIBPATH=[join(ryu_lib_dir, 'armlinux64', build_type)])
     elif guess_arch == 'ppc64':
         env.Append(CPPDEFINES=["SDB_BIG_ENDIAN"])
         env.Append(LIBPATH="/usr/lib64")
         env.Append(LIBPATH="/lib64")
         env.Append(LIBPATH=[join(ssl_lib_dir, 'ppclinux64', build_type)])
+        env.Append(LIBPATH=[join(ryu_lib_dir, 'ppclinux64', build_type)])
     elif guess_arch == 'ppc64le':
         env.Append(CPPDEFINES=["SDB_LITTLE_ENDIAN"])
         env.Append(LIBPATH="/usr/lib64")
         env.Append(LIBPATH="/lib64")
         env.Append(LIBPATH=[join(ssl_lib_dir, 'ppclelinux64', build_type)])
+        env.Append(LIBPATH=[join(ryu_lib_dir, 'ppclelinux64', build_type)])
     if debugBuild:
         env.Append(CPPFLAGS=" -O0 -fstack-protector")
         env['ENV']['GLIBCXX_FORCE_NEW'] = 1
@@ -267,7 +277,7 @@ elif guess_os == "linux":
 
 env.Append(CPPPATH=[root_dir, client_include, boost_dir,
                     common_include_dir, bson_include_dir,
-                    python_include, ssl_include,
+                    python_include, ssl_include, ryu_dir,
                     cbsonmodule_include_dir, csdbmodule_include_dir])
 
 env.Append(LIBPATH=python_lib)

@@ -12,6 +12,8 @@ ENGINE_PATH = $(CURRENT_PATH)/../../SequoiaDB/engine
 
 OPENSSL_PATH = $(CURRENT_PATH)/../../thirdparty/crypto/openssl-1.1.1o
 OPENSSL_LIBRARY = $(CURRENT_PATH)/../../thirdparty/crypto/openssl-1.1.1o/lib
+RYU_PATH = $(CURRENT_PATH)/../../thirdparty/ryu
+RYU_LIBRARY = $(CURRENT_PATH)/../../thirdparty/ryu/lib
 
 BSON_SOURCE = $(BSON_PATH)/numbers.c $(BSON_PATH)/bson.c $(BSON_PATH)/encoding.c $(BSON_PATH)/common_decimal.c
 
@@ -112,7 +114,7 @@ endif
 WARNINGS?=-Wall -Wno-unknown-pragmas -Wno-missing-prototypes -Wno-missing-format-attribute
 #DEBUG?=-ggdb -DSDB_USE_OWN_POSTGRES
 DEBUG?=-ggdb
-INCLUDEPATH=-I$(EXTERNAL_PATH) -I$(BSON_PATH) -I$(MD5_PATH) -I$(OPENSSL_PATH)/include
+INCLUDEPATH=-I$(EXTERNAL_PATH) -I$(BSON_PATH) -I$(MD5_PATH) -I$(OPENSSL_PATH)/include -I$(RYU_PATH)
 ALL_CFLAGS=$(CFLAGS) $(OPTIMIZATION) $(WARNINGS) $(DEBUG) $(INCLUDEPATH) $(ALL_DEFINES) $(DYN_FLAGS)
 
 
@@ -142,23 +144,29 @@ else
         ifeq ($(UNAME_P),x86_64)
             ifeq ($(ver), debug)
                 OPENSSL_LIBRARY_PATH = $(OPENSSL_LIBRARY)/linux64/debug
+                RYU_LIBRARY_PATH = $(RYU_LIBRARY)/linux64/debug
             else
                 OPENSSL_LIBRARY_PATH = $(OPENSSL_LIBRARY)/linux64/release
+                RYU_LIBRARY_PATH = $(RYU_LIBRARY)/linux64/release
             endif
         else ifeq ($(UNAME_P),aarch64)
             ifeq ($(ver), debug)
                 OPENSSL_LIBRARY_PATH = $(OPENSSL_LIBRARY)/armlinux64/debug
+                RYU_LIBRARY_PATH = $(RYU_LIBRARY)/armlinux64/debug
             else
                 OPENSSL_LIBRARY_PATH = $(OPENSSL_LIBRARY)/armlinux64/release
+                RYU_LIBRARY_PATH = $(RYU_LIBRARY)/armlinux64/release
             endif
         else
             ifeq ($(ver), debug)
                 OPENSSL_LIBRARY_PATH = $(OPENSSL_LIBRARY)/linux32/debug
+                RYU_LIBRARY_PATH = $(RYU_LIBRARY)/linux32/debug
             else
                 OPENSSL_LIBRARY_PATH = $(OPENSSL_LIBRARY)/linux32/release
+                RYU_LIBRARY_PATH = $(RYU_LIBRARY)/linux32/release
             endif
         endif
-        SHLIB_LINK = -pthread -lcrypto -L$(OPENSSL_LIBRARY_PATH)
+        SHLIB_LINK = -pthread -lcrypto -L$(OPENSSL_LIBRARY_PATH) -lryu -L$(RYU_LIBRARY_PATH)
     endif
 endif
 
