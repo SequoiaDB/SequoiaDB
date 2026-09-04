@@ -1305,11 +1305,18 @@ Export("cov")
 Export("boost_lib_dir")
 Export("intel_decimal_lib_dir")
 
-print("Begin to build thirdparty...")
-thirdpartyEnv.SConscript('thirdparty/SConscript', exports=["boost_lib_dir",
-                         "ssl_lib_dir", "zlib_lib_dir", "lz4_lib_dir", "ryu_lib_dir",
-                         "snappy_lib_dir",
-                         "sm_lib_dir", "mdocml_lib_dir", "fuse_lib_dir", "intel_decimal_lib_dir"], duplicate=False)
+# Documentation builds only invoke doc/build.py and do not link thirdparty
+# libraries. Skip thirdparty here to avoid unrelated compile failures/cost
+# (e.g. scons --doc on Windows).
+hasDocOnly = ( hasDoc or hasWebSite or hasChm or hasOffline or hasDoxygen )
+if not hasDocOnly:
+   print("Begin to build thirdparty...")
+   thirdpartyEnv.SConscript('thirdparty/SConscript', exports=["boost_lib_dir",
+                            "ssl_lib_dir", "zlib_lib_dir", "lz4_lib_dir", "ryu_lib_dir",
+                            "snappy_lib_dir",
+                            "sm_lib_dir", "mdocml_lib_dir", "fuse_lib_dir", "intel_decimal_lib_dir"], duplicate=False)
+else:
+   print("Skip building thirdparty for documentation build...")
 
 if not has_option("noautogen"):
    language = get_option ( "language" )
