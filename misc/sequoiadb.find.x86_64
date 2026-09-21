@@ -4200,3 +4200,5 @@ sequoiadb/tools/dr_location/bin/sdb_start_critical.sh
 sequoiadb/tools/dr_location/bin/sdb_start_maintenance.sh
 sequoiadb/tools/dr_location/bin/sdb_stop_critical.sh
 sequoiadb/tools/dr_location/bin/sdb_stop_maintenance.sh
+sequoiadb/tools/generateJSforcopycluster/generate_copy_cluster.sh
+sequoiadb/tools/generateJSforcopycluster/README.md
