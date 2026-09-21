@@ -15,6 +15,16 @@ function generatePublicVar(file)
    file.write("   var coordPort = 11810;\n");
    file.write("}\n\n");
 
+   file.write("if(undefined === username)\n");
+   file.write("{\n");
+   file.write("   var username = '';\n");
+   file.write("}\n\n");
+
+   file.write("if(undefined === password)\n");
+   file.write("{\n");
+   file.write("   var password = '';\n");
+   file.write("}\n\n");
+
    file.write("if(undefined === needDeploy)\n");
    file.write("{\n");
    file.write("   var needDeploy = false;\n");
@@ -739,7 +749,7 @@ function main()\n\
 {\n\
    try\n\
    {\n\
-      var db = new Sdb(coordHostName, coordPort);\n\
+      var db = new Sdb(coordHostName, coordPort, username, password);\n\
       \n\
       if (step === 0)\n\
       {\n\
@@ -777,7 +787,7 @@ function main()\n\
    }\n\
 }\n\
 println('Usage:')\n\
-println('      -e \\\'var coordHostName = \\\"localhost\\\"; var step = 0/1/2/3/4\\\'');\n\
+println('      -e \\\'var coordHostName = \\\"localhost\\\"; var username = \\\"\\\"; var password = \\\"\\\"; var step = 0/1/2/3/4\\\'');\n\
 println('you can modify parameters!!!');\n\
 println('use default parameters continue...');\n\
 main();"
@@ -833,15 +843,23 @@ function createAllIndexes(db, indexes)\n\
 }
 
 
-function newDB(hostname, port)
+function newDB(hostname, port, user, passwd)
 {
    try
    {
-      var db = new Sdb(hostname, port);
+      if (undefined === user)
+      {
+         user = "";
+      }
+      if (undefined === passwd)
+      {
+         passwd = "";
+      }
+      var db = new Sdb(hostname, port, user, passwd);
    }
    catch(e)
    {
-      throw "new Sdb(" + hostname + "," + port +") ErrCode: " + e;
+      throw "new Sdb(" + hostname + "," + port + "," + user + ",***) ErrCode: " + e;
    }
    return db;
 }
@@ -904,12 +922,22 @@ if (undefined === inCLNames)
    var inCLNames = [];
 }
 
+if (undefined === username)
+{
+   var username = "";
+}
+
+if (undefined === password)
+{
+   var password = "";
+}
+
 function main()
 {
    try
    {
-      var db = newDB(coordHostName, coordPort);
-      var catadb = newDB(catalogHostName, catalogPort);
+      var db = newDB(coordHostName, coordPort, username, password);
+      var catadb = newDB(catalogHostName, catalogPort, username, password);
       var file = createFile(generateFilePath);
       var exceptCSSet = [];
       var dsMappingCLSet = [];
@@ -976,10 +1004,13 @@ function readInput()
 }
 */
 println("Usage:" );
-println("     -e 'var coordHostName= \"localhost\";" +
+println("     ./generate_copy_cluster.sh [options]");
+println("  or -e 'var coordHostName= \"localhost\";" +
                  "var coordPort=11810;" +
                  "var catalogHostName=\"localhost\" ;" +
                  "var catalogPort=11820 ;" +
+                 "var username=\"\";" +
+                 "var password=\"\";" +
                  "[ var inDomainNames=[\"name1\",\"name2\"];" +
                  "var inDSNames = [\"name1\",\"name2\"];" +
                  "var inCSNames = [\"name1\",\"name2\"];" +
