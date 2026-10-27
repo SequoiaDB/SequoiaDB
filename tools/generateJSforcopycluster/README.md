@@ -119,6 +119,8 @@ sdb -e 'var coordHostName="localhost"; var coordPort=11810; var username="sdbadm
 
 按 0 到 4 的顺序分步执行。`step=0` 会按源集群拓扑创建节点，请在空集群或确认无路径、端口冲突后再执行。
 
+> **Note:** 多组切分表创建时先指定源 `CataInfo` 第一组为 `Group`，再 `split` 对齐源分布（主表除外）。
+
 无鉴权时 `username`、`password` 可传空字符串，或依赖脚本内默认空值。
 
 ## 仍可直接调用 JS

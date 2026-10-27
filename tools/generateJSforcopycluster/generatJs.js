@@ -459,6 +459,12 @@ function getCLDefine(db, jsFile, csSet, dsSet, dsMappingCLSet)
                   }
                   cl.CataInfo.push(cataItem);
                }
+               // 非主表：先落到 CataInfo 第一组，再 split；避免 AutoSplit/随机落组
+               if (true !== cl.option.IsMainCL &&
+                   undefined !== obj.CataInfo[0].GroupName)
+               {
+                  cl.option.Group = obj.CataInfo[0].GroupName;
+               }
             }
          }
 
