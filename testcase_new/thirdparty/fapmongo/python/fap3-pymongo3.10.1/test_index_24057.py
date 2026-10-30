@@ -49,7 +49,7 @@ class TestIndex24057( utils.TestBase ):
       self.assertRegex( str( self.result ), self.idxName1 + '_1' )   
       self.assertRegex( str( self.result ), self.idxName2 )   
       self.assertRegex( str( self.result ), self.idxName3 )   
-      self.assertRegex( str( self.result ), '\$id' ) 
+      self.assertRegex( str( self.result ), r'\$id' )
 
       # list_indexes
       self.indexes = []
