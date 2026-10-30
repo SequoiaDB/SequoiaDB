@@ -34,6 +34,12 @@ class LobTest13456 extends PHPUnit_Framework_TestCase
          return;
       }   
       
+      if ( globalParameter::isStandalone( self::$db ) )
+      {
+         self::$skipTestCase = true;
+         return;
+      }
+      
       // setSssionAttr['m']
       $err = self::$db -> setSessionAttr(array('PreferedInstance' => 'm' ));
       if ( $err['errno'] != 0 )
@@ -127,6 +133,15 @@ class LobTest13456 extends PHPUnit_Framework_TestCase
    
    public static function tearDownAfterClass()
    {
+      if ( self::$skipTestCase == true )
+      {
+         if ( !empty( self::$db ) )
+         {
+            self::$db->close();
+         }
+         return;
+      }
+      
       echo "\n---Begin to dropCS in the end.\n"; 
       $err = self::$db -> dropCS( self::$csName );
       if ( $err['errno'] != 0 )
