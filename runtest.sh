@@ -28,7 +28,7 @@ rsrvnodedir="${runtest_path}/database_runtest/"
 runresult=0
 
 csprefix="local_test"
-reportDirRoot=${csprefix}"_report"
+reportDirRoot="local_test_report/js"
 
 passDir=""
 passFile=""
@@ -498,13 +498,24 @@ function generateFindCmd()
    fi
 }
 
-# remove all reports in "local_test_report"
+# 只清空本次会跑的 JS 类型目录，不影响 java/ 及其它语言。
 function removeReport()
 {
-   if [ -d $reportDirRoot ] ; then
-      rm -rf $reportDirRoot/
-   fi
-   mkdir ${reportDirRoot}
+   mkdir -p ${reportDirRoot}
+   for testRoot in ${testRoots[@]}
+   do
+      case ${testRoot} in
+         $storyTestRoot )   rm -rf ${reportDirRoot}/story
+                            mkdir -p ${reportDirRoot}/story
+                            ;;
+         $sdvTestRoot )     rm -rf ${reportDirRoot}/sdv
+                            mkdir -p ${reportDirRoot}/sdv
+                            ;;
+         $storyATTestRoot ) rm -rf ${reportDirRoot}/story_at
+                            mkdir -p ${reportDirRoot}/story_at
+                            ;;
+      esac
+   done
 }
 
 function mainRun()

@@ -269,3 +269,8 @@ hs_err_pid*
 .vscode
 .compile_commands.json
 compile_commands.json
+
+# 本地 runner 报告（js/java 等按语言分子目录）
+local_test_report/
+
+
