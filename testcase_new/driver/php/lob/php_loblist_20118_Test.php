@@ -20,6 +20,10 @@ class lob20118 extends PHPUnit_Framework_TestCase
       self::$db -> connect(globalParameter::getHostName().':'.
                            globalParameter::getCoordPort()) ;
       $this -> assertEquals( 0, self::$db -> getError()['errno'] );
+      if( globalParameter::isStandalone( self::$db ) )
+      {
+         $this -> markTestSkipped( "Database is standalone." );
+      }
    }
    
    function test()
@@ -72,9 +76,15 @@ class lob20118 extends PHPUnit_Framework_TestCase
    public function tearDown()
    {
       echo "\n---check lob subcl complete.\n";
-      self::$db -> dropCS( self::$csName );
-      $this -> assertEquals( 0, self::$db -> getError()['errno'] );
-      self::$db -> close();
+      if ( !empty( self::$db ) )
+      {
+         $err = self::$db -> dropCS( self::$csName );
+         if ( $err['errno'] != 0 && $err['errno'] != -34 )
+         {
+            $this -> assertEquals( 0, $err['errno'] );
+         }
+         self::$db -> close();
+      }
    }
 }
 ?>
