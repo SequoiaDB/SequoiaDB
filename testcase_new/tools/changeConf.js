@@ -29,6 +29,7 @@ if( typeof( standaloneConf ) === "undefined" )  var standaloneDynaConf = {};
 
 var hasError = false;
 var hostList = [];
+var clusterNodes = {};
 
 main();
 
@@ -84,7 +85,14 @@ function getHostList()
          var groupInfo = rc.current().toObj().Group;
          for( var i in groupInfo )
          {
-            hostList.push( groupInfo[i].HostName );
+            var host = groupInfo[i].HostName;
+            hostList.push( host );
+            if( typeof( clusterNodes[host] ) === "undefined" ) clusterNodes[host] = [];
+            for( var j in groupInfo[i].Service )
+            {
+               if( groupInfo[i].Service[j].Type === 0 )
+                  clusterNodes[host].push( { svcname: groupInfo[i].Service[j].Name } );
+            }
          }
       }
       hostList = uniqueArr( hostList );
@@ -93,9 +101,17 @@ function getHostList()
    else
    {
       hostList.push( hostname );
+      clusterNodes[hostname] = [ { svcname: String( svcname ) } ];
    }
    
    println( "---get hostlist: " + hostList );
+}
+
+// Python limits changes and checks to cluster members; legacy callers keep their scope.
+function getNodeFilter( host )
+{
+   if( typeof( clusterOnly ) === "undefined" || clusterOnly !== true ) return {};
+   return { $or: clusterNodes[host] };
 }
 
 function isStandalone()
@@ -154,7 +170,7 @@ function getInitConf( role, initFile )
    for( var i in hostList )
    {
       var oma = new Oma( hostList[i], 11790 );
-      var nodes = oma.listNodes( { role: role } ).toArray();
+      var nodes = oma.listNodes( { role: role }, getNodeFilter( hostList[i] ) ).toArray();
 
       if( nodes.length > 0 )
       {
@@ -218,7 +234,7 @@ function checkNodeStart()
    for( var i in hostList )
    {
       var oma = new Oma( hostList[i], 11790 );
-      var localNodes = oma.listNodes( { mode: 'local' } ).toArray();
+      var localNodes = oma.listNodes( { mode: 'local' }, getNodeFilter( hostList[i] ) ).toArray();
 
       for( var j in localNodes )
       {
@@ -330,7 +346,7 @@ function checkAllConfChange()
    for( var i in hostList )
    {
       var oma = new Oma( hostList[i], 11790 );
-      var nodeInfoArr = oma.listNodes().toArray();
+      var nodeInfoArr = oma.listNodes( {}, getNodeFilter( hostList[i] ) ).toArray();
       
       // every node
       for( var k in nodeInfoArr )
@@ -400,7 +416,7 @@ function restartNodes( role )
    for( var i in hostList )
    {
       var oma = new Oma( hostList[i], 11790 );
-      var nodeInfoArr = oma.listNodes( { role: role, mode:"local", expand: true } ).toArray();
+      var nodeInfoArr = oma.listNodes( { role: role, mode:"local", expand: true }, getNodeFilter( hostList[i] ) ).toArray();
       
       // every node
       for( var k in nodeInfoArr )
@@ -456,7 +472,7 @@ function setAllNodeConf( confType )
    for( var i in hostList )
    {
       var oma = new Oma( hostList[i], 11790 );      
-      var nodeInfoArr = oma.listNodes( { mode: "local" } ).toArray();
+      var nodeInfoArr = oma.listNodes( { mode: "local" }, getNodeFilter( hostList[i] ) ).toArray();
       
       // every node
       for( var k in nodeInfoArr )
