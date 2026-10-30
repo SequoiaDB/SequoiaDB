@@ -6,6 +6,7 @@ currentHostname=$(hostname)
 
 source /etc/profile
 source /etc/default/sequoiadb
+INSTALL_DIR="${3:-$INSTALL_DIR}"
 
 # stop sdb-schedule tools
 ${INSTALL_DIR}/tools/sdb-schedule/sdb-schedule/bin/schctl.sh stop -t all -f
@@ -25,4 +26,3 @@ REMOVE_JS="$SCRIPT_DIR/removeDSCluster.js"
 
 echo "cleaning datasource cluster..."
 ${INSTALL_DIR}/bin/sdb -f $REMOVE_JS -e "var DSHOSTNAME=\"$currentHostname\"; var DSSVCNAME=32010; var COORDHOSTNAME=\"$COORDHOSTNAME\"; var RSRVNODEDIR=\"${INSTALL_DIR}/database\";"
-

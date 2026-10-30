@@ -7,6 +7,7 @@ CURRENT_HOSTNAME="$(hostname)"
 
 source /etc/profile >/dev/null 2>&1 || true
 source /etc/default/sequoiadb
+INSTALL_DIR="${3:-$INSTALL_DIR}"
 
 log() {
     echo "[INFO] $*"
