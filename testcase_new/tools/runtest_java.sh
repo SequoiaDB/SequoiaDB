@@ -291,6 +291,21 @@ count_xml_tag() {
     { grep -REoh "<$2[[:space:]/>]" "$1" --include='*.xml' 2>/dev/null || true; } | wc -l
 }
 
+# 去掉注释后 suite 中有 <class> 或 <package> 才算登记了用例；
+# 只有 parameter/listener 的 suite（如 sdv/java/configure.xml）是静态空 suite。
+suite_has_cases() {
+    awk '
+        { text = text $0 "\n" }
+        END {
+            while ((start = index(text, "<!--")) > 0) {
+                stop = index(substr(text, start + 4), "-->")
+                if (stop == 0) { text = substr(text, 1, start - 1); break }
+                text = substr(text, 1, start - 1) substr(text, start + stop + 6)
+            }
+            exit !(text ~ /<(class|package)[[:space:]\/>]/)
+        }' "$1"
+}
+
 
 # -p/-f 只改代理文件：保留所有登记了目标包/类的 <test>，因此原 suite 的
 # groups、parameter、parallel 等运行上下文不会被错误套用。未登记目标时，只有
@@ -1288,6 +1303,12 @@ for ((suite_index = 0; suite_index < ${#proxy_files[@]}; suite_index++)); do
     maven_command=${maven_command#' '}
 
     echo " [ Suite $((suite_index + 1))/${#proxy_files[@]} ] $(basename "$proxy_file")" | tee -a "$log_file"
+    # 静态空 suite 没有可执行的用例，跳过 Maven 并按通过处理；登记了用例却执行 0 条仍返回 3。
+    if ! suite_has_cases "$proxy_file"; then
+        echo "[runtest_java][WARN] suite registers no <class> or <package>; skipped: ${suite_files[$suite_index]}" |
+            tee -a "$log_file"
+        continue
+    fi
     printf 'CMD: %s\n' "$maven_command" >>"$result_file"
     if [[ "$print_mode" == maven ]]; then
         print_command "${command[@]}"
