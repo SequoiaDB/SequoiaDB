@@ -7,7 +7,7 @@
 
 include_once dirname(__FILE__).'/../global.php';
 
-class lob20118 extends PHPUnit_Framework_TestCase
+class lob20158 extends PHPUnit_Framework_TestCase
 {
    private static $db;
    private static $csName = 'cs20158';
