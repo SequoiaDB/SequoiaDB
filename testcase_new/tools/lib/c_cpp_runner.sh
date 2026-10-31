@@ -1047,7 +1047,24 @@ function autoTest()
    if ! publishReports; then
       mergeRunnerRC 2
    fi
+   if ! hideRawXml; then
+      mergeRunnerRC 2
+   fi
    return $runnerRC
+}
+
+# raw/ 在报告目录内，Jenkins 的 report/**/*.xml 会把原始 XML 与发布后的 XML 重复收集。
+# 发布完成后改名为 .xml.raw（与 PHP 一致），内容保留供排查。
+function hideRawXml()
+{
+   local file
+
+   [ -n "$rawReportDir" ] && [ -d "$rawReportDir/raw" ] || return 0
+   for file in "$rawReportDir"/raw/*.xml
+   do
+      [ -f "$file" ] || continue
+      mv -f -- "$file" "$file.raw" || return 1
+   done
 }
 
 function runnerMain()
