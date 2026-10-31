@@ -42,7 +42,7 @@ function runner_kv_file($path)
         runner_fail('无法读取：' . $path);
     }
     $values = array();
-    foreach (preg_split('/\R/', $text) as $line) {
+    foreach (preg_split('/\r\n|\r|\n/', $text) as $line) {
         $line = trim($line);
         if ($line === '' || $line[0] === '#') {
             continue;
@@ -574,7 +574,7 @@ class PhpTestRunner
         $this->line("$label $status $time", "$label $colored $time", $this->options['print'] !== 'full');
         $detail = isset($case['detail']) && $case['detail'] !== '' ? $case['detail'] : $case['problem'];
         if ($case['status'] === 'fail' && $this->options['print'] === 'failed' && $detail !== '') {
-            foreach (preg_split('/\R/', $detail) as $text) {
+            foreach (preg_split('/\r\n|\r|\n/', $detail) as $text) {
                 $this->line('  ' . $text);
             }
         } elseif ($case['status'] === 'fail' && $case['problem'] !== '') {
@@ -779,7 +779,7 @@ class PhpTestRunner
         // PHPUnit 异常退出时记一条 phpunit error，按测试失败处理，后续 suite 继续执行。
         if ($problem !== '') {
             $detailPath = trim((string)@file_get_contents($stderr)) !== '' ? $stderr : $stdout;
-            $lines = preg_split('/\R/', trim((string)@file_get_contents($detailPath)));
+            $lines = preg_split('/\r\n|\r|\n/', trim((string)@file_get_contents($detailPath)));
             $message = $problem . '（PHPUnit 退出码 ' . $code . '）'
                 . (end($lines) !== '' ? '：' . trim(end($lines)) : '') . '；日志：' . $this->display($detailPath);
             $this->printCase(array('name' => $name . '#phpunit', 'status' => 'fail', 'time' => 0.0,
