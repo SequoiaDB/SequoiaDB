@@ -303,6 +303,8 @@ def run_cases(args, case_dir, files, report_dir, config, log, console):
 
         def _make_result(self):
             result = super(Runner, self)._make_result()
+            # 新版 run() 会用 self.failfast 覆盖；1.7.7 不会，需在结果对象上设置。
+            result.failfast = args.stop
             start_test = result.startTest
             stop_test = result.stopTest
             def captured(stream):
@@ -381,7 +383,10 @@ def run_cases(args, case_dir, files, report_dir, config, log, console):
                             sys.path.insert(0, base)
                     __import__(os.path.relpath(path, discovery_top)[:-3].replace(os.sep, '.'))
                     suite.addTests(loader.discover(base, pattern=os.path.basename(path), top_level_dir=discovery_top))
-                result = Runner(output=report_dir, stream=log, failfast=args.stop).run(suite)
+                # xmlrunner 1.7.7 的构造函数不接受 failfast，改为构造后设置。
+                runner = Runner(output=report_dir, stream=log)
+                runner.failfast = args.stop
+                result = runner.run(suite)
                 expected += result.testsRun
                 if args.stop and (result.failures or result.errors or result.unexpectedSuccesses):
                     break
@@ -617,7 +622,10 @@ def execute(args):
                 try:
                     total, failed, skipped, reported = summarize(report_dir, emit, args, case_dir, console)
                     # 选中的文件里没有用例返回 3；有用例却缺少结果按失败处理。
-                    if rc == 0:
+                    # -f 显式指定的文件静态不含用例（如 sync 逐文件执行时的 commlib.py）仅告警。
+                    if rc == 0 and not total and not expected and args.files:
+                        emit(' warning    : selected file(s) contain no test case')
+                    elif rc == 0:
                         rc = 3 if not total and not expected else 1 if failed or reported < expected else 0
                     if args.reportFormat:
                         sys.path.insert(0, os.path.join(ROOT, 'tools', 'report-formatters'))
