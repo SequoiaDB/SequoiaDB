@@ -644,17 +644,56 @@ run_configure_command() {
         printf -v arg '%q' "$arg"
         command_text+="${command_text:+ }$arg"
     done
-    if [[ -n "$remote_password" ]]; then
-        if ! command -v sshpass >/dev/null 2>&1; then
-            echo "[runtest_java][ERROR] CONFIGURETEST requires sshpass for password-based SSH to $remote_user@$db_hostname" >&2
-            return 2
+    detect_configure_ssh_mode || return 2
+    case "$configure_ssh_mode" in
+        key)
+            ssh -o BatchMode=yes -o StrictHostKeyChecking=no \
+                "$remote_user@$db_hostname" "$command_text"
+            ;;
+        sshpass)
+            SSHPASS="$remote_password" sshpass -e ssh -o StrictHostKeyChecking=no \
+                "$remote_user@$db_hostname" "$command_text"
+            ;;
+        askpass)
+            # 无控制终端时 OpenSSH 才会调用 SSH_ASKPASS；密码经环境变量传给 askpass，不落盘。
+            DISPLAY="${DISPLAY:-:0}" SSH_ASKPASS="$configure_askpass" SSH_ASKPASS_REQUIRE=force \
+                RUNTEST_JAVA_SSH_PASSWORD="$remote_password" \
+                setsid ${configure_setsid_wait:+"$configure_setsid_wait"} ssh -o StrictHostKeyChecking=no \
+                -o PreferredAuthentications=keyboard-interactive,password -o NumberOfPasswordPrompts=1 \
+                "$remote_user@$db_hostname" "$command_text"
+            ;;
+    esac
+}
+
+# 旧 CI 由 Ant sshexec 内置密码登录；bash 下依次尝试免密、sshpass、OpenSSH 自带的 SSH_ASKPASS，
+# 执行机无需额外安装软件。须在主 shell 中先调用一次，命令替换和管道里的子 shell 才能复用缓存结果。
+configure_ssh_mode=
+configure_askpass=
+configure_setsid_wait=
+detect_configure_ssh_mode() {
+    [[ -n "$configure_ssh_mode" ]] && return 0
+    if ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
+        "$remote_user@$db_hostname" true </dev/null >/dev/null 2>&1; then
+        configure_ssh_mode=key
+    elif [[ -z "$remote_password" ]]; then
+        echo "[runtest_java][ERROR] CONFIGURETEST cannot SSH to $remote_user@$db_hostname: no key-based login and no password" >&2
+        return 2
+    elif command -v sshpass >/dev/null 2>&1; then
+        configure_ssh_mode=sshpass
+    elif command -v setsid >/dev/null 2>&1; then
+        configure_askpass=$(mktemp "${TMPDIR:-/tmp}/runtest-java-askpass.XXXXXX") || return 2
+        printf '#!/bin/sh\nprintf "%%s\\n" "$RUNTEST_JAVA_SSH_PASSWORD"\n' >"$configure_askpass" || return 2
+        chmod 0700 "$configure_askpass" || return 2
+        # util-linux 2.24 起支持 -w；旧版本中命令不是进程组组长时 setsid 直接 exec，同样保留退出码。
+        if setsid --help 2>&1 | grep -q -- '--wait'; then
+            configure_setsid_wait=-w
         fi
-        sshpass -p "$remote_password" ssh -o StrictHostKeyChecking=no \
-            "$remote_user@$db_hostname" "$command_text"
+        configure_ssh_mode=askpass
     else
-        ssh -o BatchMode=yes -o StrictHostKeyChecking=no \
-            "$remote_user@$db_hostname" "$command_text"
+        echo "[runtest_java][ERROR] CONFIGURETEST requires key-based SSH, sshpass or setsid to reach $remote_user@$db_hostname" >&2
+        return 2
     fi
+    echo "[runtest_java] CONFIGURETEST SSH to $remote_user@$db_hostname via $configure_ssh_mode" >&2
 }
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
@@ -1157,6 +1196,7 @@ prepare_configure_helpers() {
     chmod 0755 "$configure_helper_dir" || return 1
     chmod 0644 "$configure_helper_dir"/* || return 1
     if ! is_local_host "$db_hostname"; then
+        detect_configure_ssh_mode || return 1
         configure_remote_helper_dir=$(run_configure_command mktemp -d /tmp/runtest-java-configure.XXXXXX) || return 1
         tar -C "$configure_helper_dir" -cf - before_configuretest.sh after_configuretest.sh removeDSCluster.js |
             run_configure_command tar -C "$configure_remote_helper_dir" -xf - || return 1
@@ -1223,6 +1263,7 @@ cleanup() {
             "$configure_helper_dir/removeDSCluster.js"
         rmdir -- "$configure_helper_dir" 2>/dev/null || true
     fi
+    [[ -z "$configure_askpass" ]] || rm -f -- "$configure_askpass"
     exit "$original_rc"
 }
 trap cleanup EXIT
@@ -1422,9 +1463,14 @@ fi
 
 # 仅在本次确实生成报告时复制并重写，避免发布上一次运行的残留 XML。
 # --reportinfo 不在本脚本解析，原样交给 formatter。
+# Mongo 各 driver 版本用例类名相同，formatter 的分组层级带上版本，Jenkins 中按版本分别展示。
+report_layer=$testcase_type
+if [[ -n "$mongo_driver_jar" ]]; then
+    report_layer="${testcase_type:-mongo}-driver${mongo_driver_version//./_}"
+fi
 if ((xml_count > 0)); then
     if [[ -n "$report_format" ]]; then
-        if ! REPORTINFO="$reportinfo" bash "$formatter" "$report_source" "${report_dir:-$report_source}" "$testcase_type"; then
+        if ! REPORTINFO="$reportinfo" bash "$formatter" "$report_source" "${report_dir:-$report_source}" "$report_layer"; then
             echo "[runtest_java][ERROR] report formatter failed: $formatter" >&2
             runner_rc=2
         fi
